@@ -4,6 +4,7 @@
 
 
 #include <iostream>
+#include <cstdlib>
 #include <fstream>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -75,6 +76,7 @@ void CLua::loadFile(std::string filename)
           {
             fprintf (stderr, "cannot run configuration file: %s",
                      lua_tostring (m_lua, -1));
+            exit(1);
           }
       }
 }
