@@ -3,7 +3,7 @@
 #
 SRCS= bindings.cc lua.cc maildir.cc main.cc screen.cc
 OBJS=$(subst .cc,.o,$(SRCS))
-CPPFLAGS=-g -Wall $(shell pkg-config --cflags lua5.1)
+CPPFLAGS=-g -Wall -Werror $(shell pkg-config --cflags lua5.1)
 LDLIBS=$(shell pkg-config --libs lua5.1)
 TARGET=lumail
 
