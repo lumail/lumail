@@ -7,6 +7,7 @@
 #include <fstream>
 
 #include "lua.h"
+#include "maildir.h"
 
 using namespace std;
 
@@ -50,6 +51,12 @@ int main( int argc, char *argv[] )
   std::string * v = s->getGlobal("VERSION");
   cout << "Version is " << *v << endl;
   delete(v);
+
+  cout <<endl;
+  if ( CMaildir::isMaildir( "/home/skx/Maildir" ) )
+    cout << "\t~/Maildir is OK" << endl;
+  if ( CMaildir::isMaildir( "/home/skx/Maildir/.steve.org.uk" ) )
+    cout << "\t~/Maildir/.steve.org.uk is OK" << endl;
 
 //
 //   while( true )
