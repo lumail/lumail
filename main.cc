@@ -1,3 +1,6 @@
+/**
+ * main.cc - Driver/Wrapper for our lumail script.
+ */
 
 
 #include <iostream>
