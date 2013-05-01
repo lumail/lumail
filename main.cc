@@ -5,12 +5,13 @@
 
 #include <iostream>
 #include <fstream>
+#include <getopt.h>
 
 #include "lua.h"
 #include "maildir.h"
+#include "version.h"
 
 using namespace std;
-
 
 
 /**
@@ -37,8 +38,67 @@ int my_function(lua_State * L)
  */
 int main( int argc, char *argv[] )
 {
-//   parse arguments
-//
+
+  //
+  //   parse arguments
+  //
+  int c;
+
+  //
+  // Flags set
+  //
+  bool verbose = false;
+  bool version = false;
+
+  while (1)
+    {
+      static struct option long_options[] =
+        {
+          {"verbose", no_argument,  0, 'v'},
+          {"version", no_argument,  0, 'V'},
+          {"rcfile", required_argument, 0, 'r'},
+          {0, 0, 0, 0}
+        };
+
+      /* getopt_long stores the option index here. */
+      int option_index = 0;
+
+      c = getopt_long (argc, argv, "vVr:", long_options, &option_index);
+
+      /* Detect the end of the options. */
+      if (c == -1)
+        break;
+
+      switch (c)
+        {
+        case 'r':
+          printf ("option --rcfile with file `%s'\n", optarg);
+          break;
+        case 'v':
+          verbose = true;
+          break;
+        case 'V':
+          version = true;
+          break;
+        case '?':
+          /* getopt_long already printed an error message. */
+          break;
+
+        default:
+          cerr << "Unknown argument" << endl;
+          return(2);
+        }
+    }
+
+  if ( verbose )
+    {
+      cout << "--verbose" << endl;
+    }
+  if ( version )
+    {
+      cout << "lumail v" << LUMAIL_VERSION << endl;
+      return 0;
+    }
 //   setup console
 //
 //   load lua environment
