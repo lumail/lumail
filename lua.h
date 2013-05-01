@@ -3,7 +3,7 @@
  */
 
 
-#ifndef _clua_h__
+#ifndef _clua_h_
 #define _clua_h_ 1
 
 extern "C" {

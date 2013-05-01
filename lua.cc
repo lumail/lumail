@@ -11,10 +11,8 @@
 #include <malloc.h>
 
 #include "lua.h"
+#include "bindings.h"
 #include "version.h"
-
-
-extern int my_function(lua_State * L);
 
 
 
@@ -55,7 +53,10 @@ CLua::CLua()
      */
     setGlobal("VERSION", LUMAIL_VERSION );
 
+
     lua_register(m_lua, "my_function", my_function);
+    lua_register(m_lua, "get_mode", get_mode);
+    lua_register(m_lua, "set_mode", set_mode);
 }
 
 
@@ -67,9 +68,15 @@ void CLua::loadFile(std::string filename)
 {
     struct stat sb;
 
+    std::cout << "Loading file " << filename << std::endl;
     if ((stat(filename.c_str(), &sb) == 0))
-	if (0 == luaL_loadfile(m_lua, (char *) (filename.c_str())))
-	    lua_pcall(m_lua, 0, 0, 0);
+      {
+        if (luaL_loadfile (m_lua, filename.c_str()) || lua_pcall (m_lua, 0, 0, 0))
+          {
+            fprintf (stderr, "cannot run configuration file: %s",
+                     lua_tostring (m_lua, -1));
+          }
+      }
 }
 
 

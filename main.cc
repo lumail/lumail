@@ -14,23 +14,6 @@
 using namespace std;
 
 
-/**
- * Some C-code called from Lua.
- */
-int my_function(lua_State * L)
-{
-    int argc = lua_gettop(L);
-
-    std::cerr << "-- my_function() called with " << argc << " arguments:" << std::endl;
-
-    for (int n = 1; n <= argc; ++n) {
-	std::cerr << "-- argument " << n << ": "
-	    << lua_tostring(L, n) << std::endl;
-    }
-
-    lua_pushnumber(L, 123);	// return value
-    return 1;			// number of return values
-}
 
 
 /**
