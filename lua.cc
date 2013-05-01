@@ -81,6 +81,15 @@ void CLua::loadFile(std::string filename)
 
 
 /**
+ * Evaluate the given string.
+ */
+void CLua::execute( std::string lua )
+{
+  luaL_dostring( m_lua, lua.c_str() );
+}
+
+
+/**
  * Call a single Lua function, passing no arguments and ignoring the return code.
  */
 bool CLua::callFunction(std::string name)

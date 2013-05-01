@@ -31,6 +31,11 @@ class CLua
   void loadFile( std::string filename);
 
   /**
+   * Evaluate the given string.
+   */
+  void execute( std::string lua );
+
+  /**
    * Call a single Lua function, passing no arguments and ignoring the return code.
    */
   bool callFunction( std::string name );
