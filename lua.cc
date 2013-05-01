@@ -9,8 +9,9 @@
 #include <sys/types.h>
 #include <string.h>
 #include <malloc.h>
-#include "lua.h"
 
+#include "lua.h"
+#include "version.h"
 
 
 extern int my_function(lua_State * L);
@@ -52,7 +53,7 @@ CLua::CLua()
     /**
      * Version number
      */
-    setGlobal("VERSION", "v0.2");
+    setGlobal("VERSION", LUMAIL_VERSION );
 
     lua_register(m_lua, "my_function", my_function);
 }
