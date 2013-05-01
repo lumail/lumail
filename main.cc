@@ -49,6 +49,7 @@ int main( int argc, char *argv[] )
   //
   bool verbose = false;
   bool version = false;
+  std::string rcfile = "";
 
   while (1)
     {
@@ -72,7 +73,7 @@ int main( int argc, char *argv[] )
       switch (c)
         {
         case 'r':
-          printf ("option --rcfile with file `%s'\n", optarg);
+          rcfile = optarg;
           break;
         case 'v':
           verbose = true;
@@ -105,6 +106,9 @@ int main( int argc, char *argv[] )
 
   CLua *lua = CLua::Instance();
   lua->loadFile("./lumail.lua");
+
+  if ( ! rcfile.empty() )
+      lua->loadFile( rcfile.c_str() );
 
   lua->callFunction("on_idle");
 
