@@ -43,12 +43,12 @@ int main( int argc, char *argv[] )
 //
 //   load lua environment
 
-  CLua *s = CLua::Instance();
-  s->loadFile("./lumail.lua");
+  CLua *lua = CLua::Instance();
+  lua->loadFile("./lumail.lua");
 
-  s->callFunction("on_idle");
+  lua->callFunction("on_idle");
 
-  std::string * v = s->getGlobal("VERSION");
+  std::string * v = lua->getGlobal("VERSION");
   cout << "Version is " << *v << endl;
   delete(v);
 
@@ -61,10 +61,19 @@ int main( int argc, char *argv[] )
 //
 //   while( true )
 //        call: on_idle
+  while( true )
+    {
+
+      lua->callFunction("on_idle");
+
 //        process events
 //        process keyboard
 //        refresh screen
+      sleep( 1);
+
+
 //   end
+    }
 //
 //   cleanup
 
