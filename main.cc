@@ -2,17 +2,16 @@
  * main.cc - Driver/Wrapper for our lumail script.
  */
 
-
+#include <cstdlib>
+#include <curses.h>
 #include <iostream>
 #include <fstream>
 #include <getopt.h>
 
 #include "lua.h"
 #include "maildir.h"
+#include "screen.h"
 #include "version.h"
-
-using namespace std;
-
 
 
 
@@ -69,60 +68,81 @@ int main( int argc, char *argv[] )
           break;
 
         default:
-          cerr << "Unknown argument" << endl;
+          std::cerr << "Unknown argument" << std::endl;
           return(2);
         }
     }
 
   if ( verbose )
     {
-      cout << "--verbose" << endl;
+      std::cout << "--verbose" << std::endl;
     }
   if ( version )
     {
-      cout << "lumail v" << LUMAIL_VERSION << endl;
+      std::cout << "lumail v" << LUMAIL_VERSION << std::endl;
       return 0;
     }
-//   setup console
-//
-//   load lua environment
 
+
+  /**
+   * Initialize the screen.
+   */
+  CScreen::Init();
+
+
+  /**
+   * Create the lua intepreter.
+   */
   CLua *lua = CLua::Instance();
+  lua->loadFile("/etc/lumail.lua");
   lua->loadFile("./lumail.lua");
 
+  /**
+   * If we have any init file specified then load it up too.
+   */
   if ( ! rcfile.empty() )
       lua->loadFile( rcfile.c_str() );
 
-  lua->callFunction("on_idle");
 
-  std::string * v = lua->getGlobal("VERSION");
-  cout << "Version is " << *v << endl;
-  delete(v);
+  /**
+   * We're starting, so call the on_start() function.
+   */
+  lua->callFunction("on_start");
 
-  cout <<endl;
-  if ( CMaildir::isMaildir( "/home/skx/Maildir" ) )
-    cout << "\t~/Maildir is OK" << endl;
-  if ( CMaildir::isMaildir( "/home/skx/Maildir/.steve.org.uk" ) )
-    cout << "\t~/Maildir/.steve.org.uk is OK" << endl;
-
-//
-//   while( true )
-//        call: on_idle
-  while( true )
+  /**
+   * Now enter our event-loop
+   */
+  char key = getch ();
+  int run = 1;
+  while (run)
     {
-
-      lua->callFunction("on_idle");
-
-//        process events
-//        process keyboard
-//        refresh screen
-      sleep( 1);
-
-
-//   end
+      if (key == ERR)
+	{
+	  /*
+	   * Timeout - so we go round the loop again.
+	   */
+          lua->callFunction("on_idle");
+	}
+      else
+        {
+          if (key == 'q' ) {
+            run = 0;
+          }
+          else
+            {
+              move(10,2);
+              printw ("Unbound key: %c", key);
+            }
+        }
+      key = getch ();
     }
-//
-//   cleanup
+
+  /**
+   * We've been terminated.
+   */
+  endwin ();
+  lua->callFunction("on_exit");
+  exit (0);
 
   return 0;
 }

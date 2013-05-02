@@ -16,6 +16,11 @@ class CScreen
  public:
 
   /**
+   * Setup the screen.
+   */
+  static void Init();
+
+  /**
    * Return the width of the screen.
    */
   static int width();
