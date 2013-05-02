@@ -57,6 +57,7 @@ CLua::CLua()
     /**
      * Register our primitives.
      */
+    lua_register(m_lua, "clear", clear);
     lua_register(m_lua, "msg", msg);
     lua_register(m_lua, "prompt", prompt);
     lua_register(m_lua, "get_mode", get_mode);

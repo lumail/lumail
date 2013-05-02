@@ -21,4 +21,7 @@ int msg(lua_State * L);
 /* prompt for input */
 int prompt(lua_State *L);
 
+/* clear the screen */
+int clear(lua_State *L);
+
 #endif /* _bindings_h */

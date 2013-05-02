@@ -49,6 +49,16 @@ int get_mode(lua_State *L)
 
 
 /**
+ * Clear the screen.
+ */
+int clear( lua_State *L)
+{
+  erase();
+  return 0;
+}
+
+
+/**
  * Exit the program.
  */
 int exit( lua_State *L)
