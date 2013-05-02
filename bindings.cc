@@ -6,25 +6,16 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include <ncurses.h>
+
 #include "global.h"
+#include "screen.h"
 #include "lua.h"
 
 
-int my_function(lua_State * L)
-{
-    int argc = lua_gettop(L);
-
-    std::cerr << "-- my_function() called with " << argc << " arguments:" << std::endl;
-
-    for (int n = 1; n <= argc; ++n) {
-	std::cerr << "-- argument " << n << ": "
-	    << lua_tostring(L, n) << std::endl;
-    }
-
-    lua_pushnumber(L, 123);	// return value
-    return 1;			// number of return values
-}
-
+/**
+ * Set the global mode for lumail.
+ */
 int set_mode(lua_State * L)
 {
   const char *str = lua_tostring (L, -1);
@@ -43,6 +34,10 @@ int set_mode(lua_State * L)
   return 0;
 }
 
+
+/**
+ * Get the global lumail mode.
+ */
 int get_mode(lua_State *L)
 {
   CGlobal *g = CGlobal::Instance();
@@ -51,8 +46,28 @@ int get_mode(lua_State *L)
   return 1;
 }
 
+
+/**
+ * Exit the program.
+ */
 int exit( lua_State *L)
 {
   exit(0);
+  return 0;
+}
+
+
+/**
+ * Write a message to the status-bar.
+ */
+int msg( lua_State *L)
+{
+  const char *str = lua_tostring (L, -1);
+
+  if (str == NULL)
+    return luaL_error(L, "Missing argument to msg(..)" );
+
+  move( CScreen::height() -1, 0 );
+  printw("%s", str);
   return 0;
 }
