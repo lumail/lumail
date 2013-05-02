@@ -52,7 +52,7 @@ CLua::CLua()
     /**
      * Version number
      */
-    setGlobal("VERSION", LUMAIL_VERSION );
+    setGlobal("VERSION", LUMAIL_VERSION);
 
     /**
      * Register our primitives.
@@ -75,24 +75,23 @@ void CLua::loadFile(std::string filename)
     struct stat sb;
 
     std::cout << "Loading file " << filename << std::endl;
-    if ((stat(filename.c_str(), &sb) == 0))
-      {
-        if (luaL_loadfile (m_lua, filename.c_str()) || lua_pcall (m_lua, 0, 0, 0))
-          {
-            fprintf (stderr, "cannot run configuration file: %s",
-                     lua_tostring (m_lua, -1));
-            exit(1);
-          }
-      }
+    if ((stat(filename.c_str(), &sb) == 0)) {
+	if (luaL_loadfile(m_lua, filename.c_str())
+	    || lua_pcall(m_lua, 0, 0, 0)) {
+	    fprintf(stderr, "cannot run configuration file: %s",
+		    lua_tostring(m_lua, -1));
+	    exit(1);
+	}
+    }
 }
 
 
 /**
  * Evaluate the given string.
  */
-void CLua::execute( std::string lua )
+void CLua::execute(std::string lua)
 {
-  luaL_dostring( m_lua, lua.c_str() );
+    luaL_dostring(m_lua, lua.c_str());
 }
 
 
@@ -103,10 +102,10 @@ bool CLua::callFunction(std::string name)
 {
     lua_getglobal(m_lua, name.c_str());
     if (lua_isfunction(m_lua, -1)) {
-        lua_pcall(m_lua, 0, 0, 0);
-        return true;
+	lua_pcall(m_lua, 0, 0, 0);
+	return true;
     } else {
-        return false;
+	return false;
     }
 }
 

@@ -17,23 +17,24 @@
 void CScreen::Init()
 {
 
-  initscr ();
+    initscr();
 
   /**
    * Make sure we have colours.
    */
-  if (!has_colors () || (start_color () != OK))
-    {
-      endwin();
-      std::cerr << "We don't have the required colour support available." << std::endl;
-      exit (1);
+    if (!has_colors() || (start_color() != OK)) {
+	endwin();
+	std::
+	    cerr << "We don't have the required colour support available."
+	    << std::endl;
+	exit(1);
     }
 
-  keypad (stdscr, TRUE);
-  crmode ();
-  noecho ();
-  curs_set (0);
-  timeout (1000);
+    keypad(stdscr, TRUE);
+    crmode();
+    noecho();
+    curs_set(0);
+    timeout(1000);
 }
 
 

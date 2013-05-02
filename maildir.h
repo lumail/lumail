@@ -14,22 +14,21 @@
 /**
  * Class contains only static methods relating to the screen dimensions.
  */
-class CMaildir
-{
+class CMaildir {
 
- public:
+  public:
 
   /**
    * Is the given path a Maildir?
    */
-  static bool isMaildir( std::string path );
+    static bool isMaildir(std::string path);
 
   /**
    * Is the given path a directory?
    */
-  static bool isDirectory( std::string path );
+    static bool isDirectory(std::string path);
 
 };
 
 
-#endif /* _maildir_h_ */
+#endif				/* _maildir_h_ */

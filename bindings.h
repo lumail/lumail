@@ -9,19 +9,19 @@
 
 
 /* exit the program */
-int exit( lua_State *L);
+int exit(lua_State * L);
 
 /* get/set the global mode: maildir/index/message */
-int get_mode(lua_State *L);
+int get_mode(lua_State * L);
 int set_mode(lua_State * L);
 
 /* draw a string at the foot of the screen. */
 int msg(lua_State * L);
 
 /* prompt for input */
-int prompt(lua_State *L);
+int prompt(lua_State * L);
 
 /* clear the screen */
-int clear(lua_State *L);
+int clear(lua_State * L);
 
-#endif /* _bindings_h */
+#endif				/* _bindings_h */

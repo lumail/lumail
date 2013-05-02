@@ -10,27 +10,26 @@
 /**
  * Class contains only static methods relating to the screen dimensions.
  */
-class CScreen
-{
+class CScreen {
 
- public:
+  public:
 
   /**
    * Setup the screen.
    */
-  static void Init();
+    static void Init();
 
   /**
    * Return the width of the screen.
    */
-  static int width();
+    static int width();
 
   /**
    * Return the height of the screen.
    */
-  static int height();
+    static int height();
 
 };
 
 
-#endif /* _screen_h_ */
+#endif				/* _screen_h_ */
