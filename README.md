@@ -27,8 +27,15 @@ Current Status
 The project is still in the early stages of development, although it is hoped
 that it will be fleshed out pretty quickly.
 
-There is currently no user-interface, no usable functionality, and no actual
-attempts at reading mail.
+The user-interface is currently a blank-screen, although if you press ':'
+you will receive a prompt which will accept and interpret Lua code.
+
+There are only a couple of lua primitives which are useful for interactive
+use, but they include:
+
+* `clear` - Clear the screen.
+* `msg` - Output a message.
+* `quit` - Quit.
 
 This section of the project notes will be updated once directories may be browsed
 and similar.  At the moment I'm laying the foundation with the primitives for
