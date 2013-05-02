@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include "global.h"
 #include "lua.h"
 
 
@@ -36,13 +37,17 @@ int set_mode(lua_State * L)
        ( strcmp( str, "message" ) != 0 ) )
     return luaL_error(L, "Valid modes are: 'index', 'maildir', & 'message'." );
 
-  /** TODO: Set the mode */
+
+  CGlobal *g = CGlobal::Instance();
+  g->set_mode( new std::string( str ) );
   return 0;
 }
 
 int get_mode(lua_State *L)
 {
-  lua_pushstring(L, "the mode is .." );
+  CGlobal *g = CGlobal::Instance();
+  std::string *s = g->get_mode();
+  lua_pushstring(L, s->c_str() );
   return 1;
 }
 

@@ -25,6 +25,12 @@ class CGlobal
   static CGlobal* Instance();
 
 
+  /**
+   * Get/Set the current mode.
+   */
+  void set_mode( std::string *mode );
+  std::string* get_mode( );
+
  protected:
 
   /**
@@ -42,6 +48,7 @@ class CGlobal
    */
   static CGlobal* pinstance;
 
+  std::string *m_mode;
 };
 
 #endif /* _global_h_ */
