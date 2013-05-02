@@ -52,6 +52,7 @@ int get_mode(lua_State *L)
  */
 int exit( lua_State *L)
 {
+  endwin();
   exit(0);
   return 0;
 }
