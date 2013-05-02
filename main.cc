@@ -128,6 +128,12 @@ int main( int argc, char *argv[] )
           if (key == 'q' ) {
             run = 0;
           }
+          else if ( key == ':' ) {
+            /**
+             * This is inspirational.
+             */
+            lua->execute( "loadstring(prompt(\":\"))();");
+          }
           else
             {
               move(10,2);
