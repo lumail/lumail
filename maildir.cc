@@ -4,10 +4,103 @@
 
 
 #include <vector>
+#include <algorithm>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
 #include <sys/types.h>
 #include "maildir.h"
 
+
+
+/**
+ * Constructor.  NOP
+ */
+CMaildir::CMaildir( std::string path )
+{
+  m_path = path;
+}
+
+/**
+ * Destructor.  NOP.
+ */
+CMaildir::~CMaildir()
+{
+}
+
+
+/**
+ * The number of new messages for this directory.
+ */
+int CMaildir::newMessages()
+{
+  return( CMaildir::countFiles( m_path + "/new" ) );
+}
+
+
+/**
+ * The number of read messages for this directory.
+ */
+int CMaildir::availableMessages()
+{
+  return( CMaildir::countFiles( m_path + "/cur" ) );
+}
+
+
+/**
+ * Count files in a directory.
+ */
+int CMaildir::countFiles( std::string path )
+{
+  int count = 0;
+  dirent* de;
+  DIR* dp;
+
+  dp = opendir( path.c_str() );
+  if (dp)
+    {
+    while (true)
+      {
+        de = readdir( dp );
+        if (de == NULL)
+          break;
+
+        if ( !CMaildir::isDirectory( std::string( path + "/" + de->d_name ) ) )
+          count += 1;
+      }
+    closedir( dp );
+    }
+  return count;
+}
+
+
+/**
+ * Return a sorted list of maildirs beneath the given path.
+ */
+std::vector<std::string> CMaildir::getFolders( std::string path )
+{
+  std::vector <std::string> result;
+  dirent* de;
+  DIR* dp;
+
+  std::string prefix = path.empty() ? "." : path.c_str() ;
+  dp = opendir( prefix.c_str() );
+  if (dp)
+    {
+    while (true)
+      {
+        de = readdir( dp );
+        if (de == NULL)
+          break;
+
+        if ( CMaildir::isMaildir( std::string( prefix + "/" + de->d_name ) ) )
+          result.push_back( std::string( prefix + "/" + de->d_name ) );
+      }
+    closedir( dp );
+    std::sort( result.begin(), result.end() );
+    }
+  return result;
+}
 
 
 /**
