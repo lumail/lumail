@@ -71,3 +71,44 @@ int msg( lua_State *L)
   printw("%s", str);
   return 0;
 }
+
+/**
+ * Prompt for input.
+ */
+int prompt( lua_State *L)
+{
+  /**
+   * Get the prompt string.
+   */
+  const char *str = lua_tostring (L, -1);
+  if (str == NULL)
+    return luaL_error(L, "Missing argument to prompt(..)" );
+
+
+  char input[1024] = { '\0' };
+
+  move( CScreen::height() -1, 0 );
+
+  curs_set (1);
+  echo ();
+
+  for (int i = 0; i < CScreen::width(); i++)
+    printw (" ");
+
+  move( CScreen::height() -1, 0 );
+  printw (str);
+  timeout (-1000);
+
+  getstr (input);
+
+  noecho ();
+  timeout (1000);
+
+  curs_set (0);
+  move( CScreen::height() -1, 0 );
+  for (int i = 0; i < CScreen::width(); i++)
+    printw (" ");
+
+  lua_pushstring(L, strdup(input) );
+  return 1;
+}
