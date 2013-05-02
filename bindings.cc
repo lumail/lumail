@@ -8,6 +8,7 @@
 #include <string.h>
 #include <ncurses.h>
 
+#include "lua.h"
 #include "global.h"
 #include "screen.h"
 #include "lua.h"
@@ -53,6 +54,10 @@ int get_mode(lua_State *L)
 int exit( lua_State *L)
 {
   endwin();
+
+  CLua *lua = CLua::Instance();
+  lua->callFunction("on_exit");
+
   exit(0);
   return 0;
 }
