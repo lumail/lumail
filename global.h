@@ -15,39 +15,45 @@
  * maildir_limit :  "all|unread|~p<xx>"
  *
  */
-class CGlobal {
-  public:
+class CGlobal
+{
+
+ public:
 
   /**
    * Get access to the singleton instance.
    */
-    static CGlobal *Instance();
+  static CGlobal *Instance();
 
 
   /**
    * Get/Set the current mode.
    */
-    void set_mode(std::string * mode);
-     std::string * get_mode();
+  void set_mode(std::string * mode);
+  std::string * get_mode();
 
-  protected:
+ protected:
 
   /**
    * Protected functions to allow our singleton implementation.
    */
-     CGlobal();
-     CGlobal(const CGlobal &);
-     CGlobal & operator=(const CGlobal &);
+  CGlobal();
+  CGlobal(const CGlobal &);
+  CGlobal & operator=(const CGlobal &);
 
 
-  private:
+ private:
 
   /**
    * The single instance of this class.
    */
-    static CGlobal *pinstance;
+  static CGlobal *pinstance;
 
-     std::string * m_mode;
+  /**
+   * The mode the client is in: index, maildir, or message.
+   */
+  std::string * m_mode;
+
 };
 
 #endif				/* _global_h_ */
