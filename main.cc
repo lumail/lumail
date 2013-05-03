@@ -2,6 +2,7 @@
  * main.cc - Driver/Wrapper for our lumail script.
  */
 
+#include <algorithm>
 #include <cstdlib>
 #include <curses.h>
 #include <iostream>
@@ -20,6 +21,21 @@
  */
 int main(int argc, char *argv[])
 {
+  /**
+   * Global maildirs.
+   *
+   * TODO: These should be in global.
+   */
+  std::vector<CMaildir> g_maildirs;
+
+  /**
+   * Temporary hack: Populate the vector of known maildirs.
+   */
+  std::vector<std::string>  f = CMaildir::getFolders( std::string("/home/skx/Maildir") );
+  std::vector < std::string >::iterator it;
+  for (it = f.begin(); it != f.end(); ++it) {
+    g_maildirs.push_back( CMaildir( *it) );
+  }
 
     //
     //   parse arguments
@@ -82,7 +98,8 @@ int main(int argc, char *argv[])
   /**
    * Initialize the screen.
    */
-    CScreen::Init();
+    CScreen screen = CScreen();
+    screen.Init();
 
 
   /**
@@ -124,11 +141,14 @@ int main(int argc, char *argv[])
              */
 		lua->execute("loadstring(prompt(\":\"))();");
 	    } else {
-		move(10, 2);
-		printw("Unbound key: %c", key);
+              std::string msg;
+              msg = "Unbound key:";
+              msg += key;
+              lua->execute("loadstring(msg(\"" + msg + "\"))();");
 	    }
 	}
 	key = getch();
+        screen.drawMaildir( g_maildirs );
     }
 
   /**
