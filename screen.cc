@@ -10,14 +10,48 @@
 #include "screen.h"
 
 
+/**
+ * Constructor.  NOP.
+ */
+CScreen::CScreen()
+{
+}
+
+
+/**
+ * Destructor.  NOP.
+ */
+CScreen::~CScreen()
+{
+}
+
+
+/**
+ * Draw a list of folders.
+ */
+void CScreen::drawMaildir( std::vector<CMaildir> x)
+{
+  clear();
+
+  int height = CScreen::height();
+  int size = x.size();
+  for( int i = 0; i < (height -1); i++ )
+    {
+      move(i, 1 );
+      printw("%s - %d:%d", x[i].name().c_str(), i , size);
+    }
+}
+
 
 /**
  * Setup the curses/screen.
  */
 void CScreen::Init()
 {
-
-    initscr();
+  /**
+   * Setup ncurses.
+   */
+  initscr();
 
   /**
    * Make sure we have colours.
