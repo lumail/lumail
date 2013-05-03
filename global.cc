@@ -45,6 +45,9 @@ CGlobal::CGlobal()
 }
 
 
+/**
+ * Set the new mode for the client.
+ */
 void CGlobal::set_mode(std::string * mode)
 {
     if (m_mode != NULL)
@@ -53,6 +56,10 @@ void CGlobal::set_mode(std::string * mode)
     m_mode = new std::string(mode->c_str());
 }
 
+
+/**
+ * Get the current mode the client is in: index, maildir or message.
+ */
 std::string * CGlobal::get_mode()
 {
     return (m_mode);
