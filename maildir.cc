@@ -48,6 +48,16 @@ int CMaildir::availableMessages()
 
 
 /**
+ * The friendly name of the maildir.
+ */
+std::string CMaildir::name()
+{
+  unsigned found = m_path.find_last_of("/");
+  return( m_path.substr(found+1) );
+}
+
+
+/**
  * Count files in a directory.
  */
 int CMaildir::countFiles( std::string path )

@@ -15,7 +15,7 @@
  * Class contains only static methods relating to the screen dimensions.
  */
 class CMaildir {
-
+ public:
   /**
    * Constructor.  NOP.
    */
@@ -36,6 +36,11 @@ class CMaildir {
    */
   int availableMessages();
 
+
+  /**
+   * The friendly name of the maildir.
+   */
+  std::string name();
 
  public:
 
