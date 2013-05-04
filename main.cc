@@ -10,6 +10,7 @@
 #include <getopt.h>
 
 #include "lua.h"
+#include "message.h"
 #include "maildir.h"
 #include "screen.h"
 #include "version.h"
@@ -21,6 +22,16 @@
  */
 int main(int argc, char *argv[])
 {
+#if 0
+    CMaildir steve = CMaildir( "/home/skx/Maildir/.steve.org.uk" );
+  std::vector<CMessage> mess = steve.getMessages();
+  std::vector < CMessage >::iterator mit;
+  for (mit = mess.begin(); mit != mess.end(); ++mit) {
+    std::cout << mit->path() << " " << mit->flags() << std::endl;
+  }
+  exit( -1 );
+#endif
+
   /**
    * Global maildirs.
    *
