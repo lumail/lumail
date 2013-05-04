@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
    * We've been terminated.
    */
     endwin();
-    lua->callFunction("on_exit");
+    lua->callFunction("exit");
     exit(0);
 
     return 0;
