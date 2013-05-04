@@ -27,13 +27,13 @@ Current Status
 The project is still in the early stages of development, although it is hoped
 that it will be fleshed out pretty quickly.
 
-The user-interface is currently a blank-screen, although if you press ':'
-you will receive a prompt which will accept and evaluate Lua code.
+The user-interface is currently a blank-screen, although we have an extensible
+mechanism for evaluating Lua-code, and responding to keypresses.
 
-There are only a couple of lua primitives which are useful for interactive
-use, but they include:
+There are several lua primitives which are useful for interactive use, they include:
 
 * `clear` - Clear the screen.
+* `prompt` - Prompt for input, and return it to the caller.
 * `msg` - Output a message.
 * `quit` - Quit.
 
