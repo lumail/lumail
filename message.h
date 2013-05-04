@@ -30,6 +30,11 @@ class CMessage
    */
   std::string path();
 
+  /**
+   * Get the flags for this message.
+   */
+  std::string flags();
+
  private:
 
   /**
