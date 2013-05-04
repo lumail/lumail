@@ -1,5 +1,5 @@
 /**
- * bindings.cc - Bindings for all fucntions callable from Lua.
+ * bindings.cc - Bindings for all functions callable from Lua.
  */
 
 #include <cstdlib>
