@@ -10,9 +10,17 @@
 #include <string>
 
 
+/**
+ * Forward decleration of class.
+ */
+class CMessage;
+
+
 
 /**
- * Class contains only static methods relating to the screen dimensions.
+ * An object for working with maildir folders.
+ *
+ * Opening them, counting messages, etc.
  */
 class CMaildir {
  public:
@@ -36,13 +44,10 @@ class CMaildir {
    */
   int availableMessages();
 
-
   /**
    * The friendly name of the maildir.
    */
   std::string name();
-
- public:
 
   /**
    * Is the given path a Maildir?
@@ -58,6 +63,13 @@ class CMaildir {
    * Return a sorted list of maildirs beneath the given path.
    */
   static std::vector<std::string> getFolders( std::string path );
+
+
+  /**
+   * Get each message in the folder.
+   */
+  std::vector<CMessage> getMessages();
+
 
   /**
    * Count files in a directory.

@@ -10,7 +10,7 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include "maildir.h"
-
+#include "message.h"
 
 
 /**
@@ -113,6 +113,48 @@ std::vector<std::string> CMaildir::getFolders( std::string path )
 }
 
 
+
+/**
+ * Get the messages in the folder.
+ */
+std::vector<CMessage> CMaildir::getMessages()
+{
+  std::vector <CMessage> result;
+  dirent* de;
+  DIR* dp;
+
+  dp = opendir( ( m_path + "/cur" ).c_str() );
+  if (dp)
+    {
+    while (true)
+      {
+        de = readdir( dp );
+        if (de == NULL)
+          break;
+
+        if ( !CMaildir::isDirectory( std::string( m_path + "/cur/" + de->d_name ) ) )
+          result.push_back( CMessage(std::string( m_path + "/cur/" + de->d_name ) ) );
+      }
+    closedir( dp );
+    }
+
+  dp = opendir( ( m_path + "/new" ).c_str() );
+  if (dp)
+    {
+    while (true)
+      {
+        de = readdir( dp );
+        if (de == NULL)
+          break;
+
+        if ( !CMaildir::isDirectory( std::string( m_path + "/new/" + de->d_name ) ) )
+          result.push_back( CMessage(std::string( m_path + "/new/" + de->d_name ) ) );
+      }
+    closedir( dp );
+    }
+  return result;
+}
+
 /**
  * Is the given path a Maildir?
  */
@@ -146,3 +188,4 @@ bool CMaildir::isDirectory(std::string path)
     return (S_ISDIR(sb.st_mode));
 
 }
+
