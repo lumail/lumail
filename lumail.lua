@@ -1,40 +1,75 @@
 --
--- Test getting/setting the current mode.
+-- lumail.lua - Init file for lumail.
 --
-set_mode( "maildir" );
-io.write("The global mode is " .. get_mode() .. "\n");
 
+
+--
+-- This function is called when the client launches.
+--
+-- You might use something like this, usefully:
+--
+--    os.execute( "imapsync ..." );
+--
 function on_start()
    msg("I've started" );
 end
 
+
+--
+-- This function is called when the client exits.
+--
+-- It could be used to do many things..
+--
 function on_exit()
    print("print: on_exit");
    io.write( "io.write: on_exit\n")
    io.write("The global mode is: '" .. get_mode() .. "'.\n");
 end
 
+
+--
+-- This function is called when the client is idle.
+--
+-- You might run something like:
+--
+--   if the current-time is a multiple of five-minutes
+--     os.execute("imapsync ..")
+--
+-- You might prefer to call fetchmail, or similar.
+--
 function on_idle()
    msg( "I am the lua function 'on_idle' - " .. os.date() .. "\n")
 end
 
 
+--
+-- Switch to the index-view mode.
+--
 function index()
    set_mode( "index" );
    redraw_display();
 end
 
+--
+-- Switch to the maildir-mode.
+--
 function maildir()
    set_mode( "maildir" );
    redraw_display();
 end
 
-function message()
-   set_mode( "message" );
-   redraw_display();
-end
 
-
+--
+-- Now setup keymaps for the different modes.
+--
+-- The same keypress might do different things in different modes,
+-- which is one of the advantages of a modal-client.
+--
+--
+--  TODO: Should there be a global-keymap?  For example:
+--
+--   keymap['q'] = 'exit()';
+--
 keymap = {}
 keymap['index']   = {}
 keymap['message'] = {}
