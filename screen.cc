@@ -5,8 +5,10 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
+#include <string.h>
 #include <sys/ioctl.h>
 #include <ncurses.h>
+#include "global.h"
 #include "screen.h"
 
 
@@ -27,19 +29,51 @@ CScreen::~CScreen()
 
 
 /**
+ * This function will draw the appropriate screen
+ * depending upon our current mode.
+ */
+void CScreen::refresh_display()
+{
+  /**
+   * Get the current mode.
+   */
+  CGlobal *g = CGlobal::Instance();
+  std::string * s = g->get_mode();
+
+  if ( strcmp( s->c_str(), "maildir" ) == 0 )
+    drawMaildir();
+  else if ( strcmp( s->c_str(), "index") == 0 )
+    drawIndex();
+  else if ( strcmp( s->c_str(), "message" ) == 0 )
+    drawMessage();
+  else
+    {
+      clear();
+      move( 3, 3 );
+      printw( "UNKNOWN MODE: '%s'", s->c_str() );
+    }
+}
+
+
+/**
  * Draw a list of folders.
  */
-void CScreen::drawMaildir( std::vector<CMaildir> x)
+void CScreen::drawMaildir()
 {
-  clear();
+  //  clear();
+  move(3, 3);
+  printw( "Drawing maildir here ..");
+}
 
-  int height = CScreen::height();
-  int size = x.size();
-  for( int i = 0; i < (height -1); i++ )
-    {
-      move(i, 1 );
-      printw("%s - %d:%d", x[i].name().c_str(), i , size);
-    }
+void CScreen::drawIndex()
+{
+  move(3, 3);
+  printw( "Drawing INDEX here ..");
+}
+void CScreen::drawMessage()
+{
+  move(3, 3);
+  printw( "Drawing MESSAGE here ..");
 }
 
 

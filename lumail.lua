@@ -4,7 +4,7 @@ io.write("Hello world, from lua version ",_VERSION, " lumail version ", VERSION,
 --
 -- Test getting/setting the current mode.
 --
-set_mode( "index" );
+set_mode( "maildir" );
 io.write("The global mode is " .. get_mode() .. "\n");
 
 function on_start()

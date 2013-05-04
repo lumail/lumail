@@ -5,6 +5,7 @@
 #ifndef _global_h_
 #define _global_h_ 1
 
+#include <string>
 
 /**
  * A singleton class to store global data:

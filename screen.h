@@ -29,7 +29,10 @@ class CScreen {
   ~CScreen();
 
 
-  void drawMaildir( std::vector<CMaildir> );
+  /**
+   * Draw/Refresh the display.
+   */
+  void refresh_display();
 
 
   /**
@@ -40,12 +43,20 @@ class CScreen {
   /**
    * Return the width of the screen.
    */
-    static int width();
+  static int width();
 
   /**
    * Return the height of the screen.
    */
-    static int height();
+  static int height();
+
+ private:
+  /**
+   * Per-mode drawing primitives.
+   */
+    void drawMaildir();
+    void drawIndex();
+    void drawMessage();
 
 };
 

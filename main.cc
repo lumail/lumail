@@ -159,7 +159,11 @@ int main(int argc, char *argv[])
 	    }
 	}
 	key = getch();
+#if 0
         screen.drawMaildir( g_maildirs );
+#else
+        screen.refresh_display();
+#endif
     }
 
   /**
