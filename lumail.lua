@@ -40,7 +40,30 @@ keymap['index']   = {}
 keymap['message'] = {}
 keymap['maildir'] = {}
 
+--
 -- globally exit
-keymap['index']['Q']   = "exit()"
-keymap['message']['Q'] = "exit()"
-keymap['maildir']['Q'] = "exit()"
+--
+keymap['index']['q']   = "exit()"
+keymap['message']['q'] = "exit()"
+keymap['maildir']['q'] = "exit()"
+
+--
+-- REPL-like-mode.
+--
+keymap['index'][':']   = "loadstring(prompt(\":\"))();";
+keymap['message'][':'] = "loadstring(prompt(\":\"))();";
+keymap['maildir'][':'] = "loadstring(prompt(\":\"))();";
+
+--
+-- Move to Maildir-mode
+--
+keymap['index']['M']   = 'maildir()';
+keymap['message']['M'] = 'maildir()';
+keymap['maildir']['M'] = 'maildir()';
+
+--
+-- Move to Index-mode
+--
+keymap['index']['I']   = 'index()';
+keymap['message']['I'] = 'index()';
+keymap['maildir']['I'] = 'index()';
