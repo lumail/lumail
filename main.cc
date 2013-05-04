@@ -16,18 +16,11 @@
 #include "version.h"
 
 
+/**
+ * Process a single keystroke from the user.
+ */
 void processKey( char key )
 {
-  /**
-   * Get the keymap table.
-   */
-  CLua *lua = CLua::Instance();
-  if ( !lua->onKey( key ) )
-    {
-      move( 20,20 );
-      printw ("Unbound key: %c", key);
-    }
-
 }
 
 
@@ -36,16 +29,6 @@ void processKey( char key )
  */
 int main(int argc, char *argv[])
 {
-#if 0
-    CMaildir steve = CMaildir( "/home/skx/Maildir/.steve.org.uk" );
-  std::vector<CMessage> mess = steve.getMessages();
-  std::vector < CMessage >::iterator mit;
-  for (mit = mess.begin(); mit != mess.end(); ++mit) {
-    std::cout << mit->path() << " " << mit->flags() << std::endl;
-  }
-  exit( -1 );
-#endif
-
   /**
    * Global maildirs.
    *
@@ -63,7 +46,7 @@ int main(int argc, char *argv[])
   }
 
     //
-    //   parse arguments
+    //   Parse command-line arguments
     //
     int c;
 
@@ -134,6 +117,7 @@ int main(int argc, char *argv[])
     lua->loadFile("/etc/lumail.lua");
     lua->loadFile("./lumail.lua");
 
+
   /**
    * If we have any init file specified then load it up too.
    */
@@ -149,40 +133,24 @@ int main(int argc, char *argv[])
   /**
    * Now enter our event-loop
    */
-    while( true )
-      {
-        char key = getch();
-	if (key == ERR) {
-	    /*
-	     * Timeout - so we go round the loop again.
-	     */
-	    lua->callFunction("on_idle");
-	}
-        else
-          {
-            processKey( key );
-          }
-        screen.refresh_display();
+    while( true ) {
+      char key = getch();
+      if (key == ERR) {
+        /*
+         * Timeout - so we go round the loop again.
+         */
+        lua->callFunction("on_idle");
       }
-#if 0
-	    if (key == 'q') {
-		run = 0;
-	    } else if (key == ':') {
-	    /**
-             * This is inspirational.
-             */
-		lua->execute("loadstring(prompt(\":\"))();");
-	    } else {
-              std::string msg;
-              msg = "Unbound key:";
-              msg += key;
-              lua->execute("loadstring(msg(\"" + msg + "\"))();");
-	    }
-	}
-	key = getch();
-        screen.drawMaildir( g_maildirs );
+      else {
+        if ( !lua->onKey( key ) ) {
+          std::string foo = "msg(\"Unbound key ";
+          foo +=  key;
+          foo +=  "\")";
+          lua->execute( foo );
+        }
+      }
+      screen.refresh_display();
     }
-#endif
 
   /**
    * We've been terminated.
