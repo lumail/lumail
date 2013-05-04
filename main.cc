@@ -16,6 +16,20 @@
 #include "version.h"
 
 
+void processKey( char key )
+{
+  /**
+   * Get the keymap table.
+   */
+  CLua *lua = CLua::Instance();
+  if ( !lua->onKey( key ) )
+    {
+      move( 20,20 );
+      printw ("Unbound key: %c", key);
+    }
+
+}
+
 
 /**
  * Entry point to our code.
@@ -135,15 +149,22 @@ int main(int argc, char *argv[])
   /**
    * Now enter our event-loop
    */
-    char key = getch();
-    int run = 1;
-    while (run) {
+    while( true )
+      {
+        char key = getch();
 	if (key == ERR) {
 	    /*
 	     * Timeout - so we go round the loop again.
 	     */
 	    lua->callFunction("on_idle");
-	} else {
+	}
+        else
+          {
+            processKey( key );
+          }
+        screen.refresh_display();
+      }
+#if 0
 	    if (key == 'q') {
 		run = 0;
 	    } else if (key == ':') {
@@ -159,12 +180,9 @@ int main(int argc, char *argv[])
 	    }
 	}
 	key = getch();
-#if 0
         screen.drawMaildir( g_maildirs );
-#else
-        screen.refresh_display();
-#endif
     }
+#endif
 
   /**
    * We've been terminated.

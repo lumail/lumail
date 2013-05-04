@@ -13,6 +13,7 @@
 
 #include "lua.h"
 #include "bindings.h"
+#include "global.h"
 #include "version.h"
 
 
@@ -133,4 +134,34 @@ std::string * CLua::getGlobal(std::string name)
     lua_pop(m_lua, 1);
 
     return result;
+}
+
+/**
+ * Execute a function from the global keymap.
+ */
+bool CLua::onKey( char key )
+{
+  char keypress[2] ;
+  keypress[0] = key;
+  keypress[1] = '\0';
+
+  /**
+   * Get the mode.
+   */
+  CGlobal     *g = CGlobal::Instance();
+  std::string *s = g->get_mode();
+
+  lua_getglobal (m_lua, "keymap");
+  lua_pushstring (m_lua, s->c_str());
+  lua_gettable (m_lua, -2);
+  lua_pushstring (m_lua, keypress);
+  lua_gettable (m_lua, -2);
+  if (lua_isstring (m_lua, -1))
+    {
+      char *str = (char *) lua_tostring (m_lua, -1);
+      execute( str );
+      return true;
+    }
+
+  return false;
 }

@@ -33,3 +33,14 @@ function message()
    set_mode( "message" );
    redraw_display();
 end
+
+
+keymap = {}
+keymap['index']   = {}
+keymap['message'] = {}
+keymap['maildir'] = {}
+
+-- globally exit
+keymap['index']['Q']   = "exit()"
+keymap['message']['Q'] = "exit()"
+keymap['maildir']['Q'] = "exit()"

@@ -45,8 +45,12 @@ extern "C" {
   /**
    * Get a global variable value from the Lua environment.
    */
-     std::string * getGlobal(std::string name);
+    std::string * getGlobal(std::string name);
 
+    /**
+     * Execute a function from the global keymap.
+     */
+    bool onKey( char key );
 
   protected:
 
