@@ -60,7 +60,6 @@ void CScreen::refresh_display()
  */
 void CScreen::drawMaildir()
 {
-  //  clear();
   move(3, 3);
   printw( "Drawing maildir here ..");
 }
