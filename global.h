@@ -5,7 +5,9 @@
 #ifndef _global_h_
 #define _global_h_ 1
 
+#include <vector>
 #include <string>
+#include "maildir.h"
 
 /**
  * A singleton class to store global data:
@@ -33,6 +35,26 @@ class CGlobal
   void set_mode(std::string * mode);
   std::string * get_mode();
 
+  /**
+   * Get all selected folders.
+   */
+  std::vector<std::string> get_selected_folders();
+
+  /**
+   * Get all folders.
+   */
+  std::vector<CMaildir> get_all_folders( std::string prefix);
+
+  /**
+   * Remove all selected folders.
+   */
+  void unset_folders();
+
+  /**
+   * Add a folder to the selected set.
+   */
+  void add_folder( std::string path );
+
  protected:
 
   /**
@@ -55,6 +77,10 @@ class CGlobal
    */
   std::string * m_mode;
 
+  /**
+   * Currently selected folders.
+   */
+  std::vector<std::string> m_folders;
 };
 
 #endif				/* _global_h_ */

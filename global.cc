@@ -64,3 +64,44 @@ std::string * CGlobal::get_mode()
 {
     return (m_mode);
 }
+
+
+/**
+ * Get all selected folders.
+ */
+std::vector<std::string> CGlobal::get_selected_folders()
+{
+  return( m_folders );
+}
+
+/**
+ * Get all folders.
+ */
+std::vector<CMaildir> CGlobal::get_all_folders(std::string prefix)
+{
+  std::vector<CMaildir> maildirs;
+
+  std::vector<std::string> folders = CMaildir::getFolders( prefix );
+  std::vector < std::string >::iterator it;
+  for (it = folders.begin(); it != folders.end(); ++it) {
+    maildirs.push_back( CMaildir( *it ) );
+  }
+
+  return( maildirs );
+}
+
+  /**
+   * Remove all selected folders.
+   */
+void CGlobal::unset_folders()
+{
+  m_folders.clear();
+}
+
+  /**
+   * Add a folder to the selected set.
+   */
+void CGlobal::add_folder( std::string path )
+{
+  m_folders.push_back( path );
+}
