@@ -36,6 +36,22 @@ int set_mode(lua_State * L)
 }
 
 
+
+/**
+ * Set the maildir-prefix
+ */
+int set_maildir(lua_State * L)
+{
+    const char *str = lua_tostring(L, -1);
+
+    if (str == NULL)
+	return luaL_error(L, "Missing argument to set_maildir(..)");
+
+    CGlobal *g = CGlobal::Instance();
+    g->set_maildir_prefix(new std::string(str));
+    return 0;
+}
+
 /**
  * Get the global lumail mode.
  */
@@ -43,6 +59,18 @@ int get_mode(lua_State * L)
 {
     CGlobal *g = CGlobal::Instance();
     std::string * s = g->get_mode();
+    lua_pushstring(L, s->c_str());
+    return 1;
+}
+
+
+/**
+ * Get the maildir-prefix
+ */
+int get_maildir(lua_State * L)
+{
+    CGlobal *g = CGlobal::Instance();
+    std::string * s = g->get_maildir_prefix();
     lua_pushstring(L, s->c_str());
     return 1;
 }

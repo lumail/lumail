@@ -63,6 +63,9 @@ CLua::CLua()
     lua_register(m_lua, "prompt", prompt);
     lua_register(m_lua, "get_mode", get_mode);
     lua_register(m_lua, "set_mode", set_mode);
+
+    lua_register(m_lua, "get_maildir", get_maildir);
+    lua_register(m_lua, "set_maildir", set_maildir);
     lua_register(m_lua, "exit", exit);
 }
 

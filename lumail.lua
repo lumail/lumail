@@ -7,7 +7,7 @@
 -- The single mandatory setting is the prefix for the
 -- maildir hierarchy.
 --
-mail_prefix = os.getenv( "HOME" ) .. "/Maildir";
+set_maildir( os.getenv( "HOME" ) .. "/Maildir" );
 
 
 --

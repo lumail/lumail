@@ -15,6 +15,10 @@ int exit(lua_State * L);
 int get_mode(lua_State * L);
 int set_mode(lua_State * L);
 
+/* get/set the global maildir-prefix */
+int set_maildir(lua_State * L);
+int get_maildir(lua_State * L);
+
 /* draw a string at the foot of the screen. */
 int msg(lua_State * L);
 

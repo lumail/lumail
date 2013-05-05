@@ -42,6 +42,7 @@ CGlobal::CGlobal()
    * Defaults.
    */
     m_mode = new std::string("maildir");
+    m_maildir_prefix = NULL;
 }
 
 
@@ -65,6 +66,20 @@ std::string * CGlobal::get_mode()
     return (m_mode);
 }
 
+
+void CGlobal::set_maildir_prefix( std::string *prefix )
+{
+  if ( m_maildir_prefix != NULL )
+    delete( m_maildir_prefix );
+
+  m_maildir_prefix = new std::string(prefix->c_str());
+}
+
+
+std::string * CGlobal::get_maildir_prefix()
+{
+  return( m_maildir_prefix );
+}
 
 /**
  * Get all selected folders.

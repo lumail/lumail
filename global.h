@@ -36,6 +36,13 @@ class CGlobal
   std::string * get_mode();
 
   /**
+   * Get/Set the maildir-prefix.
+   */
+  void set_maildir_prefix( std::string *prefix );
+  std::string * get_maildir_prefix();
+
+
+  /**
    * Get all selected folders.
    */
   std::vector<std::string> get_selected_folders();
@@ -76,6 +83,11 @@ class CGlobal
    * The mode the client is in: index, maildir, or message.
    */
   std::string * m_mode;
+
+  /**
+   * The maildir-prefix.
+   */
+  std::string * m_maildir_prefix;
 
   /**
    * Currently selected folders.
