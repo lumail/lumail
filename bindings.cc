@@ -83,6 +83,7 @@ int msg(lua_State * L)
     if (str == NULL)
 	return luaL_error(L, "Missing argument to msg(..)");
 
+    CScreen::clearStatus();
     move(CScreen::height() - 1, 0);
     printw("%s", str);
     return 0;
@@ -103,28 +104,23 @@ int prompt(lua_State * L)
 
     char input[1024] = { '\0' };
 
-    move(CScreen::height() - 1, 0);
 
     curs_set(1);
     echo();
 
-    for (int i = 0; i < CScreen::width(); i++)
-	printw(" ");
-
+    CScreen::clearStatus();
     move(CScreen::height() - 1, 0);
     printw(str);
-    timeout(-1000);
 
+    timeout(-1000);
     getstr(input);
 
     noecho();
     timeout(1000);
 
     curs_set(0);
-    move(CScreen::height() - 1, 0);
-    for (int i = 0; i < CScreen::width(); i++)
-	printw(" ");
 
+    CScreen::clearStatus();
     lua_pushstring(L, strdup(input));
     return 1;
 }

@@ -50,6 +50,11 @@ class CScreen {
    */
   static int height();
 
+  /**
+   * Clear the status-line of the screen.
+   */
+  static void clearStatus();
+
  private:
   /**
    * Per-mode drawing primitives.

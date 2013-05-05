@@ -126,3 +126,15 @@ int CScreen::height()
     ioctl(0, TIOCGWINSZ, &w);
     return (w.ws_row);
 }
+
+/**
+ * Clear the status-line of the screen.
+ */
+void CScreen::clearStatus()
+{
+  move(CScreen::height() - 1, 0);
+
+  for (int i = 0; i < CScreen::width(); i++)
+    printw(" ");
+
+}
