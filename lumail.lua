@@ -4,6 +4,13 @@
 
 
 --
+-- The single mandatory setting is the prefix for the
+-- maildir hierarchy.
+--
+mail_prefix = os.getenv( "HOME" ) .. "/Maildir";
+
+
+--
 -- This function is called when the client launches.
 --
 -- You might use something like this, usefully:
