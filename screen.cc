@@ -60,6 +60,8 @@ void CScreen::refresh_display()
  */
 void CScreen::drawMaildir()
 {
+  clear();
+
   /**
    * Get all known folders.
    */
@@ -88,11 +90,13 @@ void CScreen::drawMaildir()
 
 void CScreen::drawIndex()
 {
+  clear();
   move(3, 3);
   printw( "Drawing INDEX here ..");
 }
 void CScreen::drawMessage()
 {
+  clear();
   move(3, 3);
   printw( "Drawing MESSAGE here ..");
 }
