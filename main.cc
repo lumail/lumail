@@ -53,14 +53,12 @@ int main(int argc, char *argv[])
     //
     // Flags set
     //
-    bool verbose = false;
     bool version = false;
     std::string rcfile = "";
 
     while (1) {
 	static struct option long_options[] = {
-	    {"verbose", no_argument, 0, 'v'},
-	    {"version", no_argument, 0, 'V'},
+	    {"version", no_argument, 0, 'v'},
 	    {"rcfile", required_argument, 0, 'r'},
 	    {0, 0, 0, 0}
 	};
@@ -68,7 +66,7 @@ int main(int argc, char *argv[])
 	/* getopt_long stores the option index here. */
 	int option_index = 0;
 
-	c = getopt_long(argc, argv, "vVr:", long_options, &option_index);
+	c = getopt_long(argc, argv, "vr:", long_options, &option_index);
 
 	/* Detect the end of the options. */
 	if (c == -1)
@@ -79,9 +77,6 @@ int main(int argc, char *argv[])
 	    rcfile = optarg;
 	    break;
 	case 'v':
-	    verbose = true;
-	    break;
-	case 'V':
 	    version = true;
 	    break;
 	case '?':
@@ -94,9 +89,6 @@ int main(int argc, char *argv[])
 	}
     }
 
-    if (verbose) {
-	std::cout << "--verbose" << std::endl;
-    }
     if (version) {
 	std::cout << "lumail v" << LUMAIL_VERSION << std::endl;
 	return 0;
