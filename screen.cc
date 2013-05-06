@@ -100,12 +100,13 @@ void CScreen::drawMaildir()
   int height   = CScreen::height();
   int selected = global->get_selected_folder();
 
+
   /*
    * Bound the selection.
    */
-  if ( selected > count ){
-    selected = 0;
+  if ( selected >= count ){
     global->set_selected_folder( 0 );
+    selected = 0;
   }
 
 
@@ -115,11 +116,20 @@ void CScreen::drawMaildir()
    */
   int row = 0;
 
-  for( row = 0; ((selected < count ) && ( row < count ) &&( row+selected <= count ) && ( row < (height-1))); row++ )
+  for( row = 0; row < (height-1) ; row++)
   {
+    /**
+     * What we'll output for this row.
+     */
     char buf[250] = { '\0' };
 
-    move(row,2);
+    /**
+     * The current object.
+     */
+    CMaildir *cur = NULL;
+    if ( (row + selected) < count )
+      cur = &display[row+selected];
+
 
     /**
      * First row is the current one.
@@ -127,22 +137,16 @@ void CScreen::drawMaildir()
     if ( row == 0 )
       attron( A_REVERSE);
 
-    std::string path = display[row+selected].path();
+    std::string path = "";
 
-    if ( (display[row + selected]).newMessages() > 0 ){
-	attrset (COLOR_PAIR (1));
-    }
+    if ( cur != NULL )
+      snprintf(buf, sizeof(buf)-1, "[ ] - %-70s", cur->path().c_str() );
 
-
-    snprintf(buf, sizeof(buf)-1, "[ ] - %-70s", path.c_str() );
     while( (int)strlen(buf) <  (CScreen::width()-3) )
-      {
-        strcat(buf, " ");
-      }
+      strcat(buf, " ");
 
+    move(row,2);
     printw("%s",buf);
-
-    attrset (COLOR_PAIR (2));
 
     /**
      * Remove the inverse.
