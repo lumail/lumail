@@ -59,7 +59,18 @@ end
 -- You might prefer to call fetchmail, or similar.
 --
 function on_idle()
-   msg( "I am the lua function 'on_idle' - " .. os.date() .. "\n")
+   m = global_mode()
+   m = string.lower( m );
+
+   str = ""
+
+   if ( string.find( m, "maildir" ) ) then
+      str = "mode:" .. m ..  " limit:" .. maildir_limit();
+   else
+      str = "mode:" .. m ;
+   end
+
+   msg( str .. " time:" .. os.date("%X" ) );
 end
 
 
