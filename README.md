@@ -27,8 +27,21 @@ Current Status
 The project is still in the early stages of development, although it is hoped
 that it will be fleshed out pretty quickly.
 
-The user-interface is currently a blank-screen, although we have an extensible
-mechanism for evaluating Lua-code, and responding to keypresses.
+Because this mail-client is a modal application the coding has been split into
+sections:
+
+* Code the display/manipulation of the Maildir folders.
+* Code the display/manipulation of the message-indexes.
+* Code the display/manipulation of a single mail message.
+
+The first of these is complete.  A maildir collection may be searched, browsed,
+and toggled.
+
+The display of indexes & messages is still missing.
+
+
+Lua-Primitives
+--------------
 
 There are several lua primitives which are useful for interactive use, they include:
 
@@ -36,13 +49,7 @@ There are several lua primitives which are useful for interactive use, they incl
 * `prompt` - Prompt for input, and return it to the caller.
 * `msg` - Output a message.
 * `quit` - Quit.
-
-This section of the project notes will be updated once directories may be browsed
-and similar.  At the moment I'm laying the foundation with the primitives for
-the low-level and the lua-bindings being written.
-
-Once the primitives are in place then the actual application should be quickly
-created.
+* Along with various primitives useful for manipulating the maildir folders, which are documented in `lumail.lua`.
 
 
 Steve
