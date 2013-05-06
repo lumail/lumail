@@ -66,7 +66,9 @@ std::string * CGlobal::get_mode()
     return (m_mode);
 }
 
-
+/**
+ * Set the prefix for our maildir folders.
+ */
 void CGlobal::set_maildir_prefix( std::string *prefix )
 {
   if ( m_maildir_prefix != NULL )
@@ -76,6 +78,9 @@ void CGlobal::set_maildir_prefix( std::string *prefix )
 }
 
 
+/**
+ * Get the prefix for the maildir folders.
+ */
 std::string * CGlobal::get_maildir_prefix()
 {
   return( m_maildir_prefix );
@@ -86,17 +91,17 @@ std::string * CGlobal::get_maildir_prefix()
  */
 std::vector<std::string> CGlobal::get_selected_folders()
 {
-  return( m_folders );
+  return( m_selected_folders );
 }
 
 /**
  * Get all folders.
  */
-std::vector<CMaildir> CGlobal::get_all_folders(std::string prefix)
+std::vector<CMaildir> CGlobal::get_all_folders()
 {
   std::vector<CMaildir> maildirs;
 
-  std::vector<std::string> folders = CMaildir::getFolders( prefix );
+  std::vector<std::string> folders = CMaildir::getFolders( *m_maildir_prefix );
   std::vector < std::string >::iterator it;
   for (it = folders.begin(); it != folders.end(); ++it) {
     maildirs.push_back( CMaildir( *it ) );
@@ -105,12 +110,12 @@ std::vector<CMaildir> CGlobal::get_all_folders(std::string prefix)
   return( maildirs );
 }
 
-  /**
-   * Remove all selected folders.
-   */
+/**
+ * Remove all selected folders.
+ */
 void CGlobal::unset_folders()
 {
-  m_folders.clear();
+  m_selected_folders.clear();
 }
 
   /**
@@ -118,5 +123,5 @@ void CGlobal::unset_folders()
    */
 void CGlobal::add_folder( std::string path )
 {
-  m_folders.push_back( path );
+  m_selected_folders.push_back( path );
 }

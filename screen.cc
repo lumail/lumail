@@ -60,8 +60,23 @@ void CScreen::refresh_display()
  */
 void CScreen::drawMaildir()
 {
-  move(3, 3);
-  printw( "Drawing maildir here ..");
+  /**
+   * Get all known folders.
+   */
+  CGlobal               *global = CGlobal::Instance();
+  std::vector<CMaildir> folders = global->get_all_folders();
+
+  /**
+   * Draw the first few.
+   */
+  int i = 0;
+  std::vector < CMaildir >::iterator it;
+  for (it = folders.begin(); it != folders.end(), i < (CScreen::height()-1); ++it, i++)
+    {
+      move(i,2);
+      printw("[ ] - %s", (*it).name().c_str() );
+    }
+
 }
 
 void CScreen::drawIndex()

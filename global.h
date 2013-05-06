@@ -50,7 +50,7 @@ class CGlobal
   /**
    * Get all folders.
    */
-  std::vector<CMaildir> get_all_folders( std::string prefix);
+  std::vector<CMaildir> get_all_folders();
 
   /**
    * Remove all selected folders.
@@ -92,7 +92,7 @@ class CGlobal
   /**
    * Currently selected folders.
    */
-  std::vector<std::string> m_folders;
+  std::vector<std::string> m_selected_folders;
 };
 
 #endif				/* _global_h_ */
