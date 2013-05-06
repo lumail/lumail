@@ -105,8 +105,14 @@ void CScreen::drawMaildir()
         attron( A_REVERSE);
 
       std::string path = (*it).path();
-      if ( !path.empty())
-        printw("[ ] - %s            ", path.c_str() );
+
+
+      if ( (*it).newMessages() > 0 )
+	attrset (COLOR_PAIR (1));
+
+      printw("[ ] - %s            ", path.c_str() );
+
+      attrset (COLOR_PAIR (2));
 
       if ( i == highlight )
         attroff(A_REVERSE);
@@ -161,6 +167,13 @@ void CScreen::Init()
     noecho();
     curs_set(0);
     timeout(1000);
+
+  /**
+   * We want (red + black) + (white + black)
+   */
+  init_pair (1, COLOR_RED, COLOR_BLACK);
+  init_pair (2, COLOR_WHITE, COLOR_BLACK);
+
 }
 
 
