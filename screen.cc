@@ -70,11 +70,18 @@ void CScreen::drawMaildir()
    * Draw the first few.
    */
   int i = 0;
+  int highlight = 10;
   std::vector < CMaildir >::iterator it;
   for (it = folders.begin(); it != folders.end(), i < (CScreen::height()-1); ++it, i++)
     {
       move(i,2);
-      printw("[ ] - %s", (*it).name().c_str() );
+      if ( i == highlight )
+        attron( A_REVERSE);
+
+      printw("[ ] - %s            ", (*it).name().c_str() );
+
+      if ( i == highlight )
+        attroff(A_REVERSE);
     }
 
 }
