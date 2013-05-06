@@ -103,6 +103,23 @@ function livejournal_folders()
    clear();
 end
 
+function maildir_down()
+   scroll_maildir_down( 1 );
+   msg("DOWN");
+end
+
+function maildir_page_down()
+   scroll_maildir_down( 10 );
+end
+
+function maildir_up()
+   scroll_maildir_up(1);
+end
+
+function maildir_page_up()
+   scroll_maildir_up(10);
+end
+
 --
 -- Now setup keymaps for the different modes.
 --
@@ -170,3 +187,7 @@ keymap['maildir']['a'] = 'all_folders()'
 keymap['maildir']['n'] = 'new_folders()'
 keymap['maildir']['l'] = 'livejournal_folders()'
 
+keymap['maildir']['j'] = 'maildir_down()'
+keymap['maildir']['J'] = 'maildir_page_down()'
+keymap['maildir']['k'] = 'maildir_up()'
+keymap['maildir']['K'] = 'maildir_page_up()'

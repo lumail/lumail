@@ -192,3 +192,35 @@ int prompt(lua_State * L)
     lua_pushstring(L, strdup(input));
     return 1;
 }
+
+
+/* scroll up/down the maildir list. */
+int scroll_maildir_down(lua_State *L){
+  int step = lua_tonumber (L, -1);
+
+  CGlobal *global = CGlobal::Instance();
+
+  int cur = global->get_selected_folder();
+  cur += step;
+
+  global->set_selected_folder( cur );
+
+  return 0;
+}
+
+/**
+ * Scroll the maildir list up.
+ */
+int scroll_maildir_up(lua_State *L) {
+  int step = lua_tonumber (L, -1);
+
+  CGlobal *global = CGlobal::Instance();
+  int cur = global->get_selected_folder();
+  cur -= step;
+
+  if ( cur < 0 )
+    cur = 0;
+
+  global->set_selected_folder( cur );
+  return( 0 );
+}

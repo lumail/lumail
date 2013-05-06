@@ -43,14 +43,14 @@ class CGlobal
 
 
   /**
-   * Get all selected folders.
-   */
-  std::vector<std::string> get_selected_folders();
-
-  /**
    * Get all folders.
    */
   std::vector<CMaildir> get_all_folders();
+
+  /**
+   * Get all selected folders.
+   */
+  std::vector<std::string> get_selected_folders();
 
   /**
    * Remove all selected folders.

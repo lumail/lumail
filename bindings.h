@@ -24,6 +24,11 @@ int maildir_limit(lua_State * L);
 int set_maildir(lua_State * L);
 int get_maildir(lua_State * L);
 
+/* scroll up/down the maildir list. */
+int scroll_maildir_down(lua_State *L);
+int scroll_maildir_up(lua_State *L);
+
+
 /* draw a string at the foot of the screen. */
 int msg(lua_State * L);
 

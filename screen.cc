@@ -94,31 +94,50 @@ void CScreen::drawMaildir()
 
 
   /**
-   * Now we're drawing the folders we can see.
+   * The number of items we've found, vs. the size of the screen.
    */
-  int i = 0;
-  int highlight = 10;
-  for (it = display.begin(); it != display.end() && i < (CScreen::height()-1); ++it, i++)
-    {
-      move(i,2);
-      if ( i == highlight )
-        attron( A_REVERSE);
+  int count    = display.size();
+  int height   = CScreen::height();
+  int selected = global->get_selected_folder();
 
-      std::string path = (*it).path();
+  /*
+   * Bound the selection.
+   */
+  if ( selected > count ){
+    selected = 0;
+    global->set_selected_folder( 0 );
+  }
 
 
-      if ( (*it).newMessages() > 0 )
+  int row = 0;
+
+  for( row = 0; ((selected < count ) && ( row < count ) &&( row+selected <= count ) && ( row < (height-1))); row++ )
+  {
+    move(row,2);
+
+    /**
+     * First row is the current one.
+     */
+    if ( row == 0 )
+      attron( A_REVERSE);
+
+    std::string path = display[row+selected].path();
+
+    if ( (display[row + selected]).newMessages() > 0 )
 	attrset (COLOR_PAIR (1));
 
-      printw("[ ] - %s            ", path.c_str() );
+    printw("[ ] - %-70s", path.c_str() );
 
-      attrset (COLOR_PAIR (2));
+    attrset (COLOR_PAIR (2));
 
-      if ( i == highlight )
-        attroff(A_REVERSE);
-    }
-
+    /**
+     * Remove the inverse.
+     */
+    if ( row == 0 )
+      attroff(A_REVERSE);
+  }
 }
+
 
 
 /**

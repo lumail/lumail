@@ -75,6 +75,13 @@ CLua::CLua()
     lua_register(m_lua, "set_maildir", set_maildir);
 
     /**
+     * Scroll mailboxes up/down.
+     */
+    lua_register(m_lua, "scroll_maildir_down", scroll_maildir_down );
+    lua_register(m_lua, "scroll_maildir_up", scroll_maildir_up );
+
+
+    /**
      * Get/Set the maildir-limit.
      */
     lua_register( m_lua, "maildir_limit", maildir_limit );
