@@ -43,6 +43,8 @@ CGlobal::CGlobal()
     m_mode           = new std::string("maildir");
     m_maildir_limit  = new std::string("all");
     m_maildir_prefix = NULL;
+    m_cur_folder     = 0;
+    m_cur_message    = 0;
 }
 
 

@@ -68,6 +68,18 @@ class CGlobal
   std::string* get_maildir_limit();
   void set_maildir_limit( std::string *limit );
 
+  /**
+   * Get/set the selected folder.
+   */
+  int get_selected_folder() { return m_cur_folder ; }
+  void set_selected_folder(int offset) {  m_cur_folder = offset ; }
+
+  /**
+   * Get/Set the selected message.
+   */
+  int get_selected_message() { return m_cur_message ; }
+  void set_selected_message(int offset) {  m_cur_message = offset ; }
+
  protected:
 
   /**
@@ -84,6 +96,16 @@ class CGlobal
    * The single instance of this class.
    */
   static CGlobal *pinstance;
+
+  /**
+   * The selected folder.
+   */
+  int m_cur_folder;
+
+  /**
+   * The selected message.
+   */
+  int m_cur_message;
 
   /**
    * The mode the client is in: index, maildir, or message.
@@ -104,6 +126,7 @@ class CGlobal
    * Currently selected folders.
    */
   std::vector<std::string> m_selected_folders;
+
 };
 
 #endif				/* _global_h_ */
