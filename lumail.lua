@@ -31,7 +31,7 @@ end
 function on_exit()
    print("print: on_exit");
    io.write( "io.write: on_exit\n")
-   io.write("The global mode is: '" .. get_mode() .. "'.\n");
+   io.write("The global mode is: '" .. global_mode() .. "'.\n");
 end
 
 
@@ -54,7 +54,7 @@ end
 -- Switch to the index-view mode.
 --
 function index()
-   set_mode( "index" );
+   global_mode( "index" );
    redraw_display();
 end
 
@@ -62,7 +62,7 @@ end
 -- Switch to the maildir-mode.
 --
 function maildir()
-   set_mode( "maildir" );
+   global_mode( "maildir" );
    redraw_display();
 end
 

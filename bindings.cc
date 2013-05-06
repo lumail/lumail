@@ -15,29 +15,6 @@
 
 
 /**
- * Set the global mode for lumail.
- */
-int set_mode(lua_State * L)
-{
-    const char *str = lua_tostring(L, -1);
-
-    if (str == NULL)
-	return luaL_error(L, "Missing argument to set_mode(..)");
-
-    if ((strcmp(str, "index") != 0) &&
-	(strcmp(str, "maildir") != 0) && (strcmp(str, "message") != 0))
-	return luaL_error(L,
-			  "Valid modes are: 'index', 'maildir', & 'message'.");
-
-
-    CGlobal *g = CGlobal::Instance();
-    g->set_mode(new std::string(str));
-    return 0;
-}
-
-
-
-/**
  * Set the maildir-prefix
  */
 int set_maildir(lua_State * L)
@@ -53,11 +30,22 @@ int set_maildir(lua_State * L)
 }
 
 /**
- * Get the global lumail mode.
+ * Get/Set the global lumail mode.
  */
-int get_mode(lua_State * L)
+int global_mode(lua_State * L)
 {
     CGlobal *g = CGlobal::Instance();
+
+    /**
+     * get the argument, and if we have one set it.
+     */
+    const char *str = lua_tostring(L, -1);
+    if (str != NULL)
+      g->set_mode(new std::string( str ));
+
+    /**
+     * Return the current/updated value.
+     */
     std::string * s = g->get_mode();
     lua_pushstring(L, s->c_str());
     return 1;

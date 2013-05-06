@@ -15,8 +15,7 @@ int exit(lua_State * L);
 int exec(lua_State * L);
 
 /* get/set the global mode: maildir/index/message */
-int get_mode(lua_State * L);
-int set_mode(lua_State * L);
+int global_mode(lua_State * L);
 
 /* limit the display of folders. */
 int sidebar_limit(lua_State * L);

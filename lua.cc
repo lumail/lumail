@@ -66,8 +66,7 @@ CLua::CLua()
     /**
      * Get/Set the global mode.
      */
-    lua_register(m_lua, "get_mode", get_mode);
-    lua_register(m_lua, "set_mode", set_mode);
+    lua_register(m_lua, "global_mode", global_mode);
 
     /**
      * Get/Set the maildir prefix.
