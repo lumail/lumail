@@ -102,6 +102,36 @@ int exit(lua_State * L)
 
 
 /**
+ * Execute a program.
+ */
+int exec(lua_State * L)
+{
+    const char *str = lua_tostring(L, -1);
+    if (str == NULL)
+	return luaL_error(L, "Missing argument to exec(..)");
+
+    CScreen::clearStatus();
+
+    /**
+     * Save the current state of the TTY
+     */
+    refresh();
+    def_prog_mode();
+    endwin();
+
+    /* Run the command */
+    system(str);
+
+    /**
+     * Reset + redraw
+     */
+    reset_prog_mode();
+    refresh();
+    return 0;
+}
+
+
+/**
  * Write a message to the status-bar.
  */
 int msg(lua_State * L)

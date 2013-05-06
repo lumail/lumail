@@ -97,6 +97,13 @@ keymap['message'][':'] = "loadstring(prompt(\":\"))();";
 keymap['maildir'][':'] = "loadstring(prompt(\":\"))();";
 
 --
+-- Execute a shell command.
+--
+keymap['index']['!']   = "exec(prompt(\":\"));";
+keymap['message']['!'] = "exec(prompt(\":\"));";
+keymap['maildir']['!'] = "exec(prompt(\":\"));";
+
+--
 -- Move to Maildir-mode
 --
 keymap['index']['M']   = 'maildir()';
