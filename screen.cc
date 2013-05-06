@@ -109,10 +109,16 @@ void CScreen::drawMaildir()
   }
 
 
+  /**
+   * Something here is screwy - segfaults if the number of folders
+   * is not less larger than the height of the screen.
+   */
   int row = 0;
 
   for( row = 0; ((selected < count ) && ( row < count ) &&( row+selected <= count ) && ( row < (height-1))); row++ )
   {
+    char buf[250] = { '\0' };
+
     move(row,2);
 
     /**
@@ -123,10 +129,18 @@ void CScreen::drawMaildir()
 
     std::string path = display[row+selected].path();
 
-    if ( (display[row + selected]).newMessages() > 0 )
+    if ( (display[row + selected]).newMessages() > 0 ){
 	attrset (COLOR_PAIR (1));
+    }
 
-    printw("[ ] - %-70s", path.c_str() );
+
+    snprintf(buf, sizeof(buf)-1, "[ ] - %-70s", path.c_str() );
+    while( (int)strlen(buf) <  (CScreen::width()-3) )
+      {
+        strcat(buf, " ");
+      }
+
+    printw("%s",buf);
 
     attrset (COLOR_PAIR (2));
 
