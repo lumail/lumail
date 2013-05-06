@@ -47,6 +47,12 @@ class CGlobal
    */
   std::vector<CMaildir> get_all_folders();
 
+
+  /**
+   * get all folders which match the current mode.
+   */
+  std::vector<CMaildir> get_folders();
+
   /**
    * Get all selected folders.
    */

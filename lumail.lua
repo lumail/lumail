@@ -119,6 +119,11 @@ function maildir_page_up()
    scroll_maildir_up(10);
 end
 
+function maildir_search_next()
+   x = prompt(":>" );
+   scroll_maildir_to( x );
+end
+
 --
 -- Now setup keymaps for the different modes.
 --
@@ -190,3 +195,4 @@ keymap['maildir']['j'] = 'maildir_down()'
 keymap['maildir']['J'] = 'maildir_page_down()'
 keymap['maildir']['k'] = 'maildir_up()'
 keymap['maildir']['K'] = 'maildir_page_up()'
+keymap['maildir']['/'] = 'maildir_search_next()'

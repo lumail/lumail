@@ -28,6 +28,11 @@ int get_maildir(lua_State * L);
 int scroll_maildir_down(lua_State *L);
 int scroll_maildir_up(lua_State *L);
 
+/* scroll to the folder matching the pattern. */
+int scroll_maildir_to(lua_State *L);
+
+/* get the current mailbox name. */
+int current_maildir(lua_State *L);
 
 /* draw a string at the foot of the screen. */
 int msg(lua_State * L);

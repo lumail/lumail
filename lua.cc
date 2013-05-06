@@ -80,6 +80,11 @@ CLua::CLua()
     lua_register(m_lua, "scroll_maildir_down", scroll_maildir_down );
     lua_register(m_lua, "scroll_maildir_up", scroll_maildir_up );
 
+    /**
+     * Find the next folder matching the pattern.
+     */
+    lua_register(m_lua, "scroll_maildir_to", scroll_maildir_to );
+    lua_register(m_lua, "current_maildir", current_maildir );
 
     /**
      * Get/Set the maildir-limit.

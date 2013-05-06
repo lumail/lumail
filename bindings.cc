@@ -224,3 +224,56 @@ int scroll_maildir_up(lua_State *L) {
   global->set_selected_folder( cur );
   return( 0 );
 }
+
+/* scroll to the folder matching the pattern. */
+int scroll_maildir_to(lua_State *L)
+{
+  const char *str = lua_tostring(L, -1);
+
+  if (str == NULL)
+    return luaL_error(L, "Missing argument to scroll_maildir_to(..)");
+
+  /**
+   * get the current folders.
+   */
+  CGlobal               *global = CGlobal::Instance();
+  std::vector<CMaildir> display = global->get_folders();
+  int                       max = display.size();
+  int                  selected = global->get_selected_folder();
+
+  int i = selected + 1;
+
+  while( i != selected )
+  {
+    if ( i >= max )
+      break;
+
+    CMaildir cur = display[i];
+    if ( strstr(cur.path().c_str(), str ) != NULL ) {
+      global->set_selected_folder( i );
+      break;
+    }
+    i += 1;
+
+    if ( i >= max )
+      i = 0;
+  }
+  return 0;
+}
+
+
+/* get the current maildir folder. */
+int current_maildir(lua_State *L)
+{
+  /**
+   * get the current folders.
+   */
+  CGlobal               *global = CGlobal::Instance();
+  std::vector<CMaildir> display = global->get_folders();
+  int                  selected = global->get_selected_folder();
+
+  CMaildir x = display[selected];
+  lua_pushstring(L, x.path().c_str());
+  return 1;
+}
+
