@@ -53,9 +53,9 @@ int global_mode(lua_State * L)
 
 
 /**
- * Limit the sidebar.
+ * Limit the maildir display.
  */
-int sidebar_limit(lua_State * L)
+int maildir_limit(lua_State * L)
 {
     CGlobal *g = CGlobal::Instance();
 
@@ -64,12 +64,12 @@ int sidebar_limit(lua_State * L)
      */
     const char *str = lua_tostring(L, -1);
     if (str != NULL)
-        g->set_sidebar_limit(new std::string( str ));
+        g->set_maildir_limit(new std::string( str ));
 
     /**
      * Return the current/updated value.
      */
-    std::string * s = g->get_sidebar_limit();
+    std::string * s = g->get_maildir_limit();
     lua_pushstring(L, s->c_str());
     return 1;
 }

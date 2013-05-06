@@ -63,10 +63,10 @@ class CGlobal
   void add_folder( std::string path );
 
   /**
-   * Get/Set the sidebar limit.
+   * Get/Set the maildir-display limit.
    */
-  std::string* get_sidebar_limit();
-  void set_sidebar_limit( std::string *limit );
+  std::string* get_maildir_limit();
+  void set_maildir_limit( std::string *limit );
 
  protected:
 
@@ -93,7 +93,7 @@ class CGlobal
   /**
    * The limit-string for the display of folders.
    */
-  std::string *m_sidebar_limit;
+  std::string *m_maildir_limit;
 
   /**
    * The maildir-prefix.

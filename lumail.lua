@@ -12,7 +12,7 @@ set_maildir( os.getenv( "HOME" ) .. "/Maildir" );
 --
 -- Show all folders by default
 --
-sidebar_limit( "all" );
+maildir_limit( "all" );
 
 
 --
@@ -44,7 +44,7 @@ function on_exit()
    print("print: on_exit");
    io.write( "io.write: on_exit\n")
    io.write("The global mode is: '" .. global_mode() .. "'.\n");
-   io.write("The limit is " .. sidebar_limit() .. "\n" );
+   io.write("The limit is " .. maildir_limit() .. "\n" );
 end
 
 
@@ -83,7 +83,7 @@ end
 -- When in maildir-mode show all folders.
 --
 function all_folders()
-   sidebar_limit( "all" );
+   maildir_limit( "all" );
    clear();
 end
 
@@ -91,7 +91,7 @@ end
 -- When in maildir-mode show all folders which contain unread messages.
 --
 function new_folders()
-   sidebar_limit( "new" );
+   maildir_limit( "new" );
    clear();
 end
 
@@ -99,7 +99,7 @@ end
 -- When in maildir-mode show all folders which have a path matching the given pattern.
 --
 function livejournal_folders()
-   sidebar_limit( "livejournal.2" );
+   maildir_limit( "livejournal.2" );
    clear();
 end
 

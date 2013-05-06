@@ -75,9 +75,9 @@ CLua::CLua()
     lua_register(m_lua, "set_maildir", set_maildir);
 
     /**
-     * Get/Set the sidebar-limit.
+     * Get/Set the maildir-limit.
      */
-    lua_register( m_lua, "sidebar_limit", sidebar_limit );
+    lua_register( m_lua, "maildir_limit", maildir_limit );
 
     lua_register(m_lua, "exit", exit);
 }

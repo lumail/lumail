@@ -32,7 +32,6 @@ CGlobal *CGlobal::Instance()
 }
 
 
-
 /**
  * Constructor - This is private as this class is a singleton.
  */
@@ -42,7 +41,7 @@ CGlobal::CGlobal()
    * Defaults.
    */
     m_mode           = new std::string("maildir");
-    m_sidebar_limit  = new std::string("all");
+    m_maildir_limit  = new std::string("all");
     m_maildir_prefix = NULL;
 }
 
@@ -67,23 +66,25 @@ std::string * CGlobal::get_mode()
     return (m_mode);
 }
 
-/**
- * Set the sidebar limit.
- */
-void CGlobal::set_sidebar_limit( std::string *limit )
-{
-  if ( m_sidebar_limit )
-    delete(m_sidebar_limit );
 
-  m_sidebar_limit = limit;
+/**
+ * Set the maildir limit.
+ */
+void CGlobal::set_maildir_limit( std::string *limit )
+{
+  if ( m_maildir_limit )
+    delete(m_maildir_limit );
+
+  m_maildir_limit = limit;
 }
 
+
 /**
- * Get the sidebar limit
+ * Get the maildir limit
  */
-std::string * CGlobal::get_sidebar_limit()
+std::string * CGlobal::get_maildir_limit()
 {
-  return( m_sidebar_limit );
+  return( m_maildir_limit );
 }
 
 
@@ -107,6 +108,7 @@ std::string * CGlobal::get_maildir_prefix()
   return( m_maildir_prefix );
 }
 
+
 /**
  * Get all selected folders.
  */
@@ -114,6 +116,7 @@ std::vector<std::string> CGlobal::get_selected_folders()
 {
   return( m_selected_folders );
 }
+
 
 /**
  * Get all folders.
@@ -131,6 +134,7 @@ std::vector<CMaildir> CGlobal::get_all_folders()
   return( maildirs );
 }
 
+
 /**
  * Remove all selected folders.
  */
@@ -139,9 +143,10 @@ void CGlobal::unset_folders()
   m_selected_folders.clear();
 }
 
-  /**
-   * Add a folder to the selected set.
-   */
+
+/**
+ * Add a folder to the selected set.
+ */
 void CGlobal::add_folder( std::string path )
 {
   m_selected_folders.push_back( path );

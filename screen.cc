@@ -29,8 +29,7 @@ CScreen::~CScreen()
 
 
 /**
- * This function will draw the appropriate screen
- * depending upon our current mode.
+ * This function will draw the appropriate screen, depending upon our current mode.
  */
 void CScreen::refresh_display()
 {
@@ -67,7 +66,7 @@ void CScreen::drawMaildir()
   CGlobal               *global = CGlobal::Instance();
   std::vector<CMaildir> folders = global->get_all_folders();
   std::vector<CMaildir> display;
-  std::string           *filter = global->get_sidebar_limit();
+  std::string           *filter = global->get_maildir_limit();
 
   /**
    * Filter the folders to those we can display
@@ -95,7 +94,7 @@ void CScreen::drawMaildir()
 
 
   /**
-   * Draw the first few.
+   * Now we're drawing the folders we can see.
    */
   int i = 0;
   int highlight = 10;
@@ -115,11 +114,20 @@ void CScreen::drawMaildir()
 
 }
 
+
+/**
+ * Draw the index-mode.
+ */
 void CScreen::drawIndex()
 {
   move(3, 3);
   printw( "Drawing INDEX here ..");
 }
+
+
+/**
+ * Draw the message mode.
+ */
 void CScreen::drawMessage()
 {
   move(3, 3);

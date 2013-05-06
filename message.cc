@@ -8,7 +8,7 @@
 
 
 /**
- * Constructo.
+ * Construct.
  */
 CMessage::CMessage(std::string filename )
 {
