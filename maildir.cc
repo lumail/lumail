@@ -56,6 +56,14 @@ std::string CMaildir::name()
   return( m_path.substr(found+1) );
 }
 
+/**
+ * The full path to the folder.
+ */
+std::string CMaildir::path()
+{
+  return( m_path );
+}
+
 
 /**
  * Count files in a directory.

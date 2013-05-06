@@ -78,6 +78,9 @@ void CGlobal::set_sidebar_limit( std::string *limit )
   m_sidebar_limit = limit;
 }
 
+/**
+ * Get the sidebar limit
+ */
 std::string * CGlobal::get_sidebar_limit()
 {
   return( m_sidebar_limit );

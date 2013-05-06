@@ -9,7 +9,11 @@
 --
 set_maildir( os.getenv( "HOME" ) .. "/Maildir" );
 
+--
+-- Show all folders by default
+--
 sidebar_limit( "all" );
+
 
 --
 -- This function is called when the client launches.
@@ -24,6 +28,14 @@ end
 
 
 --
+-- Show the version
+--
+function show_version()
+   msg("This is lumail version " .. VERSION );
+end
+
+
+--
 -- This function is called when the client exits.
 --
 -- It could be used to do many things..
@@ -32,6 +44,7 @@ function on_exit()
    print("print: on_exit");
    io.write( "io.write: on_exit\n")
    io.write("The global mode is: '" .. global_mode() .. "'.\n");
+   io.write("The limit is " .. sidebar_limit() .. "\n" );
 end
 
 
@@ -55,7 +68,7 @@ end
 --
 function index()
    global_mode( "index" );
-   redraw_display();
+   clear();
 end
 
 --
@@ -63,9 +76,32 @@ end
 --
 function maildir()
    global_mode( "maildir" );
-   redraw_display();
+   clear();
 end
 
+--
+-- When in maildir-mode show all folders.
+--
+function all_folders()
+   sidebar_limit( "all" );
+   clear();
+end
+
+--
+-- When in maildir-mode show all folders which contain unread messages.
+--
+function new_folders()
+   sidebar_limit( "new" );
+   clear();
+end
+
+--
+-- When in maildir-mode show all folders which have a path matching the given pattern.
+--
+function livejournal_folders()
+   sidebar_limit( "livejournal.2" );
+   clear();
+end
 
 --
 -- Now setup keymaps for the different modes.
@@ -105,6 +141,13 @@ keymap['message']['!'] = "exec(prompt(\":\"));";
 keymap['maildir']['!'] = "exec(prompt(\":\"));";
 
 --
+-- Show the client version
+--
+keymap['maildir']['v'] = 'show_version()'
+keymap['index']['v']   = 'show_version()'
+keymap['message']['v'] = 'show_version()'
+
+--
 -- Move to Maildir-mode
 --
 keymap['index']['M']   = 'maildir()';
@@ -117,3 +160,13 @@ keymap['maildir']['M'] = 'maildir()';
 keymap['index']['I']   = 'index()';
 keymap['message']['I'] = 'index()';
 keymap['maildir']['I'] = 'index()';
+
+
+
+--
+-- Toggle display of folders
+--
+keymap['maildir']['a'] = 'all_folders()'
+keymap['maildir']['n'] = 'new_folders()'
+keymap['maildir']['l'] = 'livejournal_folders()'
+

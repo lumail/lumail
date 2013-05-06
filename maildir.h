@@ -50,6 +50,11 @@ class CMaildir {
   std::string name();
 
   /**
+   * The full path to the folder.
+   */
+  std::string path();
+
+  /**
    * Is the given path a Maildir?
    */
   static bool isMaildir(std::string path);

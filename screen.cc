@@ -60,27 +60,54 @@ void CScreen::refresh_display()
  */
 void CScreen::drawMaildir()
 {
-  clear();
 
   /**
-   * Get all known folders.
+   * Get all known folders + the current display mode
    */
   CGlobal               *global = CGlobal::Instance();
   std::vector<CMaildir> folders = global->get_all_folders();
+  std::vector<CMaildir> display;
+  std::string           *filter = global->get_sidebar_limit();
+
+  /**
+   * Filter the folders to those we can display
+   */
+  std::vector<CMaildir>::iterator it;
+  for (it = folders.begin(); it != folders.end(); ++it)
+    {
+      CMaildir x = *it;
+
+      if ( strcmp( filter->c_str(), "all") == 0 ){
+        display.push_back( x );
+      }
+      else if ( strcmp( filter->c_str(), "new") == 0 )  {
+        if ( x.newMessages() > 0 ) {
+          display.push_back( x );
+        }
+      }
+      else {
+        std::string  path = x.path();
+        if ( path.find( *filter, 0 ) !=std::string::npos ) {
+            display.push_back( x );
+        }
+      }
+    }
+
 
   /**
    * Draw the first few.
    */
   int i = 0;
   int highlight = 10;
-  std::vector < CMaildir >::iterator it;
-  for (it = folders.begin(); it != folders.end(), i < (CScreen::height()-1); ++it, i++)
+  for (it = display.begin(); it != display.end() && i < (CScreen::height()-1); ++it, i++)
     {
       move(i,2);
       if ( i == highlight )
         attron( A_REVERSE);
 
-      printw("[ ] - %s            ", (*it).name().c_str() );
+      std::string path = (*it).path();
+      if ( !path.empty())
+        printw("[ ] - %s            ", path.c_str() );
 
       if ( i == highlight )
         attroff(A_REVERSE);
@@ -90,13 +117,11 @@ void CScreen::drawMaildir()
 
 void CScreen::drawIndex()
 {
-  clear();
   move(3, 3);
   printw( "Drawing INDEX here ..");
 }
 void CScreen::drawMessage()
 {
-  clear();
   move(3, 3);
   printw( "Drawing MESSAGE here ..");
 }
