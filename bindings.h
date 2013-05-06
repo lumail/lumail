@@ -18,6 +18,9 @@ int exec(lua_State * L);
 int get_mode(lua_State * L);
 int set_mode(lua_State * L);
 
+/* limit the display of folders. */
+int sidebar_limit(lua_State * L);
+
 /* get/set the global maildir-prefix */
 int set_maildir(lua_State * L);
 int get_maildir(lua_State * L);

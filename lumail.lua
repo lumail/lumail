@@ -9,6 +9,7 @@
 --
 set_maildir( os.getenv( "HOME" ) .. "/Maildir" );
 
+sidebar_limit( "all" );
 
 --
 -- This function is called when the client launches.

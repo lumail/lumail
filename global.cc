@@ -41,7 +41,8 @@ CGlobal::CGlobal()
   /**
    * Defaults.
    */
-    m_mode = new std::string("maildir");
+    m_mode           = new std::string("maildir");
+    m_sidebar_limit  = new std::string("all");
     m_maildir_prefix = NULL;
 }
 
@@ -65,6 +66,23 @@ std::string * CGlobal::get_mode()
 {
     return (m_mode);
 }
+
+/**
+ * Set the sidebar limit.
+ */
+void CGlobal::set_sidebar_limit( std::string *limit )
+{
+  if ( m_sidebar_limit )
+    delete(m_sidebar_limit );
+
+  m_sidebar_limit = limit;
+}
+
+std::string * CGlobal::get_sidebar_limit()
+{
+  return( m_sidebar_limit );
+}
+
 
 /**
  * Set the prefix for our maildir folders.

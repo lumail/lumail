@@ -63,11 +63,23 @@ CLua::CLua()
     lua_register(m_lua, "exec", exec);
     lua_register(m_lua, "prompt", prompt);
 
+    /**
+     * Get/Set the global mode.
+     */
     lua_register(m_lua, "get_mode", get_mode);
     lua_register(m_lua, "set_mode", set_mode);
 
+    /**
+     * Get/Set the maildir prefix.
+     */
     lua_register(m_lua, "get_maildir", get_maildir);
     lua_register(m_lua, "set_maildir", set_maildir);
+
+    /**
+     * Get/Set the sidebar-limit.
+     */
+    lua_register( m_lua, "sidebar_limit", sidebar_limit );
+
     lua_register(m_lua, "exit", exit);
 }
 

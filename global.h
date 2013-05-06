@@ -62,6 +62,12 @@ class CGlobal
    */
   void add_folder( std::string path );
 
+  /**
+   * Get/Set the sidebar limit.
+   */
+  std::string* get_sidebar_limit();
+  void set_sidebar_limit( std::string *limit );
+
  protected:
 
   /**
@@ -83,6 +89,11 @@ class CGlobal
    * The mode the client is in: index, maildir, or message.
    */
   std::string * m_mode;
+
+  /**
+   * The limit-string for the display of folders.
+   */
+  std::string *m_sidebar_limit;
 
   /**
    * The maildir-prefix.

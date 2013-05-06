@@ -65,6 +65,28 @@ int get_mode(lua_State * L)
 
 
 /**
+ * Limit the sidebar.
+ */
+int sidebar_limit(lua_State * L)
+{
+    CGlobal *g = CGlobal::Instance();
+
+    /**
+     * get the argument, and if we have one set it.
+     */
+    const char *str = lua_tostring(L, -1);
+    if (str != NULL)
+        g->set_sidebar_limit(new std::string( str ));
+
+    /**
+     * Return the current/updated value.
+     */
+    std::string * s = g->get_sidebar_limit();
+    lua_pushstring(L, s->c_str());
+    return 1;
+}
+
+/**
  * Get the maildir-prefix
  */
 int get_maildir(lua_State * L)
