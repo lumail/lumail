@@ -10,8 +10,8 @@
 #include <sys/ioctl.h>
 #include <ncurses.h>
 #include "global.h"
+#include "message.h"
 #include "screen.h"
-
 
 /**
  * Constructor.  NOP.
@@ -20,14 +20,12 @@ CScreen::CScreen()
 {
 }
 
-
 /**
  * Destructor.  NOP.
  */
 CScreen::~CScreen()
 {
 }
-
 
 /**
  * This function will draw the appropriate screen, depending upon our current mode.
@@ -37,23 +35,21 @@ void CScreen::refresh_display()
   /**
    * Get the current mode.
    */
-  CGlobal *g = CGlobal::Instance();
-  std::string * s = g->get_mode();
+    CGlobal *g = CGlobal::Instance();
+    std::string * s = g->get_mode();
 
-  if ( strcmp( s->c_str(), "maildir" ) == 0 )
-    drawMaildir();
-  else if ( strcmp( s->c_str(), "index") == 0 )
-    drawIndex();
-  else if ( strcmp( s->c_str(), "message" ) == 0 )
-    drawMessage();
-  else
-    {
-      clear();
-      move( 3, 3 );
-      printw( "UNKNOWN MODE: '%s'", s->c_str() );
+    if (strcmp(s->c_str(), "maildir") == 0)
+	drawMaildir();
+    else if (strcmp(s->c_str(), "index") == 0)
+	drawIndex();
+    else if (strcmp(s->c_str(), "message") == 0)
+	drawMessage();
+    else {
+	clear();
+	move(3, 3);
+	printw("UNKNOWN MODE: '%s'", s->c_str());
     }
 }
-
 
 /**
  * Draw a list of folders.
@@ -64,120 +60,174 @@ void CScreen::drawMaildir()
   /**
    * Get all known folders + the current display mode
    */
-  CGlobal               *global = CGlobal::Instance();
-  std::vector<CMaildir> display = global->get_folders();
+    CGlobal *global = CGlobal::Instance();
+    std::vector < CMaildir > display = global->get_folders();
 
   /**
    * The number of items we've found, vs. the size of the screen.
    */
-  int count    = display.size();
-  int height   = CScreen::height();
-  int selected = global->get_selected_folder();
+    int count = display.size();
+    int height = CScreen::height();
+    int selected = global->get_selected_folder();
 
-
-  /*
-   * Bound the selection.
-   */
-  if ( selected >= count ){
-    global->set_selected_folder( 0 );
-    selected = 0;
-  }
-
+    /*
+     * Bound the selection.
+     */
+    if (selected >= count) {
+	global->set_selected_folder(0);
+	selected = 0;
+    }
 
   /**
    * Something here is screwy - segfaults if the number of folders
    * is not less larger than the height of the screen.
    */
-  int row = 0;
+    int row = 0;
 
   /**
    * Selected folders.
    */
-  std::vector<std::string> sfolders = global->get_selected_folders();
+    std::vector < std::string > sfolders = global->get_selected_folders();
 
-  for( row = 0; row < (height-1) ; row++)
-  {
+    for (row = 0; row < (height - 1); row++) {
     /**
      * What we'll output for this row.
      */
-    char buf[250] = { '\0' };
+	char buf[250] = { '\0' };
 
     /**
      * The current object.
      */
-    CMaildir *cur = NULL;
-    if ( (row + selected) < count )
-      cur = &display[row+selected];
+	CMaildir *cur = NULL;
+	if ((row + selected) < count)
+	    cur = &display[row + selected];
 
-
-    std::string found = "[ ]";
-    if ( cur != NULL )
-      {
-        if ( std::find( sfolders.begin(), sfolders.end(), cur->path() ) != sfolders.end() )
-          found = "[x]";
-      }
+	std::string found = "[ ]";
+	if (cur != NULL) {
+	    if (std::find(sfolders.begin(), sfolders.end(), cur->path()) !=
+		sfolders.end())
+		found = "[x]";
+	}
 
     /**
      * First row is the current one.
      */
-    if ( row == 0 )
-      attron( A_REVERSE);
+	if (row == 0)
+	    attron(A_REVERSE);
 
-    std::string path = "";
+	std::string path = "";
 
-    if ( cur != NULL )
-      snprintf(buf, sizeof(buf)-1, "%s - %-70s", found.c_str(), cur->path().c_str() );
+	if (cur != NULL)
+	    snprintf(buf, sizeof(buf) - 1, "%s - %-70s", found.c_str(),
+		     cur->path().c_str());
 
-    while( (int)strlen(buf) <  (CScreen::width()-3) )
-      strcat(buf, " ");
+	while ((int)strlen(buf) < (CScreen::width() - 3))
+	    strcat(buf, " ");
 
-    move(row,2);
-    printw("%s",buf);
+	move(row, 2);
+	printw("%s", buf);
 
     /**
      * Remove the inverse.
      */
-    if ( row == 0 )
-      attroff(A_REVERSE);
-  }
+	if (row == 0)
+	    attroff(A_REVERSE);
+    }
 }
-
-
 
 /**
  * Draw the index-mode.
  */
 void CScreen::drawIndex()
 {
-  CGlobal                  *global = CGlobal::Instance();
-  std::vector<std::string> folders = global->get_selected_folders();
+  /**
+   * Get all messages from the currently selected maildirs.
+   */
+    CGlobal *global = CGlobal::Instance();
+    std::vector < CMessage > messages = global->get_messages();
 
-  int row = 2;
-  std::vector < std::string >::iterator it;
-  for (it = folders.begin(); it != folders.end(); ++it) {
-    move( row, 2 );
-    printw("Should show folder: %s", (*it).c_str() );
-    row += 1;
-  }
+  /**
+   * If we have no messages report that.
+   */
+    if (messages.size() < 1) {
+	move(2, 2);
+	printw("No messages found");
+	return;
+    }
 
-  if ( row == 2 )
-    {
-      move(2,2);
-      printw("Drawing index here - but no folders are selected!" );
+  /**
+   * The number of items we've found, vs. the size of the screen.
+   */
+    int count = messages.size();
+    int height = CScreen::height();
+    int selected = global->get_selected_message();
+
+    /*
+     * Bound the selection.
+     */
+    if (selected >= count) {
+	global->set_selected_message(0);
+	selected = 0;
+    }
+
+  /**
+   * OK so we have (at least one) selected maildir and we have messages.
+   */
+    int row = 0;
+
+    for (row = 0; row < (height - 1); row++) {
+    /**
+     * What we'll output for this row.
+     */
+	char buf[250] = { '\0' };
+
+    /**
+     * The current object.
+     */
+	CMessage *cur = NULL;
+	if ((row + selected) < count)
+	    cur = &messages[row + selected];
+
+	if (row == 0)
+	    attron(A_REVERSE);
+
+	std::string path = "";
+
+	if (cur != NULL)
+	    snprintf(buf, sizeof(buf) - 1, "%s", (*cur).format().c_str());
+
+    /**
+     * Pad.
+     */
+	while ((int)strlen(buf) < (CScreen::width() - 3))
+	    strcat(buf, " ");
+
+    /**
+     * Truncate.
+     */
+	if ((int)strlen(buf) > (CScreen::width() - 3))
+	    buf[(CScreen::width() - 3)] = '\0';
+
+	move(row, 2);
+	printw("%s", buf);
+
+    /**
+     * Remove the inverse.
+     */
+	if (row == 0)
+	    attroff(A_REVERSE);
     }
 
 }
-
 
 /**
  * Draw the message mode.
  */
 void CScreen::drawMessage()
 {
-  move(3, 3);
-  printw( "Drawing MESSAGE here ..");
+    move(3, 3);
+    printw("Drawing MESSAGE here ..");
 }
-
 
 /**
  * Setup the curses/screen.
@@ -187,15 +237,14 @@ void CScreen::Init()
   /**
    * Setup ncurses.
    */
-  initscr();
+    initscr();
 
   /**
    * Make sure we have colours.
    */
     if (!has_colors() || (start_color() != OK)) {
 	endwin();
-	std::
-	    cerr << "We don't have the required colour support available."
+	std::cerr << "We don't have the required colour support available."
 	    << std::endl;
 	exit(1);
     }
@@ -209,11 +258,10 @@ void CScreen::Init()
   /**
    * We want (red + black) + (white + black)
    */
-  init_pair (1, COLOR_RED, COLOR_BLACK);
-  init_pair (2, COLOR_WHITE, COLOR_BLACK);
+    init_pair(1, COLOR_RED, COLOR_BLACK);
+    init_pair(2, COLOR_WHITE, COLOR_BLACK);
 
 }
-
 
 /**
  * Return the width of the screen.
@@ -224,7 +272,6 @@ int CScreen::width()
     ioctl(0, TIOCGWINSZ, &w);
     return (w.ws_col);
 }
-
 
 /**
  * Return the height of the screen.
@@ -241,9 +288,9 @@ int CScreen::height()
  */
 void CScreen::clearStatus()
 {
-  move(CScreen::height() - 1, 0);
+    move(CScreen::height() - 1, 0);
 
-  for (int i = 0; i < CScreen::width(); i++)
-    printw(" ");
+    for (int i = 0; i < CScreen::width(); i++)
+	printw(" ");
 
 }
