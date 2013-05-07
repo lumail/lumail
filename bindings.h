@@ -10,6 +10,9 @@
 /* exit the program */
 int exit(lua_State * L);
 
+/* compose a new mail. */
+int compose(lua_State *i);
+
 /* execute a program */
 int exec(lua_State * L);
 

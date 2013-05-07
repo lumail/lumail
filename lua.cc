@@ -107,6 +107,14 @@ CLua::CLua()
      */
     lua_register(m_lua, "maildir_limit", maildir_limit);
 
+    /**
+     * Compose a new mail.
+     */
+    lua_register(m_lua, "compose", compose);
+
+    /**
+     * Exit, cleaning up the screen and running our at-exit-hook.
+     */
     lua_register(m_lua, "exit", exit);
 }
 

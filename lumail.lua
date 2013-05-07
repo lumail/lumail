@@ -263,6 +263,13 @@ keymap['message']['q'] = "exit()"
 keymap['maildir']['q'] = "exit()"
 
 --
+-- Globally compose a new message.
+--
+keymap['index']['c']   = "compose()"
+keymap['message']['c'] = "compose()"
+keymap['maildir']['c'] = "compose()"
+
+--
 -- REPL-like-mode.
 --
 keymap['index'][':']   = "loadstring(prompt(\":\"))();";

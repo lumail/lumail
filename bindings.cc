@@ -456,3 +456,49 @@ int toggle_selected_folder(lua_State * L)
 
     return (0);
 }
+
+
+/**
+ * Compose a new mail.
+ */
+int compose(lua_State * L)
+{
+
+  char filename[] = "/tmp/mytemp.XXXXXX";
+  int fd = mkstemp(filename);
+
+  if (fd == -1)
+    return luaL_error(L, "Failed to create a temporary file");
+
+
+
+  write(fd, "To: \n", strlen( "To: \n"));
+  write(fd, "Subject: New mail\n", strlen( "Subject: New mail\n" ) );
+  write(fd, "From: \n" , strlen( "From: \n" ) );
+  write(fd, "\n\n", 2 );
+  write(fd, "....\n", strlen("....\n" ) );
+  close(fd);
+
+    /**
+     * Save the current state of the TTY
+     */
+    refresh();
+    def_prog_mode();
+    endwin();
+
+    /* Run the edito */
+    std::string cmd = "vim ";
+    cmd += filename;
+    system(cmd.c_str());
+
+    /**
+     * Reset + redraw
+     */
+    reset_prog_mode();
+    refresh();
+
+    CLua *lua = CLua::Instance();
+    lua->execute( "msg(\"Mail sending should happen here, after a prompt\");" );
+    return 0;
+}
+
