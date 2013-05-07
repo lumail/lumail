@@ -26,23 +26,22 @@ int main(int argc, char *argv[])
     //
     int c;
 
-    //
-    // Flags set
-    //
-    bool version = false;
-    std::string rcfile = "";
+    bool version = false;       /* show version */
+    std::string rcfile = "";    /* load rc file */
+    std::string folder = "";    /* open folder */
 
     while (1) {
 	static struct option long_options[] = {
 	    {"version", no_argument, 0, 'v'},
 	    {"rcfile", required_argument, 0, 'r'},
+	    {"folder", required_argument, 0, 'f'},
 	    {0, 0, 0, 0}
 	};
 
 	/* getopt_long stores the option index here. */
 	int option_index = 0;
 
-	c = getopt_long(argc, argv, "vr:", long_options, &option_index);
+	c = getopt_long(argc, argv, "vr:f:", long_options, &option_index);
 
 	/* Detect the end of the options. */
 	if (c == -1)
@@ -51,6 +50,9 @@ int main(int argc, char *argv[])
 	switch (c) {
 	case 'r':
 	    rcfile = optarg;
+	    break;
+	case 'f':
+	    folder = optarg;
 	    break;
 	case 'v':
 	    version = true;
@@ -93,6 +95,26 @@ int main(int argc, char *argv[])
    * We're starting, so call the on_start() function.
    */
     lua->callFunction("on_start");
+
+    /**
+     * If we have a starting folder, select it.
+     */
+    if ( !folder.empty() ) {
+      CLua *lua = CLua::Instance();
+
+      if ( CMaildir::isDirectory( folder ) )
+        {
+          lua->execute( "global_mode( \"index\" );" );
+          lua->execute( "maildir_limit( \"all\" );" );
+          lua->execute( "clear_selected_folders();");
+          lua->execute( "scroll_maildir_to( \"" + folder + "\");" );
+          lua->execute( "add_selected_folder()");
+          lua->execute( "global_mode( \"index\" );" );
+        }
+      else{
+        lua->execute("msg(\"Startup folder doesn't exist!\");" );
+      }
+    }
 
   /**
    * Now enter our event-loop
