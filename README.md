@@ -13,6 +13,22 @@ states:
 
 This suits my email tastes, although I appreciate it perhaps isn't for everybody.
 
+Once launched you'll start in the "maildir" mode.  This consists of a scrollable list
+of folder-names.  You can page up/down with `j/k`, or search with `/`.
+
+Each maildir-name has a small `[ ]` next to it.  This indicates whether the folder is
+selected or not.  Unlike other mail-clients where you open a mailbox/folder with lumail
+you can open __multiple__ folders at the same time.
+
+To open the single folder, which is highlighted, press RETURN.  Otherwise you may toggle
+the folders selected state with "SPACE".  Once you've selected as many folders as you
+wish you can press "I" to view the index-mode.
+
+Index-mode is naviated the same way as maildir-mode; use `j + k + /` to move around,
+and view the messages.
+
+TODO:  You cannot actually open a message yet.
+
 
 Code
 ----
