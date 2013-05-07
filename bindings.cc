@@ -376,6 +376,7 @@ int add_selected_folder(lua_State * L)
     const char *str = lua_tostring(L, -1);
 
     CGlobal *global = CGlobal::Instance();
+    CLua    *lua    = CLua::Instance();
 
   /**
    * default to the current folder.
@@ -386,8 +387,10 @@ int add_selected_folder(lua_State * L)
 
 	CMaildir x = display[selected];
 	global->add_folder(x.path().c_str());
+        lua->execute("on_select_folder(\"" + x.path() + "\");");
     } else {
 	global->add_folder(std::string(str));
+        lua->execute("on_select_folder(\"" + std::string(str) + "\");");
     }
 
     global->set_selected_message(0);
@@ -416,8 +419,14 @@ int set_selected_folder(lua_State * L)
 
 	CMaildir x = display[selected];
 	global->add_folder(x.path().c_str());
+        CLua    *lua    = CLua::Instance();
+        lua->execute("on_select_folder(\"" + x.path() + "\");");
+
     } else {
 	global->add_folder(std::string(str));
+        CLua    *lua    = CLua::Instance();
+        lua->execute("on_select_folder(\"" + std::string(str) + "\");");
+
     }
     return (0);
 }
@@ -447,6 +456,8 @@ int toggle_selected_folder(lua_State * L)
     } else {
 	toggle = std::string(str);
     }
+    CLua    *lua    = CLua::Instance();
+    lua->execute("on_select_folder(\"" + std::string(toggle) + "\");");
 
     if (std::find(sfolders.begin(), sfolders.end(), toggle) != sfolders.end()) {
 	global->remove_folder(toggle);

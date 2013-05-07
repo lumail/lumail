@@ -55,6 +55,20 @@ end
 
 
 --
+-- This function is called when a folder is selected.
+--
+-- It is where you can run per-folder hooks.
+--
+-- Remember: More than one folder might be selected.
+--
+function on_select_folder( f )
+   ff = io.open( "/tmp/log.lua", "a");
+   ff:write( "Opened " .. f .. "\n" );
+   ff:close();
+end
+
+
+--
 -- Show the version of this client.
 --
 function show_version()
