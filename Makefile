@@ -4,7 +4,7 @@
 SRCS= bindings.cc global.cc lua.cc maildir.cc message.cc main.cc screen.cc
 OBJS=$(subst .cc,.o,$(SRCS))
 CPPFLAGS=-g -Wall -Werror $(shell pkg-config --cflags lua5.1)
-LDLIBS=$(shell pkg-config --libs lua5.1) -lcurses
+LDLIBS=$(shell pkg-config --libs lua5.1) -lcurses -lmimetic
 TARGET=lumail
 
 all: $(TARGET)
@@ -23,5 +23,9 @@ clean:
 
 dist-clean: clean
 	$(RM) *~ .dependtool
+
+tidy:
+	indent -linux -i4 *.cc *.h
+
 
 include .depend
