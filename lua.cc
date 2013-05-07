@@ -2,7 +2,6 @@
  * lua.cc - Singleton interface to an embedded Lua interpreter.
  */
 
-
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -16,14 +15,10 @@
 #include "global.h"
 #include "version.h"
 
-
-
 /**
  * Instance-handle.
  */
 CLua *CLua::pinstance = NULL;
-
-
 
 /**
  * Get access to our LUA intepreter.
@@ -35,8 +30,6 @@ CLua *CLua::Instance()
 
     return pinstance;
 }
-
-
 
 /**
  * Constructor - This is private as this class is a singleton.
@@ -74,34 +67,48 @@ CLua::CLua()
     lua_register(m_lua, "maildir_prefix", maildir_prefix);
 
     /**
-     * Scroll mailboxes up/down.
+     * Get/Set the index format.
      */
-    lua_register(m_lua, "scroll_maildir_down", scroll_maildir_down );
-    lua_register(m_lua, "scroll_maildir_up", scroll_maildir_up );
+    lua_register(m_lua, "index_format", index_format);
 
     /**
-     * Find the next folder matching the pattern.
+     * Scroll mailboxes up/down.
      */
-    lua_register(m_lua, "scroll_maildir_to", scroll_maildir_to );
-    lua_register(m_lua, "current_maildir", current_maildir );
+    lua_register(m_lua, "scroll_maildir_down", scroll_maildir_down);
+    lua_register(m_lua, "scroll_maildir_up", scroll_maildir_up);
+
+    /**
+     * Scroll index up/down.
+     */
+    lua_register(m_lua, "scroll_index_down", scroll_index_down);
+    lua_register(m_lua, "scroll_index_up", scroll_index_up);
+
+    /**
+     * Find the next folder/message matching the pattern.
+     */
+    lua_register(m_lua, "scroll_maildir_to", scroll_maildir_to);
+    lua_register(m_lua, "scroll_index_to", scroll_index_to);
+
+    /**
+     * Get the current maildir.
+     */
+    lua_register(m_lua, "current_maildir", current_maildir);
 
     /**
      * Folder selections.
      */
-    lua_register(m_lua, "clear_selected_folders", clear_selected_folders );
-    lua_register(m_lua, "add_selected_folder",    add_selected_folder );
-    lua_register(m_lua, "toggle_selected_folder", toggle_selected_folder );
-    lua_register(m_lua, "set_selected_folder",    set_selected_folder );
+    lua_register(m_lua, "clear_selected_folders", clear_selected_folders);
+    lua_register(m_lua, "add_selected_folder", add_selected_folder);
+    lua_register(m_lua, "toggle_selected_folder", toggle_selected_folder);
+    lua_register(m_lua, "set_selected_folder", set_selected_folder);
 
     /**
      * Get/Set the maildir-limit.
      */
-    lua_register( m_lua, "maildir_limit", maildir_limit );
+    lua_register(m_lua, "maildir_limit", maildir_limit);
 
     lua_register(m_lua, "exit", exit);
 }
-
-
 
 /**
  * Load the specified lua file, and evaluate it.
@@ -121,7 +128,6 @@ void CLua::loadFile(std::string filename)
     }
 }
 
-
 /**
  * Evaluate the given string.
  */
@@ -129,7 +135,6 @@ void CLua::execute(std::string lua)
 {
     luaL_dostring(m_lua, lua.c_str());
 }
-
 
 /**
  * Call a single Lua function, passing no arguments and ignoring the return code.
@@ -154,7 +159,6 @@ void CLua::setGlobal(std::string name, std::string value)
     lua_setglobal(m_lua, name.c_str());
 }
 
-
 /**
  * Get a global variable value from the Lua environment.
  */
@@ -174,29 +178,30 @@ std::string * CLua::getGlobal(std::string name)
 /**
  * Execute a function from the global keymap.
  */
-bool CLua::onKey( char key )
+bool CLua::onKey(char key)
 {
-  char keypress[2] ;
-  keypress[0] = key;
-  keypress[1] = '\0';
+    char keypress[2];
+    keypress[0] = key;
+    keypress[1] = '\0';
 
   /**
    * Get the mode.
    */
-  CGlobal     *g = CGlobal::Instance();
-  std::string *s = g->get_mode();
+    CGlobal *g = CGlobal::Instance();
+    std::string * s = g->get_mode();
 
-  lua_getglobal (m_lua, "keymap");
-  lua_pushstring (m_lua, s->c_str());
-  lua_gettable (m_lua, -2);
-  lua_pushstring (m_lua, keypress);
-  lua_gettable (m_lua, -2);
-  if (lua_isstring (m_lua, -1))
-    {
-      char *str = (char *) lua_tostring (m_lua, -1);
-      execute( str );
-      return true;
+    lua_getglobal(m_lua, "keymap");
+    lua_pushstring(m_lua, s->c_str());
+    lua_gettable(m_lua, -2);
+    lua_pushstring(m_lua, keypress);
+    lua_gettable(m_lua, -2);
+    if (lua_isstring(m_lua, -1)) {
+	char *str = (char *)lua_tostring(m_lua, -1);
+	execute(str);
+	return true;
     }
 
-  return false;
+    return false;
 }
+
+

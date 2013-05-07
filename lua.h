@@ -2,7 +2,6 @@
  * lua.h - Singleton interface to an embedded Lua interpreter.
  */
 
-
 #ifndef _clua_h_
 #define _clua_h_ 1
 
@@ -15,7 +14,7 @@ extern "C" {
  * A singleton class holding a Lua intepretter.
  */ class CLua
 {
-  public:
+ public:
 
   /**
    * Get access to the singleton instance.
@@ -45,14 +44,14 @@ extern "C" {
   /**
    * Get a global variable value from the Lua environment.
    */
-    std::string * getGlobal(std::string name);
+     std::string * getGlobal(std::string name);
 
     /**
      * Execute a function from the global keymap.
      */
-    bool onKey( char key );
+    bool onKey(char key);
 
-  protected:
+ protected:
 
   /**
    * Protected functions to allow our singleton implementation.
@@ -61,8 +60,7 @@ extern "C" {
      CLua(const CLua &);
      CLua & operator=(const CLua &);
 
-
-  private:
+ private:
 
   /**
    * The single instance of this class.
