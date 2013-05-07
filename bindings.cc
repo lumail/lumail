@@ -17,16 +17,17 @@
 /**
  * Set the maildir-prefix
  */
-int set_maildir(lua_State * L)
+int maildir_prefix(lua_State * L)
 {
     const char *str = lua_tostring(L, -1);
+    CGlobal      *g = CGlobal::Instance();
 
-    if (str == NULL)
-	return luaL_error(L, "Missing argument to set_maildir(..)");
+    if (str != NULL)
+      g->set_maildir_prefix(new std::string(str));
 
-    CGlobal *g = CGlobal::Instance();
-    g->set_maildir_prefix(new std::string(str));
-    return 0;
+    std::string * s = g->get_maildir_prefix();
+    lua_pushstring(L, s->c_str());
+    return 1;
 }
 
 /**
@@ -70,17 +71,6 @@ int maildir_limit(lua_State * L)
      * Return the current/updated value.
      */
     std::string * s = g->get_maildir_limit();
-    lua_pushstring(L, s->c_str());
-    return 1;
-}
-
-/**
- * Get the maildir-prefix
- */
-int get_maildir(lua_State * L)
-{
-    CGlobal *g = CGlobal::Instance();
-    std::string * s = g->get_maildir_prefix();
     lua_pushstring(L, s->c_str());
     return 1;
 }
@@ -194,7 +184,9 @@ int prompt(lua_State * L)
 }
 
 
-/* scroll up/down the maildir list. */
+/**
+ * scroll up/down the maildir list.
+ */
 int scroll_maildir_down(lua_State *L){
   int step = lua_tonumber (L, -1);
 
@@ -225,7 +217,10 @@ int scroll_maildir_up(lua_State *L) {
   return( 0 );
 }
 
-/* scroll to the folder matching the pattern. */
+
+/**
+ * scroll to the folder matching the pattern.
+ */
 int scroll_maildir_to(lua_State *L)
 {
   const char *str = lua_tostring(L, -1);
@@ -262,7 +257,9 @@ int scroll_maildir_to(lua_State *L)
 }
 
 
-/* get the current maildir folder. */
+/**
+ * Get the currently highlighted maildir folder.
+ */
 int current_maildir(lua_State *L)
 {
   /**

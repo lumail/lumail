@@ -71,8 +71,7 @@ CLua::CLua()
     /**
      * Get/Set the maildir prefix.
      */
-    lua_register(m_lua, "get_maildir", get_maildir);
-    lua_register(m_lua, "set_maildir", set_maildir);
+    lua_register(m_lua, "maildir_prefix", maildir_prefix);
 
     /**
      * Scroll mailboxes up/down.
