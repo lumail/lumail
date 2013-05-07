@@ -110,7 +110,7 @@ end
 -- When in maildir-mode show all folders which have a path matching the given pattern.
 --
 function livejournal_folders()
-   maildir_limit( "livejournal." );
+   maildir_limit( "livejournal.2" );
    clear();
 end
 

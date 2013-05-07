@@ -40,6 +40,14 @@ and toggled.
 The display of indexes & messages is still missing.
 
 
+Screenshots
+-----------
+
+* [Showing all folders](img/all.png).
+* [Showing all folders with new mail](img/new.png).
+* [Showing all folders which match a pattern](img/lj.png).
+
+
 Lua-Primitives
 --------------
 
