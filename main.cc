@@ -17,34 +17,10 @@
 
 
 /**
- * Process a single keystroke from the user.
- */
-void processKey( char key )
-{
-}
-
-
-/**
  * Entry point to our code.
  */
 int main(int argc, char *argv[])
 {
-  /**
-   * Global maildirs.
-   *
-   * TODO: These should be in global.
-   */
-  std::vector<CMaildir> g_maildirs;
-
-  /**
-   * Temporary hack: Populate the vector of known maildirs.
-   */
-  std::vector<std::string>  f = CMaildir::getFolders( std::string("/home/skx/Maildir") );
-  std::vector < std::string >::iterator it;
-  for (it = f.begin(); it != f.end(); ++it) {
-    g_maildirs.push_back( CMaildir( *it) );
-  }
-
     //
     //   Parse command-line arguments
     //
@@ -94,13 +70,11 @@ int main(int argc, char *argv[])
 	return 0;
     }
 
-
   /**
    * Initialize the screen.
    */
     CScreen screen = CScreen();
     screen.Init();
-
 
   /**
    * Create the lua intepreter.
@@ -109,13 +83,11 @@ int main(int argc, char *argv[])
     lua->loadFile("/etc/lumail.lua");
     lua->loadFile("./lumail.lua");
 
-
   /**
    * If we have any init file specified then load it up too.
    */
     if (!rcfile.empty())
 	lua->loadFile(rcfile.c_str());
-
 
   /**
    * We're starting, so call the on_start() function.
@@ -125,23 +97,22 @@ int main(int argc, char *argv[])
   /**
    * Now enter our event-loop
    */
-    while( true ) {
-      char key = getch();
-      if (key == ERR) {
-        /*
-         * Timeout - so we go round the loop again.
-         */
-        lua->callFunction("on_idle");
-      }
-      else {
-        if ( !lua->onKey( key ) ) {
-          std::string foo = "msg(\"Unbound key ";
-          foo +=  key;
-          foo +=  "\")";
-          lua->execute( foo );
-        }
-      }
-      screen.refresh_display();
+    while (true) {
+	char key = getch();
+	if (key == ERR) {
+	    /*
+	     * Timeout - so we go round the loop again.
+	     */
+	    lua->callFunction("on_idle");
+	} else {
+	    if (!lua->onKey(key)) {
+		std::string foo = "msg(\"Unbound key ";
+		foo += key;
+		foo += "\")";
+		lua->execute(foo);
+	    }
+	}
+	screen.refresh_display();
     }
 
   /**
