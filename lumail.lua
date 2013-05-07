@@ -14,6 +14,12 @@ maildir_prefix( os.getenv( "HOME" ) .. "/Maildir" );
 --
 maildir_limit( "all" );
 
+--
+-- Index format.
+--
+-- Valid options are sadly limited to $FLAGS, $FROM, $SUBJECT, $DATE
+--
+index_format( "[$FLAGS] $FROM - $SUBJECT" );
 
 --
 -- This function is called when the client launches.
@@ -130,12 +136,33 @@ function maildir_page_up()
    scroll_maildir_up(10);
 end
 
+
+function message_down()
+   scroll_index_down( 1 );
+end
+
+function message_page_down()
+   scroll_index_down( 10 );
+end
+
+function message_up()
+   scroll_index_up(1);
+end
+
+function message_page_up()
+   scroll_index_up(10);
+end
+
 --
--- Search for the next folder which matches the entered pattern.
+-- Search for the next folder/message which matches the entered pattern.
 --
-function maildir_search_next()
+function search_next()
    x = prompt("/:" );
-   scroll_maildir_to( x );
+   if ( string.find( m, "maildir" ) ) then
+      scroll_maildir_to( x );
+   else
+      scroll_index_to( x );
+   end
 end
 
 --
@@ -224,7 +251,17 @@ keymap['maildir']['j'] = 'maildir_down()'
 keymap['maildir']['J'] = 'maildir_page_down()'
 keymap['maildir']['k'] = 'maildir_up()'
 keymap['maildir']['K'] = 'maildir_page_up()'
-keymap['maildir']['/'] = 'maildir_search_next()'
+keymap['maildir']['/'] = 'search_next()'
+
+
+--
+-- Scroll up/down the message index
+--
+keymap['index']['j'] = 'message_down()'
+keymap['index']['J'] = 'message_page_down()'
+keymap['index']['k'] = 'message_up()'
+keymap['index']['K'] = 'message_page_up()'
+keymap['index']['/'] = 'search_next()'
 
 --
 -- Selection bindings.
