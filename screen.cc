@@ -136,8 +136,23 @@ void CScreen::drawMaildir()
  */
 void CScreen::drawIndex()
 {
-  move(3, 3);
-  printw( "Drawing INDEX here ..");
+  CGlobal                  *global = CGlobal::Instance();
+  std::vector<std::string> folders = global->get_selected_folders();
+
+  int row = 2;
+  std::vector < std::string >::iterator it;
+  for (it = folders.begin(); it != folders.end(); ++it) {
+    move( row, 2 );
+    printw("Should show folder: %s", (*it).c_str() );
+    row += 1;
+  }
+
+  if ( row == 2 )
+    {
+      move(2,2);
+      printw("Drawing index here - but no folders are selected!" );
+    }
+
 }
 
 

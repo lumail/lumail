@@ -42,4 +42,11 @@ int prompt(lua_State * L);
 /* clear the screen */
 int clear(lua_State * L);
 
+/**
+ * folder selection code.
+ */
+int clear_selected_folders(lua_State * L);
+int add_selected_folder(lua_State * L);
+
+
 #endif				/* _bindings_h */

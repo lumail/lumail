@@ -274,3 +274,38 @@ int current_maildir(lua_State *L)
   return 1;
 }
 
+/**
+ * folder selection code.
+ */
+int clear_selected_folders(lua_State * L)
+{
+  CGlobal *global = CGlobal::Instance();
+  global->unset_folders();
+  return 0;
+}
+
+int add_selected_folder(lua_State * L)
+{
+  /**
+   * get the optional argument.
+   */
+  const char *str = lua_tostring(L, -1);
+
+  CGlobal *global = CGlobal::Instance();
+
+  /**
+   * default to the current folder.
+   */
+  if (str == NULL) {
+    std::vector<CMaildir> display = global->get_folders();
+    int                  selected = global->get_selected_folder();
+
+    CMaildir x = display[selected];
+    global->add_folder( x.path().c_str());
+  }
+  else {
+    global->add_folder( std::string(str) );
+  }
+  return( 0 );
+}
+
