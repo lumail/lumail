@@ -17,7 +17,15 @@ maildir_limit( "all" );
 --
 -- Index format.
 --
--- Valid options are sadly limited to $FLAGS, $FROM, $SUBJECT, $DATE
+-- Valid options are sadly limited to:
+--
+--   $DATE
+--   $FLAGS
+--   $FROM
+--   $SUBJECT
+--   $TO
+--
+-- TODO: Make the date more selectable..
 --
 index_format( "[$FLAGS] $FROM - $SUBJECT" );
 

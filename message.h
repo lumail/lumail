@@ -7,7 +7,6 @@
 
 #include <string>
 
-
 /**
  * A single message.
  */
@@ -30,6 +29,12 @@ class CMessage
    */
   std::string path();
 
+
+  /**
+   * Format the message for display in the header - via the lua format string.
+   */
+  std::string format();
+
   /**
    * Get the flags for this message.
    */
@@ -44,5 +49,4 @@ class CMessage
 
 };
 
-
-#endif /* _message_h */
+#endif				/* _message_h */
