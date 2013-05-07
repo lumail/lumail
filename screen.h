@@ -2,58 +2,53 @@
  * screen.h - Utility functions related to the screen size.
  */
 
-
 #ifndef _screen_h_
 #define _screen_h_ 1
 
-
 #include <vector>
 #include "maildir.h"
-
 
 /**
  * Class contains only static methods relating to the screen dimensions.
  */
 class CScreen {
 
-  public:
+ public:
 
   /**
    * Constructor.  NOP.
    */
-  CScreen();
+    CScreen();
 
   /**
    * Destructor.  NOP.
    */
-  ~CScreen();
-
+    ~CScreen();
 
   /**
    * Draw/Refresh the display.
    */
-  void refresh_display();
-
+    void refresh_display();
 
   /**
    * Setup the screen.
    */
-  void Init();
+    void Init();
 
   /**
    * Return the width of the screen.
    */
-  static int width();
+    static int width();
 
   /**
    * Return the height of the screen.
    */
-  static int height();
+    static int height();
 
   /**
    * Clear the status-line of the screen.
    */
-  static void clearStatus();
+    static void clearStatus();
 
  private:
   /**
@@ -64,6 +59,5 @@ class CScreen {
     void drawMessage();
 
 };
-
 
 #endif				/* _screen_h_ */
