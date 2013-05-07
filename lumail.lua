@@ -50,7 +50,7 @@ index_format( "[$FLAGS] $FROM - $SUBJECT" );
 --    os.execute( "imapsync ..." );
 --
 function on_start()
-   msg("I've started" );
+   msg("lumail v" .. VERSION .. " http://lumail.org/" );
 end
 
 
