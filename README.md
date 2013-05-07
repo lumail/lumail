@@ -20,12 +20,12 @@ Each maildir-name has a small `[ ]` next to it.  This indicates whether the fold
 selected or not.  Unlike other mail-clients where you open a mailbox/folder with lumail
 you can open __multiple__ folders at the same time.
 
-To open the single folder, which is highlighted, press RETURN.  Otherwise you may toggle
+To open the single folder which is highlighted, press RETURN.  Otherwise you may toggle
 the folders selected state with "SPACE".  Once you've selected as many folders as you
 wish you can press "I" to view the index-mode.
 
 Index-mode is naviated the same way as maildir-mode; use `j + k + /` to move around,
-and view the messages.
+and view the messages in the selected folder(s).
 
 TODO:  You cannot actually open a message yet.
 
