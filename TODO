@@ -25,3 +25,14 @@
        setBar()
 
 9. Double-check we're not leaking lua-stack objects.  Don't seem to be, and yet ..
+
+10.  We need to have a notion of your default from-address.  For use in the compose
+    function.  Ditto the name.  These should be changeable on a per-folder basis.
+
+     We could use a table, but I think it would be simpler to have a hook for
+    changing folders.  This will fail if we open multiple folders though:
+
+  folder: steve.org.uk/  -> from = steve@steve.org.uk
+  folder: debian.devel/  -> from = skx@debian.org
+
+     If we open both folders then compose should default to which?
