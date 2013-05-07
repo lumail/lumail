@@ -7,7 +7,6 @@
 
 #include "lua.h"
 
-
 /* exit the program */
 int exit(lua_State * L);
 
@@ -23,15 +22,25 @@ int maildir_limit(lua_State * L);
 /* get/set the global maildir-prefix */
 int maildir_prefix(lua_State * L);
 
+/* get/set the index-format. */
+int index_format(lua_State *L);
+
 /* scroll up/down the maildir list. */
-int scroll_maildir_down(lua_State *L);
-int scroll_maildir_up(lua_State *L);
+int scroll_maildir_down(lua_State * L);
+int scroll_maildir_up(lua_State * L);
+
+/* scroll up/down the message list. */
+int scroll_index_down(lua_State * L);
+int scroll_index_up(lua_State * L);
 
 /* scroll to the folder matching the pattern. */
-int scroll_maildir_to(lua_State *L);
+int scroll_maildir_to(lua_State * L);
+
+/* scroll to the message matching the pattern. */
+int scroll_index_to(lua_State * L);
 
 /* get the current mailbox name. */
-int current_maildir(lua_State *L);
+int current_maildir(lua_State * L);
 
 /* draw a string at the foot of the screen. */
 int msg(lua_State * L);
@@ -49,6 +58,5 @@ int clear_selected_folders(lua_State * L);
 int add_selected_folder(lua_State * L);
 int toggle_selected_folder(lua_State * L);
 int set_selected_folder(lua_State * L);
-
 
 #endif				/* _bindings_h */
