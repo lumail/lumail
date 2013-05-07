@@ -82,16 +82,21 @@ Screenshots
 * [Showing all folders which match a pattern](img/lj.png).
 
 
-Lua-Primitives
---------------
+Configuration & Lua-Primitives
+------------------------------
 
 If you examine the supplied [lumail.lua](https://raw.github.com/skx/lumail/master/lumail.lua)
 configuration file you'll get a flavour for the configuration.
 
-You will need to point the mail-client at your local Maildir location, from which all
-sub-folders will be determined at run-time.
+The main part of the configuration is to  point the mail-client at your local Maildir
+location, from which all sub-folders will be determined at run-time.
 
-The other configuration largely consists of setting up key-bindings.
+At startup the following three lua files are evaluated, if present:
+
+* `/etc/lumail.lua`
+* `~/.lumail/config.lua`
+* `./lumail.lua`
+   * This is depreciated and will be removed in the future.
 
 
 Steve
