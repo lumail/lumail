@@ -1,0 +1,30 @@
+
+1.  The ":" input-reading function should have history.
+
+2.  Scrolling in large maildirs is slow because we re-read each message
+   we display.  (Max== screen height).
+    We should create persistant objects, or use a cache.
+
+3.  Unread folders should be red.
+
+4.  Unread messages should be red.
+
+5.  We need a simple "read message" routine.  We're using the MIME-parser
+   now so we should find that simple to extract the body.  (Be evil and only
+   expose the text/plain version of multi-part messages ;)
+
+6.  Lua doesn't have access to the list of currently-selected folders,
+   just the ability to clear them and add new ones.  Fix this.
+
+7.  We should have a compose mode.  Use our MIME-parser to add attachments,
+   and pipe to /usr/bin/sendmail - use "sendmail()" to set the path/args.
+
+8.  We currently look for a global and `pwd`/luamail.lua file.  Look for
+   ~/.luamil/conf instead of the pwd.
+
+9.  Reformat the code and use consistent function-names.  This is unfortunate:
+       get_foo_bar().
+     vs.
+       setBar()
+
+10. Double-check we're not leaking lua-stack objects.  Don't seem to be, and yet ..
