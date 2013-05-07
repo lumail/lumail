@@ -19,12 +19,9 @@
 7.  We should have a compose mode.  Use our MIME-parser to add attachments,
    and pipe to /usr/bin/sendmail - use "sendmail()" to set the path/args.
 
-8.  We currently look for a global and `pwd`/luamail.lua file.  Look for
-   ~/.luamil/conf instead of the pwd.
-
-9.  Reformat the code and use consistent function-names.  This is unfortunate:
+8.  Reformat the code and use consistent function-names.  This is unfortunate:
        get_foo_bar().
      vs.
        setBar()
 
-10. Double-check we're not leaking lua-stack objects.  Don't seem to be, and yet ..
+9. Double-check we're not leaking lua-stack objects.  Don't seem to be, and yet ..

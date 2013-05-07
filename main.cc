@@ -85,6 +85,13 @@ int main(int argc, char *argv[])
     lua->loadFile("/etc/lumail.lua");
     lua->loadFile("./lumail.lua");
 
+    /**
+     * Load the init-file from the users home-directory, if we can.
+     */
+    std::string home = getenv( "HOME" );
+    if ( CMaildir::isDirectory( home + "/.lumail" ) )
+        lua->loadFile( home + "/.lumail/config.lua");
+
   /**
    * If we have any init file specified then load it up too.
    */
