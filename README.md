@@ -24,15 +24,12 @@ I hacked together in a couple of days:
 Current Status
 --------------
 
-The project is still in the early stages of development, although it is hoped
-that it will be fleshed out pretty quickly.
-
 Because this mail-client is a modal application the coding has been split into
 sections:
 
-* Code the display/manipulation of the Maildir folders.
-* Code the display/manipulation of the message-indexes.
-* Code the display/manipulation of a single mail message.
+* [x] Code the display/manipulation of the Maildir folders.
+* [x] Code the display/manipulation of the message-indexes.
+* [ ] Code the display/manipulation of a single mail message.
 
 The first two items on this list are complete:
 
