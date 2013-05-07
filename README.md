@@ -1,24 +1,42 @@
 lumail
 ======
 
-lumail is a simple console-based email client which is in the process of being
-developed.
+lumail is a modal console-based email client, which has built in support for scripting
+via Lua.
 
-It is a modal-mailclient, which means that you're always in one of three states:
+The email client is a modal application, which means that you're *always* in one of three
+states:
 
 * Interacting with lists of mailboxes.
 * Interacting with lists of messages.
 * Interacting with a single message.
 
+This suits my email tastes, although I appreciate it perhaps isn't for everybody.
+
 
 Code
 ----
 
-Code is written in C++, and is largely inspired by the proof of concept project
+The application is developed in C++, and is largely inspired by the proof of concept project
 I hacked together in a couple of days:
 
 * cmail
     * https://github.com/skx/cmail/
+
+The dependencies are pretty straightforward:
+
+* lua 5.1 - The scripting language
+* ncurses - The console-graphics library.
+* mimetic - The MIME-library.
+
+Upon a Debian GNU/Linux system you may install them via:
+
+     # apt-get install libncurses-dev liblua5.1-0-dev lua5.1 libmimetic-dev
+
+Building the code should be as simple as cloning the repository and running "`make`".
+
+From there it may be executed directly, although you might wish to make tweaks to
+the supplied configuration file `lumail.lua`.
 
 
 Current Status
@@ -51,13 +69,13 @@ Screenshots
 Lua-Primitives
 --------------
 
-There are several lua primitives which are useful for interactive use, they include:
+If you examine the supplied [lumail.lua](https://raw.github.com/skx/lumail/master/lumail.lua)
+configuration file you'll get a flavour for the configuration.
 
-* `clear` - Clear the screen.
-* `prompt` - Prompt for input, and return it to the caller.
-* `msg` - Output a message.
-* `quit` - Quit.
-* Along with various primitives useful for manipulating the maildir folders, which are documented in `lumail.lua`.
+You will need to point the mail-client at your local Maildir location, from which all
+sub-folders will be determined at run-time.
+
+The other configuration largely consists of setting up key-bindings.
 
 
 Steve
