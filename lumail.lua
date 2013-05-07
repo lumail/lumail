@@ -62,9 +62,14 @@ end
 -- Remember: More than one folder might be selected.
 --
 function on_select_folder( f )
-   ff = io.open( "/tmp/log.lua", "a");
-   ff:write( "Opened " .. f .. "\n" );
-   ff:close();
+
+   --
+   -- This is test-code.
+   --
+   -- ff = io.open( "/tmp/log.lua", "a");
+   -- ff:write( "Opened " .. f .. "\n" );
+   -- ff:close();
+
 end
 
 
