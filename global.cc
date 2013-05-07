@@ -2,7 +2,7 @@
  * global.cc - Singleton interface to store global data
  */
 
-
+#include <algorithm>
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -189,4 +189,19 @@ void CGlobal::unset_folders()
 void CGlobal::add_folder( std::string path )
 {
   m_selected_folders.push_back( path );
+}
+
+void CGlobal::remove_folder( std::string path )
+{
+  std::vector<std::string>::iterator it;
+
+  it = std::find( m_selected_folders.begin(),
+                  m_selected_folders.end(),
+                  path );
+
+  if ( it != m_selected_folders.end() )
+    {
+      m_selected_folders.erase( it );
+    }
+
 }

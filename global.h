@@ -69,6 +69,11 @@ class CGlobal
   void add_folder( std::string path );
 
   /**
+   * Remove a folder from the selected set.
+   */
+  void remove_folder( std::string path );
+
+  /**
    * Get/Set the maildir-display limit.
    */
   std::string* get_maildir_limit();

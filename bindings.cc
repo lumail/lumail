@@ -2,12 +2,14 @@
  * bindings.cc - Bindings for all functions callable from Lua.
  */
 
+#include <algorithm>
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <string.h>
 #include <ncurses.h>
 
+#include "maildir.h"
 #include "lua.h"
 #include "global.h"
 #include "screen.h"
@@ -297,6 +299,35 @@ int add_selected_folder(lua_State * L)
    * default to the current folder.
    */
   if (str == NULL) {
+    int                  selected = global->get_selected_folder();
+    std::vector<CMaildir> display = global->get_folders();
+
+    CMaildir x = display[selected];
+    global->add_folder( x.path().c_str());
+  }
+  else {
+    global->add_folder( std::string(str) );
+  }
+  return( 0 );
+}
+
+/**
+ * Remove all entries.  Add single new one.
+ */
+int set_selected_folder(lua_State * L)
+{
+  /**
+   * get the optional argument.
+   */
+  const char *str = lua_tostring(L, -1);
+
+  CGlobal *global = CGlobal::Instance();
+  global->unset_folders();
+
+  /**
+   * default to the current folder.
+   */
+  if (str == NULL) {
     std::vector<CMaildir> display = global->get_folders();
     int                  selected = global->get_selected_folder();
 
@@ -306,6 +337,44 @@ int add_selected_folder(lua_State * L)
   else {
     global->add_folder( std::string(str) );
   }
+  return( 0 );
+}
+
+/**
+ * Toggle the current item.
+ */
+int toggle_selected_folder(lua_State * L)
+{
+  /**
+   * get the optional argument.
+   */
+  const char *str = lua_tostring(L, -1);
+  CGlobal *global = CGlobal::Instance();
+  std::vector<std::string> sfolders = global->get_selected_folders();
+
+  /**
+   * default to the current folder.
+   */
+  std::string toggle;
+
+  if (str == NULL) {
+    std::vector<CMaildir> display = global->get_folders();
+    int                  selected = global->get_selected_folder();
+    CMaildir x = display[selected];
+    toggle = x.path();
+  }
+  else {
+    toggle = std::string(str) ;
+  }
+
+  if ( std::find( sfolders.begin(), sfolders.end(), toggle ) != sfolders.end() ) {
+    global->remove_folder( toggle );
+  }
+  else {
+    global->add_folder( toggle );
+  }
+
+
   return( 0 );
 }
 

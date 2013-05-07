@@ -130,10 +130,25 @@ function maildir_page_up()
    scroll_maildir_up(10);
 end
 
+--
+-- Search for the next folder which matches the entered pattern.
+--
 function maildir_search_next()
    x = prompt("/:" );
    scroll_maildir_to( x );
 end
+
+--
+-- Open a folder exclusively.
+--
+function open_folder()
+   clear_selected_folders();
+   add_selected_folder()
+   global_mode( "index" );
+   clear();
+end
+
+
 
 --
 -- Now setup keymaps for the different modes.
@@ -202,10 +217,20 @@ keymap['maildir']['a'] = 'all_folders()'
 keymap['maildir']['n'] = 'new_folders()'
 keymap['maildir']['l'] = 'livejournal_folders()'
 
+--
+-- Scroll up/down & find folders
+--
 keymap['maildir']['j'] = 'maildir_down()'
 keymap['maildir']['J'] = 'maildir_page_down()'
 keymap['maildir']['k'] = 'maildir_up()'
 keymap['maildir']['K'] = 'maildir_page_up()'
-
-
 keymap['maildir']['/'] = 'maildir_search_next()'
+
+--
+-- Selection bindings.
+--
+--  "space" will toggle the current folder as selected.
+--  "return" will open the selected folder exclusively.
+--
+keymap['maildir'][' '] = 'toggle_selected_folder()'
+keymap['maildir']['\n'] = 'open_folder()'
