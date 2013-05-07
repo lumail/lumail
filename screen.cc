@@ -4,6 +4,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <algorithm>
 #include <fstream>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -89,6 +90,11 @@ void CScreen::drawMaildir()
    */
   int row = 0;
 
+  /**
+   * Selected folders.
+   */
+  std::vector<std::string> sfolders = global->get_selected_folders();
+
   for( row = 0; row < (height-1) ; row++)
   {
     /**
@@ -104,6 +110,13 @@ void CScreen::drawMaildir()
       cur = &display[row+selected];
 
 
+    std::string found = "[ ]";
+    if ( cur != NULL )
+      {
+        if ( std::find( sfolders.begin(), sfolders.end(), cur->path() ) != sfolders.end() )
+          found = "[x]";
+      }
+
     /**
      * First row is the current one.
      */
@@ -113,7 +126,7 @@ void CScreen::drawMaildir()
     std::string path = "";
 
     if ( cur != NULL )
-      snprintf(buf, sizeof(buf)-1, "[ ] - %-70s", cur->path().c_str() );
+      snprintf(buf, sizeof(buf)-1, "%s - %-70s", found.c_str(), cur->path().c_str() );
 
     while( (int)strlen(buf) <  (CScreen::width()-3) )
       strcat(buf, " ");
