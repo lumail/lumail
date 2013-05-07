@@ -12,10 +12,23 @@ maildir_prefix( os.getenv( "HOME" ) .. "/Maildir" );
 --
 -- Show all folders by default
 --
+-- When called wiht no arguments this function will return the current
+-- setting, otherwise it will update it.
+--
+-- The maildir limit can be set to three values:
+--
+--    all  -> Show all maildir folders.
+--    new  -> Show all maildir folders which contain unread messages.
+--   "str" -> Show all maildir folders which contain the substring "str" in their paths.
+--
+-- See "all" , "new", and "livejournal" functions for example of use.
+--
 maildir_limit( "all" );
 
+
+
 --
--- Index format.
+-- The index format controls how messages are displayed inside folder lists.
 --
 -- Valid options are sadly limited to:
 --
@@ -30,9 +43,9 @@ maildir_limit( "all" );
 index_format( "[$FLAGS] $FROM - $SUBJECT" );
 
 --
--- This function is called when the client launches.
+-- This function is called when the client is launched.
 --
--- You might use something like this, usefully:
+-- You might consider something useful like this:
 --
 --    os.execute( "imapsync ..." );
 --
@@ -42,7 +55,7 @@ end
 
 
 --
--- Show the version
+-- Show the version of this client.
 --
 function show_version()
    msg("This is lumail version " .. VERSION );
@@ -52,7 +65,7 @@ end
 --
 -- This function is called when the client exits.
 --
--- It could be used to do many things..
+-- It could also be used to run an imap-sync, or similar hook at exit-time.
 --
 function on_exit()
    print("print: on_exit");
@@ -70,7 +83,7 @@ end
 --   if the current-time is a multiple of five-minutes
 --     os.execute("imapsync ..")
 --
--- You might prefer to call fetchmail, or similar.
+-- (Of course you may prefer to call fetchmail, or similar.)
 --
 function on_idle()
    m = global_mode()
@@ -91,10 +104,15 @@ end
 --
 -- Switch to the index-view mode.
 --
+-- This will display the messages contained in all currently-selected folders.
+--
+-- (Selected folders will be displayed with a "[x]" next to them in maildir-mode.)
+--
 function index()
    global_mode( "index" );
    clear();
 end
+
 
 --
 -- Switch to the maildir-mode.
@@ -104,6 +122,7 @@ function maildir()
    clear();
 end
 
+
 --
 -- When in maildir-mode show all folders.
 --
@@ -111,6 +130,7 @@ function all_folders()
    maildir_limit( "all" );
    clear();
 end
+
 
 --
 -- When in maildir-mode show all folders which contain unread messages.
@@ -120,6 +140,7 @@ function new_folders()
    clear();
 end
 
+
 --
 -- When in maildir-mode show all folders which have a path matching the given pattern.
 --
@@ -128,38 +149,41 @@ function livejournal_folders()
    clear();
 end
 
+
+--
+-- Navigation functions for maildir-mode
+--
 function maildir_down()
    scroll_maildir_down( 1 );
 end
-
 function maildir_page_down()
    scroll_maildir_down( 10 );
 end
-
 function maildir_up()
    scroll_maildir_up(1);
 end
-
 function maildir_page_up()
    scroll_maildir_up(10);
 end
 
 
+
+--
+-- Navigation functions for index-mode
+--
 function message_down()
    scroll_index_down( 1 );
 end
-
 function message_page_down()
    scroll_index_down( 10 );
 end
-
 function message_up()
    scroll_index_up(1);
 end
-
 function message_page_up()
    scroll_index_up(10);
 end
+
 
 --
 -- Search for the next folder/message which matches the entered pattern.
@@ -173,8 +197,12 @@ function search_next()
    end
 end
 
+
 --
 -- Open a folder exclusively.
+--
+-- This behaves like the traditional "open folder" function in our favourite
+-- client.  I like to open multiple folders at once, because that's how I roll.
 --
 function open_folder()
    clear_selected_folders();
@@ -182,6 +210,32 @@ function open_folder()
    global_mode( "index" );
    clear();
 end
+
+
+
+--
+-- Open my most important folders.
+--
+function faves()
+   global_mode( "index" );
+
+   -- ensure all folders are available
+   maildir_limit( "all" );
+   clear_selected_folders();
+
+   -- The first folder.
+   scroll_maildir_to( "/.steve.org.uk" );
+   add_selected_folder()
+
+   -- The second folder.
+   scroll_maildir_to( "/.people.kirsi" );
+   add_selected_folder()
+
+   -- Now we've selected two folders, open them.
+   global_mode( "index" );
+   clear();
+end
+
 
 
 
@@ -260,6 +314,7 @@ keymap['maildir']['J'] = 'maildir_page_down()'
 keymap['maildir']['k'] = 'maildir_up()'
 keymap['maildir']['K'] = 'maildir_page_up()'
 keymap['maildir']['/'] = 'search_next()'
+keymap['maildir']['f'] = 'faves()'
 
 
 --
