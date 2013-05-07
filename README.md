@@ -34,10 +34,13 @@ sections:
 * Code the display/manipulation of the message-indexes.
 * Code the display/manipulation of a single mail message.
 
-The first of these is complete.  A maildir collection may be searched, browsed,
-and toggled.
+The first two items on this list are complete:
 
-The display of indexes & messages is still missing.
+* You can launch the client and navigate/manipulate the Maildir folders.
+* Opening a folder, or series of folders, will show you the messages in it.
+    * The messages may be scrolled.
+
+The missing step is the ability to read individual messages, reply to messages, etc.
 
 
 Screenshots
