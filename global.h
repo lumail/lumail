@@ -8,19 +8,14 @@
 #include <vector>
 #include <string>
 #include "maildir.h"
+#include "message.h"
 
 /**
- * A singleton class to store global data:
- *
- * current_mode:  <string>
- * current_selected_folders : vector<string>
- * index_limit : "all|unread|~p<XX>"
- * maildir_limit :  "all|unread|~p<xx>"
+ * A singleton class to store global data.
  *
  */
 class CGlobal
 {
-
  public:
 
   /**
@@ -28,35 +23,43 @@ class CGlobal
    */
   static CGlobal *Instance();
 
-
   /**
-   * Get/Set the current mode.
+   * Get/Set the current lumail-mode: index/maildir/message
    */
   void set_mode(std::string * mode);
   std::string * get_mode();
 
   /**
-   * Get/Set the maildir-prefix.
+   * Get/Set the maildir-prefix, which is where we find Maildir-folders beneath.
    */
-  void set_maildir_prefix( std::string *prefix );
+  void set_maildir_prefix(std::string * prefix);
   std::string * get_maildir_prefix();
 
+  /**
+   * Get/Set the index-format.
+   */
+  void set_index_format(std::string * fmt);
+  std::string * get_index_format();
 
   /**
    * Get all folders.
    */
-  std::vector<CMaildir> get_all_folders();
-
+  std::vector < CMaildir > get_all_folders();
 
   /**
-   * get all folders which match the current mode.
+   * Get all folders which match the current mode: new/all/pattern
    */
-  std::vector<CMaildir> get_folders();
+  std::vector < CMaildir > get_folders();
 
   /**
    * Get all selected folders.
    */
-  std::vector<std::string> get_selected_folders();
+  std::vector < std::string > get_selected_folders();
+
+  /**
+   * Get all messages from the currently-selected folders.
+   */
+  std::vector < CMessage > get_messages();
 
   /**
    * Remove all selected folders.
@@ -66,30 +69,38 @@ class CGlobal
   /**
    * Add a folder to the selected set.
    */
-  void add_folder( std::string path );
+  void add_folder(std::string path);
 
   /**
    * Remove a folder from the selected set.
    */
-  void remove_folder( std::string path );
+  bool remove_folder(std::string path);
 
   /**
-   * Get/Set the maildir-display limit.
+   * Get/Set the maildir-display limit: new/all/pattern
    */
-  std::string* get_maildir_limit();
-  void set_maildir_limit( std::string *limit );
+  std::string * get_maildir_limit();
+  void set_maildir_limit(std::string * limit);
 
   /**
-   * Get/set the selected folder.
+   * Get/set the selected folder, i.e. the one with the highlight.
    */
-  int get_selected_folder() { return m_cur_folder ; }
-  void set_selected_folder(int offset) {  m_cur_folder = offset ; }
+  int get_selected_folder() {
+    return m_cur_folder;
+  }
+  void set_selected_folder(int offset) {
+    m_cur_folder = offset;
+  }
 
   /**
-   * Get/Set the selected message.
+   * Get/Set the selected message.  Not used.
    */
-  int get_selected_message() { return m_cur_message ; }
-  void set_selected_message(int offset) {  m_cur_message = offset ; }
+  int get_selected_message() {
+    return m_cur_message;
+  }
+  void set_selected_message(int offset) {
+    m_cur_message = offset;
+  }
 
  protected:
 
@@ -99,7 +110,6 @@ class CGlobal
   CGlobal();
   CGlobal(const CGlobal &);
   CGlobal & operator=(const CGlobal &);
-
 
  private:
 
@@ -126,7 +136,7 @@ class CGlobal
   /**
    * The limit-string for the display of folders.
    */
-  std::string *m_maildir_limit;
+  std::string * m_maildir_limit;
 
   /**
    * The maildir-prefix.
@@ -136,8 +146,13 @@ class CGlobal
   /**
    * Currently selected folders.
    */
-  std::vector<std::string> m_selected_folders;
+  std::vector < std::string > m_selected_folders;
+
+  /**
+   * The index-format string.
+   */
+  std::string * m_index_format;
 
 };
 
-#endif				/* _global_h_ */
+#endif /* _global_h_ */

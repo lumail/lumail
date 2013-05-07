@@ -2,6 +2,8 @@
  * global.cc - Singleton interface to store global data
  */
 
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <algorithm>
 #include <iostream>
 #include <cstdlib>
@@ -11,14 +13,10 @@
 
 #include "global.h"
 
-
-
 /**
  * Instance-handle.
  */
 CGlobal *CGlobal::pinstance = NULL;
-
-
 
 /**
  * Get access to our singleton-object.
@@ -31,7 +29,6 @@ CGlobal *CGlobal::Instance()
     return pinstance;
 }
 
-
 /**
  * Constructor - This is private as this class is a singleton.
  */
@@ -40,13 +37,13 @@ CGlobal::CGlobal()
   /**
    * Defaults.
    */
-    m_mode           = new std::string("maildir");
-    m_maildir_limit  = new std::string("all");
+    m_mode = new std::string("maildir");
+    m_maildir_limit = new std::string("all");
+    m_index_format = new std::string( "[$FLAGS] $FROM - $SUBJECT" );
     m_maildir_prefix = NULL;
-    m_cur_folder     = 0;
-    m_cur_message    = 0;
+    m_cur_folder = 0;
+    m_cur_message = 0;
 }
-
 
 /**
  * Set the new mode for the client.
@@ -59,7 +56,6 @@ void CGlobal::set_mode(std::string * mode)
     m_mode = new std::string(mode->c_str());
 }
 
-
 /**
  * Get the current mode the client is in: index, maildir or message.
  */
@@ -68,140 +64,234 @@ std::string * CGlobal::get_mode()
     return (m_mode);
 }
 
-
 /**
  * Set the maildir limit.
  */
-void CGlobal::set_maildir_limit( std::string *limit )
+void CGlobal::set_maildir_limit(std::string * limit)
 {
-  if ( m_maildir_limit )
-    delete(m_maildir_limit );
+    if (m_maildir_limit)
+	delete(m_maildir_limit);
 
-  m_maildir_limit = limit;
+    m_maildir_limit = limit;
 }
-
 
 /**
  * Get the maildir limit
  */
 std::string * CGlobal::get_maildir_limit()
 {
-  return( m_maildir_limit );
+    return (m_maildir_limit);
 }
-
 
 /**
  * Set the prefix for our maildir folders.
  */
-void CGlobal::set_maildir_prefix( std::string *prefix )
+void CGlobal::set_maildir_prefix(std::string * prefix)
 {
-  if ( m_maildir_prefix != NULL )
-    delete( m_maildir_prefix );
+    if (m_maildir_prefix != NULL)
+	delete(m_maildir_prefix);
 
-  m_maildir_prefix = new std::string(prefix->c_str());
+    m_maildir_prefix = new std::string(prefix->c_str());
 }
-
 
 /**
  * Get the prefix for the maildir folders.
  */
 std::string * CGlobal::get_maildir_prefix()
 {
-  return( m_maildir_prefix );
+    return (m_maildir_prefix);
+}
+
+
+/**
+ * Set the index format.
+ */
+void CGlobal::set_index_format(std::string * fmt)
+{
+    if (m_index_format != NULL)
+	delete(m_index_format);
+
+    m_index_format = new std::string(fmt->c_str());
+}
+
+/**
+ * Get the index format.
+ */
+std::string * CGlobal::get_index_format()
+{
+    return (m_index_format);
 }
 
 
 /**
  * Get all selected folders.
  */
-std::vector<std::string> CGlobal::get_selected_folders()
+std::vector < std::string > CGlobal::get_selected_folders()
 {
-  return( m_selected_folders );
+    return (m_selected_folders);
 }
-
 
 /**
  * Get all folders.
  */
-std::vector<CMaildir> CGlobal::get_all_folders()
+std::vector < CMaildir > CGlobal::get_all_folders()
 {
-  std::vector<CMaildir> maildirs;
+    std::vector < CMaildir > maildirs;
 
-  std::vector<std::string> folders = CMaildir::getFolders( *m_maildir_prefix );
-  std::vector < std::string >::iterator it;
-  for (it = folders.begin(); it != folders.end(); ++it) {
-    maildirs.push_back( CMaildir( *it ) );
-  }
+    std::vector < std::string > folders =
+	CMaildir::getFolders(*m_maildir_prefix);
+    std::vector < std::string >::iterator it;
+    for (it = folders.begin(); it != folders.end(); ++it) {
+	maildirs.push_back(CMaildir(*it));
+    }
 
-  return( maildirs );
+    return (maildirs);
 }
 
 /**
  * Get folders matching the current mode.
  */
-std::vector<CMaildir> CGlobal::get_folders()
+std::vector < CMaildir > CGlobal::get_folders()
 {
-  CGlobal               *global = CGlobal::Instance();
-  std::vector<CMaildir> folders = global->get_all_folders();
-  std::string           *filter = global->get_maildir_limit();
-  std::vector<CMaildir> display;
+    CGlobal *global = CGlobal::Instance();
+    std::vector < CMaildir > folders = global->get_all_folders();
+    std::string * filter = global->get_maildir_limit();
+    std::vector < CMaildir > display;
 
   /**
    * Filter the folders to those we can display
    */
-  std::vector<CMaildir>::iterator it;
-  for (it = folders.begin(); it != folders.end(); ++it)
-    {
-      CMaildir x = *it;
+    std::vector < CMaildir >::iterator it;
+    for (it = folders.begin(); it != folders.end(); ++it) {
+	CMaildir x = *it;
 
-      if ( strcmp( filter->c_str(), "all") == 0 ){
-        display.push_back( x );
-      }
-      else if ( strcmp( filter->c_str(), "new") == 0 )  {
-        if ( x.newMessages() > 0 ) {
-          display.push_back( x );
-        }
-      }
-      else {
-        std::string  path = x.path();
-        if ( path.find( *filter, 0 ) !=std::string::npos ) {
-            display.push_back( x );
-        }
-      }
+	if (strcmp(filter->c_str(), "all") == 0) {
+	    display.push_back(x);
+	} else if (strcmp(filter->c_str(), "new") == 0) {
+	    if (x.newMessages() > 0) {
+		display.push_back(x);
+	    }
+	} else {
+	    std::string path = x.path();
+	    if (path.find(*filter, 0) != std::string::npos) {
+		display.push_back(x);
+	    }
+	}
     }
 
-  return( display );
+    return (display);
 }
 
+/**
+ * My sort function: sort CMessages by most recent to oldest.
+ */
+bool my_sort(CMessage a, CMessage b)
+{
+  /**
+   * Stat both files.
+   */
+    struct stat us;
+    struct stat them;
+
+    std::string us_path = a.path();
+    std::string them_path = b.path();
+
+    if (stat(us_path.c_str(), &us) < 0)
+	return 0;
+
+    if (stat(them_path.c_str(), &them) < 0)
+	return 0;
+
+    return (us.st_mtime < them.st_mtime);
+
+}
+
+/**
+ * Get all messages from the currently selected folders.
+ */
+std::vector < CMessage > CGlobal::get_messages()
+{
+  /**
+   * Get the selected maildirs.
+   */
+    CGlobal *global = CGlobal::Instance();
+    std::vector < std::string > folders = global->get_selected_folders();
+
+  /**
+   * The sum of all messages we're going to display.
+   */
+    std::vector < CMessage > messages;
+
+  /**
+   * For each selected maildir read the messages.
+   */
+    std::vector < std::string >::iterator it;
+    for (it = folders.begin(); it != folders.end(); ++it) {
+
+    /**
+     * get the messages from this folder.
+     */
+	CMaildir tmp = CMaildir(*it);
+	std::vector < CMessage > contents = tmp.getMessages();
+
+    /**
+     * Append to the list of messages combined.
+     */
+	std::vector < CMessage >::iterator mit;
+	for (mit = contents.begin(); mit != contents.end(); ++mit) {
+	    messages.push_back(*mit);
+	}
+    }
+
+    /*
+     * Sort?
+     */
+    std::sort(messages.begin(), messages.end(), my_sort);
+
+    return (messages);
+
+}
 
 /**
  * Remove all selected folders.
  */
 void CGlobal::unset_folders()
 {
-  m_selected_folders.clear();
+    m_selected_folders.clear();
 }
-
 
 /**
  * Add a folder to the selected set.
  */
-void CGlobal::add_folder( std::string path )
+void CGlobal::add_folder(std::string path)
 {
-  m_selected_folders.push_back( path );
+    m_selected_folders.push_back(path);
 }
 
-void CGlobal::remove_folder( std::string path )
+/**
+ * Remove a folder from the selected set.
+ */
+bool CGlobal::remove_folder(std::string path)
 {
-  std::vector<std::string>::iterator it;
+    std::vector < std::string >::iterator it;
 
-  it = std::find( m_selected_folders.begin(),
-                  m_selected_folders.end(),
-                  path );
+  /**
+   * Find the folder.
+   */
+    it = std::find(m_selected_folders.begin(), m_selected_folders.end(), path);
 
-  if ( it != m_selected_folders.end() )
-    {
-      m_selected_folders.erase( it );
+  /**
+   * If we found it reemove it.
+   */
+    if (it != m_selected_folders.end()) {
+	m_selected_folders.erase(it);
+	return true;
     }
 
+  /**
+   * Failed to find it.
+   */
+    return false;
+
 }
+
