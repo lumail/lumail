@@ -104,6 +104,9 @@ int main(int argc, char *argv[])
 
       if ( CMaildir::isDirectory( folder ) )
         {
+          /**
+           * This should be simplifiable.
+           */
           lua->execute( "global_mode( \"index\" );" );
           lua->execute( "maildir_limit( \"all\" );" );
           lua->execute( "clear_selected_folders();");
