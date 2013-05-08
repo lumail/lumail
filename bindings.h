@@ -36,6 +36,9 @@ int global_mode(lua_State * L);
 /* limit the display of folders. */
 int maildir_limit(lua_State * L);
 
+/* limit the display of messages. */
+int index_limit(lua_State * L);
+
 /* get/set the global maildir-prefix */
 int maildir_prefix(lua_State * L);
 

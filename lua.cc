@@ -118,9 +118,10 @@ CLua::CLua()
     lua_register(m_lua, "set_selected_folder", set_selected_folder);
 
     /**
-     * Get/Set the maildir-limit.
+     * Get/Set the maildir-limit & index-limit.
      */
     lua_register(m_lua, "maildir_limit", maildir_limit);
+    lua_register(m_lua, "index_limit", index_limit);
 
     /**
      * Compose a new mail.

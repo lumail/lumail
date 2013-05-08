@@ -112,6 +112,30 @@ int maildir_limit(lua_State * L)
     return 1;
 }
 
+
+/**
+ * limit the display of messages.
+ */
+int index_limit(lua_State * L)
+{
+    CGlobal *g = CGlobal::Instance();
+
+    /**
+     * get the argument, and if we have one set it.
+     */
+    const char *str = lua_tostring(L, -1);
+    if (str != NULL)
+	g->set_index_limit(new std::string(str));
+
+    /**
+     * Return the current/updated value.
+     */
+    std::string * s = g->get_index_limit();
+    lua_pushstring(L, s->c_str());
+    return 1;
+}
+
+
 /**
  * Clear the screen.
  */
