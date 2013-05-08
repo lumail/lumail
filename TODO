@@ -3,10 +3,6 @@
    we display.  (Max== screen height).
     We should create persistant objects, or use a cache.
 
-3.  Unread folders should be red.
-
-4.  Unread messages should be red.
-
 5.  We need a simple "read message" routine.  We're using the MIME-parser
    now so we should find that simple to extract the body.  (Be evil and only
    expose the text/plain version of multi-part messages ;)
