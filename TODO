@@ -1,6 +1,4 @@
 
-1.  The ":" input-reading function should have history.
-
 2.  Scrolling in large maildirs is slow because we re-read each message
    we display.  (Max== screen height).
     We should create persistant objects, or use a cache.
