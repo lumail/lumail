@@ -9,6 +9,18 @@
 --
 maildir_prefix( os.getenv( "HOME" ) .. "/Maildir" );
 
+
+--
+-- Set the from address for yourself, which will be used for
+-- composing/replying when they are implemented.
+--
+-- This can be changed in the `on_select_folder()` function, as
+-- shown later.
+--
+default_email = "Steve Kemp <steve@steve.org.uk>";
+from( default_email );
+
+
 --
 -- Show all folders by default
 --
@@ -61,14 +73,18 @@ end
 --
 -- Remember: More than one folder might be selected.
 --
-function on_select_folder( f )
+function on_select_folder( folder )
 
    --
-   -- This is test-code.
+   -- Change the email address we use depending on our folder.
    --
-   -- ff = io.open( "/tmp/log.lua", "a");
-   -- ff:write( "Opened " .. f .. "\n" );
-   -- ff:close();
+   if ( string.find( folder, "debian-administration", 1, true )  ) then
+      from ("Steve <steve@debian-administration.org>");
+   elseif ( string.find( folder, "debian" , 1, true )  ) then
+      from("Steve <skx@debian.org>");
+   else
+      from( default_email );
+   end
 
 end
 

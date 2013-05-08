@@ -116,6 +116,13 @@ class CGlobal
     m_cur_message = offset;
   }
 
+  /**
+   * Get/Set the from address.
+   */
+  std::string * get_default_from();
+  void set_default_from( std::string *address);
+
+
  protected:
 
   /**
@@ -166,6 +173,11 @@ class CGlobal
    * The index-format string.
    */
   std::string * m_index_format;
+
+  /**
+   * The from-address of the user.
+   */
+  std::string * m_from_address;
 
 };
 

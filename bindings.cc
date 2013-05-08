@@ -528,3 +528,18 @@ int compose(lua_State * L)
     return 0;
 }
 
+/**
+ * Set the default from address.
+ */
+int from(lua_State * L)
+{
+    const char *str = lua_tostring(L, -1);
+    CGlobal *g = CGlobal::Instance();
+
+    if (str != NULL)
+	g->set_default_from(new std::string(str));
+
+    std::string * s = g->get_default_from();
+    lua_pushstring(L, s->c_str());
+    return 1;
+}

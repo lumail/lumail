@@ -130,6 +130,11 @@ CLua::CLua()
      * Exit, cleaning up the screen and running our at-exit-hook.
      */
     lua_register(m_lua, "exit", exit);
+
+    /**
+     * Set the From: address for the user.
+     */
+    lua_register(m_lua, "from", from);
 }
 
 /**

@@ -54,6 +54,12 @@ CGlobal::CGlobal()
     m_mode = new std::string("maildir");
     m_maildir_limit = new std::string("all");
     m_index_format = new std::string( "[$FLAGS] $FROM - $SUBJECT" );
+
+    std::string user = "UNKNOWN";
+    if ( getenv( "USER" ) )
+      user = getenv( "USER" );
+
+    m_from_address = new std::string( user + "@localhost" );
     m_maildir_prefix = NULL;
     m_cur_folder = 0;
     m_cur_message = 0;
@@ -309,3 +315,21 @@ bool CGlobal::remove_folder(std::string path)
 
 }
 
+/**
+ * Get the from address.
+ */
+std::string * CGlobal::get_default_from()
+{
+  return( m_from_address );
+}
+
+/**
+ * Set the from-address.
+ */
+void CGlobal::set_default_from( std::string *address)
+{
+    if (m_from_address)
+	delete(m_from_address);
+
+    m_from_address = address;
+}
