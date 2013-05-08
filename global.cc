@@ -51,18 +51,19 @@ CGlobal::CGlobal()
   /**
    * Defaults.
    */
-    m_mode = new std::string("maildir");
+    m_mode          = new std::string("maildir");
     m_maildir_limit = new std::string("all");
-    m_index_format = new std::string( "[$FLAGS] $FROM - $SUBJECT" );
+    m_index_limit   = new std::string("all");
+    m_index_format  = new std::string( "[$FLAGS] $FROM - $SUBJECT" );
 
     std::string user = "UNKNOWN";
     if ( getenv( "USER" ) )
       user = getenv( "USER" );
 
-    m_from_address = new std::string( user + "@localhost" );
+    m_from_address   = new std::string( user + "@localhost" );
     m_maildir_prefix = NULL;
-    m_cur_folder = 0;
-    m_cur_message = 0;
+    m_cur_folder     = 0;
+    m_cur_message    = 0;
 }
 
 /**
@@ -101,6 +102,26 @@ void CGlobal::set_maildir_limit(std::string * limit)
 std::string * CGlobal::get_maildir_limit()
 {
     return (m_maildir_limit);
+}
+
+
+/**
+ * Set the index-limit.
+ */
+void CGlobal::set_index_limit( std::string *limit)
+{
+    if (m_index_limit)
+	delete(m_index_limit);
+
+    m_index_limit = limit;
+}
+
+/**
+ * Get the index-limit.
+ */
+std::string *CGlobal::get_index_limit()
+{
+  return( m_index_limit );
 }
 
 /**

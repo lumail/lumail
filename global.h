@@ -97,6 +97,12 @@ class CGlobal
   void set_maildir_limit(std::string * limit);
 
   /**
+   * Get/Set the index-limit: new/all/pattern.
+   */
+  std::string * get_index_limit();
+  void set_index_limit(std::string * limit);
+
+  /**
    * Get/set the selected folder, i.e. the one with the highlight.
    */
   int get_selected_folder() {
@@ -173,6 +179,11 @@ class CGlobal
    * The index-format string.
    */
   std::string * m_index_format;
+
+  /**
+   * The index-limit string.
+   */
+  std::string * m_index_limit;
 
   /**
    * The from-address of the user.
