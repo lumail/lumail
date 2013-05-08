@@ -18,6 +18,9 @@
 
 7.  We should have a compose mode.  Use our MIME-parser to add attachments,
    and pipe to /usr/bin/sendmail - use "sendmail()" to set the path/args.
+    NOTE: "compose()" primitive works, but just invokes vim on a temporary
+   file, then deletes it.
+
 
 8.  Reformat the code and use consistent function-names.  This is unfortunate:
        get_foo_bar().
