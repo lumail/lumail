@@ -78,16 +78,6 @@ void CScreen::drawMaildir()
     std::string *prefix = global->get_maildir_prefix();
     std::vector < CMaildir > display = global->get_folders();
 
-    /**
-     * Ensure the prefix exists.
-     */
-    if ( !CMaildir::isDirectory( *prefix ) )
-      {
-        move(2,2);
-        printw("The maildir prefix you've set (%s) is not a Maildir", prefix->c_str() );
-        return;
-      }
-
   /**
    * The number of items we've found, vs. the size of the screen.
    */
