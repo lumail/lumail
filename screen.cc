@@ -239,8 +239,61 @@ void CScreen::drawIndex()
  */
 void CScreen::drawMessage()
 {
-    move(3, 3);
-    printw("Drawing MESSAGE here ..");
+  /**
+   * Get all messages from the currently selected maildirs.
+   */
+  CGlobal *global = CGlobal::Instance();
+  std::vector < CMessage > messages = global->get_messages();
+
+  /**
+   * The number of items we've found, vs. the size of the screen.
+   */
+  int count = messages.size();
+  int selected = global->get_selected_message();
+
+  /**
+   * Screen width, used to truncate long strings.
+   */
+  int width = CScreen::width();
+
+  /**
+   * Bound the selection.
+   */
+  if (selected >= count) {
+    global->set_selected_message(0);
+    selected = 0;
+  }
+
+  CMessage *cur = NULL;
+  if ((selected) < count)
+    cur = &messages[ selected];
+  else
+    {
+      clear();
+      move(3,3);
+      printw("No selected message?!");
+      return;
+    }
+
+  /**
+   * Now we have a message - display it.
+   *
+   * TODO: Do this properly.
+   */
+  move(0,2);
+  printw("From: %s", cur->from().substr(0, width - 12 ).c_str() );
+  move(1,2);
+  printw("Subject: %s", cur->subject().substr(0, width-12).c_str() );
+  move(2,2);
+  printw("Date: %s", cur->date().substr(0, width-12).c_str() );
+  move(3,2);
+  printw("To: %s", cur->to().substr(0, width-12).c_str());
+
+  move(10,2);
+  printw("Should display message here");
+
+
+
 }
 
 /**
@@ -307,4 +360,79 @@ void CScreen::clearStatus()
     for (int i = 0; i < CScreen::width(); i++)
 	printw(" ");
 
+}
+
+
+/* Read up to buflen-1 characters into `buffer`.
+ * A terminating '\0' character is added after the input.  */
+void CScreen::readline(char *buffer, int buflen)
+{
+  int old_curs = curs_set(1);
+  int pos = 0;
+  int len = 0;
+  int x, y;
+  static char *prev = NULL;
+
+  getyx(stdscr, y, x);
+  for (;;) {
+    int c;
+
+    buffer[len] = ' ';
+    mvaddnstr(y, x, buffer, len+1);
+    for( int padding = len; padding < CScreen::width(); padding++ )
+      {printw(" ");}
+
+    move(y, x+pos);
+    c = getch();
+
+    if (c == KEY_ENTER || c == '\n' || c == '\r') {
+      break;
+    } else if (isprint(c)) {
+      if (pos < buflen-1) {
+        memmove(buffer+pos+1, buffer+pos, len-pos);
+        buffer[pos++] = c;
+        len += 1;
+      } else {
+        beep();
+      }
+    } else if (c == KEY_LEFT) {
+      if (pos > 0) pos -= 1; else beep();
+    } else if ( c == KEY_UP ) {
+      if ( prev != NULL )
+        {
+          strcpy( buffer, prev );
+          pos = len = strlen(buffer);
+        }
+      else {
+        beep();
+      }
+
+    }
+    else if (c == KEY_RIGHT) {
+      if (pos < len) pos += 1; else beep();
+    } else if (c == KEY_BACKSPACE) {
+      if (pos > 0) {
+        memmove(buffer+pos-1, buffer+pos, len-pos);
+        pos -= 1;
+        len -= 1;
+      } else {
+        beep();
+      }
+    } else if (c == KEY_DC) {
+      if (pos < len) {
+        memmove(buffer+pos, buffer+pos+1, len-pos-1);
+        len -= 1;
+      } else {
+        beep();
+      }
+    } else {
+      beep();
+    }
+  }
+  buffer[len] = '\0';
+  if (old_curs != ERR) curs_set(old_curs);
+
+  if ( prev != NULL )
+    free( prev );
+  prev = strdup( buffer);
 }

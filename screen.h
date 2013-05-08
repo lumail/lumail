@@ -25,52 +25,58 @@
 /**
  * Class contains only static methods relating to the screen dimensions.
  */
-class CScreen {
+class CScreen
+{
 
  public:
 
   /**
    * Constructor.  NOP.
    */
-    CScreen();
+  CScreen();
 
   /**
    * Destructor.  NOP.
    */
-    ~CScreen();
+  ~CScreen();
 
   /**
    * Draw/Refresh the display.
    */
-    void refresh_display();
+  void refresh_display();
 
   /**
    * Setup the screen.
    */
-    void Init();
+  void Init();
 
   /**
    * Return the width of the screen.
    */
-    static int width();
+  static int width();
 
   /**
    * Return the height of the screen.
    */
-    static int height();
+  static int height();
 
   /**
    * Clear the status-line of the screen.
    */
-    static void clearStatus();
+  static void clearStatus();
+
+  /**
+   * Read a line of input.
+   */
+  static void readline( char *buffer, int buflen );
 
  private:
   /**
    * Per-mode drawing primitives.
    */
-    void drawMaildir();
-    void drawIndex();
-    void drawMessage();
+  void drawMaildir();
+  void drawIndex();
+  void drawMessage();
 
 };
 
