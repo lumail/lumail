@@ -95,6 +95,18 @@ std::string CMessage::flags()
 
 
 /**
+ * Is this message new?
+ */
+bool CMessage::is_new()
+{
+  std::string f = flags();
+  if ( f.find( 'N' ) != std::string::npos )
+    return true;
+  else
+    return false;
+}
+
+/**
  * Format the message for display in the header - via the lua format string.
  */
 std::string CMessage::format()

@@ -67,6 +67,10 @@ class CMessage
    */
   std::string flags();
 
+  /**
+   * Is this message new?
+   */
+  bool is_new();
 
   /**
    * Get the sender of the message.
