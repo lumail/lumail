@@ -5,3 +5,4 @@ TODO.local
 core
 test/str
 test/body
+test/readline
