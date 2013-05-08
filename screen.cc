@@ -75,7 +75,6 @@ void CScreen::drawMaildir()
    * Get all known folders + the current display mode
    */
     CGlobal *global = CGlobal::Instance();
-    std::string *prefix = global->get_maildir_prefix();
     std::vector < CMaildir > display = global->get_folders();
 
   /**
