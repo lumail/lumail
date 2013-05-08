@@ -1,4 +1,7 @@
-ALL: body readline str
+ALL: array-to-lua body readline str
+
+array-to-lua: array-to-lua.cc
+	g++ -o array-to-lua array-to-lua.cc $(shell pkg-config --cflags --libs lua5.1)
 
 body: body.cc Makefile
 	g++ -o body body.cc -lmimetic
@@ -10,4 +13,4 @@ str: str.cc Makefile
 	g++ -o str str.cc
 
 clean:
-	rm -f body str readline || true
+	rm -f array-to-lua body str readline || true
