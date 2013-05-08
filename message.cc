@@ -38,6 +38,7 @@ using namespace mimetic;
 CMessage::CMessage(std::string filename)
 {
     m_path = filename;
+    m_me   = NULL;
 }
 
 
@@ -46,11 +47,13 @@ CMessage::CMessage(std::string filename)
  */
 CMessage::~CMessage()
 {
+  if ( m_me != NULL )
+    delete( m_me );
 }
 
 
 /**
- * Get the path to the message.
+ * Get the path to the message on-disk.
  */
 std::string CMessage::path()
 {
@@ -81,6 +84,12 @@ std::string CMessage::flags()
     if ( m_path.find( "/new/" ) != std::string::npos )
       flags += "N";
 
+    /**
+     * Pad.
+     */
+    while( (int)strlen(flags.c_str()) < 4 )
+      flags += " ";
+
     return flags;
 }
 
@@ -91,23 +100,11 @@ std::string CMessage::flags()
 std::string CMessage::format()
 {
   /**
-   * Read the message.
-   */
-  ifstream file(path().c_str());
-  MimeEntity me(file);
-
-  /**
-   * Get the header.
-   */
-  Header & h = me.header();
-
-  /**
    * Get the format-string we'll expand.
    */
   CGlobal *global = CGlobal::Instance();
   std::string *fmt = global->get_index_format();
   std::string result = std::string(*fmt);
-
 
   /**
    * The variables we know about.
@@ -126,35 +123,29 @@ std::string CMessage::format()
     if ( ( offset != std::string::npos ) && ( offset < result.size() ) ) {
 
       /**
-       * The bit before the variable, the bit after, and the body we'll replace
-       * the key with.
+       * The bit before the variable, the bit after, and the body we'll replace it with.
        */
       std::string before = result.substr(0,offset-1);
       std::string body = "";
       std::string after  = result.substr(offset+strlen(std_name[i]));
 
       /**
-       * Stub-bodies for the variables.
+       * Expand the specific variables.
        */
       if ( strcmp(std_name[i] , "TO" ) == 0 ) {
-        body = h.to().str();
+        body = to();
       }
       if ( strcmp(std_name[i] , "DATE" ) == 0 ) {
-        if (h.hasField("date"))
-          body = h.field("date").value();
+        body = date();
       }
       if ( strcmp(std_name[i] , "FROM" ) == 0 ) {
-        body += h.from().str();
+        body += from();
       }
       if ( strcmp(std_name[i] , "FLAGS" ) == 0 ) {
-        std::string flg = flags();
-        while( (int)strlen(flg.c_str()) < 3 )
-          flg = std::string(" ") + flg;
-
-        body = flg;
+        body = flags();
       }
       if ( strcmp(std_name[i] , "SUBJECT" ) == 0 ) {
-        body = h.subject();
+        body = subject();
       }
 
       result = before + body + after;
@@ -162,6 +153,68 @@ std::string CMessage::format()
   }
 
 
-
   return( result );
 }
+
+
+/**
+ * Get the sender of the message.
+ */
+std::string CMessage::from()
+{
+  if ( m_me == NULL ) {
+    ifstream file(path().c_str());
+    m_me = new MimeEntity(file);
+  }
+  Header & h = m_me->header();
+  return(h.from().str() );
+}
+
+
+/**
+ * Get the date of the message.
+ *
+ * TODO: If date is empty stat() the filename.
+ */
+std::string CMessage::date()
+{
+  if ( m_me == NULL ) {
+    ifstream file(path().c_str());
+    m_me = new MimeEntity(file);
+  }
+  Header & h = m_me->header();
+  if (h.hasField("date"))
+    return(h.field("date").value());
+  else
+    return "No date";
+}
+
+
+/**
+ * Get the recipient of the message.
+ */
+std::string CMessage::to()
+{
+  if ( m_me == NULL ) {
+    ifstream file(path().c_str());
+    m_me = new MimeEntity(file);
+  }
+  Header & h = m_me->header();
+  return(h.to().str() );
+}
+
+
+/**
+ * Get the subject of the message.
+ */
+std::string CMessage::subject()
+{
+  if ( m_me == NULL ) {
+    ifstream file(path().c_str());
+    m_me = new MimeEntity(file);
+  }
+  Header & h = m_me->header();
+  return(h.subject());
+}
+
+

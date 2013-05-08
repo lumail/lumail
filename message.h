@@ -19,10 +19,20 @@
 #ifndef _message_h
 #define _message_h 1
 
+
 #include <string>
+#include <stdint.h>
+#include <mimetic/mimetic.h>
+
 
 /**
- * A single message.
+ * A class for working with a single message.
+ *
+ * The constructor will be passed a reference to a filename, which is assumed to be file
+ * beneath a Maildir folder.
+ *
+ * Using the mimetic library we'll parse the message and make verious fields available.
+ *
  */
 class CMessage
 {
@@ -33,13 +43,15 @@ class CMessage
    */
   CMessage(std::string filename);
 
+
   /**
    * Destructor.
    */
   ~CMessage();
 
+
   /**
-   * Get the path.
+   * Get the path to the message, on-disk.
    */
   std::string path();
 
@@ -49,10 +61,35 @@ class CMessage
    */
   std::string format();
 
+
   /**
    * Get the flags for this message.
    */
   std::string flags();
+
+
+  /**
+   * Get the sender of the message.
+   */
+  std::string from();
+
+
+  /**
+   * Get the date of the message.
+   */
+  std::string date();
+
+
+  /**
+   * Get the recipient of the message.
+   */
+  std::string to();
+
+
+  /**
+   * Get the subject of the message.
+   */
+  std::string subject();
 
  private:
 
@@ -61,6 +98,10 @@ class CMessage
    */
   std::string m_path;
 
+  /**
+   * MIME Entity object for this message.
+   */
+  mimetic::MimeEntity *m_me;
 };
 
 #endif				/* _message_h */
