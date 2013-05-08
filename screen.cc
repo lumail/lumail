@@ -108,14 +108,17 @@ void CScreen::drawMaildir()
      * What we'll output for this row.
      */
 	char buf[250] = { '\0' };
+        int unread = 0;
+
 
     /**
      * The current object.
      */
 	CMaildir *cur = NULL;
-	if ((row + selected) < count)
+	if ((row + selected) < count) {
 	    cur = &display[row + selected];
-
+            unread = cur->newMessages();
+        }
 	std::string found = "[ ]";
 	if (cur != NULL) {
 	    if (std::find(sfolders.begin(), sfolders.end(), cur->path()) !=
@@ -127,7 +130,7 @@ void CScreen::drawMaildir()
      * First row is the current one.
      */
 	if (row == 0)
-	    attron(A_REVERSE);
+          attron(A_STANDOUT);
 
 	std::string path = "";
 
@@ -139,13 +142,22 @@ void CScreen::drawMaildir()
 	    strcat(buf, " ");
 
 	move(row, 2);
+
+        if ( unread ) {
+          if ( row == 0 )
+            attrset( COLOR_PAIR(1) |A_REVERSE );
+          else
+            attrset( COLOR_PAIR(1) );
+        }
 	printw("%s", buf);
+
+        attrset( COLOR_PAIR(2) );
 
     /**
      * Remove the inverse.
      */
 	if (row == 0)
-	    attroff(A_REVERSE);
+	    attroff(A_STANDOUT);
     }
 }
 
@@ -202,8 +214,23 @@ void CScreen::drawIndex()
 	if ((row + selected) < count)
 	    cur = &messages[row + selected];
 
-	if (row == 0)
-	    attron(A_REVERSE);
+        bool unread = false;
+        if ( cur != NULL ) {
+          std::string flags = cur->flags();
+          if ( flags.find( "N" ) != std::string::npos )
+            unread = true;
+        }
+
+	if ( unread ) {
+          if (row == 0)
+	    attrset(COLOR_PAIR(1)|A_REVERSE);
+          else
+	    attrset(COLOR_PAIR(1));
+        }
+        else {
+          if (row == 0)
+	    attrset(A_REVERSE);
+        }
 
 	std::string path = "";
 
@@ -224,6 +251,8 @@ void CScreen::drawIndex()
 
 	move(row, 2);
 	printw("%s", buf);
+
+        attrset( COLOR_PAIR(2) );
 
     /**
      * Remove the inverse.
