@@ -74,6 +74,7 @@ int from(lua_State * L);
 /**
  * folder selection code.
  */
+int selected_folders(lua_State * L);
 int clear_selected_folders(lua_State * L);
 int add_selected_folder(lua_State * L);
 int toggle_selected_folder(lua_State * L);

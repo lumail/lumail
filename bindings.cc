@@ -247,8 +247,9 @@ int scroll_maildir_up(lua_State * L)
     return (0);
 }
 
+
 /**
- * scroll up/down themessage list.
+ * scroll up/down the message list.
  */
 int scroll_index_down(lua_State * L)
 {
@@ -263,6 +264,7 @@ int scroll_index_down(lua_State * L)
 
     return 0;
 }
+
 
 /**
  * Scroll the index list up.
@@ -281,6 +283,7 @@ int scroll_index_up(lua_State * L)
     global->set_selected_message(cur);
     return (0);
 }
+
 
 /**
  * scroll to the folder matching the pattern.
@@ -319,6 +322,7 @@ int scroll_maildir_to(lua_State * L)
     return 0;
 }
 
+
 /**
  * Get the currently highlighted maildir folder.
  */
@@ -335,6 +339,7 @@ int current_maildir(lua_State * L)
     lua_pushstring(L, x.path().c_str());
     return 1;
 }
+
 
 /**
  * Search for the next message matching the pattern.
@@ -374,8 +379,35 @@ int scroll_index_to(lua_State * L)
     return 0;
 }
 
+
 /**
- * folder selection code.
+ * Get the currently selected folders.
+ */
+int selected_folders(lua_State * L)
+{
+  CGlobal *global = CGlobal::Instance();
+  std::vector<std::string> selected = global->get_selected_folders();
+  std::vector<std::string>::iterator it;
+
+  /**
+   * Create the table.
+   */
+  lua_newtable(L);
+
+  int i = 1;
+  for (it = selected.begin(); it != selected.end(); ++it) {
+    lua_pushnumber(L,i);
+    lua_pushstring(L,(*it).c_str());
+    lua_settable(L,-3);
+    i++;
+  }
+
+  return 1;
+}
+
+
+/**
+ * Clear all currently selected folders.
  */
 int clear_selected_folders(lua_State * L)
 {
@@ -385,6 +417,10 @@ int clear_selected_folders(lua_State * L)
     return 0;
 }
 
+
+/**
+ * Add the given folder to the selected set.
+ */
 int add_selected_folder(lua_State * L)
 {
   /**
@@ -414,8 +450,9 @@ int add_selected_folder(lua_State * L)
     return (0);
 }
 
+
 /**
- * Remove all entries.  Add single new one.
+ * Remove all currently selected folders.  Add single new one.
  */
 int set_selected_folder(lua_State * L)
 {
@@ -448,8 +485,9 @@ int set_selected_folder(lua_State * L)
     return (0);
 }
 
+
 /**
- * Toggle the current item.
+ * Toggle the selection state of the currently selected folder.
  */
 int toggle_selected_folder(lua_State * L)
 {

@@ -7,14 +7,10 @@
    now so we should find that simple to extract the body.  (Be evil and only
    expose the text/plain version of multi-part messages ;)
 
-6.  Lua doesn't have access to the list of currently-selected folders,
-   just the ability to clear them and add new ones.  Fix this.
-
 7.  We should have a compose mode.  Use our MIME-parser to add attachments,
    and pipe to /usr/bin/sendmail - use "sendmail()" to set the path/args.
     NOTE: "compose()" primitive works, but just invokes vim on a temporary
    file, then deletes it.
-
 
 8.  Reformat the code and use consistent function-names.  This is unfortunate:
        get_foo_bar().

@@ -111,6 +111,7 @@ CLua::CLua()
     /**
      * Folder selections.
      */
+    lua_register(m_lua, "selected_folders", selected_folders);
     lua_register(m_lua, "clear_selected_folders", clear_selected_folders);
     lua_register(m_lua, "add_selected_folder", add_selected_folder);
     lua_register(m_lua, "toggle_selected_folder", toggle_selected_folder);

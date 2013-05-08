@@ -410,3 +410,28 @@ keymap['maildir']['\n'] = 'open_folder()'
 --
 keymap['message']['j'] = 'message_down()'
 keymap['message']['k'] = 'message_up()'
+
+
+-----
+-----
+---
+--  Here be dragons.
+---
+-----
+-----
+
+--
+-- Debug Code ; test getting the selected folders works.
+--
+function debugy()
+   sels = selected_folders();
+
+   ff = io.open( "/tmp/log.lua", "a");
+
+   for i,v in ipairs( sels ) do
+      ff:write( "Value " .. i .. " is " .. v .. "\n" );
+   end
+   ff:close();
+end
+
+keymap['maildir']['D'] = 'debugy()';
