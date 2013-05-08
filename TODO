@@ -1,21 +1,30 @@
+Once this list is empty we'll move to using the github issues.
 
-2.  Scrolling in large maildirs is slow because we re-read each message
-   we display.  (Max== screen height).
-    We should create persistant objects, or use a cache.
 
-5.  We need a simple "read message" routine.  We're using the MIME-parser
-   now so we should find that simple to extract the body.  (Be evil and only
-   expose the text/plain version of multi-part messages ;)
 
-7.  We should have a compose mode.  Use our MIME-parser to add attachments,
-   and pipe to /usr/bin/sendmail - use "sendmail()" to set the path/args.
-    NOTE: "compose()" primitive works, but just invokes vim on a temporary
-   file, then deletes it.
 
-8.  Reformat the code and use consistent function-names.  This is unfortunate:
-       get_foo_bar().
-     vs.
-       setBar()
+Scrolling in large maildirs is slow because we re-read each message
+we display.  (Max== screen height).  We should create persistant objects, or use a cache.
 
-9. Double-check we're not leaking lua-stack objects.  Don't seem to be, and yet ..
+
+
+We need a simple "read message" routine.  We're using the MIME-parser
+now so we should find that simple to extract the body.  (Be evil and only
+expose the text/plain version of multi-part messages ;)
+
+NOTE: See test/body.cc
+
+
+
+We should have a compose mode.  Use our MIME-parser to add attachments,
+and pipe to /usr/bin/sendmail - use "sendmail()" to set the path/args.
+
+NOTE: "compose()" primitive works, but just invokes vim on a temporary file, then deletes it.
+
+
+
+Reformat the code and use consistent function-names. (get_foo_bar()  vs.  setBar()).
+
+
+Double-check we're not leaking lua-stack objects.  Don't seem to be, and yet ..
 
