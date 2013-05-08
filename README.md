@@ -11,7 +11,7 @@ states:
 * Interacting with lists of messages.
 * Interacting with a single message.
 
-This suits my email tastes, although I appreciate it perhaps isn't for everybody.
+This suits my email tastes, although perhaps isn't for everybody.
 
 Once launched you'll start in the "maildir" mode.  This consists of a scrollable list
 of folder-names.  You can page up/down with `j/k`, or search with `/`.
@@ -25,9 +25,9 @@ the folders selected state with "SPACE".  Once you've selected as many folders a
 wish you can press "I" to view the index-mode.
 
 Index-mode is naviated the same way as maildir-mode; use `j + k + /` to move around,
-and view the messages in the selected folder(s).
-
-TODO:  You cannot actually open a message yet.
+then press "SPACE"/"RETURN" to view an individual message.  Currently the display
+of messages is not complete - but the headers are visible and from the message
+view you may move to the next/previous message as expected.
 
 
 Code
@@ -63,7 +63,7 @@ sections:
 
 * [x] Code the display/manipulation of the Maildir folders.
 * [x] Code the display/manipulation of the message-indexes.
-* [ ] Code the display/manipulation of a single mail message.
+* [x] Code the display/manipulation of a single mail message.
 
 The first two items on this list are complete:
 
@@ -72,6 +72,10 @@ The first two items on this list are complete:
     * The messages may be scrolled.
 
 The missing step is the ability to read individual messages, reply to messages, etc.
+
+Currently there is the ability to view header-information of single messages, but
+the actual body-display is not yet coded.
+
 
 
 Screenshots
