@@ -4,8 +4,7 @@
 
 
 --
--- The single mandatory setting is the prefix for the
--- maildir hierarchy.
+-- This setting is used to specify the prefix for your maildir hierarchy.
 --
 maildir_prefix( os.getenv( "HOME" ) .. "/Maildir" );
 
@@ -14,8 +13,7 @@ maildir_prefix( os.getenv( "HOME" ) .. "/Maildir" );
 -- Set the from address for yourself, which will be used for
 -- composing/replying when they are implemented.
 --
--- This can be changed in the `on_select_folder()` function, as
--- shown later.
+-- This can be changed in the `on_select_folder()` function, as shown later.
 --
 default_email = "Steve Kemp <steve@steve.org.uk>";
 from( default_email );
@@ -31,7 +29,7 @@ from( default_email );
 --
 --    all  -> Show all maildir folders.
 --    new  -> Show all maildir folders which contain unread messages.
---   "str" -> Show all maildir folders which contain the substring "str" in their paths.
+--   "str" -> Show all maildir folders which match the substring "str".
 --
 -- See "all" , "new", and "livejournal" functions for example of use.
 --
@@ -42,7 +40,7 @@ maildir_limit( "all" );
 --
 -- The index format controls how messages are displayed inside folder lists.
 --
--- Valid options are sadly limited to:
+-- Valid options are currently limited to:
 --
 --   $DATE
 --   $FLAGS
@@ -50,9 +48,10 @@ maildir_limit( "all" );
 --   $SUBJECT
 --   $TO
 --
--- TODO: Make the date more selectable..
+-- TODO: Make the date more selectable: $MONTH, $YEAR, $DAY, etc.
 --
 index_format( "[$FLAGS] $FROM - $SUBJECT" );
+
 
 --
 -- This function is called when the client is launched.
@@ -159,6 +158,15 @@ end
 
 
 --
+-- Move to message-mode with the currently selected message.
+--
+function view_message()
+   global_mode( "message");
+   clear();
+end
+
+
+--
 -- When in maildir-mode show all folders.
 --
 function all_folders()
@@ -230,6 +238,8 @@ function search_next()
    else
       scroll_index_to( x );
    end
+
+   -- TODO we should be able to search within the body of a message too.
 end
 
 
@@ -281,9 +291,12 @@ end
 -- which is one of the advantages of a modal-client.
 --
 --
---  TODO: Should there be a global-keymap?  For example:
+--  TODO: Should there be a global-keymap?
 --
---   keymap['q'] = 'exit()';
+--   For example:
+--      keymap['q'] = 'exit()';
+--   or
+--      kemymap['global']['q'] = 'exit()';
 --
 keymap = {}
 keymap['index']   = {}
@@ -293,9 +306,19 @@ keymap['maildir'] = {}
 --
 -- globally exit
 --
-keymap['index']['q']   = "exit()"
-keymap['message']['q'] = "exit()"
-keymap['maildir']['q'] = "exit()"
+keymap['index']['Q']   = "exit()"
+keymap['message']['Q'] = "exit()"
+keymap['maildir']['Q'] = "exit()"
+
+--
+-- Quitting means different things in different modes.
+--
+--  If viewing a message quit means return to the index.
+keymap['message']['q'] = "index()"
+--  If viewing a folder quit means return to the maildir list.
+keymap['index']['q'] = "maildir()"
+-- If viewing a maildir list then q means nop.
+keymap['maildir']['q'] = "exit();"
 
 --
 -- Globally compose a new message.
@@ -368,6 +391,9 @@ keymap['index']['k'] = 'message_up()'
 keymap['index']['K'] = 'message_page_up()'
 keymap['index']['/'] = 'search_next()'
 
+keymap['index'][' '] = 'view_message()'
+keymap['index']['\n'] = 'view_message()'
+
 --
 -- Selection bindings.
 --
@@ -376,3 +402,11 @@ keymap['index']['/'] = 'search_next()'
 --
 keymap['maildir'][' '] = 'toggle_selected_folder()'
 keymap['maildir']['\n'] = 'open_folder()'
+
+
+
+--
+-- Message-scrolling.
+--
+keymap['message']['j'] = 'message_down()'
+keymap['message']['k'] = 'message_up()'
