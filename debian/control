@@ -1,0 +1,13 @@
+Source: lumail
+Section: mail
+Priority: optional
+Maintainer: Steve Kemp <steve@steve.org.uk>
+Build-Depends: debhelper (>> 7.0.0), libncurses5-dev, liblua5.1-0-dev, libmimetic-dev
+Standards-Version: 3.9.1
+Homepage: http://www.lumail.org/
+
+Package: lumail
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Modal text-based mail client.
+ This is the lumail modal-email client for console use.
