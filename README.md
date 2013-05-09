@@ -60,13 +60,13 @@ Current Status
 
 Because lumail is modal application the coding has been split into sections:
 
-* [x] Code the display/manipulation of the Maildir folders.
+* Code the display/manipulation of the Maildir folders.
     * This is complete.
     * You may scroll/search/limit the display of folders.
-* [x] Code the display/manipulation of the message-indexes.
+* Code the display/manipulation of the message-indexes.
     * This is functional.
     * You may scroll/search/limit the display of folders.  But such searches are slow.
-* [x] Code the display/manipulation of a single mail message.
+* Code the display/manipulation of a single mail message.
     * This is nearly-functional.
     * You may view the first screen-ful of a message.  If it is text/plain.
 
