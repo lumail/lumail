@@ -66,6 +66,12 @@ int main( int argc, char *argv[] )
       }
   }
 
+  if ( ! found )
+    {
+      std::cout << "Didn't find MIME-part.  Hoping for the best" << std::endl;
+      std::cout << me->body() << std::endl;
+    }
+
   /**
    * Cleanup.
    */
