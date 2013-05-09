@@ -406,6 +406,12 @@ keymap['index'][' '] = 'view_message()'
 keymap['index']['\n'] = 'view_message()'
 
 --
+-- View all/new messages only.
+--
+keymap['index']['a'] = 'index_limit("all")'
+keymap['index']['n'] = 'index_limit("new")'
+
+--
 -- Selection bindings.
 --
 --  "space" will toggle the current folder as selected.
