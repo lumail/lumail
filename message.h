@@ -73,6 +73,16 @@ class CMessage
   bool is_new();
 
   /**
+   * Mark a message as new.
+   */
+  bool mark_new();
+
+  /**
+   * Mark a message as read.
+   */
+  bool mark_read();
+
+  /**
    * Get the sender of the message.
    */
   std::string from();
