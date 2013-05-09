@@ -58,23 +58,24 @@ the supplied configuration file `lumail.lua`.
 Current Status
 --------------
 
-Because this mail-client is a modal application the coding has been split into
-sections:
+Because lumail is modal application the coding has been split into sections:
 
 * [x] Code the display/manipulation of the Maildir folders.
+    * This is complete.
+    * You may scroll/search/limit the display of folders.
 * [x] Code the display/manipulation of the message-indexes.
+    * This is functional.
+    * You may scroll/search/limit the display of folders.  But such searches are slow.
 * [x] Code the display/manipulation of a single mail message.
+    * This is nearly-functional.
+    * You may view the first screen-ful of a message.  If it is text/plain.
 
-The first two items on this list are complete:
+Missing functionality largely relates to using this client for real.
+The following features are missing:
 
-* You can launch the client and navigate/manipulate the Maildir folders.
-* Opening a folder, or series of folders, will show you the messages in it.
-    * The messages may be scrolled.
-
-The missing step is the ability to read individual messages, reply to messages, etc.
-
-Currently there is the ability to view header-information of single messages, but
-the actual body-display is not yet coded.
+* The ability to compose a new message.
+* The ability to reply to a message.
+* The ability to delete a message.
 
 
 
