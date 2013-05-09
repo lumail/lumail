@@ -1,5 +1,5 @@
 /**
- * bindings.h - Bindings for all fucntions callable from Lua.
+ * bindings.h - Bindings for all functions callable from Lua.
  *
  * This file is part of lumail: http://lumail.org/
  *
