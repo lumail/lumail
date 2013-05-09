@@ -5,7 +5,7 @@ To make 0.05:
 
 1. Wire up "is_unread()" "mark_read()" + "mark_new()" to lua.
 
-BUG:  If index-view is set to limit only new messages and we mark it is red then
+BUG:  If index-view is set to limit only new messages and we mark it is read then
 it will immediately disappear because it is no longer in the set of messages returned
 by get_messsages().
 Either a) add a special case, or b) add an explicit "write_folders()" function.
