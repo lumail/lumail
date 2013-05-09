@@ -71,6 +71,9 @@ int prompt(lua_State * L);
 /* clear the screen */
 int clear(lua_State * L);
 
+/* sleep */
+int sleep(lua_State *L );
+
 /* set the default from address */
 int from(lua_State * L);
 

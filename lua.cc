@@ -66,6 +66,7 @@ CLua::CLua()
      * Register our primitives.
      */
     lua_register(m_lua, "clear", clear);
+    lua_register(m_lua, "sleep", sleep);
     lua_register(m_lua, "msg", msg);
     lua_register(m_lua, "exec", exec);
     lua_register(m_lua, "prompt", prompt);

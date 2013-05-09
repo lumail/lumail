@@ -141,9 +141,36 @@ int index_limit(lua_State * L)
  */
 int clear(lua_State * L)
 {
-    erase();
-    return 0;
+  /**
+   * Clear all the screen - but not the prompt.
+   */
+  int width = CScreen::width();
+  int height = CScreen::height();
+
+  std::string blank = "";
+  while( (int)blank.length() < width )
+    blank += " ";
+
+  for(int i = 0; i < ( height - 1 ); i++ )
+    mvprintw( i, 0, "%s", blank.c_str() );
+
+  refresh();
+  return 0;
 }
+
+/**
+ * Sleep.
+ */
+int sleep(lua_State *L )
+{
+  int delay = lua_tointeger(L, -1);
+  if (delay < 0 )
+    return luaL_error(L, "positive integer expected for sleep(..)");
+
+  sleep( delay );
+  return 0;
+}
+
 
 /**
  * Exit the program.
