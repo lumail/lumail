@@ -24,6 +24,7 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <ncurses.h>
+#include "lua.h"
 #include "global.h"
 #include "message.h"
 #include "screen.h"
@@ -60,9 +61,10 @@ void CScreen::refresh_display()
     else if (strcmp(s->c_str(), "message") == 0)
 	drawMessage();
     else {
-	clear();
-	move(3, 3);
-	printw("UNKNOWN MODE: '%s'", s->c_str());
+      CLua *lua = CLua::Instance();
+      lua->execute( "clear();" );
+      move(3, 3);
+      printw("UNKNOWN MODE: '%s'", s->c_str());
     }
 }
 
@@ -310,7 +312,9 @@ void CScreen::drawMessage()
    *
    * TODO: Do this properly.
    */
-  clear();
+  CLua *lua = CLua::Instance();
+  lua->execute( "clear();" );
+
   move(0,2);
   printw("From: %s", cur->from().substr(0, width - 12 ).c_str() );
   move(1,2);
