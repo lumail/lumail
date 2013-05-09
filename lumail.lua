@@ -211,13 +211,13 @@ function maildir_down()
    scroll_maildir_down( 1 );
 end
 function maildir_page_down()
-   scroll_maildir_down( 10 );
+   scroll_maildir_down( screen_height() - 2  );
 end
 function maildir_up()
    scroll_maildir_up(1);
 end
 function maildir_page_up()
-   scroll_maildir_up(10);
+   scroll_maildir_up( screen_height() -2 );
 end
 
 
@@ -229,13 +229,13 @@ function message_down()
    scroll_index_down( 1 );
 end
 function message_page_down()
-   scroll_index_down( 10 );
+   scroll_index_down( screen_height() - 2 );
 end
 function message_up()
    scroll_index_up(1);
 end
 function message_page_up()
-   scroll_index_up(10);
+   scroll_index_up( screen_height() - 2 );
 end
 
 
