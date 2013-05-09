@@ -133,6 +133,14 @@ CLua::CLua()
      */
     lua_register(m_lua, "exit", exit);
 
+
+    /**
+     * Get screen dimensions.
+     */
+    lua_register(m_lua, "screen_width", screen_width);
+    lua_register(m_lua, "screen_height", screen_height);
+
+
     /**
      * Set the From: address for the user.
      */

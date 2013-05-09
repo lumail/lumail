@@ -83,4 +83,10 @@ int add_selected_folder(lua_State * L);
 int toggle_selected_folder(lua_State * L);
 int set_selected_folder(lua_State * L);
 
+/**
+ * Accessors for the screen dimensions.
+ */
+int screen_width(lua_State * L);
+int screen_height(lua_State * L);
+
 #endif				/* _bindings_h */

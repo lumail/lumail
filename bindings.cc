@@ -607,3 +607,23 @@ int from(lua_State * L)
     lua_pushstring(L, s->c_str());
     return 1;
 }
+
+
+/**
+ * Get the screen width.
+ */
+int screen_width(lua_State * L)
+{
+  lua_pushinteger(L, CScreen::width() );
+  return 1;
+}
+
+
+/**
+ * Get the screen height.
+ */
+int screen_height(lua_State * L)
+{
+  lua_pushinteger(L, CScreen::height() );
+  return 1;
+}
