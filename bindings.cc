@@ -581,6 +581,8 @@ int compose(lua_State * L)
     cmd += filename;
     system(cmd.c_str());
 
+    unlink( filename );
+
     /**
      * Reset + redraw
      */
