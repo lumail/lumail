@@ -1,3 +1,10 @@
+lumail (0.04) stable; urgency=low
+
+  * New release now that message-reading wroks.
+    (Provided the message is short enough to fit on the screen!).
+
+ -- Steve Kemp <steve@steve.org.uk>  Thu, 09 May 2013 18:55:18 +0000
+
 lumail (0.03-1) stable; urgency=low
 
   * Initial Debian package.
