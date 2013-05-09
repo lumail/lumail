@@ -105,6 +105,12 @@ class CMessage
    */
   std::string subject();
 
+  /**
+   * Get the body of the message, as a vector of lines.
+   */
+  std::vector<std::string> body();
+
+
  private:
 
   /**

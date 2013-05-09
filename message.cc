@@ -318,3 +318,64 @@ std::string CMessage::subject()
 }
 
 
+/**
+ * Get the body of the message, as a vector of lines.
+ */
+std::vector<std::string> CMessage::body()
+{
+  std::vector<std::string> result;
+
+  /**
+   * Parse if we've not done so.
+   */
+  if ( m_me == NULL ) {
+    ifstream file(path().c_str());
+    m_me = new MimeEntity(file);
+  }
+
+  /**
+   * The body.
+   */
+  std::string body;
+
+  /**
+   * Iterate over every part.
+   */
+  mimetic::MimeEntityList& parts = m_me->body().parts();
+  mimetic::MimeEntityList::iterator mbit = parts.begin(), meit = parts.end();
+  for(; mbit != meit; ++mbit) {
+
+    /**
+     * Get the content-type.
+     */
+    std::string type = (*mbit)->header().contentType().str();
+
+    /**
+     * If we've found text/plain then we're good.
+     */
+    if ( type.find( "text/plain" ) != std::string::npos )
+      {
+        if ( body.empty() )
+          body =  (*mbit)->body();
+      }
+  }
+
+  /**
+   * If we failed to find a part of text/plain then just grab the whole damn
+   * thing and hope for the best.
+   */
+  if ( body.empty() )
+    body = m_me->body();
+
+
+  /**
+   * Split the body into an array, by newlines newlines.
+   */
+  std::stringstream stream(body);
+  std::string line;
+  while (std::getline(stream, line)) {
+    result.push_back( line );
+  }
+
+  return(result);
+}
