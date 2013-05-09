@@ -11,14 +11,6 @@ by get_messsages().
 Either a) add a special case, or b) add an explicit "write_folders()" function.
 
 
-2. We need a simple "read message" routine.  We're using the MIME-parser
-now so we should find that simple to extract the body.  (Be evil and only
-expose the text/plain version of multi-part messages ;)
-
-NOTE: See test/body.cc
-
-
-
 To make: 0.06:
 
 

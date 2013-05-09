@@ -16,6 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
+#include <algorithm>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -309,6 +310,7 @@ void CScreen::drawMessage()
    *
    * TODO: Do this properly.
    */
+  clear();
   move(0,2);
   printw("From: %s", cur->from().substr(0, width - 12 ).c_str() );
   move(1,2);
@@ -318,10 +320,21 @@ void CScreen::drawMessage()
   move(3,2);
   printw("To: %s", cur->to().substr(0, width-12).c_str());
 
-  move(10,2);
-  printw("Should display message here");
+  /**
+   * Now draw the body.
+   */
+  std::vector<std::string> body = cur->body();
 
+  /**
+   * How many lines to draw?
+   */
+  int max = std::min((int)body.size(), CScreen::height()-6);
 
+  for( int i = 0; i < max; i++ )
+    {
+      move( i + 5, 0 );
+      printw( "%s", body[i].c_str() );
+    }
 
 }
 
