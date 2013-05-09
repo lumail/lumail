@@ -36,6 +36,17 @@ from( default_email );
 maildir_limit( "all" );
 
 
+--
+-- When opening folders we'll show all messages.
+--
+-- Valid options are:
+--
+--        all  -> Show all message.
+--        new  -> Show all unread messages.
+--  TODO "str" -> Show all messages which match the substring "str".
+--
+index_limit( "all" );
+
 
 --
 -- The index format controls how messages are displayed inside folder lists.

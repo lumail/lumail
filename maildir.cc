@@ -22,6 +22,8 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/types.h>
+
+#include "global.h"
 #include "maildir.h"
 #include "message.h"
 
@@ -128,40 +130,54 @@ std::vector < std::string > CMaildir::getFolders(std::string path)
  */
 std::vector < CMessage > CMaildir::getMessages()
 {
-    std::vector < CMessage > result;
-    dirent *de;
-    DIR *dp;
+  /**
+   * See what filter we have available.
+   */
+  CGlobal *global = CGlobal::Instance();
+  std::string *filter = global->get_index_limit();
 
-    dp = opendir((m_path + "/cur").c_str());
-    if (dp) {
-	while (true) {
-	    de = readdir(dp);
-	    if (de == NULL)
-		break;
+  std::vector < CMessage > result;
+  dirent *de;
+  DIR *dp;
 
-	    if (!CMaildir::isDirectory
-		(std::string(m_path + "/cur/" + de->d_name)))
-		result.push_back(CMessage
-				 (std::string(m_path + "/cur/" + de->d_name)));
-	}
-	closedir(dp);
+  dp = opendir((m_path + "/cur").c_str());
+  if (dp) {
+    while (true) {
+      de = readdir(dp);
+      if (de == NULL)
+        break;
+
+      if (!CMaildir::isDirectory (std::string(m_path + "/cur/" + de->d_name)))
+        {
+          CMessage t = CMessage(std::string(m_path + "/cur/" + de->d_name));
+          if ( strcmp(filter->c_str(), "all" ) == 0 )
+            result.push_back(t);
+          if ( ( strcmp(filter->c_str(), "new") == 0 ) && t.is_new() )
+            result.push_back(t);
+        }
     }
+    closedir(dp);
+  }
 
-    dp = opendir((m_path + "/new").c_str());
-    if (dp) {
-	while (true) {
-	    de = readdir(dp);
-	    if (de == NULL)
-		break;
+  dp = opendir((m_path + "/new").c_str());
+  if (dp) {
+    while (true) {
+      de = readdir(dp);
+      if (de == NULL)
+        break;
 
-	    if (!CMaildir::isDirectory
-		(std::string(m_path + "/new/" + de->d_name)))
-		result.push_back(CMessage
-				 (std::string(m_path + "/new/" + de->d_name)));
-	}
-	closedir(dp);
+      if (!CMaildir::isDirectory (std::string(m_path + "/new/" + de->d_name)))
+      {
+          CMessage t = CMessage(std::string(m_path + "/new/" + de->d_name));
+          if ( strcmp(filter->c_str(), "all" ) == 0 )
+            result.push_back(t);
+          if ( ( strcmp(filter->c_str(), "new") == 0 ) && t.is_new() )
+            result.push_back(t);
+      }
     }
-    return result;
+    closedir(dp);
+  }
+  return result;
 }
 
 /**
