@@ -452,3 +452,15 @@ function debugy()
 end
 
 keymap['maildir']['D'] = 'debugy()';
+
+function sleepy()
+   clear()
+   sleep( 1 );
+   msg( "1/2: Cleared" )
+   clear();
+   sleep( 1 );
+   msg( "2/2: OK" );
+end
+keymap['index']['S'] = 'sleepy()';
+keymap['maildir']['S'] = 'sleepy()';
+keymap['message']['S'] = 'sleepy()';
