@@ -24,20 +24,14 @@ To open the single folder which is highlighted, press RETURN.  Otherwise you may
 the folders selected state with "SPACE".  Once you've selected as many folders as you
 wish you can press "I" to view the index-mode.
 
-Index-mode is naviated the same way as maildir-mode; use `j + k + /` to move around,
-then press "SPACE"/"RETURN" to view an individual message.  Currently the display
-of messages is not complete - but the headers are visible and from the message
-view you may move to the next/previous message as expected.
+Index-mode is navigated the same way as maildir-mode; use `j + k + /` to move around,
+then press "SPACE"/"RETURN" to view an individual message.
 
 
 Code
 ----
 
-The application is developed in C++, and is largely inspired by the proof of concept project
-I hacked together in a couple of days:
-
-* cmail
-    * https://github.com/skx/cmail/
+The application is developed in C++, and is largely inspired by [the proof of concept code](https://github.com/skx/cmail/) I hacked together in a couple of days.
 
 The dependencies are pretty straightforward:
 
@@ -45,11 +39,11 @@ The dependencies are pretty straightforward:
 * ncurses - The console-graphics library.
 * mimetic - The MIME-library.
 
-Upon a Debian GNU/Linux system you may install them via:
+Upon a Debian GNU/Linux system you may install them all via:
 
      # apt-get install libncurses-dev liblua5.1-0-dev lua5.1 libmimetic-dev
 
-Building the code should be as simple as cloning the repository and running "`make`".
+Building the code should be as simple as cloning this repository and running "`make`".
 
 From there it may be executed directly, although you might wish to make tweaks to
 the supplied configuration file `lumail.lua`.
@@ -71,12 +65,13 @@ Because lumail is modal application the coding has been split into sections:
     * You may view the first screen-ful of a message.  If it is text/plain.
 
 Missing functionality largely relates to using this client for real.
+
 The following features are missing:
 
 * The ability to compose a new message.
 * The ability to reply to a message.
 * The ability to delete a message.
-
+* The ability to mark a new message as read.
 
 
 Screenshots
