@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <fstream>
 #include <string.h>
+#include <cctype>
 #include <sys/ioctl.h>
 #include <ncurses.h>
 #include "lua.h"
@@ -283,10 +284,6 @@ void CScreen::drawMessage()
   int count = messages.size();
   int selected = global->get_selected_message();
 
-  /**
-   * Screen width, used to truncate long strings.
-   */
-  int width = CScreen::width();
 
   /**
    * Bound the selection.
@@ -315,14 +312,28 @@ void CScreen::drawMessage()
   CLua *lua = CLua::Instance();
   lua->execute( "clear();" );
 
-  move(0,2);
-  printw("From: %s", cur->from().substr(0, width - 12 ).c_str() );
-  move(1,2);
-  printw("Subject: %s", cur->subject().substr(0, width-12).c_str() );
-  move(2,2);
-  printw("Date: %s", cur->date().substr(0, width-12).c_str() );
-  move(3,2);
-  printw("To: %s", cur->to().substr(0, width-12).c_str());
+  /**
+   * The headers we'll print.
+   */
+  std::vector<std::string> headers;
+  headers.push_back( "$DATE" );
+  headers.push_back( "$FROM" );
+  headers.push_back( "$TO" );
+  headers.push_back( "$SUBJECT" );
+
+  std::vector<std::string>::iterator it;
+  int row = 0;
+  for (it = headers.begin(); it != headers.end(); ++it) {
+    move( row, 0 );
+
+    std::string name = (*it);
+    name = name.substr(1);
+    std::transform(name.begin(), name.end(), name.begin(), tolower);
+    name[0] = toupper(name[0]);
+
+    printw( "%s: %s", name.c_str(), cur->format( *it ).c_str() );
+    row += 1;
+  }
 
   /**
    * Now draw the body.
