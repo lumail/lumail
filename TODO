@@ -26,6 +26,14 @@ NOTE: "compose()" primitive works, but just invokes vim on a temporary file, the
 NOTE: Could use the ncurses forms library?
 
 
+To make: 0.07:
+
+Add text-completion stuff to the input routine.
+
+Read email addresses from ~/addressbook - or whatever pine/alpine/mutt use.
+Do this in lua?  So you could exec lbdb?
+
+
 
 Before we publish any debian packages
 -------------------------------------
