@@ -326,12 +326,21 @@ void CScreen::drawMessage()
   for (it = headers.begin(); it != headers.end(); ++it) {
     move( row, 0 );
 
+    /**
+     * The header-name, in useful format.
+     */
     std::string name = (*it);
     name = name.substr(1);
     std::transform(name.begin(), name.end(), name.begin(), tolower);
     name[0] = toupper(name[0]);
 
-    printw( "%s: %s", name.c_str(), cur->format( *it ).c_str() );
+    /**
+     * The header-value.
+     */
+    std::string value = cur->format( *it );
+    value = value.substr(0, (CScreen::width() - name.size() - 4 ) );
+
+    printw( "%s: %s", name.c_str(), value.c_str() );
     row += 1;
   }
 
