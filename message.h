@@ -59,7 +59,7 @@ class CMessage
   /**
    * Format the message for display in the header - via the lua format string.
    */
-  std::string format();
+  std::string format( std::string fmt = "");
 
 
   /**

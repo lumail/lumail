@@ -197,14 +197,23 @@ bool CMessage::mark_new()
 /**
  * Format the message for display in the header - via the lua format string.
  */
-std::string CMessage::format()
+std::string CMessage::format( std::string fmt )
 {
+
+  std::string result;
+
   /**
-   * Get the format-string we'll expand.
+   * Get the format-string we'll expand from the global
+   * setting, if it wasn't supplied.
    */
-  CGlobal *global = CGlobal::Instance();
-  std::string *fmt = global->get_index_format();
-  std::string result = std::string(*fmt);
+  if ( fmt.empty() )  {
+    CGlobal *global = CGlobal::Instance();
+    std::string *fmt = global->get_index_format();
+    result = std::string(*fmt);
+  }
+  else {
+    result = fmt;
+  }
 
   /**
    * The variables we know about.
