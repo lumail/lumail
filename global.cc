@@ -23,7 +23,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 #include "global.h"
 

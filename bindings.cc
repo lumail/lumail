@@ -23,7 +23,7 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <ncurses.h>
 #include <unistd.h>
 
