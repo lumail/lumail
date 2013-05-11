@@ -84,7 +84,7 @@ end
 -- Remember: More than one folder might be selected.
 --
 function on_select_folder( folder )
-
+msg( "Selected folder: " .. folder );
    --
    -- Change the email address we use depending on our folder.
    --

@@ -42,7 +42,7 @@ int maildir_prefix(lua_State * L)
     CGlobal *g = CGlobal::Instance();
 
     if (str != NULL) {
-      if ( !CMaildir::isDirectory( str ) )
+      if ( !CMaildir::is_directory( str ) )
 	return luaL_error(L, "The specified prefix is not a Maildir" );
 
 	g->set_maildir_prefix(new std::string(str));

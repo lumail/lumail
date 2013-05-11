@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
      * Load the init-file from the users home-directory, if we can.
      */
     std::string home = getenv( "HOME" );
-    if ( CMaildir::isDirectory( home + "/.lumail" ) )
+    if ( CMaildir::is_directory( home + "/.lumail" ) )
         lua->loadFile( home + "/.lumail/config.lua");
 
   /**
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
     if ( !folder.empty() ) {
       CLua *lua = CLua::Instance();
 
-      if ( CMaildir::isDirectory( folder ) )
+      if ( CMaildir::is_directory( folder ) )
         {
           /**
            * This should be simplifiable.

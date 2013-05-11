@@ -70,12 +70,12 @@ class CMaildir
   /**
    * Is the given path a Maildir?
    */
-  static bool isMaildir(std::string path);
+  static bool is_maildir(std::string path);
 
   /**
    * Is the given path a directory?
    */
-  static bool isDirectory(std::string path);
+  static bool is_directory(std::string path);
 
   /**
    * Return a sorted list of maildirs beneath the given path.

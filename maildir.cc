@@ -91,7 +91,7 @@ int CMaildir::countFiles(std::string path)
       if (de == NULL)
         break;
 
-      if (!CMaildir::isDirectory(std::string(path + "/" + de->d_name)))
+      if (!CMaildir::is_directory(std::string(path + "/" + de->d_name)))
         count += 1;
     }
     closedir(dp);
@@ -118,7 +118,7 @@ std::vector < std::string > CMaildir::getFolders(std::string path)
 
       std::string subdir_name = std::string(de->d_name);
       std::string subdir_path = std::string(prefix + "/" + subdir_name);
-      if (CMaildir::isMaildir(subdir_path))
+      if (CMaildir::is_maildir(subdir_path))
         result.push_back(subdir_path);
       else {
         if (subdir_name != "." && subdir_name != "..") {
@@ -163,7 +163,7 @@ std::vector < CMessage > CMaildir::getMessages()
       if (de == NULL)
         break;
 
-      if (!CMaildir::isDirectory (std::string(m_path + "/cur/" + de->d_name)))
+      if (!CMaildir::is_directory (std::string(m_path + "/cur/" + de->d_name)))
         {
           CMessage t = CMessage(std::string(m_path + "/cur/" + de->d_name));
           if ( strcmp(filter->c_str(), "all" ) == 0 )
@@ -182,7 +182,7 @@ std::vector < CMessage > CMaildir::getMessages()
       if (de == NULL)
         break;
 
-      if (!CMaildir::isDirectory (std::string(m_path + "/new/" + de->d_name)))
+      if (!CMaildir::is_directory (std::string(m_path + "/new/" + de->d_name)))
         {
           CMessage t = CMessage(std::string(m_path + "/new/" + de->d_name));
           if ( strcmp(filter->c_str(), "all" ) == 0 )
@@ -199,7 +199,7 @@ std::vector < CMessage > CMaildir::getMessages()
 /**
  * Is the given path a Maildir?
  */
-bool CMaildir::isMaildir(std::string path)
+bool CMaildir::is_maildir(std::string path)
 {
   std::vector < std::string > dirs;
   dirs.push_back(path);
@@ -209,7 +209,7 @@ bool CMaildir::isMaildir(std::string path)
 
   std::vector < std::string >::iterator it;
   for (it = dirs.begin(); it != dirs.end(); ++it) {
-    if (!CMaildir::isDirectory(*it))
+    if (!CMaildir::is_directory(*it))
       return false;
   }
   return true;
@@ -218,7 +218,7 @@ bool CMaildir::isMaildir(std::string path)
 /**
  * Is the given path a directory?
  */
-bool CMaildir::isDirectory(std::string path)
+bool CMaildir::is_directory(std::string path)
 {
   struct stat sb;
 
