@@ -25,6 +25,7 @@
 #include <string.h>
 #include <malloc.h>
 #include <ncurses.h>
+#include <unistd.h>
 
 #include "maildir.h"
 #include "lua.h"
