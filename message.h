@@ -83,6 +83,11 @@ class CMessage
   bool mark_read();
 
   /**
+   * get a header from the message.
+   */
+  std::string header( std::string name);
+
+  /**
    * Get the sender of the message.
    */
   std::string from();

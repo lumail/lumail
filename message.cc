@@ -267,16 +267,27 @@ std::string CMessage::format( std::string fmt )
 
 
 /**
- * Get the sender of the message.
+ * Get the value of a header.
  */
-std::string CMessage::from()
+std::string CMessage::header( std::string name )
 {
   if ( m_me == NULL ) {
     ifstream file(path().c_str());
     m_me = new MimeEntity(file);
   }
   Header & h = m_me->header();
-  return(h.from().str() );
+  if (h.hasField(name ) )
+    return(h.field(name).value() );
+  else
+    return "";
+}
+
+/**
+ * Get the sender of the message.
+ */
+std::string CMessage::from()
+{
+  return(header( "From" ) );
 }
 
 
@@ -287,15 +298,7 @@ std::string CMessage::from()
  */
 std::string CMessage::date()
 {
-  if ( m_me == NULL ) {
-    ifstream file(path().c_str());
-    m_me = new MimeEntity(file);
-  }
-  Header & h = m_me->header();
-  if (h.hasField("date"))
-    return(h.field("date").value());
-  else
-    return "No date";
+  return( header("Date" ) );
 }
 
 
@@ -304,12 +307,7 @@ std::string CMessage::date()
  */
 std::string CMessage::to()
 {
-  if ( m_me == NULL ) {
-    ifstream file(path().c_str());
-    m_me = new MimeEntity(file);
-  }
-  Header & h = m_me->header();
-  return(h.to().str() );
+  return( header( "To" ) );
 }
 
 
@@ -318,12 +316,7 @@ std::string CMessage::to()
  */
 std::string CMessage::subject()
 {
-  if ( m_me == NULL ) {
-    ifstream file(path().c_str());
-    m_me = new MimeEntity(file);
-  }
-  Header & h = m_me->header();
-  return(h.subject());
+  return( header( "Subject" ) );
 }
 
 
