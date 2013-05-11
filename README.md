@@ -99,5 +99,14 @@ At startup the following three lua files are evaluated, if present:
    * This is depreciated and will be removed in the future.
 
 
+Further Information
+-------------------
+
+You may find further information upon the lumail website:
+
+* http://lumail.org/
+    * This website is built automatically from the [lumail.org repository](https://github.com/skx/lumail.org/).
+
+
 Steve
 --
