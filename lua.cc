@@ -86,21 +86,17 @@ CLua::CLua()
     lua_register(m_lua, "index_format", index_format);
 
     /**
-     * Scroll mailboxes up/down.
+     * Scroll mailboxes up/down/to a pattern.
      */
     lua_register(m_lua, "scroll_maildir_down", scroll_maildir_down);
     lua_register(m_lua, "scroll_maildir_up", scroll_maildir_up);
+    lua_register(m_lua, "scroll_maildir_to", scroll_maildir_to);
 
     /**
-     * Scroll index up/down.
+     * Scroll index up/down/to a pattern.
      */
     lua_register(m_lua, "scroll_index_down", scroll_index_down);
     lua_register(m_lua, "scroll_index_up", scroll_index_up);
-
-    /**
-     * Find the next folder/message matching the pattern.
-     */
-    lua_register(m_lua, "scroll_maildir_to", scroll_maildir_to);
     lua_register(m_lua, "scroll_index_to", scroll_index_to);
 
     /**
