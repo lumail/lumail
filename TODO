@@ -1,5 +1,7 @@
 Once this list is empty we'll move to using the github issues.
 
+If there are any issues found before this file is empty github
+may still be used.
 
 To make 0.05:
 
@@ -8,6 +10,7 @@ To make 0.05:
 BUG:  If index-view is set to limit only new messages and we mark it is read then
 it will immediately disappear because it is no longer in the set of messages returned
 by get_messsages().
+
 Either a) add a special case, or b) add an explicit "write_folders()" function.
 
 
@@ -39,6 +42,8 @@ Before we publish any debian packages
 -------------------------------------
 
 Reformat the code and use consistent function-names. (get_foo_bar()  vs.  setBar()).
+
+Reformat the code, since indent has messed things up.
 
 Double-check we're not leaking lua-stack objects.  Don't seem to be, and yet ..
 
