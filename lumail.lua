@@ -301,25 +301,39 @@ end
 -- The same keypress might do different things in different modes,
 -- which is one of the advantages of a modal-client.
 --
---
---  TODO: Should there be a global-keymap?
+-- However to avoid duplication there is a global keymap.
 --
 --   For example:
---      keymap['q'] = 'exit()';
---   or
---      kemymap['global']['q'] = 'exit()';
+--      kemymap['global']['Q'] = 'exit()';
 --
 keymap = {}
+keymap['global']  = {}
 keymap['index']   = {}
 keymap['message'] = {}
 keymap['maildir'] = {}
 
+
 --
--- globally exit
+-- Global Bindings
 --
-keymap['index']['Q']   = "exit()"
-keymap['message']['Q'] = "exit()"
-keymap['maildir']['Q'] = "exit()"
+-- Debug message.
+keymap['global']['G'] = 'msg("Global-Steve");';
+-- Quit
+keymap['global']['Q'] = "exit()"
+-- Compose a new message.
+keymap['global']['c'] = "compose()"
+-- repl-mode
+keymap['global'][':'] = "loadstring(prompt(\":\"))();";
+-- Execute-shell
+keymap['global']['!'] = "exec(prompt(\":\"));";
+-- Move to Maildir-mode
+keymap['global']['M']   = 'maildir()';
+-- Move to Index-mode
+keymap['global']['I'] = 'index()';
+-- Show the client version
+keymap['global']['v'] = 'show_version()'
+
+
 
 --
 -- Quitting means different things in different modes.
@@ -330,49 +344,6 @@ keymap['message']['q'] = "index()"
 keymap['index']['q'] = "maildir()"
 -- If viewing a maildir list then q means nop.
 keymap['maildir']['q'] = "exit();"
-
---
--- Globally compose a new message.
---
-keymap['index']['c']   = "compose()"
-keymap['message']['c'] = "compose()"
-keymap['maildir']['c'] = "compose()"
-
---
--- REPL-like-mode.
---
-keymap['index'][':']   = "loadstring(prompt(\":\"))();";
-keymap['message'][':'] = "loadstring(prompt(\":\"))();";
-keymap['maildir'][':'] = "loadstring(prompt(\":\"))();";
-
---
--- Execute a shell command.
---
-keymap['index']['!']   = "exec(prompt(\":\"));";
-keymap['message']['!'] = "exec(prompt(\":\"));";
-keymap['maildir']['!'] = "exec(prompt(\":\"));";
-
---
--- Show the client version
---
-keymap['maildir']['v'] = 'show_version()'
-keymap['index']['v']   = 'show_version()'
-keymap['message']['v'] = 'show_version()'
-
---
--- Move to Maildir-mode
---
-keymap['index']['M']   = 'maildir()';
-keymap['message']['M'] = 'maildir()';
-keymap['maildir']['M'] = 'maildir()';
-
---
--- Move to Index-mode
---
-keymap['index']['I']   = 'index()';
-keymap['message']['I'] = 'index()';
-keymap['maildir']['I'] = 'index()';
-
 
 
 --
@@ -461,6 +432,4 @@ function sleepy()
    sleep( 1 );
    msg( "2/2: OK" );
 end
-keymap['index']['S'] = 'sleepy()';
-keymap['maildir']['S'] = 'sleepy()';
-keymap['message']['S'] = 'sleepy()';
+keymap['global']['S'] = 'sleepy()';
