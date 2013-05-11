@@ -63,7 +63,7 @@ extern "C" {
     /**
      * Execute a function from the global keymap.
      */
-    bool onKey(char key);
+    bool on_keypress(char key);
 
  protected:
 

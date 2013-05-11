@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
 	     */
 	    lua->callFunction("on_idle");
 	} else {
-	    if (!lua->onKey(key)) {
+	    if (!lua->on_keypress(key)) {
 		std::string foo = "msg(\"Unbound key ";
 		foo += key;
 		foo += "\")";

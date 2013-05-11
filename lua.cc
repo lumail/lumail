@@ -15,7 +15,6 @@
  * On Debian GNU/Linux systems, the complete text of version 2 of the GNU
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
-
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -216,29 +215,62 @@ std::string * CLua::getGlobal(std::string name)
 /**
  * Execute a function from the global keymap.
  */
-bool CLua::onKey(char key)
+bool CLua::on_keypress(char key)
 {
     char keypress[2];
     keypress[0] = key;
     keypress[1] = '\0';
 
-  /**
-   * Get the mode.
-   */
+    /**
+     * The result of the lookup.
+     */
+    char *result = NULL;
+
+    /**
+     * Get the current global-mode.
+     */
     CGlobal *g = CGlobal::Instance();
-    std::string * s = g->get_mode();
+    std::string *mode = g->get_mode();
 
+    /**
+     * Lookup the keypress in the global-keymap.
+     */
     lua_getglobal(m_lua, "keymap");
-    lua_pushstring(m_lua, s->c_str());
+    lua_pushstring(m_lua, "global" );
     lua_gettable(m_lua, -2);
-    lua_pushstring(m_lua, keypress);
-    lua_gettable(m_lua, -2);
-    if (lua_isstring(m_lua, -1)) {
-	char *str = (char *)lua_tostring(m_lua, -1);
-	execute(str);
-	return true;
-    }
+    if ( lua_istable(m_lua, -1 ) )
+      {
+        lua_pushstring(m_lua, keypress);
+        lua_gettable(m_lua, -2);
+        if (lua_isstring(m_lua, -1)) {
+          result = (char *)lua_tostring(m_lua, -1);
+        }
+      }
 
+
+    /**
+     * Lookup the keypress in the per-mode keymap.
+     */
+    lua_getglobal(m_lua, "keymap");
+    lua_pushstring(m_lua, mode->c_str() );
+    lua_gettable(m_lua, -2);
+    if ( lua_istable(m_lua, -1 ) )
+      {
+        lua_pushstring(m_lua, keypress);
+        lua_gettable(m_lua, -2);
+        if (lua_isstring(m_lua, -1)) {
+          result = (char *)lua_tostring(m_lua, -1);
+        }
+      }
+
+    /**
+     * If one/other of these resulted in success then we're golden.
+     */
+    if ( result != NULL )
+      {
+        execute(result);
+        return true;
+      }
     return false;
 }
 
