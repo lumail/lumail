@@ -32,7 +32,7 @@
  */
 CMaildir::CMaildir(std::string path)
 {
-    m_path = path;
+  m_path = path;
 }
 
 /**
@@ -47,7 +47,7 @@ CMaildir::~CMaildir()
  */
 int CMaildir::newMessages()
 {
-    return (CMaildir::countFiles(m_path + "/new"));
+  return (CMaildir::countFiles(m_path + "/new"));
 }
 
 /**
@@ -55,7 +55,7 @@ int CMaildir::newMessages()
  */
 int CMaildir::availableMessages()
 {
-    return (CMaildir::countFiles(m_path + "/cur"));
+  return (CMaildir::countFiles(m_path + "/cur"));
 }
 
 /**
@@ -63,8 +63,8 @@ int CMaildir::availableMessages()
  */
 std::string CMaildir::name()
 {
-    unsigned found = m_path.find_last_of("/");
-    return (m_path.substr(found + 1));
+  unsigned found = m_path.find_last_of("/");
+  return (m_path.substr(found + 1));
 }
 
 /**
@@ -72,7 +72,7 @@ std::string CMaildir::name()
  */
 std::string CMaildir::path()
 {
-    return (m_path);
+  return (m_path);
 }
 
 /**
@@ -80,23 +80,23 @@ std::string CMaildir::path()
  */
 int CMaildir::countFiles(std::string path)
 {
-    int count = 0;
-    dirent *de;
-    DIR *dp;
+  int count = 0;
+  dirent *de;
+  DIR *dp;
 
-    dp = opendir(path.c_str());
-    if (dp) {
-	while (true) {
-	    de = readdir(dp);
-	    if (de == NULL)
-		break;
+  dp = opendir(path.c_str());
+  if (dp) {
+    while (true) {
+      de = readdir(dp);
+      if (de == NULL)
+        break;
 
-	    if (!CMaildir::isDirectory(std::string(path + "/" + de->d_name)))
-		count += 1;
-	}
-	closedir(dp);
+      if (!CMaildir::isDirectory(std::string(path + "/" + de->d_name)))
+        count += 1;
     }
-    return count;
+    closedir(dp);
+  }
+  return count;
 }
 
 /**
@@ -104,41 +104,41 @@ int CMaildir::countFiles(std::string path)
  */
 std::vector < std::string > CMaildir::getFolders(std::string path)
 {
-    std::vector < std::string > result;
-    dirent *de;
-    DIR *dp;
+  std::vector < std::string > result;
+  dirent *de;
+  DIR *dp;
 
-    std::string prefix = path.empty()? "." : path.c_str();
-    dp = opendir(prefix.c_str());
-    if (dp) {
-	while (true) {
-	    de = readdir(dp);
-	    if (de == NULL)
-		break;
+  std::string prefix = path.empty()? "." : path.c_str();
+  dp = opendir(prefix.c_str());
+  if (dp) {
+    while (true) {
+      de = readdir(dp);
+      if (de == NULL)
+        break;
 
-	    std::string subdir_name = std::string(de->d_name);
-	    std::string subdir_path = std::string(prefix + "/" + subdir_name);
-	    if (CMaildir::isMaildir(subdir_path))
-		result.push_back(subdir_path);
-	    else {
-		if (subdir_name != "." && subdir_name != "..") {
-		    DIR* sdp = opendir(subdir_path.c_str());
-		    if (sdp) {
-			closedir(sdp);
-			std::vector < std::string > sub_maildirs;
-			sub_maildirs = CMaildir::getFolders(subdir_path);
-			std::vector < std::string >::iterator it;
-			for (it = sub_maildirs.begin(); it != sub_maildirs.end(); ++it) {
-			    result.push_back(*it);
-			}
-		    }
-		}
-	    }
-	}
-	closedir(dp);
-	std::sort(result.begin(), result.end());
+      std::string subdir_name = std::string(de->d_name);
+      std::string subdir_path = std::string(prefix + "/" + subdir_name);
+      if (CMaildir::isMaildir(subdir_path))
+        result.push_back(subdir_path);
+      else {
+        if (subdir_name != "." && subdir_name != "..") {
+          DIR* sdp = opendir(subdir_path.c_str());
+          if (sdp) {
+            closedir(sdp);
+            std::vector < std::string > sub_maildirs;
+            sub_maildirs = CMaildir::getFolders(subdir_path);
+            std::vector < std::string >::iterator it;
+            for (it = sub_maildirs.begin(); it != sub_maildirs.end(); ++it) {
+              result.push_back(*it);
+            }
+          }
+        }
+      }
     }
-    return result;
+    closedir(dp);
+    std::sort(result.begin(), result.end());
+  }
+  return result;
 }
 
 /**
@@ -183,13 +183,13 @@ std::vector < CMessage > CMaildir::getMessages()
         break;
 
       if (!CMaildir::isDirectory (std::string(m_path + "/new/" + de->d_name)))
-      {
+        {
           CMessage t = CMessage(std::string(m_path + "/new/" + de->d_name));
           if ( strcmp(filter->c_str(), "all" ) == 0 )
             result.push_back(t);
           if ( ( strcmp(filter->c_str(), "new") == 0 ) && t.is_new() )
             result.push_back(t);
-      }
+        }
     }
     closedir(dp);
   }
@@ -201,18 +201,18 @@ std::vector < CMessage > CMaildir::getMessages()
  */
 bool CMaildir::isMaildir(std::string path)
 {
-    std::vector < std::string > dirs;
-    dirs.push_back(path);
-    dirs.push_back(path + "/cur");
-    dirs.push_back(path + "/tmp");
-    dirs.push_back(path + "/new");
+  std::vector < std::string > dirs;
+  dirs.push_back(path);
+  dirs.push_back(path + "/cur");
+  dirs.push_back(path + "/tmp");
+  dirs.push_back(path + "/new");
 
-    std::vector < std::string >::iterator it;
-    for (it = dirs.begin(); it != dirs.end(); ++it) {
-	if (!CMaildir::isDirectory(*it))
-	    return false;
-    }
-    return true;
+  std::vector < std::string >::iterator it;
+  for (it = dirs.begin(); it != dirs.end(); ++it) {
+    if (!CMaildir::isDirectory(*it))
+      return false;
+  }
+  return true;
 }
 
 /**
@@ -220,11 +220,11 @@ bool CMaildir::isMaildir(std::string path)
  */
 bool CMaildir::isDirectory(std::string path)
 {
-    struct stat sb;
+  struct stat sb;
 
-    if (stat(path.c_str(), &sb) < 0)
-	return 0;
+  if (stat(path.c_str(), &sb) < 0)
+    return 0;
 
-    return (S_ISDIR(sb.st_mode));
+  return (S_ISDIR(sb.st_mode));
 
 }

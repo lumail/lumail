@@ -27,74 +27,78 @@
  */
 class CMessage;
 
+
 /**
  * An object for working with maildir folders.
  *
  * Opening them, counting messages, etc.
  */
-class CMaildir {
+class CMaildir
+{
  public:
+
   /**
    * Constructor.  NOP.
    */
-    CMaildir(std::string path);
+  CMaildir(std::string path);
 
   /**
    * Destructor.  NOP.
    */
-    ~CMaildir();
+  ~CMaildir();
 
   /**
    * The number of new messages for this directory.
    */
-    int newMessages();
+  int newMessages();
 
   /**
    * The number of read messages for this directory.
    */
-    int availableMessages();
+  int availableMessages();
 
   /**
    * The friendly name of the maildir.
    */
-     std::string name();
+  std::string name();
 
   /**
    * The full path to the folder.
    */
-     std::string path();
+  std::string path();
 
   /**
    * Is the given path a Maildir?
    */
-    static bool isMaildir(std::string path);
+  static bool isMaildir(std::string path);
 
   /**
    * Is the given path a directory?
    */
-    static bool isDirectory(std::string path);
+  static bool isDirectory(std::string path);
 
   /**
    * Return a sorted list of maildirs beneath the given path.
    */
-    static std::vector < std::string > getFolders(std::string path);
+  static std::vector < std::string > getFolders(std::string path);
 
   /**
    * Get each message in the folder.
    */
-     std::vector < CMessage > getMessages();
+  std::vector < CMessage > getMessages();
 
   /**
    * Count files in a directory.
    */
-    static int countFiles(std::string path);
+  static int countFiles(std::string path);
 
  private:
 
   /**
    * The path to the directory we represent.
    */
-     std::string m_path;
+  std::string m_path;
+
 };
 
 #endif				/* _maildir_h_ */
