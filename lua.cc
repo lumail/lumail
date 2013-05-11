@@ -62,13 +62,14 @@ CLua::CLua()
     setGlobal("VERSION", LUMAIL_VERSION);
 
     /**
-     * Register our primitives.
+     * Register our primitives - the basic ones.
      */
     lua_register(m_lua, "clear", clear);
-    lua_register(m_lua, "sleep", sleep);
-    lua_register(m_lua, "msg", msg);
     lua_register(m_lua, "exec", exec);
+    lua_register(m_lua, "exit", exit);
+    lua_register(m_lua, "msg", msg);
     lua_register(m_lua, "prompt", prompt);
+    lua_register(m_lua, "sleep", sleep);
 
     /**
      * Get/Set the global mode.
@@ -84,6 +85,7 @@ CLua::CLua()
      * Get/Set the index format.
      */
     lua_register(m_lua, "index_format", index_format);
+    // TODO: message_headers( "To", "From", "Cc", etc.
 
     /**
      * Scroll mailboxes up/down/to a pattern.
@@ -103,9 +105,10 @@ CLua::CLua()
      * Get the current maildir.
      */
     lua_register(m_lua, "current_maildir", current_maildir);
+    // TODO: current_message
 
     /**
-     * Folder selections.
+     * Folder selection.
      */
     lua_register(m_lua, "selected_folders", selected_folders);
     lua_register(m_lua, "clear_selected_folders", clear_selected_folders);
@@ -123,12 +126,7 @@ CLua::CLua()
      * Compose a new mail.
      */
     lua_register(m_lua, "compose", compose);
-
-    /**
-     * Exit, cleaning up the screen and running our at-exit-hook.
-     */
-    lua_register(m_lua, "exit", exit);
-
+    // TODO: reply()
 
     /**
      * Get screen dimensions.
@@ -141,6 +139,7 @@ CLua::CLua()
      * Set the From: address for the user.
      */
     lua_register(m_lua, "from", from);
+    //TODO: sendmail_path
 }
 
 /**
