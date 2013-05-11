@@ -1,6 +1,24 @@
 --
--- lumail.lua - Init file for lumail.
+-- When lumail launches it will look for two configuration files, and
+-- load them both if they exist:
 --
+--   /etc/lumail.lua
+--   ~/.lumail/config.lua
+--
+-- Historically it has also loaded ./lumail.lua, but this is deprecated.
+-- If you wish to load it please run:
+--
+--   $ lumail --rcfile ./lumail.lua
+--
+--
+-- Primitives called here are documented online at:
+--
+--   http://lumail.org/lua/
+--
+-- Steve
+-- --
+--
+
 
 
 --
