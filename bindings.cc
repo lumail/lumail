@@ -181,7 +181,7 @@ int exit(lua_State * L)
     endwin();
 
     CLua *lua = CLua::Instance();
-    lua->callFunction("on_exit");
+    lua->call_function("on_exit");
 
     exit(0);
     return 0;

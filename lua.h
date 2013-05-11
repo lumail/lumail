@@ -38,7 +38,7 @@ extern "C" {
   /**
    * Load and execute a single file of Lua code.
    */
-    void loadFile(std::string filename);
+    void load_file(std::string filename);
 
   /**
    * Evaluate the given string.
@@ -48,17 +48,17 @@ extern "C" {
   /**
    * Call a single Lua function, passing no arguments and ignoring the return code.
    */
-    bool callFunction(std::string name);
+    bool call_function(std::string name);
 
   /**
    * Set a global variable into the Lua environment.
    */
-    void setGlobal(std::string name, std::string value);
+    void set_global(std::string name, std::string value);
 
   /**
    * Get a global variable value from the Lua environment.
    */
-     std::string * getGlobal(std::string name);
+     std::string * get_global(std::string name);
 
     /**
      * Execute a function from the global keymap.

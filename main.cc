@@ -96,26 +96,26 @@ int main(int argc, char *argv[])
    * Create the lua intepreter.
    */
     CLua *lua = CLua::Instance();
-    lua->loadFile("/etc/lumail.lua");
-    lua->loadFile("./lumail.lua");
+    lua->load_file("/etc/lumail.lua");
+    lua->load_file("./lumail.lua");
 
     /**
      * Load the init-file from the users home-directory, if we can.
      */
     std::string home = getenv( "HOME" );
     if ( CMaildir::is_directory( home + "/.lumail" ) )
-        lua->loadFile( home + "/.lumail/config.lua");
+        lua->load_file( home + "/.lumail/config.lua");
 
   /**
    * If we have any init file specified then load it up too.
    */
     if (!rcfile.empty())
-	lua->loadFile(rcfile.c_str());
+	lua->load_file(rcfile.c_str());
 
   /**
    * We're starting, so call the on_start() function.
    */
-    lua->callFunction("on_start");
+    lua->call_function("on_start");
 
     /**
      * If we have a starting folder, select it.
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 	    /*
 	     * Timeout - so we go round the loop again.
 	     */
-	    lua->callFunction("on_idle");
+	    lua->call_function("on_idle");
 	} else {
 	    if (!lua->on_keypress(key)) {
 		std::string foo = "msg(\"Unbound key ";
@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
   /**
    * We've been terminated.
    */
-    lua->callFunction("exit");
+    lua->call_function("exit");
     exit(0);
 
     return 0;

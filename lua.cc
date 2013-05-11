@@ -59,7 +59,7 @@ CLua::CLua()
     /**
      * Version number
      */
-    setGlobal("VERSION", LUMAIL_VERSION);
+    set_global("VERSION", LUMAIL_VERSION);
 
     /**
      * Register our primitives - the basic ones.
@@ -145,7 +145,7 @@ CLua::CLua()
 /**
  * Load the specified lua file, and evaluate it.
  */
-void CLua::loadFile(std::string filename)
+void CLua::load_file(std::string filename)
 {
     struct stat sb;
 
@@ -171,7 +171,7 @@ void CLua::execute(std::string lua)
 /**
  * Call a single Lua function, passing no arguments and ignoring the return code.
  */
-bool CLua::callFunction(std::string name)
+bool CLua::call_function(std::string name)
 {
     lua_getglobal(m_lua, name.c_str());
     if (lua_isfunction(m_lua, -1)) {
@@ -185,7 +185,7 @@ bool CLua::callFunction(std::string name)
 /**
  * Set a global variable into the Lua environment.
  */
-void CLua::setGlobal(std::string name, std::string value)
+void CLua::set_global(std::string name, std::string value)
 {
     lua_pushstring(m_lua, value.c_str());
     lua_setglobal(m_lua, name.c_str());
@@ -194,7 +194,7 @@ void CLua::setGlobal(std::string name, std::string value)
 /**
  * Get a global variable value from the Lua environment.
  */
-std::string * CLua::getGlobal(std::string name)
+std::string * CLua::get_global(std::string name)
 {
     std::string * result = NULL;
 
