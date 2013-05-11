@@ -116,8 +116,24 @@ std::vector < std::string > CMaildir::getFolders(std::string path)
 	    if (de == NULL)
 		break;
 
-	    if (CMaildir::isMaildir(std::string(prefix + "/" + de->d_name)))
-		result.push_back(std::string(prefix + "/" + de->d_name));
+	    std::string subdir_name = std::string(de->d_name);
+	    std::string subdir_path = std::string(prefix + "/" + subdir_name);
+	    if (CMaildir::isMaildir(subdir_path))
+		result.push_back(subdir_path);
+	    else {
+		if (subdir_name != "." && subdir_name != "..") {
+		    DIR* sdp = opendir(subdir_path.c_str());
+		    if (sdp) {
+			closedir(sdp);
+			std::vector < std::string > sub_maildirs;
+			sub_maildirs = CMaildir::getFolders(subdir_path);
+			std::vector < std::string >::iterator it;
+			for (it = sub_maildirs.begin(); it != sub_maildirs.end(); ++it) {
+			    result.push_back(*it);
+			}
+		    }
+		}
+	    }
 	}
 	closedir(dp);
 	std::sort(result.begin(), result.end());
