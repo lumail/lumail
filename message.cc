@@ -71,7 +71,7 @@ std::string CMessage::flags()
     if (m_path.empty())
 	return (flags);
 
-    unsigned offset = m_path.find(":2,");
+    size_t offset = m_path.find(":2,");
     if (offset != std::string::npos)
       flags = m_path.substr(offset + 3);
 
@@ -227,7 +227,7 @@ std::string CMessage::format( std::string fmt )
    */
   for( int i = 0 ; std_name[i] ; ++i) {
 
-    unsigned int offset = result.find( std_name[i], 0 );
+    size_t offset = result.find( std_name[i], 0 );
 
     if ( ( offset != std::string::npos ) && ( offset < result.size() ) ) {
 
