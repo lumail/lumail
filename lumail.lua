@@ -262,13 +262,15 @@ end
 --
 function search_next()
    x = prompt("/:" );
+   m = global_mode();
+
    if ( string.find( m, "maildir" ) ) then
       scroll_maildir_to( x );
-   else
+   elseif (string.find(m, "index" ) ) then
       scroll_index_to( x );
+   else
+      msg( "search_next() not implemented for mode:" .. m );
    end
-
-   -- TODO we should be able to search within the body of a message too.
 end
 
 
@@ -397,8 +399,8 @@ keymap['index']['\n'] = 'view_message()'
 --
 -- View all/new messages only.
 --
-keymap['index']['a'] = 'index_limit("all")'
-keymap['index']['n'] = 'index_limit("new")'
+keymap['index']['a'] = 'index_limit("all");'
+keymap['index']['n'] = 'index_limit("new");'
 
 --
 -- Selection bindings.
@@ -416,7 +418,7 @@ keymap['maildir']['\n'] = 'open_folder()'
 --
 keymap['message']['j'] = 'message_down()'
 keymap['message']['k'] = 'message_up()'
-
+keymap['message']['/'] = 'search_next()'
 
 -----
 -----
