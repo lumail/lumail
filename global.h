@@ -58,22 +58,22 @@ class CGlobal
   /**
    * Get all folders.
    */
-  std::vector < CMaildir > get_all_folders();
+  std::vector<CMaildir> get_all_folders();
 
   /**
    * Get all folders which match the current mode: new/all/pattern
    */
-  std::vector < CMaildir > get_folders();
+  std::vector<CMaildir> get_folders();
 
   /**
    * Get all selected folders.
    */
-  std::vector < std::string > get_selected_folders();
+  std::vector<std::string> get_selected_folders();
 
   /**
    * Get all messages from the currently-selected folders.
    */
-  std::vector < CMessage > get_messages();
+  std::vector<CMessage *> get_messages();
 
   /**
    * Remove all selected folders.

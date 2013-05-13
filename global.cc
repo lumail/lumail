@@ -167,7 +167,7 @@ std::string * CGlobal::get_index_format()
 /**
  * Get all selected folders.
  */
-std::vector < std::string > CGlobal::get_selected_folders()
+std::vector<std::string> CGlobal::get_selected_folders()
 {
     return (m_selected_folders);
 }
@@ -175,11 +175,11 @@ std::vector < std::string > CGlobal::get_selected_folders()
 /**
  * Get all folders.
  */
-std::vector < CMaildir > CGlobal::get_all_folders()
+std::vector<CMaildir> CGlobal::get_all_folders()
 {
-    std::vector < CMaildir > maildirs;
+    std::vector<CMaildir> maildirs;
 
-    std::vector < std::string > folders =
+    std::vector<std::string> folders =
 	CMaildir::getFolders(*m_maildir_prefix);
     std::vector < std::string >::iterator it;
     for (it = folders.begin(); it != folders.end(); ++it) {
@@ -195,14 +195,14 @@ std::vector < CMaildir > CGlobal::get_all_folders()
 std::vector < CMaildir > CGlobal::get_folders()
 {
     CGlobal *global = CGlobal::Instance();
-    std::vector < CMaildir > folders = global->get_all_folders();
+    std::vector<CMaildir> folders = global->get_all_folders();
+    std::vector<CMaildir> display;
     std::string * filter = global->get_maildir_limit();
-    std::vector < CMaildir > display;
 
   /**
    * Filter the folders to those we can display
    */
-    std::vector < CMaildir >::iterator it;
+    std::vector<CMaildir>::iterator it;
     for (it = folders.begin(); it != folders.end(); ++it) {
 	CMaildir x = *it;
 
@@ -226,7 +226,7 @@ std::vector < CMaildir > CGlobal::get_folders()
 /**
  * My sort function: sort CMessages by most recent to oldest.
  */
-bool my_sort(CMessage a, CMessage b)
+bool my_sort(CMessage *a, CMessage *b)
 {
   /**
    * Stat both files.
@@ -234,8 +234,8 @@ bool my_sort(CMessage a, CMessage b)
     struct stat us;
     struct stat them;
 
-    std::string us_path = a.path();
-    std::string them_path = b.path();
+    std::string us_path = a->path();
+    std::string them_path = b->path();
 
     if (stat(us_path.c_str(), &us) < 0)
 	return 0;
@@ -250,46 +250,46 @@ bool my_sort(CMessage a, CMessage b)
 /**
  * Get all messages from the currently selected folders.
  */
-std::vector < CMessage > CGlobal::get_messages()
+std::vector<CMessage *> CGlobal::get_messages()
 {
   /**
    * Get the selected maildirs.
    */
-    CGlobal *global = CGlobal::Instance();
-    std::vector < std::string > folders = global->get_selected_folders();
+  CGlobal *global = CGlobal::Instance();
+  std::vector<std::string> folders = global->get_selected_folders();
 
   /**
    * The sum of all messages we're going to display.
    */
-    std::vector < CMessage > messages;
+  std::vector<CMessage *> messages;
 
   /**
    * For each selected maildir read the messages.
    */
-    std::vector < std::string >::iterator it;
-    for (it = folders.begin(); it != folders.end(); ++it) {
+  std::vector<std::string>::iterator it;
+  for (it = folders.begin(); it != folders.end(); ++it) {
 
     /**
      * get the messages from this folder.
      */
-	CMaildir tmp = CMaildir(*it);
-	std::vector < CMessage > contents = tmp.getMessages();
+    CMaildir tmp = CMaildir(*it);
+    std::vector<CMessage *> contents = tmp.getMessages();
 
     /**
      * Append to the list of messages combined.
      */
-	std::vector < CMessage >::iterator mit;
-	for (mit = contents.begin(); mit != contents.end(); ++mit) {
-	    messages.push_back(*mit);
-	}
+    std::vector<CMessage *>::iterator mit;
+    for (mit = contents.begin(); mit != contents.end(); ++mit) {
+      messages.push_back(*mit);
     }
+  }
 
-    /*
-     * Sort?
-     */
-    std::sort(messages.begin(), messages.end(), my_sort);
+  /*
+   * Sort?
+   */
+  std::sort(messages.begin(), messages.end(), my_sort);
 
-    return (messages);
+  return (messages);
 
 }
 
@@ -314,7 +314,7 @@ void CGlobal::add_folder(std::string path)
  */
 bool CGlobal::remove_folder(std::string path)
 {
-    std::vector < std::string >::iterator it;
+    std::vector<std::string>::iterator it;
 
   /**
    * Find the folder.

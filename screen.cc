@@ -174,7 +174,7 @@ void CScreen::drawIndex()
    * Get all messages from the currently selected maildirs.
    */
     CGlobal *global = CGlobal::Instance();
-    std::vector < CMessage > messages = global->get_messages();
+    std::vector<CMessage*> messages = global->get_messages();
 
   /**
    * If we have no messages report that.
@@ -216,7 +216,7 @@ void CScreen::drawIndex()
      */
 	CMessage *cur = NULL;
 	if ((row + selected) < count)
-	    cur = &messages[row + selected];
+	    cur = messages[row + selected];
 
         bool unread = false;
         if ( cur != NULL ) {
@@ -276,7 +276,7 @@ void CScreen::drawMessage()
    * Get all messages from the currently selected maildirs.
    */
   CGlobal *global = CGlobal::Instance();
-  std::vector < CMessage > messages = global->get_messages();
+  std::vector<CMessage *> messages = global->get_messages();
 
   /**
    * The number of items we've found, vs. the size of the screen.
@@ -295,7 +295,7 @@ void CScreen::drawMessage()
 
   CMessage *cur = NULL;
   if ((selected) < count)
-    cur = &messages[ selected];
+    cur = messages[ selected];
   else
     {
       clear();

@@ -398,37 +398,37 @@ int current_maildir(lua_State * L)
  */
 int scroll_index_to(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
+  const char *str = lua_tostring(L, -1);
 
-    if (str == NULL)
-	return luaL_error(L, "Missing argument to scroll_index_to(..)");
+  if (str == NULL)
+    return luaL_error(L, "Missing argument to scroll_index_to(..)");
 
   /**
    * get the current messages
    */
-    CGlobal *global = CGlobal::Instance();
-    std::vector < CMessage > messages = global->get_messages();
-    int max = messages.size();
-    int selected = global->get_selected_message();
+  CGlobal *global = CGlobal::Instance();
+  std::vector<CMessage *> messages = global->get_messages();
+  int max = messages.size();
+  int selected = global->get_selected_message();
 
-    int i = selected + 1;
+  int i = selected + 1;
 
-    while (i != selected) {
-	if (i >= max)
-	    break;
+  while (i != selected) {
+    if (i >= max)
+      break;
 
-	CMessage cur = messages[i];
-	std::string format = cur.format();
-	if (strstr(format.c_str(), str) != NULL) {
-	    global->set_selected_message(i);
-	    break;
-	}
-	i += 1;
-
-	if (i >= max)
-	    i = 0;
+    CMessage *cur = messages[i];
+    std::string format = cur->format();
+    if (strstr(format.c_str(), str) != NULL) {
+      global->set_selected_message(i);
+      break;
     }
-    return 0;
+    i += 1;
+
+    if (i >= max)
+      i = 0;
+  }
+  return 0;
 }
 
 

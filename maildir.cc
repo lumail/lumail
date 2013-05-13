@@ -142,56 +142,57 @@ std::vector < std::string > CMaildir::getFolders(std::string path)
 }
 
 /**
- * Get the messages in the folder.
+ * Get each messages in the folder.
  */
-std::vector < CMessage > CMaildir::getMessages()
+std::vector <CMessage *> CMaildir::getMessages()
 {
   /**
    * See what filter we have available.
    */
-  CGlobal *global = CGlobal::Instance();
-  std::string *filter = global->get_index_limit();
-
-  std::vector < CMessage > result;
+  CGlobal *global      = CGlobal::Instance();
+  std::string *filter  = global->get_index_limit();
+  std::vector<CMessage*> result;
   dirent *de;
   DIR *dp;
 
-  dp = opendir((m_path + "/cur").c_str());
-  if (dp) {
-    while (true) {
-      de = readdir(dp);
-      if (de == NULL)
-        break;
+  /**
+   * Directories we search.
+   */
+  std::vector < std::string > dirs;
+  dirs.push_back(m_path + "/cur");
+  dirs.push_back(m_path + "/new");
 
-      if (!CMaildir::is_directory (std::string(m_path + "/cur/" + de->d_name)))
-        {
-          CMessage t = CMessage(std::string(m_path + "/cur/" + de->d_name));
+  /**
+   * For each directory.
+   */
+  std::vector < std::string >::iterator it;
+  for (it = dirs.begin(); it != dirs.end(); ++it) {
+
+    std::string path = *it;
+
+    dp = opendir(path.c_str());
+    if (dp) {
+
+      while (true) {
+
+        de = readdir(dp);
+        if (de == NULL)
+          break;
+
+        if (!CMaildir::is_directory (std::string(path + de->d_name))) {
+          CMessage *t = new CMessage(std::string(path + de->d_name));
+
+          /**
+           * TODO: This will go away.
+           */
           if ( strcmp(filter->c_str(), "all" ) == 0 )
             result.push_back(t);
-          if ( ( strcmp(filter->c_str(), "new") == 0 ) && t.is_new() )
+          if ( ( strcmp(filter->c_str(), "new") == 0 ) && t->is_new() )
             result.push_back(t);
         }
+      }
+      closedir(dp);
     }
-    closedir(dp);
-  }
-
-  dp = opendir((m_path + "/new").c_str());
-  if (dp) {
-    while (true) {
-      de = readdir(dp);
-      if (de == NULL)
-        break;
-
-      if (!CMaildir::is_directory (std::string(m_path + "/new/" + de->d_name)))
-        {
-          CMessage t = CMessage(std::string(m_path + "/new/" + de->d_name));
-          if ( strcmp(filter->c_str(), "all" ) == 0 )
-            result.push_back(t);
-          if ( ( strcmp(filter->c_str(), "new") == 0 ) && t.is_new() )
-            result.push_back(t);
-        }
-    }
-    closedir(dp);
   }
   return result;
 }

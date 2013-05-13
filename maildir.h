@@ -85,7 +85,7 @@ class CMaildir
   /**
    * Get each message in the folder.
    */
-  std::vector < CMessage > getMessages();
+  std::vector <CMessage *> getMessages();
 
   /**
    * Count files in a directory.
