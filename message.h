@@ -68,6 +68,11 @@ class CMessage
   std::string flags();
 
   /**
+   * Does this message match the given filter?
+   */
+  bool matches_filter( std::string *filter );
+
+  /**
    * Is this message new?
    */
   bool is_new();

@@ -93,6 +93,21 @@ std::string CMessage::flags()
     return flags;
 }
 
+/**
+ * Does this message match the given filter.
+ */
+bool CMessage::matches_filter( std::string *filter )
+{
+  if ( strcmp( filter->c_str(), "all" ) == 0 )
+    return true;
+
+  if  ( ( strcmp( filter->c_str(), "new" ) == 0 ) &&
+        is_new() )
+    return true;
+
+  return false;
+}
+
 
 /**
  * Is this message new?

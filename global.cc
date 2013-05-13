@@ -257,6 +257,7 @@ std::vector<CMessage *> CGlobal::get_messages()
    */
   CGlobal *global = CGlobal::Instance();
   std::vector<std::string> folders = global->get_selected_folders();
+  std::string * filter = global->get_index_limit();
 
   /**
    * The sum of all messages we're going to display.
@@ -280,7 +281,8 @@ std::vector<CMessage *> CGlobal::get_messages()
      */
     std::vector<CMessage *>::iterator mit;
     for (mit = contents.begin(); mit != contents.end(); ++mit) {
-      messages.push_back(*mit);
+      if ( (*mit)->matches_filter( filter ) )
+        messages.push_back(*mit) ;
     }
   }
 

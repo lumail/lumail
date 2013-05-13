@@ -196,8 +196,8 @@ void CScreen::drawIndex()
      * Bound the selection.
      */
     if (selected >= count) {
-	global->set_selected_message(0);
-	selected = 0;
+      selected = count-1;
+	global->set_selected_message(selected);
     }
 
   /**
@@ -295,7 +295,7 @@ void CScreen::drawMessage()
 
   CMessage *cur = NULL;
   if ((selected) < count)
-    cur = messages[ selected];
+    cur = messages[selected];
   else
     {
       clear();
@@ -360,6 +360,8 @@ void CScreen::drawMessage()
       printw( "%s", body[i].c_str() );
     }
 
+  if ( cur->is_new() )
+    cur->mark_read();
 }
 
 /**
