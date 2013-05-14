@@ -227,6 +227,7 @@ std::string CMessage::format( std::string fmt )
     CGlobal *global  = CGlobal::Instance();
     std::string *fmt = global->get_index_format();
     result = std::string(*fmt);
+  }
 
   /**
    * The variables we know about.
@@ -273,8 +274,6 @@ std::string CMessage::format( std::string fmt )
       result = before + body + after;
     }
   }
-
-
   return( result );
 }
 
