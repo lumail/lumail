@@ -80,8 +80,11 @@ int global_mode(lua_State * L)
      * get the argument, and if we have one set it.
      */
     const char *str = lua_tostring(L, -1);
-    if (str != NULL)
-	g->set_mode(new std::string(str));
+    if (str != NULL) {
+      std::string *mode = new std::string(str);
+      std::transform(mode->begin(), mode->end(), mode->begin(), tolower);
+      g->set_mode(mode);
+    }
 
     /**
      * Return the current/updated value.
