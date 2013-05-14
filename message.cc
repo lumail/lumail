@@ -66,43 +66,43 @@ std::string CMessage::path()
  */
 std::string CMessage::flags()
 {
-    std::string flags = "";
+  std::string flags = "";
 
-    if (m_path.empty())
-	return (flags);
+  if (m_path.empty())
+    return (flags);
 
-    size_t offset = m_path.find(":2,");
-    if (offset != std::string::npos)
-      flags = m_path.substr(offset + 3);
+  size_t offset = m_path.find(":2,");
+  if (offset != std::string::npos)
+    flags = m_path.substr(offset + 3);
 
-    if ( flags.size() > 3)
-      flags = "";
+  if ( flags.size() > 3)
+    flags = "";
 
-    /**
-     * Sleazy Hack.
-     */
-    if ( m_path.find( "/new/" ) != std::string::npos )
-      flags += "N";
+  /**
+   * Sleazy Hack.
+   */
+  if ( m_path.find( "/new/" ) != std::string::npos )
+    flags += "N";
 
-    /**
-     * Pad.
-     */
-    while( (int)strlen(flags.c_str()) < 4 )
-      flags += " ";
+  /**
+   * Pad.
+   */
+  while( (int)strlen(flags.c_str()) < 4 )
+    flags += " ";
 
-    return flags;
+  return flags;
 }
 
+
 /**
- * Does this message match the given filter.
+ * Does this message match the given filter?
  */
 bool CMessage::matches_filter( std::string *filter )
 {
   if ( strcmp( filter->c_str(), "all" ) == 0 )
     return true;
 
-  if  ( ( strcmp( filter->c_str(), "new" ) == 0 ) &&
-        is_new() )
+  if ( ( strcmp( filter->c_str(), "new" ) == 0 ) && is_new() )
     return true;
 
   return false;
@@ -121,8 +121,9 @@ bool CMessage::is_new()
     return false;
 }
 
+
 /**
- * Mark the given message as read.
+ * Mark the message as read.
  */
 bool CMessage::mark_read()
 {
@@ -156,19 +157,21 @@ bool CMessage::mark_read()
     }
   else {
     /**
-     * The file is new, but not in the new folder.  THat means we need to remove "N" from
+     * The file is new, but not in the new folder.  That means we need to remove "N" from
      * the flag-component of the path.
      *
      * TODO
      */
     return false;
   }
-
 }
 
+
+/**
+ * Mark the message as unread.
+ */
 bool CMessage::mark_new()
 {
-
   /*
    * Get the current path, and build a new one.
    */
@@ -214,21 +217,16 @@ bool CMessage::mark_new()
  */
 std::string CMessage::format( std::string fmt )
 {
-
-  std::string result;
+  std::string result = fmt;
 
   /**
    * Get the format-string we'll expand from the global
    * setting, if it wasn't supplied.
    */
-  if ( fmt.empty() )  {
-    CGlobal *global = CGlobal::Instance();
+  if ( result.empty() ) {
+    CGlobal *global  = CGlobal::Instance();
     std::string *fmt = global->get_index_format();
     result = std::string(*fmt);
-  }
-  else {
-    result = fmt;
-  }
 
   /**
    * The variables we know about.
@@ -297,12 +295,13 @@ std::string CMessage::header( std::string name )
     return "";
 }
 
+
 /**
  * Get the sender of the message.
  */
 std::string CMessage::from()
 {
-  return(header( "From" ) );
+  return( header( "From" ) );
 }
 
 
@@ -386,7 +385,7 @@ std::vector<std::string> CMessage::body()
 
 
   /**
-   * Split the body into an array, by newlines newlines.
+   * Split the body into an array, by newlines.
    */
   std::stringstream stream(body);
   std::string line;

@@ -61,7 +61,6 @@ class CMessage
    */
   std::string format( std::string fmt = "");
 
-
   /**
    * Get the flags for this message.
    */
@@ -97,18 +96,15 @@ class CMessage
    */
   std::string from();
 
-
   /**
    * Get the date of the message.
    */
   std::string date();
 
-
   /**
    * Get the recipient of the message.
    */
   std::string to();
-
 
   /**
    * Get the subject of the message.
@@ -134,4 +130,4 @@ class CMessage
   mimetic::MimeEntity *m_me;
 };
 
-#endif				/* _message_h */
+#endif /* _message_h */
