@@ -199,7 +199,7 @@ int exec(lua_State * L)
     if (str == NULL)
 	return luaL_error(L, "Missing argument to exec(..)");
 
-    CScreen::clearStatus();
+    CScreen::clear_status();
 
     /**
      * Save the current state of the TTY
@@ -229,7 +229,7 @@ int msg(lua_State * L)
     if (str == NULL)
 	return luaL_error(L, "Missing argument to msg(..)");
 
-    CScreen::clearStatus();
+    CScreen::clear_status();
     move(CScreen::height() - 1, 0);
     printw("%s", str);
     return 0;
@@ -251,7 +251,7 @@ int prompt(lua_State * L)
     curs_set(1);
     echo();
 
-    CScreen::clearStatus();
+    CScreen::clear_status();
     move(CScreen::height() - 1, 0);
     printw(str);
 
@@ -262,7 +262,7 @@ int prompt(lua_State * L)
 
     curs_set(0);
 
-    CScreen::clearStatus();
+    CScreen::clear_status();
     lua_pushstring(L, strdup(input));
     return 1;
 }

@@ -421,7 +421,7 @@ int CScreen::height()
 /**
  * Clear the status-line of the screen.
  */
-void CScreen::clearStatus()
+void CScreen::clear_status()
 {
     move(CScreen::height() - 1, 0);
 

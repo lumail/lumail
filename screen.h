@@ -63,7 +63,7 @@ class CScreen
   /**
    * Clear the status-line of the screen.
    */
-  static void clearStatus();
+  static void clear_status();
 
   /**
    * Read a line of input.
