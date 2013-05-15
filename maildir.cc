@@ -79,12 +79,12 @@ std::string CMaildir::path()
 /**
  * Does this folder match the given filter.
  */
-bool CMaildir::matches( std::string filter )
+bool CMaildir::matches_filter( std::string *filter )
 {
-  if (strcmp(filter.c_str(), "all") == 0)
+  if (strcmp(filter->c_str(), "all") == 0)
     return true;
 
-  if (strcmp(filter.c_str(), "new") == 0) {
+  if (strcmp(filter->c_str(), "new") == 0) {
     if ( newMessages() > 0)
       return true;
     else
@@ -92,7 +92,7 @@ bool CMaildir::matches( std::string filter )
   }
 
   std::string p = path();
-  if (p.find(filter, 0) != std::string::npos)
+  if (p.find(*filter, 0) != std::string::npos)
     return true;
 
   return false;

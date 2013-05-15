@@ -70,7 +70,7 @@ class CMaildir
   /**
    * Does this maildir match the given filter?
    */
-  bool matches( std::string filter );
+  bool matches_filter( std::string *filter );
 
   /**
    * Is the given path a Maildir?

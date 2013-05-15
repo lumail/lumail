@@ -206,7 +206,7 @@ std::vector < CMaildir > CGlobal::get_folders()
   for (it = folders.begin(); it != folders.end(); ++it) {
     CMaildir x = *it;
 
-    if ( x.matches( *filter ) )
+    if ( x.matches_filter( filter ) )
       display.push_back(x);
   }
 
