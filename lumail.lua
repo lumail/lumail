@@ -61,7 +61,7 @@ maildir_limit( "all" );
 --
 --        all  -> Show all message.
 --        new  -> Show all unread messages.
---  TODO "str" -> Show all messages which match the substring "str".
+--       "str" -> Show all messages which match the substring "str".
 --
 index_limit( "all" );
 
