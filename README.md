@@ -8,24 +8,17 @@ The email client is a modal application, which means that you're *always* in one
 states:
 
 * Interacting with lists of mailboxes.
+   * This is the mode you'll start in.
+   * Move around via `j`/`k`/`/`.
+   * You may open the single selected folder by pressing `RETURN`.
+   * Or you may toggle the selected state by pressing `SPACE` and jumping into index mode with `I` when you've selected all the folders you care about.
 * Interacting with lists of messages.
+   * Press `a` to view all messages.
+   * Press `n` to view new messages only.
 * Interacting with a single message.
 
-This suits my email tastes, although perhaps isn't for everybody.
-
-Once launched you'll start in the "maildir" mode.  This consists of a scrollable list
-of folder-names.  You can page up/down with `j/k`, or search with `/`.
-
-Each maildir-name has a small `[ ]` next to it.  This indicates whether the folder is
-selected or not.  Unlike other mail-clients where you open a mailbox/folder with lumail
-you can open __multiple__ folders at the same time.
-
-To open the single folder which is highlighted, press RETURN.  Otherwise you may toggle
-the folders selected state with "SPACE".  Once you've selected as many folders as you
-wish you can press "I" to view the index-mode.
-
-Index-mode is navigated the same way as maildir-mode; use `j + k + /` to move around,
-then press "SPACE"/"RETURN" to view an individual message.
+You'll find (a quick introduction to using lumail)[http://lumail.org/getting-started/] on
+the [lumail website](http://lumail.org).
 
 
 Code
@@ -61,8 +54,8 @@ Because lumail is modal application the coding has been split into sections:
     * This is functional.
     * You may scroll/search/limit the display of folders.  But such searches are slow.
 * Code the display/manipulation of a single mail message.
-    * This is nearly-functional.
     * You may view the first screen-ful of a message.  If it is text/plain.
+    * Once viewed a message is marked as read.
 
 Missing functionality largely relates to using this client for real.
 
@@ -71,7 +64,6 @@ The following features are missing:
 * The ability to compose a new message.
 * The ability to reply to a message.
 * The ability to delete a message.
-* The ability to mark a new message as read.
 
 
 Screenshots
@@ -88,7 +80,7 @@ Configuration & Lua-Primitives
 If you examine the supplied [lumail.lua](https://raw.github.com/skx/lumail/master/lumail.lua)
 configuration file you'll get a flavour for the configuration.
 
-The main part of the configuration is to  point the mail-client at your local Maildir
+The main part of the configuration is to point the mail-client at your local Maildir
 location, from which all sub-folders will be determined at run-time.
 
 At startup the following three lua files are evaluated, if present:
@@ -105,7 +97,7 @@ Further Information
 You may find further information upon the lumail website:
 
 * http://lumail.org/
-    * This website is built automatically from the [lumail.org repository](https://github.com/skx/lumail.org/).
+    * This website is built automatically from the [lumail.org website repository](https://github.com/skx/lumail.org/).
 
 
 Steve
