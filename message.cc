@@ -102,8 +102,12 @@ bool CMessage::matches_filter( std::string *filter )
   if ( strcmp( filter->c_str(), "all" ) == 0 )
     return true;
 
-  if ( ( strcmp( filter->c_str(), "new" ) == 0 ) && is_new() )
-    return true;
+  if ( strcmp( filter->c_str(), "new" ) == 0 ) {
+      if ( is_new() )
+        return true;
+      else
+        return false;
+  }
 
   /**
    * Matching the formatted version.
