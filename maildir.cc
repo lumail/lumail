@@ -75,6 +75,30 @@ std::string CMaildir::path()
   return (m_path);
 }
 
+
+/**
+ * Does this folder match the given filter.
+ */
+bool CMaildir::matches( std::string filter )
+{
+  if (strcmp(filter.c_str(), "all") == 0)
+    return true;
+
+  if (strcmp(filter.c_str(), "new") == 0) {
+    if ( newMessages() > 0)
+      return true;
+    else
+      return false;
+  }
+
+  std::string p = path();
+  if (p.find(filter, 0) != std::string::npos)
+    return true;
+
+  return false;
+}
+
+
 /**
  * Count files in a directory.
  */

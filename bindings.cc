@@ -660,7 +660,7 @@ int compose(lua_State * L)
 
 
 /**
- * Set the default from address.
+ * Get, or set, the default from address.
  */
 int from(lua_State * L)
 {

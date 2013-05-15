@@ -194,33 +194,23 @@ std::vector<CMaildir> CGlobal::get_all_folders()
  */
 std::vector < CMaildir > CGlobal::get_folders()
 {
-    CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir> folders = global->get_all_folders();
-    std::vector<CMaildir> display;
-    std::string * filter = global->get_maildir_limit();
+  CGlobal *global = CGlobal::Instance();
+  std::vector<CMaildir> folders = global->get_all_folders();
+  std::vector<CMaildir> display;
+  std::string * filter = global->get_maildir_limit();
 
   /**
    * Filter the folders to those we can display
    */
-    std::vector<CMaildir>::iterator it;
-    for (it = folders.begin(); it != folders.end(); ++it) {
-	CMaildir x = *it;
+  std::vector<CMaildir>::iterator it;
+  for (it = folders.begin(); it != folders.end(); ++it) {
+    CMaildir x = *it;
 
-	if (strcmp(filter->c_str(), "all") == 0) {
-	    display.push_back(x);
-	} else if (strcmp(filter->c_str(), "new") == 0) {
-	    if (x.newMessages() > 0) {
-		display.push_back(x);
-	    }
-	} else {
-	    std::string path = x.path();
-	    if (path.find(*filter, 0) != std::string::npos) {
-		display.push_back(x);
-	    }
-	}
-    }
+    if ( x.matches( *filter ) )
+      display.push_back(x);
+  }
 
-    return (display);
+  return (display);
 }
 
 /**

@@ -68,6 +68,11 @@ class CMaildir
   std::string path();
 
   /**
+   * Does this maildir match the given filter?
+   */
+  bool matches( std::string filter );
+
+  /**
    * Is the given path a Maildir?
    */
   static bool is_maildir(std::string path);
