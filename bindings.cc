@@ -33,8 +33,9 @@
 #include "screen.h"
 #include "lua.h"
 
+
 /**
- * Set the maildir-prefix
+ * Get, or set, the maildir-prefix
  */
 int maildir_prefix(lua_State * L)
 {
@@ -53,8 +54,9 @@ int maildir_prefix(lua_State * L)
     return 1;
 }
 
+
 /**
- * Set the index-format
+ * Get, or set, the index-format
  */
 int index_format(lua_State * L)
 {
@@ -70,7 +72,7 @@ int index_format(lua_State * L)
 }
 
 /**
- * Get/Set the global lumail mode.
+ * Get, or set, the global lumail mode.
  */
 int global_mode(lua_State * L)
 {
@@ -95,7 +97,7 @@ int global_mode(lua_State * L)
 }
 
 /**
- * Limit the maildir display.
+ * Get, or set, the maildir limit.
  */
 int maildir_limit(lua_State * L)
 {
@@ -118,7 +120,7 @@ int maildir_limit(lua_State * L)
 
 
 /**
- * limit the display of messages.
+ * Get, or set, the index limit.
  */
 int index_limit(lua_State * L)
 {
@@ -141,7 +143,7 @@ int index_limit(lua_State * L)
 
 
 /**
- * Clear the screen.
+ * Clear the screen; but not the prompt.
  */
 int clear(lua_State * L)
 {
@@ -161,6 +163,7 @@ int clear(lua_State * L)
   refresh();
   return 0;
 }
+
 
 /**
  * Sleep.
@@ -191,7 +194,7 @@ int exit(lua_State * L)
 }
 
 /**
- * Execute a program.
+ * Execute a program, resetting curses first.
  */
 int exec(lua_State * L)
 {
@@ -585,45 +588,76 @@ int toggle_selected_folder(lua_State * L)
 int compose(lua_State * L)
 {
 
+  CGlobal *global = CGlobal::Instance();
   char filename[] = "/tmp/mytemp.XXXXXX";
   int fd = mkstemp(filename);
 
   if (fd == -1)
-    return luaL_error(L, "Failed to create a temporary file");
+    return luaL_error(L, "Failed to create a temporary file.");
 
-
-
+  /**
+   * TO
+   */
   write(fd, "To: \n", strlen( "To: \n"));
+
+  /**
+   * Subject.
+   */
   write(fd, "Subject: New mail\n", strlen( "Subject: New mail\n" ) );
-  write(fd, "From: \n" , strlen( "From: \n" ) );
-  write(fd, "\n\n", 2 );
+
+  /**
+   * From
+   */
+  write(fd, "From: " , strlen( "From: " ) );
+  std::string *from = global->get_default_from();
+  write(fd, from->c_str(), strlen( from->c_str() ) );
+  write(fd, "\n", 1 );
+
+  /**
+   * Space
+   */
+  write(fd, "\n", 1 );
+
+  /**
+   * Body
+   */
   write(fd, "....\n", strlen("....\n" ) );
   close(fd);
 
-    /**
-     * Save the current state of the TTY
-     */
-    refresh();
-    def_prog_mode();
-    endwin();
+  /**
+   * Save the current state of the TTY
+   */
+  refresh();
+  def_prog_mode();
+  endwin();
 
-    /* Run the edito */
-    std::string cmd = "vim ";
-    cmd += filename;
-    system(cmd.c_str());
+  /* Run the editor */
+  std::string cmd = "vim";
 
-    unlink( filename );
+  if ( getenv( "EDITOR" ) )
+    cmd = getenv( "EDITOR" );
 
-    /**
-     * Reset + redraw
-     */
-    reset_prog_mode();
-    refresh();
+  cmd += " ";
+  cmd += filename;
+  system(cmd.c_str());
 
-    CLua *lua = CLua::Instance();
-    lua->execute( "msg(\"Mail sending should happen here, after a prompt\");" );
-    return 0;
+  /**
+   * TODO send the mail.
+   */
+
+  unlink( filename );
+
+  /**
+   * Reset + redraw
+   */
+  reset_prog_mode();
+  refresh();
+
+  CLua *lua = CLua::Instance();
+  lua->execute( "msg(\"Mail sending should happen here, after a prompt\");" );
+  return 0;
 }
+
 
 /**
  * Set the default from address.
