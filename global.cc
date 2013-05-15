@@ -64,6 +64,7 @@ CGlobal::CGlobal()
     m_maildir_prefix = NULL;
     m_cur_folder     = 0;
     m_cur_message    = 0;
+    m_messages       = NULL;
 }
 
 /**
@@ -240,8 +241,34 @@ bool my_sort(CMessage *a, CMessage *b)
 /**
  * Get all messages from the currently selected folders.
  */
-std::vector<CMessage *> CGlobal::get_messages()
+std::vector<CMessage *>* CGlobal::get_messages()
 {
+  return( m_messages );
+}
+
+
+/**
+ * Update the list of global messages, using the index_limit string set by lua.
+ */
+void CGlobal::update_messages()
+{
+  /**
+   * If we have items already then free each of them.
+   */
+  if ( m_messages != NULL ) {
+    std::vector<CMessage *>::iterator it;
+    for (it = m_messages->begin(); it != m_messages->end(); ++it) {
+      delete( *it );
+    }
+    delete( m_messages );
+  }
+
+  /**
+   * create a new store.
+   */
+  m_messages = new std::vector<CMessage *>;
+
+
   /**
    * Get the selected maildirs.
    */
@@ -249,10 +276,6 @@ std::vector<CMessage *> CGlobal::get_messages()
   std::vector<std::string> folders = global->get_selected_folders();
   std::string * filter = global->get_index_limit();
 
-  /**
-   * The sum of all messages we're going to display.
-   */
-  std::vector<CMessage *> messages;
 
   /**
    * For each selected maildir read the messages.
@@ -272,16 +295,14 @@ std::vector<CMessage *> CGlobal::get_messages()
     std::vector<CMessage *>::iterator mit;
     for (mit = contents.begin(); mit != contents.end(); ++mit) {
       if ( (*mit)->matches_filter( filter ) )
-        messages.push_back(*mit) ;
+        m_messages->push_back(*mit) ;
     }
   }
 
   /*
    * Sort?
    */
-  std::sort(messages.begin(), messages.end(), my_sort);
-
-  return (messages);
+  std::sort(m_messages->begin(), m_messages->end(), my_sort);
 
 }
 

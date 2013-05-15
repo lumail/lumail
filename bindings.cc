@@ -134,6 +134,11 @@ int index_limit(lua_State * L)
 	g->set_index_limit(new std::string(str));
 
     /**
+     * Update the selected mesages.
+     */
+    g->update_messages();
+
+    /**
      * Return the current/updated value.
      */
     std::string * s = g->get_index_limit();
@@ -413,8 +418,16 @@ int scroll_index_to(lua_State * L)
    * get the current messages
    */
   CGlobal *global = CGlobal::Instance();
-  std::vector<CMessage *> messages = global->get_messages();
-  int max = messages.size();
+  std::vector<CMessage *> *messages = global->get_messages();
+
+  /**
+   * If we have no messages we're not scrolling anywhere.
+   */
+  if ( messages == NULL )
+    return 0;
+
+
+  int max      = messages->size();
   int selected = global->get_selected_message();
 
   int i = selected + 1;
@@ -423,7 +436,7 @@ int scroll_index_to(lua_State * L)
     if (i >= max)
       break;
 
-    CMessage *cur = messages[i];
+    CMessage *cur = messages->at(i);
     std::string format = cur->format();
     if (strstr(format.c_str(), str) != NULL) {
       global->set_selected_message(i);
@@ -472,6 +485,7 @@ int clear_selected_folders(lua_State * L)
     CGlobal *global = CGlobal::Instance();
     global->unset_folders();
     global->set_selected_message(0);
+    global->update_messages();
     return 0;
 }
 
@@ -505,6 +519,7 @@ int add_selected_folder(lua_State * L)
     }
 
     global->set_selected_message(0);
+    global->update_messages();
     return (0);
 }
 
@@ -540,6 +555,8 @@ int set_selected_folder(lua_State * L)
         lua->execute("on_select_folder(\"" + std::string(str) + "\");");
 
     }
+
+    global->update_messages();
     return (0);
 }
 
@@ -578,6 +595,7 @@ int toggle_selected_folder(lua_State * L)
 	global->add_folder(toggle);
     }
 
+    global->update_messages();
     return (0);
 }
 

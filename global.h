@@ -73,7 +73,13 @@ class CGlobal
   /**
    * Get all messages from the currently-selected folders.
    */
-  std::vector<CMessage *> get_messages();
+  std::vector<CMessage *> * get_messages();
+
+  /**
+   * Update the list of messages.
+   */
+  void update_messages();
+
 
   /**
    * Remove all selected folders.
@@ -189,6 +195,11 @@ class CGlobal
    * The from-address of the user.
    */
   std::string * m_from_address;
+
+  /**
+   * The list of currently visible messages.
+   */
+  std::vector<CMessage*> *m_messages;
 
 };
 
