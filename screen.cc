@@ -180,9 +180,31 @@ void CScreen::drawIndex()
    * If we have no messages report that.
    */
     if (( messages == NULL ) ||  (messages->size() < 1)) {
-	move(2, 2);
-	printw("No messages found.");
-	return;
+      move(2, 2);
+      printw("No messages found in:");
+
+      std::vector<std::string> folders = global->get_selected_folders();
+      std::vector<std::string>::iterator it;
+      int height = CScreen::height();
+      int row = 4;
+
+      for (it = folders.begin(); it != folders.end(); ++it) {
+
+        /**
+         * Avoid drawing into the status area.
+         */
+        if ( row >= (height-1) )
+          break;
+
+        /**
+         * Show the name of the folder.
+         */
+        std::string name = (*it);
+        move( row, 5 );
+        printw("%s", name.c_str() );
+        row+=1;
+      }
+      return;
     }
 
   /**
