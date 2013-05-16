@@ -28,10 +28,10 @@
 #include <unistd.h>
 
 #include "maildir.h"
-#include "lua.h"
+#include "lua.h" // XXX
 #include "global.h"
 #include "screen.h"
-#include "lua.h"
+#include "lua.h" // XXX
 
 
 /**
