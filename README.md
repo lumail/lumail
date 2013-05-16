@@ -17,7 +17,7 @@ states:
    * Press `n` to view new messages only.
 * Interacting with a single message.
 
-You'll find (a quick introduction to using lumail)[http://lumail.org/getting-started/] on
+You'll find [a quick introduction to using lumail](http://lumail.org/getting-started/) on
 the [lumail website](http://lumail.org).
 
 
