@@ -105,7 +105,7 @@ CLua::CLua()
      * Get the current maildir.
      */
     lua_register(m_lua, "current_maildir", current_maildir);
-    // TODO: current_message
+    lua_register(m_lua, "current_message", current_message);
 
     /**
      * Folder selection.

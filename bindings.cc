@@ -28,7 +28,7 @@
 #include <unistd.h>
 
 #include "maildir.h"
-#include "lua.h" 
+#include "lua.h"
 #include "global.h"
 #include "screen.h"
 
@@ -401,6 +401,40 @@ int current_maildir(lua_State * L)
     CMaildir x = display[selected];
     lua_pushstring(L, x.path().c_str());
     return 1;
+}
+
+/**
+ * Get the currently highlighted message-path.
+ */
+int current_message(lua_State * L)
+{
+  /**
+   * Get all messages from the currently selected maildirs.
+   */
+  CGlobal *global = CGlobal::Instance();
+  std::vector<CMessage *> *messages = global->get_messages();
+
+  /**
+   * The number of items we've found, and the currently selected one.
+   */
+  int count    = messages->size();
+  int selected = global->get_selected_message();
+
+  /**
+   * No messages?
+   */
+  if ( ( count < 1 ) || selected > count )
+    {
+      lua_pushstring(L,"" );
+      return 1;
+    }
+
+  /**
+   * Push the path.
+   */
+  CMessage *cur = messages->at(selected);
+  lua_pushstring(L, cur->path().c_str() );
+  return 1;
 }
 
 

@@ -62,6 +62,9 @@ int scroll_index_to(lua_State * L);
 /* get the current mailbox name. */
 int current_maildir(lua_State * L);
 
+/* get the current message path. */
+int current_message(lua_State * L);
+
 /* draw a string at the foot of the screen. */
 int msg(lua_State * L);
 
