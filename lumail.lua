@@ -118,6 +118,16 @@ end
 
 
 --
+-- This function is called when a message is read.
+--
+-- The argument is the path to the message on-disk.
+--
+function on_read_message( path )
+   msg( "Reading: " .. path );
+end
+
+
+--
 -- Show the version of this client.
 --
 function show_version()

@@ -331,8 +331,14 @@ void CScreen::drawMessage()
    *
    * TODO: Do this properly.
    */
+
+
+  /**
+   * Clear the screen.
+   */
   CLua *lua = CLua::Instance();
   lua->execute( "clear();" );
+
 
   /**
    * The headers we'll print.
@@ -382,8 +388,16 @@ void CScreen::drawMessage()
       printw( "%s", body[i].c_str() );
     }
 
+  /**
+   * The message is no longer new.
+   */
   if ( cur->is_new() )
     cur->mark_read();
+
+  /**
+   * We're reading a message so call our hook.
+   */
+  lua->execute( "on_read_message(\"" + cur->path() + "\");" );
 }
 
 /**
