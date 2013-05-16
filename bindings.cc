@@ -450,6 +450,13 @@ int is_new(lua_State * L)
   const char *str = lua_tostring(L, -1);
   if ( str != NULL )
     {
+      CMessage cur( str );
+      if ( cur.is_new() )
+        lua_pushinteger(L,1);
+      else
+        lua_pushinteger(L,0);
+
+      return 1;
     }
 
   /**

@@ -123,7 +123,12 @@ end
 -- The argument is the path to the message on-disk.
 --
 function on_read_message( path )
-   msg( "Reading: " .. path );
+   if ( is_new( path ) == 1 ) then
+      msg( "The current message is new" );
+   else
+      msg( "The current message has already been read" );
+   end
+
 end
 
 
