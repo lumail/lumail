@@ -510,9 +510,13 @@ int add_selected_folder(lua_State * L)
 	int selected = global->get_selected_folder();
 	std::vector < CMaildir > display = global->get_folders();
 
+        if ( display.size()  == 0 )
+          return 0;
+
 	CMaildir x = display[selected];
-	global->add_folder(x.path().c_str());
+        global->add_folder(x.path().c_str());
         lua->execute("on_select_folder(\"" + x.path() + "\");");
+
     } else {
 	global->add_folder(std::string(str));
         lua->execute("on_select_folder(\"" + std::string(str) + "\");");
@@ -580,6 +584,10 @@ int toggle_selected_folder(lua_State * L)
 
     if (str == NULL) {
 	std::vector < CMaildir > display = global->get_folders();
+        if ( display.size()  == 0 )
+          return 0;
+
+
 	int selected = global->get_selected_folder();
 	CMaildir x = display[selected];
 	toggle = x.path();
