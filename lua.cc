@@ -105,7 +105,18 @@ CLua::CLua()
      * Get the current maildir.
      */
     lua_register(m_lua, "current_maildir", current_maildir);
+
+    /**
+     * Get the current message
+     */
     lua_register(m_lua, "current_message", current_message);
+
+    /**
+     * Message status manipulation.
+     */
+    lua_register(m_lua, "is_new", is_new);
+    // lua_register(m_lua, "mark_new", mark_new);
+    // lua_register(m_lua, "mark_read", mark_read);
 
     /**
      * Folder selection.

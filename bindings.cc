@@ -438,6 +438,58 @@ int current_message(lua_State * L)
 }
 
 
+
+/**
+ * Is the named/current message new?
+ */
+int is_new(lua_State * L)
+{
+  /**
+   * See if we were passed a path.
+   */
+  const char *str = lua_tostring(L, -1);
+  if ( str != NULL )
+    {
+    }
+
+  /**
+   * OK we're working with the currently selected message.
+   */
+
+
+  /**
+   * Get all messages from the currently selected messages.
+   */
+  CGlobal *global = CGlobal::Instance();
+  std::vector<CMessage *> *messages = global->get_messages();
+
+  /**
+   * The number of items we've found, and the currently selected one.
+   */
+  int count    = messages->size();
+  int selected = global->get_selected_message();
+
+  /**
+   * No messages?
+   */
+  if ( ( count < 1 ) || selected > count )
+    {
+      lua_pushinteger(L, 0);
+      return 1;
+    }
+
+  /**
+   * Get the value.
+   */
+  CMessage *cur = messages->at(selected);
+  if ( cur->is_new() )
+    lua_pushinteger(L,1);
+  else
+    lua_pushinteger(L,0);
+
+  return 1;
+}
+
 /**
  * Search for the next message matching the pattern.
  */
