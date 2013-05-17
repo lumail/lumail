@@ -41,6 +41,12 @@ Building the code should be as simple as cloning this repository and running "`m
 From there it may be executed directly, although you might wish to make tweaks to
 the supplied configuration file `lumail.lua`.
 
+For coding-style we use the following [Emacs](http://www.gnu.org/software/emacs/) settings:
+
+    (setq c-default-style "linux" c-basic-offset 4)
+    (c-set-offset 'substatement-open 0)
+
+
 
 Current Status
 --------------
