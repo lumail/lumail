@@ -119,6 +119,20 @@ end
 
 
 --
+-- Jump to the end of the list of messages/maildirs.
+--
+function jump_to_end()
+   if ( string.find( m, "maildir" ) ) then
+      jump_maildir_to( count_maildirs() - 1 );
+   elseif (string.find(m, "index" ) ) then
+      jump_index_to( count_messages() - 1 );
+   else
+      msg( "jump_to_end not implemented for mode:" .. m );
+   end
+end
+
+
+--
 -- This function is called when a message is displayed.
 --
 -- The argument is the path to the message on-disk.
@@ -371,7 +385,8 @@ keymap['global']['M']   = 'maildir()';
 keymap['global']['I'] = 'index()';
 -- Show the client version
 keymap['global']['v'] = 'show_version()'
-
+-- Jump to end
+keymap['global']['*'] = 'jump_to_end()'
 
 
 --

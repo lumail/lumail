@@ -93,6 +93,7 @@ CLua::CLua()
     lua_register(m_lua, "scroll_maildir_down", scroll_maildir_down);
     lua_register(m_lua, "scroll_maildir_up", scroll_maildir_up);
     lua_register(m_lua, "scroll_maildir_to", scroll_maildir_to);
+    lua_register(m_lua, "jump_maildir_to", jump_maildir_to);
 
     /**
      * Scroll index up/down/to a pattern.
@@ -100,11 +101,13 @@ CLua::CLua()
     lua_register(m_lua, "scroll_index_down", scroll_index_down);
     lua_register(m_lua, "scroll_index_up", scroll_index_up);
     lua_register(m_lua, "scroll_index_to", scroll_index_to);
+    lua_register(m_lua, "jump_index_to", jump_index_to );
 
     /**
      * Get the current maildir.
      */
     lua_register(m_lua, "current_maildir", current_maildir);
+    lua_register(m_lua, "count_maildirs", count_maildirs );
 
     /**
      * Get the current message

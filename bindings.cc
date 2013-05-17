@@ -312,6 +312,19 @@ int scroll_maildir_up(lua_State * L)
 
 
 /**
+ * Jump to the given entry in the maildir list.
+ */
+int jump_maildir_to(lua_State * L)
+{
+    int offset = lua_tonumber(L, -1);
+    CGlobal *global = CGlobal::Instance();
+    global->set_selected_folder(offset);
+
+    return 0;
+}
+
+
+/**
  * scroll up/down the message list.
  */
 int scroll_index_down(lua_State * L)
@@ -344,6 +357,18 @@ int scroll_index_up(lua_State * L)
 	cur = 0;
 
     global->set_selected_message(cur);
+    return (0);
+}
+
+/**
+ * Jump to the given message.
+ */
+int jump_index_to(lua_State * L)
+{
+    int offset = lua_tonumber(L, -1);
+
+    CGlobal *global = CGlobal::Instance();
+    global->set_selected_message(offset);
     return (0);
 }
 
@@ -402,6 +427,16 @@ int current_maildir(lua_State * L)
     lua_pushstring(L, x.path().c_str());
     return 1;
 }
+
+int count_maildirs(lua_State *L)
+{
+    CGlobal *global = CGlobal::Instance();
+
+    std::vector<CMaildir> folders = global->get_folders();
+    lua_pushinteger(L, folders.size() );
+    return 1;
+}
+
 
 /**
  * Get the currently highlighted message-path.
