@@ -67,8 +67,8 @@ int current_message(lua_State * L);
 
 /* message helpers */
 int is_new(lua_State *L);
-//int mark_new(lua_Stat *L);
-//int mark_read(lua_Stat *L);
+int mark_new(lua_State *L);
+int mark_read(lua_State *L);
 
 /* draw a string at the foot of the screen. */
 int msg(lua_State * L);

@@ -497,6 +497,106 @@ int is_new(lua_State * L)
   return 1;
 }
 
+
+
+/**
+ * Mark the message as read.
+ */
+int mark_read(lua_State * L)
+{
+  /**
+   * See if we were passed a path.
+   */
+  const char *str = lua_tostring(L, -1);
+  if ( str != NULL )
+    {
+      CMessage cur( str );
+      cur.mark_read();
+      return 0;
+    }
+
+
+  /**
+   * OK we're working with the currently selected message.
+   */
+
+  /**
+   * Get all messages from the currently selected messages.
+   */
+  CGlobal *global = CGlobal::Instance();
+  std::vector<CMessage *> *messages = global->get_messages();
+
+  /**
+   * The number of items we've found, and the currently selected one.
+   */
+  int count    = messages->size();
+  int selected = global->get_selected_message();
+
+  /**
+   * No messages?
+   */
+  if ( ( count < 1 ) || selected > count )
+      return 0;
+
+  /**
+   * Mark read..
+   */
+  CMessage *cur = messages->at(selected);
+  cur->mark_read();
+
+  return 0;
+}
+
+
+
+/**
+ * Mark the message as new.
+ */
+int mark_new(lua_State * L)
+{
+  /**
+   * See if we were passed a path.
+   */
+  const char *str = lua_tostring(L, -1);
+  if ( str != NULL )
+    {
+      CMessage cur( str );
+      cur.mark_new();
+      return 0;
+    }
+
+  /**
+   * OK we're working with the currently selected message.
+   */
+
+  /**
+   * Get all messages from the currently selected messages.
+   */
+  CGlobal *global = CGlobal::Instance();
+  std::vector<CMessage *> *messages = global->get_messages();
+
+  /**
+   * The number of items we've found, and the currently selected one.
+   */
+  int count    = messages->size();
+  int selected = global->get_selected_message();
+
+  /**
+   * No messages?
+   */
+  if ( ( count < 1 ) || selected > count )
+    return 0;
+
+  /**
+   * Mark the message
+   */
+  CMessage *cur = messages->at(selected);
+  cur->mark_new();
+  return( 0 );
+}
+
+
+
 /**
  * Search for the next message matching the pattern.
  */
