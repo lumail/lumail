@@ -15,6 +15,8 @@
  * On Debian GNU/Linux systems, the complete text of version 2 of the GNU
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
+
+
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -23,15 +25,18 @@
 #include <string.h>
 #include <stdlib.h>
 
+
 #include "lua.h"
 #include "bindings.h"
 #include "global.h"
 #include "version.h"
 
+
 /**
  * Instance-handle.
  */
 CLua *CLua::pinstance = NULL;
+
 
 /**
  * Get access to our LUA intepreter.
@@ -39,20 +44,22 @@ CLua *CLua::pinstance = NULL;
 CLua *CLua::Instance()
 {
     if (!pinstance)
-	pinstance = new CLua;
+        pinstance = new CLua;
 
     return pinstance;
 }
+
 
 /**
  * Constructor - This is private as this class is a singleton.
  */
 CLua::CLua()
 {
-  /**
-   * Create LUA object.
-   */
+    /**
+     * Create LUA object.
+     */
     m_lua = lua_open();
+
     luaopen_base(m_lua);
     luaL_openlibs(m_lua);
 
@@ -157,6 +164,7 @@ CLua::CLua()
     //TODO: sendmail_path
 }
 
+
 /**
  * Load the specified lua file, and evaluate it.
  */
@@ -165,15 +173,18 @@ void CLua::load_file(std::string filename)
     struct stat sb;
 
     std::cout << "Loading file " << filename << std::endl;
-    if ((stat(filename.c_str(), &sb) == 0)) {
+    if ((stat(filename.c_str(), &sb) == 0))
+    {
 	if (luaL_loadfile(m_lua, filename.c_str())
-	    || lua_pcall(m_lua, 0, 0, 0)) {
+	    || lua_pcall(m_lua, 0, 0, 0))
+        {
 	    fprintf(stderr, "cannot run configuration file: %s",
 		    lua_tostring(m_lua, -1));
 	    exit(1);
 	}
     }
 }
+
 
 /**
  * Evaluate the given string.
@@ -189,12 +200,13 @@ void CLua::execute(std::string lua)
 bool CLua::call_function(std::string name)
 {
     lua_getglobal(m_lua, name.c_str());
-    if (lua_isfunction(m_lua, -1)) {
+    if (lua_isfunction(m_lua, -1))
+    {
 	lua_pcall(m_lua, 0, 0, 0);
 	return true;
-    } else {
-	return false;
     }
+    else
+	return false;
 }
 
 /**
@@ -221,6 +233,7 @@ std::string * CLua::get_global(std::string name)
 
     return result;
 }
+
 
 /**
  * Execute a function from the global keymap.
@@ -249,13 +262,13 @@ bool CLua::on_keypress(char key)
     lua_pushstring(m_lua, "global" );
     lua_gettable(m_lua, -2);
     if ( lua_istable(m_lua, -1 ) )
-      {
+    {
         lua_pushstring(m_lua, keypress);
         lua_gettable(m_lua, -2);
-        if (lua_isstring(m_lua, -1)) {
-          result = (char *)lua_tostring(m_lua, -1);
-        }
-      }
+
+        if (lua_isstring(m_lua, -1))
+            result = (char *)lua_tostring(m_lua, -1);
+    }
 
 
     /**
@@ -265,22 +278,22 @@ bool CLua::on_keypress(char key)
     lua_pushstring(m_lua, mode->c_str() );
     lua_gettable(m_lua, -2);
     if ( lua_istable(m_lua, -1 ) )
-      {
+    {
         lua_pushstring(m_lua, keypress);
         lua_gettable(m_lua, -2);
-        if (lua_isstring(m_lua, -1)) {
-          result = (char *)lua_tostring(m_lua, -1);
-        }
-      }
+        if (lua_isstring(m_lua, -1))
+            result = (char *)lua_tostring(m_lua, -1);
+
+    }
 
     /**
      * If one/other of these resulted in success then we're golden.
      */
     if ( result != NULL )
-      {
+    {
         execute(result);
         return true;
-      }
+    }
     return false;
 }
 
