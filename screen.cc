@@ -389,12 +389,6 @@ void CScreen::drawMessage()
     }
 
   /**
-   * The message is no longer new.
-   */
-  if ( cur->is_new() )
-    cur->mark_read();
-
-  /**
    * We're reading a message so call our hook.
    */
   lua->execute( "on_read_message(\"" + cur->path() + "\");" );

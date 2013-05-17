@@ -118,17 +118,20 @@ end
 
 
 --
--- This function is called when a message is read.
+-- This function is called when a message is displayed.
 --
 -- The argument is the path to the message on-disk.
 --
+-- Here we use the "is_new()" and "mark_read()" functions with that
+-- path.  If the path were omitted then the current-message would be
+-- implicit, so there is no difference.
+--
+-- We mark any new message(s) read when we read them here.
+--
 function on_read_message( path )
-   if ( is_new( path ) == 1 ) then
-      msg( "The current message is new" );
-   else
-      msg( "The current message has already been read" );
+   if ( is_new() == 1 ) then
+      mark_read();
    end
-
 end
 
 
