@@ -17,6 +17,7 @@
  *
  */
 
+
 #include <stdio.h>
 #include <algorithm>
 #include <cstdlib>
@@ -26,6 +27,7 @@
 #include <stdlib.h>
 #include <ncurses.h>
 #include <unistd.h>
+
 
 #include "maildir.h"
 #include "lua.h"
@@ -42,9 +44,10 @@ int maildir_prefix(lua_State * L)
     const char *str = lua_tostring(L, -1);
     CGlobal *g = CGlobal::Instance();
 
-    if (str != NULL) {
-      if ( !CMaildir::is_directory( str ) )
-	return luaL_error(L, "The specified prefix is not a Maildir" );
+    if (str != NULL)
+    {
+        if ( !CMaildir::is_directory( str ) )
+            return luaL_error(L, "The specified prefix is not a Maildir" );
 
 	g->set_maildir_prefix(new std::string(str));
     }
@@ -71,6 +74,7 @@ int index_format(lua_State * L)
     return 1;
 }
 
+
 /**
  * Get, or set, the global lumail mode.
  */
@@ -82,10 +86,11 @@ int global_mode(lua_State * L)
      * get the argument, and if we have one set it.
      */
     const char *str = lua_tostring(L, -1);
-    if (str != NULL) {
-      std::string *mode = new std::string(str);
-      std::transform(mode->begin(), mode->end(), mode->begin(), tolower);
-      g->set_mode(mode);
+    if (str != NULL)
+    {
+        std::string *mode = new std::string(str);
+        std::transform(mode->begin(), mode->end(), mode->begin(), tolower);
+        g->set_mode(mode);
     }
 
     /**
@@ -95,6 +100,7 @@ int global_mode(lua_State * L)
     lua_pushstring(L, s->c_str());
     return 1;
 }
+
 
 /**
  * Get, or set, the maildir limit.
@@ -163,7 +169,7 @@ int clear(lua_State * L)
     blank += " ";
 
   for(int i = 0; i < ( height - 1 ); i++ )
-    mvprintw( i, 0, "%s", blank.c_str() );
+      mvprintw( i, 0, "%s", blank.c_str() );
 
   refresh();
   return 0;
@@ -175,12 +181,12 @@ int clear(lua_State * L)
  */
 int sleep(lua_State *L )
 {
-  int delay = lua_tointeger(L, -1);
-  if (delay < 0 )
-    return luaL_error(L, "positive integer expected for sleep(..)");
+    int delay = lua_tointeger(L, -1);
+    if (delay < 0 )
+        return luaL_error(L, "positive integer expected for sleep(..)");
 
-  sleep( delay );
-  return 0;
+    sleep( delay );
+    return 0;
 }
 
 
@@ -197,6 +203,7 @@ int exit(lua_State * L)
     exit(0);
     return 0;
 }
+
 
 /**
  * Execute a program, resetting curses first.
@@ -227,6 +234,7 @@ int exec(lua_State * L)
     return 0;
 }
 
+
 /**
  * Write a message to the status-bar.
  */
@@ -243,14 +251,15 @@ int msg(lua_State * L)
     return 0;
 }
 
+
 /**
  * Prompt for input.
  */
 int prompt(lua_State * L)
 {
-  /**
-   * Get the prompt string.
-   */
+    /**
+     * Get the prompt string.
+     */
     const char *str = lua_tostring(L, -1);
     if (str == NULL)
 	return luaL_error(L, "Missing argument to prompt(..)");
@@ -275,6 +284,7 @@ int prompt(lua_State * L)
     return 1;
 }
 
+
 /**
  * scroll up/down the maildir list.
  */
@@ -291,6 +301,7 @@ int scroll_maildir_down(lua_State * L)
 
     return 0;
 }
+
 
 /**
  * Scroll the maildir list up.
@@ -360,6 +371,7 @@ int scroll_index_up(lua_State * L)
     return (0);
 }
 
+
 /**
  * Jump to the given message.
  */
@@ -383,9 +395,9 @@ int scroll_maildir_to(lua_State * L)
     if (str == NULL)
 	return luaL_error(L, "Missing argument to scroll_maildir_to(..)");
 
-  /**
-   * get the current folders.
-   */
+    /**
+     * get the current folders.
+     */
     CGlobal *global = CGlobal::Instance();
     std::vector < CMaildir > display = global->get_folders();
     int max = display.size();
@@ -398,7 +410,8 @@ int scroll_maildir_to(lua_State * L)
 	    break;
 
 	CMaildir cur = display[i];
-	if (strstr(cur.path().c_str(), str) != NULL) {
+	if (strstr(cur.path().c_str(), str) != NULL)
+        {
 	    global->set_selected_folder(i);
 	    break;
 	}
@@ -416,9 +429,9 @@ int scroll_maildir_to(lua_State * L)
  */
 int current_maildir(lua_State * L)
 {
-  /**
-   * get the current folders.
-   */
+    /**
+     * get the current folders.
+     */
     CGlobal *global = CGlobal::Instance();
     std::vector < CMaildir > display = global->get_folders();
     int selected = global->get_selected_folder();
@@ -428,6 +441,10 @@ int current_maildir(lua_State * L)
     return 1;
 }
 
+
+/**
+ * Count the visible maildir folders.
+ */
 int count_maildirs(lua_State *L)
 {
     CGlobal *global = CGlobal::Instance();
@@ -443,33 +460,33 @@ int count_maildirs(lua_State *L)
  */
 int current_message(lua_State * L)
 {
-  /**
-   * Get all messages from the currently selected maildirs.
-   */
-  CGlobal *global = CGlobal::Instance();
-  std::vector<CMessage *> *messages = global->get_messages();
+    /**
+     * Get all messages from the currently selected maildirs.
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
 
-  /**
-   * The number of items we've found, and the currently selected one.
-   */
-  int count    = messages->size();
-  int selected = global->get_selected_message();
+    /**
+     * The number of items we've found, and the currently selected one.
+     */
+    int count    = messages->size();
+    int selected = global->get_selected_message();
 
-  /**
-   * No messages?
-   */
-  if ( ( count < 1 ) || selected > count )
+    /**
+     * No messages?
+     */
+    if ( ( count < 1 ) || selected > count )
     {
-      lua_pushstring(L,"" );
-      return 1;
+        lua_pushstring(L,"" );
+        return 1;
     }
 
-  /**
-   * Push the path.
-   */
-  CMessage *cur = messages->at(selected);
-  lua_pushstring(L, cur->path().c_str() );
-  return 1;
+    /**
+     * Push the path.
+     */
+    CMessage *cur = messages->at(selected);
+    lua_pushstring(L, cur->path().c_str() );
+    return 1;
 }
 
 
@@ -482,54 +499,54 @@ int is_new(lua_State * L)
   /**
    * See if we were passed a path.
    */
-  const char *str = lua_tostring(L, -1);
-  if ( str != NULL )
+    const char *str = lua_tostring(L, -1);
+    if ( str != NULL )
     {
-      CMessage cur( str );
-      if ( cur.is_new() )
+        CMessage cur( str );
+        if ( cur.is_new() )
+            lua_pushinteger(L,1);
+        else
+            lua_pushinteger(L,0);
+
+        return 1;
+    }
+
+    /**
+     * OK we're working with the currently selected message.
+     */
+
+
+    /**
+     * Get all messages from the currently selected messages.
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
+
+    /**
+     * The number of items we've found, and the currently selected one.
+     */
+    int count    = messages->size();
+    int selected = global->get_selected_message();
+
+    /**
+     * No messages?
+     */
+    if ( ( count < 1 ) || selected > count )
+    {
+        lua_pushinteger(L, 0);
+        return 1;
+    }
+
+    /**
+     * Get the value.
+     */
+    CMessage *cur = messages->at(selected);
+    if ( cur->is_new() )
         lua_pushinteger(L,1);
-      else
+    else
         lua_pushinteger(L,0);
 
-      return 1;
-    }
-
-  /**
-   * OK we're working with the currently selected message.
-   */
-
-
-  /**
-   * Get all messages from the currently selected messages.
-   */
-  CGlobal *global = CGlobal::Instance();
-  std::vector<CMessage *> *messages = global->get_messages();
-
-  /**
-   * The number of items we've found, and the currently selected one.
-   */
-  int count    = messages->size();
-  int selected = global->get_selected_message();
-
-  /**
-   * No messages?
-   */
-  if ( ( count < 1 ) || selected > count )
-    {
-      lua_pushinteger(L, 0);
-      return 1;
-    }
-
-  /**
-   * Get the value.
-   */
-  CMessage *cur = messages->at(selected);
-  if ( cur->is_new() )
-    lua_pushinteger(L,1);
-  else
-    lua_pushinteger(L,0);
-
-  return 1;
+    return 1;
 }
 
 
@@ -544,11 +561,11 @@ int mark_read(lua_State * L)
    */
   const char *str = lua_tostring(L, -1);
   if ( str != NULL )
-    {
+  {
       CMessage cur( str );
       cur.mark_read();
       return 0;
-    }
+  }
 
 
   /**
@@ -589,45 +606,45 @@ int mark_read(lua_State * L)
  */
 int mark_new(lua_State * L)
 {
-  /**
-   * See if we were passed a path.
-   */
-  const char *str = lua_tostring(L, -1);
-  if ( str != NULL )
+    /**
+     * See if we were passed a path.
+     */
+    const char *str = lua_tostring(L, -1);
+    if ( str != NULL )
     {
-      CMessage cur( str );
-      cur.mark_new();
-      return 0;
+        CMessage cur( str );
+        cur.mark_new();
+        return 0;
     }
 
-  /**
-   * OK we're working with the currently selected message.
-   */
+    /**
+     * OK we're working with the currently selected message.
+     */
 
-  /**
-   * Get all messages from the currently selected messages.
-   */
-  CGlobal *global = CGlobal::Instance();
-  std::vector<CMessage *> *messages = global->get_messages();
+    /**
+     * Get all messages from the currently selected messages.
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
 
-  /**
-   * The number of items we've found, and the currently selected one.
-   */
-  int count    = messages->size();
-  int selected = global->get_selected_message();
+    /**
+     * The number of items we've found, and the currently selected one.
+     */
+    int count    = messages->size();
+    int selected = global->get_selected_message();
 
-  /**
-   * No messages?
-   */
-  if ( ( count < 1 ) || selected > count )
-    return 0;
+    /**
+     * No messages?
+     */
+    if ( ( count < 1 ) || selected > count )
+        return 0;
 
-  /**
-   * Mark the message
-   */
-  CMessage *cur = messages->at(selected);
-  cur->mark_new();
-  return( 0 );
+    /**
+     * Mark the message
+     */
+    CMessage *cur = messages->at(selected);
+    cur->mark_new();
+    return( 0 );
 }
 
 
@@ -637,45 +654,45 @@ int mark_new(lua_State * L)
  */
 int scroll_index_to(lua_State * L)
 {
-  const char *str = lua_tostring(L, -1);
+    const char *str = lua_tostring(L, -1);
 
-  if (str == NULL)
-    return luaL_error(L, "Missing argument to scroll_index_to(..)");
+    if (str == NULL)
+        return luaL_error(L, "Missing argument to scroll_index_to(..)");
 
-  /**
-   * get the current messages
-   */
-  CGlobal *global = CGlobal::Instance();
-  std::vector<CMessage *> *messages = global->get_messages();
+    /**
+     * get the current messages
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
 
-  /**
-   * If we have no messages we're not scrolling anywhere.
-   */
-  if ( messages == NULL )
-    return 0;
+    /**
+     * If we have no messages we're not scrolling anywhere.
+     */
+    if ( messages == NULL )
+        return 0;
 
 
-  int max      = messages->size();
-  int selected = global->get_selected_message();
+    int max      = messages->size();
+    int selected = global->get_selected_message();
 
-  int i = selected + 1;
+    int i = selected + 1;
 
-  while (i != selected) {
-    if (i >= max)
-      break;
+    while (i != selected) {
+        if (i >= max)
+            break;
 
-    CMessage *cur = messages->at(i);
-    std::string format = cur->format();
-    if (strstr(format.c_str(), str) != NULL) {
-      global->set_selected_message(i);
-      break;
+        CMessage *cur = messages->at(i);
+        std::string format = cur->format();
+        if (strstr(format.c_str(), str) != NULL) {
+            global->set_selected_message(i);
+            break;
+        }
+        i += 1;
+
+        if (i >= max)
+            i = 0;
     }
-    i += 1;
-
-    if (i >= max)
-      i = 0;
-  }
-  return 0;
+    return 0;
 }
 
 
@@ -684,24 +701,25 @@ int scroll_index_to(lua_State * L)
  */
 int selected_folders(lua_State * L)
 {
-  CGlobal *global = CGlobal::Instance();
-  std::vector<std::string> selected = global->get_selected_folders();
-  std::vector<std::string>::iterator it;
+    CGlobal *global = CGlobal::Instance();
+    std::vector<std::string> selected = global->get_selected_folders();
+    std::vector<std::string>::iterator it;
 
-  /**
-   * Create the table.
-   */
-  lua_newtable(L);
+    /**
+     * Create the table.
+     */
+    lua_newtable(L);
 
-  int i = 1;
-  for (it = selected.begin(); it != selected.end(); ++it) {
-    lua_pushnumber(L,i);
-    lua_pushstring(L,(*it).c_str());
-    lua_settable(L,-3);
-    i++;
-  }
+    int i = 1;
+    for (it = selected.begin(); it != selected.end(); ++it)
+    {
+        lua_pushnumber(L,i);
+        lua_pushstring(L,(*it).c_str());
+        lua_settable(L,-3);
+        i++;
+    }
 
-  return 1;
+    return 1;
 }
 
 
@@ -723,29 +741,32 @@ int clear_selected_folders(lua_State * L)
  */
 int add_selected_folder(lua_State * L)
 {
-  /**
-   * get the optional argument.
-   */
+    /**
+     * get the optional argument.
+     */
     const char *str = lua_tostring(L, -1);
 
     CGlobal *global = CGlobal::Instance();
     CLua    *lua    = CLua::Instance();
 
-  /**
-   * default to the current folder.
-   */
-    if (str == NULL) {
+    /**
+     * default to the current folder.
+     */
+    if (str == NULL)
+    {
 	int selected = global->get_selected_folder();
 	std::vector < CMaildir > display = global->get_folders();
 
         if ( display.size()  == 0 )
-          return 0;
+            return 0;
 
 	CMaildir x = display[selected];
         global->add_folder(x.path().c_str());
         lua->execute("on_select_folder(\"" + x.path() + "\");");
 
-    } else {
+    }
+    else
+    {
 	global->add_folder(std::string(str));
         lua->execute("on_select_folder(\"" + std::string(str) + "\");");
     }
@@ -761,18 +782,19 @@ int add_selected_folder(lua_State * L)
  */
 int set_selected_folder(lua_State * L)
 {
-  /**
-   * get the optional argument.
-   */
+    /**
+     * get the optional argument.
+     */
     const char *str = lua_tostring(L, -1);
 
     CGlobal *global = CGlobal::Instance();
     global->unset_folders();
 
-  /**
-   * default to the current folder.
-   */
-    if (str == NULL) {
+    /**
+     * default to the current folder.
+     */
+    if (str == NULL)
+    {
 	std::vector < CMaildir > display = global->get_folders();
 	int selected = global->get_selected_folder();
 
@@ -781,16 +803,18 @@ int set_selected_folder(lua_State * L)
         CLua    *lua    = CLua::Instance();
         lua->execute("on_select_folder(\"" + x.path() + "\");");
 
-    } else {
+    }
+    else
+    {
 	global->add_folder(std::string(str));
         CLua    *lua    = CLua::Instance();
         lua->execute("on_select_folder(\"" + std::string(str) + "\");");
-
     }
 
     global->update_messages();
     return (0);
 }
+
 
 
 /**
@@ -798,36 +822,42 @@ int set_selected_folder(lua_State * L)
  */
 int toggle_selected_folder(lua_State * L)
 {
-  /**
-   * get the optional argument.
-   */
+    /**
+     * get the optional argument.
+     */
     const char *str = lua_tostring(L, -1);
     CGlobal *global = CGlobal::Instance();
     std::vector < std::string > sfolders = global->get_selected_folders();
 
-  /**
-   * default to the current folder.
-   */
+    /**
+     * default to the current folder.
+     */
     std::string toggle;
 
-    if (str == NULL) {
+    if (str == NULL)
+    {
 	std::vector < CMaildir > display = global->get_folders();
         if ( display.size()  == 0 )
-          return 0;
+            return 0;
 
 
 	int selected = global->get_selected_folder();
 	CMaildir x = display[selected];
 	toggle = x.path();
-    } else {
+    }
+    else
+    {
 	toggle = std::string(str);
     }
     CLua    *lua    = CLua::Instance();
     lua->execute("on_select_folder(\"" + std::string(toggle) + "\");");
 
-    if (std::find(sfolders.begin(), sfolders.end(), toggle) != sfolders.end()) {
+    if (std::find(sfolders.begin(), sfolders.end(), toggle) != sfolders.end())
+    {
 	global->remove_folder(toggle);
-    } else {
+    }
+    else
+    {
 	global->add_folder(toggle);
     }
 
@@ -835,16 +865,17 @@ int toggle_selected_folder(lua_State * L)
     return (0);
 }
 
+
 /**
  * Count messages in the selected folder(s).
  */
 int count_messages(lua_State * L)
 {
-  CGlobal *global = CGlobal::Instance();
-  std::vector<CMessage *> *messages = global->get_messages();
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
 
-  lua_pushinteger(L, messages->size() );
-  return 1;
+    lua_pushinteger(L, messages->size() );
+    return 1;
 }
 
 
@@ -859,7 +890,7 @@ int compose(lua_State * L)
   int fd = mkstemp(filename);
 
   if (fd == -1)
-    return luaL_error(L, "Failed to create a temporary file.");
+      return luaL_error(L, "Failed to create a temporary file.");
 
   /**
    * TO
@@ -901,7 +932,7 @@ int compose(lua_State * L)
   std::string cmd = "vim";
 
   if ( getenv( "EDITOR" ) )
-    cmd = getenv( "EDITOR" );
+      cmd = getenv( "EDITOR" );
 
   cmd += " ";
   cmd += filename;
@@ -947,8 +978,8 @@ int from(lua_State * L)
  */
 int screen_width(lua_State * L)
 {
-  lua_pushinteger(L, CScreen::width() );
-  return 1;
+    lua_pushinteger(L, CScreen::width() );
+    return 1;
 }
 
 
@@ -957,6 +988,6 @@ int screen_width(lua_State * L)
  */
 int screen_height(lua_State * L)
 {
-  lua_pushinteger(L, CScreen::height() );
-  return 1;
+    lua_pushinteger(L, CScreen::height() );
+    return 1;
 }
