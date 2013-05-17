@@ -346,6 +346,20 @@ function faves()
 end
 
 
+--
+-- Mark all messages in the current folder as read.
+--
+function mark_all_read()
+   count = count_messages()
+   i = 0
+
+   while( i < count ) do
+      jump_index_to( i )
+      mark_read();
+      i = i + 1
+   end
+
+end
 
 
 --
