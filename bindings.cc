@@ -800,6 +800,18 @@ int toggle_selected_folder(lua_State * L)
     return (0);
 }
 
+/**
+ * Count messages in the selected folder(s).
+ */
+int count_messages(lua_State * L)
+{
+  CGlobal *global = CGlobal::Instance();
+  std::vector<CMessage *> *messages = global->get_messages();
+
+  lua_pushinteger(L, messages->size() );
+  return 1;
+}
+
 
 /**
  * Compose a new mail.

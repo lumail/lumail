@@ -114,6 +114,7 @@ msg( "Selected folder: " .. folder );
       from( default_email );
    end
 
+   msg( "There are " .. count_messages() .. " messages" );
 end
 
 

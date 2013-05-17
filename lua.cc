@@ -126,6 +126,7 @@ CLua::CLua()
     lua_register(m_lua, "add_selected_folder", add_selected_folder);
     lua_register(m_lua, "toggle_selected_folder", toggle_selected_folder);
     lua_register(m_lua, "set_selected_folder", set_selected_folder);
+    lua_register(m_lua, "count_messages", count_messages );
 
     /**
      * Get/Set the maildir-limit & index-limit.

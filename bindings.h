@@ -93,6 +93,7 @@ int clear_selected_folders(lua_State * L);
 int add_selected_folder(lua_State * L);
 int toggle_selected_folder(lua_State * L);
 int set_selected_folder(lua_State * L);
+int count_messages(lua_State * L);
 
 /**
  * Accessors for the screen dimensions.
