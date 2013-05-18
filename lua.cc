@@ -162,7 +162,7 @@ CLua::CLua()
      * Set the From: address for the user.
      */
     lua_register(m_lua, "from", from);
-    //TODO: sendmail_path
+    lua_register(m_lua, "sendmail_path", sendmail_path );
 }
 
 

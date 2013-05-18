@@ -134,6 +134,12 @@ class CGlobal
   std::string * get_default_from();
   void set_default_from( std::string *address);
 
+  /**
+   * Get/Set the sendmail path.
+   */
+  std::string * get_sendmail_path();
+  void set_sendmail_path( std::string *path);
+
 
  protected:
 
@@ -180,6 +186,11 @@ class CGlobal
    * Currently selected folders.
    */
   std::vector < std::string > m_selected_folders;
+
+  /**
+   * the path to the sendmail binary.
+   */
+  std::string * m_sendmail_path;
 
   /**
    * The index-format string.

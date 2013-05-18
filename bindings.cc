@@ -1043,6 +1043,22 @@ int from(lua_State * L)
     return 1;
 }
 
+/**
+ * Get, or set, the sendmail path.
+ */
+int sendmail_path(lua_State * L)
+{
+    const char *str = lua_tostring(L, -1);
+    CGlobal *g = CGlobal::Instance();
+
+    if (str != NULL)
+	g->set_sendmail_path(new std::string(str));
+
+    std::string * s = g->get_sendmail_path();
+    lua_pushstring(L, s->c_str());
+    return 1;
+}
+
 
 /**
  * Get the screen width.

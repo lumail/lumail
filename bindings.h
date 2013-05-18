@@ -91,6 +91,9 @@ int sleep(lua_State *L );
 /* set the default from address */
 int from(lua_State * L);
 
+/* get/set the path to sendmail */
+int sendmail_path(lua_State *L);
+
 /**
  * folder selection code.
  */

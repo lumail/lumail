@@ -61,6 +61,7 @@ CGlobal::CGlobal()
       user = getenv( "USER" );
 
     m_from_address   = new std::string( user + "@localhost" );
+    m_sendmail_path  = new std::string( "/usr/lib/sendmail -t" );
     m_maildir_prefix = NULL;
     m_cur_folder     = 0;
     m_cur_message    = 0;
@@ -366,4 +367,23 @@ void CGlobal::set_default_from( std::string *address)
 	delete(m_from_address);
 
     m_from_address = address;
+}
+
+/**
+ * Get the sendmail path
+ */
+std::string * CGlobal::get_sendmail_path()
+{
+    return( m_sendmail_path );
+}
+
+/**
+ * Set the sendmail path
+ */
+void CGlobal::set_sendmail_path( std::string *path)
+{
+    if ( m_sendmail_path )
+        delete( m_sendmail_path );
+
+    m_sendmail_path = path;
 }
