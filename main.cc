@@ -35,22 +35,24 @@
  */
 int main(int argc, char *argv[])
 {
-    //
-    //   Parse command-line arguments
-    //
+    /**
+     * Parse command-line arguments
+     */
     int c;
 
     bool version = false;       /* show version */
     std::string rcfile = "";    /* load rc file */
     std::string folder = "";    /* open folder */
 
-    while (1) {
-	static struct option long_options[] = {
-	    {"version", no_argument, 0, 'v'},
-	    {"rcfile", required_argument, 0, 'r'},
-	    {"folder", required_argument, 0, 'f'},
-	    {0, 0, 0, 0}
-	};
+    while (1)
+    {
+	static struct option long_options[] =
+            {
+                {"version", no_argument, 0, 'v'},
+                {"rcfile", required_argument, 0, 'r'},
+                {"folder", required_argument, 0, 'f'},
+                {0, 0, 0, 0}
+            };
 
 	/* getopt_long stores the option index here. */
 	int option_index = 0;
@@ -61,7 +63,8 @@ int main(int argc, char *argv[])
 	if (c == -1)
 	    break;
 
-	switch (c) {
+	switch (c)
+        {
 	case 'r':
 	    rcfile = optarg;
 	    break;
@@ -81,14 +84,15 @@ int main(int argc, char *argv[])
 	}
     }
 
-    if (version) {
+    if (version)
+    {
 	std::cout << "lumail v" << LUMAIL_VERSION << std::endl;
 	return 0;
     }
 
-  /**
-   * Initialize the screen.
-   */
+    /**
+     * Initialize the screen.
+     */
     CScreen screen = CScreen();
     screen.Init();
 
@@ -97,9 +101,9 @@ int main(int argc, char *argv[])
      */
     int init = 0;
 
-  /**
-   * Create the lua intepreter.
-   */
+    /**
+     * Create the lua intepreter.
+     */
     CLua *lua = CLua::Instance();
     if ( lua->load_file("/etc/lumail.lua") )
         init += 1;
@@ -112,12 +116,15 @@ int main(int argc, char *argv[])
         if ( lua->load_file( home + "/.lumail/config.lua") )
             init += 1;
 
-  /**
-   * If we have any init file specified then load it up too.
-   */
+    /**
+     * If we have any init file specified then load it up too.
+     */
     if (!rcfile.empty())
+    {
         if ( lua->load_file(rcfile.c_str()) )
             init += 1;
+    }
+
 
     /**
      *  Ensure we've loaded something.
@@ -140,59 +147,75 @@ int main(int argc, char *argv[])
     /**
      * If we have a starting folder, select it.
      */
-    if ( !folder.empty() ) {
-      CLua *lua = CLua::Instance();
-
-      if ( CMaildir::is_directory( folder ) )
+    if ( !folder.empty() )
+    {
+        if ( CMaildir::is_directory( folder ) )
         {
-          /**
-           * This should be simplifiable.
-           */
-          lua->execute( "global_mode( \"index\" );" );
-          lua->execute( "maildir_limit( \"all\" );" );
-          lua->execute( "clear_selected_folders();");
-          lua->execute( "scroll_maildir_to( \"" + folder + "\");" );
-          lua->execute( "add_selected_folder()");
-          lua->execute( "global_mode( \"index\" );" );
+            /**
+             * This should be simplifiable.
+             */
+            lua->execute( "global_mode( \"index\" );" );
+            lua->execute( "maildir_limit( \"all\" );" );
+            lua->execute( "clear_selected_folders();");
+            lua->execute( "scroll_maildir_to( \"" + folder + "\");" );
+            lua->execute( "add_selected_folder()");
+            lua->execute( "global_mode( \"index\" );" );
         }
-      else{
-        lua->execute("msg(\"Startup folder doesn't exist!\");" );
-      }
+        else
+        {
+            lua->execute("msg(\"Startup folder doesn't exist!\");" );
+        }
     }
 
 
-  /**
-   * Now enter our event-loop
-   */
-    while (true) {
+    /**
+     * Now enter our event-loop
+     */
+    while (true)
+    {
 	char key = getch();
-	if (key == ERR) {
+	if (key == ERR)
+        {
 	    /*
 	     * Timeout - so we go round the loop again.
 	     */
 	    lua->call_function("on_idle");
 
-	} else {
-
+	}
+        else
+        {
+            /**
+             * The human-readable version of the key which has
+             * been pressed.
+             *
+             * i.e. Ctrl-r -> ^R.
+             */
             const char *name = keyname( key );
 
-
-	    if (!lua->on_keypress(name)) {
+	    if (!lua->on_keypress(name))
+            {
 		std::string foo = "msg(\"Unbound key: ";
                 foo += std::string(name) + "\");";
 		lua->execute(foo);
 	    }
 	}
 
-
 	screen.refresh_display();
     }
 
-  /**
-   * We've been terminated.
-   */
+    /**
+     * We've been terminated.
+     *
+     * We call the lua-version of exit, because this will run our
+     * on-exit hook/function, after ending the curses window(ing)
+     * routine(s).
+     *
+     */
     lua->call_function("exit");
-    exit(0);
 
+    /**
+     * This code is never reached.
+     */
+    exit(0);
     return 0;
 }
