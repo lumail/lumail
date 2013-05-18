@@ -92,28 +92,49 @@ int main(int argc, char *argv[])
     CScreen screen = CScreen();
     screen.Init();
 
+    /**
+     * Number of init-files we've loaded.
+     */
+    int init = 0;
+
   /**
    * Create the lua intepreter.
    */
     CLua *lua = CLua::Instance();
-    lua->load_file("/etc/lumail.lua");
+    if ( lua->load_file("/etc/lumail.lua") )
+        init += 1;
 
     /**
      * Load the init-file from the users home-directory, if we can.
      */
     std::string home = getenv( "HOME" );
     if ( CMaildir::is_directory( home + "/.lumail" ) )
-        lua->load_file( home + "/.lumail/config.lua");
+        if ( lua->load_file( home + "/.lumail/config.lua") )
+            init += 1;
 
   /**
    * If we have any init file specified then load it up too.
    */
     if (!rcfile.empty())
-	lua->load_file(rcfile.c_str());
+        if ( lua->load_file(rcfile.c_str()) )
+            init += 1;
 
-  /**
-   * We're starting, so call the on_start() function.
-   */
+    /**
+     *  Ensure we've loaded something.
+     */
+    if ( init == 0 )
+    {
+        endwin();
+        std::cerr << "No init file was loaded!" << std::endl;
+        std::cerr << "We try to load both /etc/lumail.lua and ~/.lumail/config.lua if present." << std::endl;
+        std::cerr << "You could try: ./lumail --rcfile ./lumail.lua" << std::endl;
+        return -1;
+    }
+
+
+    /**
+     * We're starting, so call the on_start() function.
+     */
     lua->call_function("on_start");
 
     /**
@@ -150,9 +171,11 @@ int main(int argc, char *argv[])
 	     * Timeout - so we go round the loop again.
 	     */
 	    lua->call_function("on_idle");
+
 	} else {
 
             const char *name = keyname( key );
+
 
 	    if (!lua->on_keypress(name)) {
 		std::string foo = "msg(\"Unbound key: ";
@@ -160,6 +183,8 @@ int main(int argc, char *argv[])
 		lua->execute(foo);
 	    }
 	}
+
+
 	screen.refresh_display();
     }
 

@@ -45,7 +45,7 @@ public:
     /**
      * Load and execute a single file of Lua code.
      */
-    void load_file(std::string filename);
+    bool load_file(std::string filename);
 
     /**
      * Evaluate the given string.

@@ -169,7 +169,7 @@ CLua::CLua()
 /**
  * Load the specified lua file, and evaluate it.
  */
-void CLua::load_file(std::string filename)
+bool CLua::load_file(std::string filename)
 {
     struct stat sb;
 
@@ -183,7 +183,10 @@ void CLua::load_file(std::string filename)
 		    lua_tostring(m_lua, -1));
 	    exit(1);
 	}
+
+        return true;
     }
+    return false;
 }
 
 
