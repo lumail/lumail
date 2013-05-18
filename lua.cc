@@ -299,3 +299,32 @@ bool CLua::on_keypress(char key)
 }
 
 
+/**
+ * convert a table to an array of strings.
+ */
+std::vector<std::string> CLua::table_to_array( std::string name )
+{
+    std::vector<std::string> results;
+
+    /**
+     * Ensure we have a table.
+     */
+    lua_getglobal(m_lua, name.c_str() );
+    if (lua_type(m_lua, -1)!=LUA_TTABLE)
+        return results;
+
+    lua_pushnil(m_lua);
+    int index = 0;
+
+    while (lua_next(m_lua, -2)) // -2 is the table
+    {
+        const char *d  = lua_tostring(m_lua, -1);
+
+        results.push_back( d );
+        index++;
+
+        lua_pop( m_lua , 1);
+    }
+
+    return( results );
+}

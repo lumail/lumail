@@ -27,6 +27,8 @@ extern "C" {
 # include <lualib.h>
 }
 
+#include <vector>
+
 
 /**
  * A singleton class holding a Lua intepretter.
@@ -69,6 +71,11 @@ public:
      * Execute a function from the global keymap.
      */
     bool on_keypress(char key);
+
+    /**
+     * convert a table to an array of strings.
+     */
+    std::vector<std::string> table_to_array( std::string name );
 
  protected:
 

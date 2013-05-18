@@ -83,6 +83,11 @@ index_format( "[$FLAGS] $FROM - $SUBJECT" );
 
 
 --
+-- The headers we show when displaying a mail.
+--
+headers = { "$TO", "$FROM", "$DATE", "$SUBJECT" }
+
+--
 -- This function is called when the client is launched.
 --
 -- You might consider something useful like this:

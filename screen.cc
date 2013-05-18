@@ -343,11 +343,18 @@ void CScreen::drawMessage()
   /**
    * The headers we'll print.
    */
-  std::vector<std::string> headers;
-  headers.push_back( "$DATE" );
-  headers.push_back( "$FROM" );
-  headers.push_back( "$TO" );
-  headers.push_back( "$SUBJECT" );
+  std::vector<std::string> headers = lua->table_to_array( "headers" );
+
+  /**
+   * If there are no values then use the defaults.
+   */
+  if ( headers.empty() )
+  {
+      headers.push_back( "$DATE" );
+      headers.push_back( "$FROM" );
+      headers.push_back( "$TO" );
+      headers.push_back( "$SUBJECT" );
+  }
 
   std::vector<std::string>::iterator it;
   int row = 0;
@@ -383,10 +390,10 @@ void CScreen::drawMessage()
   int max = std::min((int)body.size(), CScreen::height()-6);
 
   for( int i = 0; i < max; i++ )
-    {
-      move( i + 5, 0 );
+  {
+      move( i + ( headers.size() + 1 ), 0 );
       printw( "%s", body[i].c_str() );
-    }
+  }
 
   /**
    * We're reading a message so call our hook.
