@@ -25,6 +25,9 @@
 
 #include <mimetic/mimetic.h>
 
+#include <sys/stat.h>
+#include <time.h>
+
 #include "message.h"
 #include "global.h"
 
@@ -318,12 +321,26 @@ std::string CMessage::from()
 /**
  * Get the date of the message.
  *
- * TODO: If date is empty stat() the filename.
+ * TODO: ctime vs localtime
  */
 std::string CMessage::date()
 {
-  return( header("Date" ) );
+  std::string date = header("Date");
+
+  if (date.empty()) {
+    struct stat st_buf;
+    const char *p = path().c_str();
+
+    int err = stat(p,&st_buf);
+    if ( !err ) {
+      time_t modt = st_buf.st_mtime;
+      date = ctime(&modt);
+    }
+  }
+
+  return( date );
 }
+
 
 
 /**
