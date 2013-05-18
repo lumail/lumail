@@ -92,8 +92,6 @@ At startup the following three lua files are evaluated, if present:
 
 * `/etc/lumail.lua`
 * `~/.lumail/config.lua`
-* `./lumail.lua`
-   * This is depreciated and will be removed in the future.
 
 
 Further Information

@@ -97,7 +97,6 @@ int main(int argc, char *argv[])
    */
     CLua *lua = CLua::Instance();
     lua->load_file("/etc/lumail.lua");
-    lua->load_file("./lumail.lua");
 
     /**
      * Load the init-file from the users home-directory, if we can.
