@@ -24,22 +24,23 @@ the [lumail website](http://lumail.org).
 Code
 ----
 
-The application is developed in C++, and is largely inspired by [the proof of concept code](https://github.com/skx/cmail/) I hacked together in a couple of days.
-
-The dependencies are pretty straightforward:
+The application is developed in C++ and has intentionally minimal dependencies:
 
 * lua 5.1 - The scripting language
-* ncurses - The console-graphics library.
+* ncurses - The console input/graphics library.
 * mimetic - The MIME-library.
 
-Upon a Debian GNU/Linux system you may install them all via:
+Upon a Debian GNU/Linux system you may install all required packages with:
 
      # apt-get install libncurses-dev liblua5.1-0-dev lua5.1 libmimetic-dev
 
-Building the code should be as simple as cloning this repository and running "`make`".
+Although we might become more complex in the future the code currently builds
+via a simple `Makefile`, and running `make` with no arguments should be sufficient.
 
-From there it may be executed directly, although you might wish to make tweaks to
-the supplied configuration file `lumail.lua`.
+Once compiled the client may be executed directly, but you will need to pass the
+path to a configuration file:
+
+     $ ./lumail --rcfile ./lumail.lua
 
 For coding-style we use the following [Emacs](http://www.gnu.org/software/emacs/) settings:
 
@@ -58,7 +59,7 @@ Because lumail is modal application the coding has been split into sections:
     * You may scroll/search/limit the display of folders.
 * Code the display/manipulation of the message-indexes.
     * This is functional.
-    * You may scroll/search/limit the display of folders.  But such searches are slow.
+    * You may scroll/search/limit the display of messages.  (But such searches are slow.)
 * Code the display/manipulation of a single mail message.
     * You may view the first screen-ful of a message.  If it is text/plain.
     * Once viewed a message is marked as read.
