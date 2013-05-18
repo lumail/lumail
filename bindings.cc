@@ -1013,6 +1013,42 @@ int compose(lua_State * L)
    * TODO send the mail.
    */
 
+  // TODO: prompt for y/n
+
+  // get the sendmail path.
+  std::string *sendmail = global->get_sendmail_path();
+
+  char buf[4096];
+  ssize_t nread;
+
+  // open the file
+  FILE *file = fopen( filename, "r" );
+
+  // open the pipe
+  FILE *pipe = popen( sendmail->c_str(), "w" );
+
+  // while read file:  send to pipe
+  while (nread = fread( buf, 1, sizeof buf, file), nread > 0)
+  {
+      char *out_ptr = buf;
+      ssize_t nwritten;
+
+      do {
+          nwritten = fwrite(out_ptr, sizeof buf, nread, pipe);
+
+          if (nwritten >= 0)
+          {
+              nread -= nwritten;
+              out_ptr += nwritten;
+          }
+      } while (nread > 0);
+  }
+
+  // close the pipe
+  // close the file.
+  pclose( pipe );
+  fclose( file );
+
   unlink( filename );
 
   /**
@@ -1021,8 +1057,6 @@ int compose(lua_State * L)
   reset_prog_mode();
   refresh();
 
-  CLua *lua = CLua::Instance();
-  lua->execute( "msg(\"Mail sending should happen here, after a prompt\");" );
   return 0;
 }
 
