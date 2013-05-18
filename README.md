@@ -67,9 +67,7 @@ Missing functionality largely relates to using this client for real.
 
 The following features are missing:
 
-* The ability to compose a new message.
 * The ability to reply to a message.
-* The ability to delete a message.
 
 
 Screenshots
