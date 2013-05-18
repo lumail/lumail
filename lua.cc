@@ -92,7 +92,7 @@ CLua::CLua()
      * Get/Set the index format.
      */
     lua_register(m_lua, "index_format", index_format);
-    // TODO: message_headers( "To", "From", "Cc", etc.
+
 
     /**
      * Scroll mailboxes up/down/to a pattern.
