@@ -127,6 +127,7 @@ CLua::CLua()
     lua_register(m_lua, "is_new", is_new);
     lua_register(m_lua, "mark_new", mark_new);
     lua_register(m_lua, "mark_read", mark_read);
+    lua_register(m_lua, "delete", delete_message);
 
     /**
      * Folder selection.

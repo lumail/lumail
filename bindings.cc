@@ -648,6 +648,77 @@ int mark_new(lua_State * L)
 }
 
 
+/**
+ * Delete a message.
+ */
+int delete_message( lua_State *L )
+{
+    /**
+     * See if we were passed a path.
+     */
+    const char *str = lua_tostring(L, -1);
+
+    CMessage *msg = NULL;
+    int allocated = false;
+
+    if ( str != NULL )
+    {
+        msg = new CMessage( str );
+        allocated = true;
+    }
+
+    /**
+     * Get all messages from the currently selected messages.
+     */
+    if ( msg == NULL )
+    {
+        CGlobal *global = CGlobal::Instance();
+        std::vector<CMessage *> *messages = global->get_messages();
+
+        /**
+         * The number of items we've found, and the currently selected one.
+         */
+        int count    = messages->size();
+        int selected = global->get_selected_message();
+
+        /**
+         * No messages?
+         */
+        if ( ( count < 1 ) || selected > count )
+        {
+            return 0;
+        }
+
+        /**
+         * Get the value.
+         */
+        msg = messages->at(selected);
+    }
+
+    /**
+     * Got a message ?
+     */
+    std::string path = msg->path();
+    unlink( path.c_str() );
+
+    CLua *lua = CLua::Instance();
+    lua->execute( "msg(\"Deleted: " + path + "\");" );
+
+    if ( allocated )
+        delete( msg );
+
+    /**
+     * Update messages
+     */
+    CGlobal *global = CGlobal::Instance();
+    global->update_messages();
+
+    /**
+     * We're done.
+     */
+    return 0;
+}
+
 
 /**
  * Search for the next message matching the pattern.
