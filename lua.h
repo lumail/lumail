@@ -70,7 +70,7 @@ public:
     /**
      * Execute a function from the global keymap.
      */
-    bool on_keypress(char key);
+    bool on_keypress(const char *keypress );
 
     /**
      * convert a table to an array of strings.

@@ -140,6 +140,7 @@ int main(int argc, char *argv[])
       }
     }
 
+
   /**
    * Now enter our event-loop
    */
@@ -151,10 +152,12 @@ int main(int argc, char *argv[])
 	     */
 	    lua->call_function("on_idle");
 	} else {
-	    if (!lua->on_keypress(key)) {
-		std::string foo = "msg(\"Unbound key ";
-		foo += key;
-		foo += "\")";
+
+            const char *name = keyname( key );
+
+	    if (!lua->on_keypress(name)) {
+		std::string foo = "msg(\"Unbound key: ";
+                foo += std::string(name) + "\");";
 		lua->execute(foo);
 	    }
 	}

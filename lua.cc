@@ -239,12 +239,8 @@ std::string * CLua::get_global(std::string name)
 /**
  * Execute a function from the global keymap.
  */
-bool CLua::on_keypress(char key)
+bool CLua::on_keypress(const char *keypress)
 {
-    char keypress[2];
-    keypress[0] = key;
-    keypress[1] = '\0';
-
     /**
      * The result of the lookup.
      */
