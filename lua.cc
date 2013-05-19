@@ -64,9 +64,10 @@ CLua::CLua()
     luaL_openlibs(m_lua);
 
     /**
-     * Version number
+     * Set a global variable into the Lua environment.
      */
-    set_global("VERSION", LUMAIL_VERSION);
+    lua_pushstring(m_lua, LUMAIL_VERSION );
+    lua_setglobal(m_lua, "VERSION" );
 
     /**
      * Register our primitives - the basic ones.
@@ -211,31 +212,6 @@ bool CLua::call_function(std::string name)
     }
     else
 	return false;
-}
-
-/**
- * Set a global variable into the Lua environment.
- */
-void CLua::set_global(std::string name, std::string value)
-{
-    lua_pushstring(m_lua, value.c_str());
-    lua_setglobal(m_lua, name.c_str());
-}
-
-/**
- * Get a global variable value from the Lua environment.
- */
-std::string * CLua::get_global(std::string name)
-{
-    std::string * result = NULL;
-
-    lua_getglobal(m_lua, name.c_str());
-    if (!lua_isnil(m_lua, -1))
-	result = new std::string(lua_tostring(m_lua, -1));
-
-    lua_pop(m_lua, 1);
-
-    return result;
 }
 
 

@@ -58,16 +58,6 @@ public:
     bool call_function(std::string name);
 
     /**
-     * Set a global variable into the Lua environment.
-     */
-    void set_global(std::string name, std::string value);
-
-    /**
-     * Get a global variable value from the Lua environment.
-     */
-    std::string * get_global(std::string name);
-
-    /**
      * Lookup a value in a nested table.
      */
     char *get_nested_table( std::string table, std::string key, std::string subkey );
