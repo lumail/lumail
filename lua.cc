@@ -240,6 +240,46 @@ std::string * CLua::get_global(std::string name)
 
 
 /**
+ * get the value from a nested table.
+ */
+char *CLua::get_nested_table( std::string table, std::string key, std::string subkey )
+{
+    char *result = NULL;
+
+    /**
+     * Ensure the table exists.
+     */
+    lua_getglobal(m_lua, table.c_str() );
+    if (lua_isnil (m_lua, -1 ) ) {
+        return result;
+    }
+
+    /**
+     * Get the sub-table.
+     */
+    lua_pushstring(m_lua, key.c_str() );
+    lua_gettable(m_lua, -2);
+    if (! lua_istable(m_lua, -1 ) )
+        return result;
+
+    /**
+     * Get the value.
+     */
+    lua_pushstring(m_lua, subkey.c_str());
+    lua_gettable(m_lua, -2);
+    if (lua_isnil (m_lua, -1 ) )
+        return result;
+
+    /**
+     * If it worked, and is a string .. return it.
+     */
+    if (lua_isstring(m_lua, -1))
+        result = (char *)lua_tostring(m_lua, -1);
+    return result;
+}
+
+
+/**
  * Execute a function from the global keymap.
  */
 bool CLua::on_keypress(const char *keypress)
@@ -256,45 +296,28 @@ bool CLua::on_keypress(const char *keypress)
     std::string *mode = g->get_mode();
 
     /**
-     * Lookup the keypress in the global-keymap.
+     * Lookup the keypress in the global-keymap, if we found it
      */
-    lua_getglobal(m_lua, "keymap");
-    lua_pushstring(m_lua, "global" );
-    lua_gettable(m_lua, -2);
-    if ( lua_istable(m_lua, -1 ) )
-    {
-        lua_pushstring(m_lua, keypress);
-        lua_gettable(m_lua, -2);
-
-        if (lua_isstring(m_lua, -1))
-            result = (char *)lua_tostring(m_lua, -1);
-    }
-
+    result = get_nested_table( "keymap", "global", keypress );
 
     /**
-     * Lookup the keypress in the per-mode keymap.
+     * If that failed then lookup the per-mode keymap.
      */
-    lua_getglobal(m_lua, "keymap");
-    lua_pushstring(m_lua, mode->c_str() );
-    lua_gettable(m_lua, -2);
-    if ( lua_istable(m_lua, -1 ) )
-    {
-        lua_pushstring(m_lua, keypress);
-        lua_gettable(m_lua, -2);
-        if (lua_isstring(m_lua, -1))
-            result = (char *)lua_tostring(m_lua, -1);
+    if ( result == NULL )
+        result = get_nested_table( "keymap", mode->c_str(), keypress );
 
-    }
 
     /**
      * If one/other of these resulted in success then we're golden.
      */
     if ( result != NULL )
-    {
         execute(result);
-        return true;
-    }
-    return false;
+
+
+    /**
+     * We succeeded if the result wasn't NULL.
+     */
+    return( result != NULL );
 }
 
 

@@ -68,6 +68,11 @@ public:
     std::string * get_global(std::string name);
 
     /**
+     * Lookup a value in a nested table.
+     */
+    char *get_nested_table( std::string table, std::string key, std::string subkey );
+
+    /**
      * Execute a function from the global keymap.
      */
     bool on_keypress(const char *keypress );
