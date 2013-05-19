@@ -1,4 +1,4 @@
-ALL: array-to-lua body readline str
+ALL: array-to-lua body readline str table
 
 array-to-lua: array-to-lua.cc
 	g++ -o array-to-lua array-to-lua.cc $(shell pkg-config --cflags --libs lua5.1)
@@ -14,6 +14,9 @@ readline: readline.cc Makefile
 
 str: str.cc Makefile
 	g++ -o str str.cc
+
+table: table.cc
+	g++ -o table table.cc $(shell pkg-config --cflags --libs lua5.1)
 
 clean:
 	rm -f array-to-lua body str readline || true
