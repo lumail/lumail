@@ -81,6 +81,7 @@ int msg(lua_State * L);
 
 /* prompt for input */
 int prompt(lua_State * L);
+int prompt_yn(lua_State * L);
 
 /* clear the screen */
 int clear(lua_State * L);

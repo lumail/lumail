@@ -286,6 +286,49 @@ int prompt(lua_State * L)
 
 
 /**
+ * Prompt for "y/n".
+ */
+int prompt_yn(lua_State * L)
+{
+    const char *def_prompt = "y/n?>";
+
+    /**
+     * Get the prompt string.
+     */
+    const char *str = lua_tostring(L, -1);
+    if (str == NULL)
+	str = def_prompt;
+
+    echo();
+
+    move(CScreen::height() - 1, 0);
+    printw(str);
+    timeout(-1000);
+
+    while (true)
+    {
+	char key = getch();
+        if ( key == 'y' || key == 'Y' )
+        {
+            lua_pushinteger(L, 1 );
+            break;
+        }
+        if ( key == 'n' || key == 'N' )
+        {
+            lua_pushinteger(L, 0 );
+            break;
+        }
+    }
+    noecho();
+    curs_set(0);
+    timeout(1000);
+
+    CScreen::clear_status();
+    return 1;
+}
+
+
+/**
  * scroll up/down the maildir list.
  */
 int scroll_maildir_down(lua_State * L)
