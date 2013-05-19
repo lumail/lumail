@@ -29,6 +29,23 @@
 #include "screen.h"
 #include "version.h"
 
+/**
+ * Some simple remapping of keyboard input.
+ */
+const char *get_key_name( char c )
+{
+    if ( c == '\n' )
+        return( "Enter" );
+    if ( c == 2 )
+        return( "j" );
+    if ( c == 3 )
+        return( "k" );
+
+    return( keyname( c ) );
+}
+
+
+
 
 /**
  * Entry point to our code.
@@ -190,7 +207,7 @@ int main(int argc, char *argv[])
              *
              * i.e. Ctrl-r -> ^R.
              */
-            const char *name = keyname( key );
+            const char *name = get_key_name( key );
 
 	    if (!lua->on_keypress(name))
             {

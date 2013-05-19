@@ -446,8 +446,8 @@ keymap['index']['k'] = 'message_up()'
 keymap['index']['K'] = 'message_page_up()'
 keymap['index']['/'] = 'search_next()'
 
-keymap['index'][' '] = 'view_message()'
-keymap['index']['^J'] = 'view_message()'
+keymap['index'][' ']     = 'view_message()'
+keymap['index']['Enter'] = 'view_message()'
 
 --
 -- View all/new messages only.
@@ -461,8 +461,8 @@ keymap['index']['n'] = 'index_limit("new");'
 --  "space" will toggle the current folder as selected.
 --  "return" will open the selected folder exclusively.
 --
-keymap['maildir'][' '] = 'toggle_selected_folder()'
-keymap['maildir']['^J'] = 'open_folder()'
+keymap['maildir'][' ']     = 'toggle_selected_folder()'
+keymap['maildir']['Enter'] = 'open_folder()'
 
 
 
