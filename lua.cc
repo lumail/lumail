@@ -280,7 +280,9 @@ char *CLua::get_nested_table( std::string table, std::string key, std::string su
 
 
 /**
- * Execute a function from the global keymap.
+ * Lookup the binding for the named keystroke in our keymap(s).
+ *
+ * If the result is a string then execute it as a function.
  */
 bool CLua::on_keypress(const char *keypress)
 {
@@ -296,23 +298,24 @@ bool CLua::on_keypress(const char *keypress)
     std::string *mode = g->get_mode();
 
     /**
-     * Lookup the keypress in the global-keymap, if we found it
+     * Lookup the keypress in the current-mode-keymap.
      */
-    result = get_nested_table( "keymap", "global", keypress );
+    result = get_nested_table( "keymap", mode->c_str(), keypress );
+
 
     /**
-     * If that failed then lookup the per-mode keymap.
+     * If that failed then lookup the global keymap.
+     *
+     * This order ensures you can have a "global" keymap, overridden in just one mode.
      */
     if ( result == NULL )
-        result = get_nested_table( "keymap", mode->c_str(), keypress );
-
+        result = get_nested_table( "keymap", "global", keypress );
 
     /**
-     * If one/other of these resulted in success then we're golden.
+     * If one/other of these lookups resulted in success then we're golden.
      */
     if ( result != NULL )
         execute(result);
-
 
     /**
      * We succeeded if the result wasn't NULL.
@@ -338,7 +341,7 @@ std::vector<std::string> CLua::table_to_array( std::string name )
     lua_pushnil(m_lua);
     int index = 0;
 
-    while (lua_next(m_lua, -2)) // -2 is the table
+    while (lua_next(m_lua, -2))
     {
         const char *d  = lua_tostring(m_lua, -1);
 
