@@ -31,7 +31,7 @@ extern "C" {
 
 
 /**
- * A singleton class holding a Lua intepretter.
+ * A singleton class holding a Lua intepreter.
  */
 class CLua
 {
