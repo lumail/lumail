@@ -88,10 +88,13 @@ configuration file you'll get a flavour for the configuration.
 The main part of the configuration is to point the mail-client at your local Maildir
 location, from which all sub-folders will be determined at run-time.
 
-At startup the following three lua files are evaluated, if present:
+At startup the following two Lua files are evaluated, if present:
 
 * `/etc/lumail.lua`
 * `~/.lumail/config.lua`
+
+If none of those files exist then the client will abort with an error.  This is to ensure
+that the keymap(s) are defined, etc.
 
 
 Further Information
