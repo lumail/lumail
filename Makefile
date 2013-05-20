@@ -19,7 +19,8 @@ depend: .depend
 	$(CXX) $(CPPFLAGS) $(LDLIBS) -MM $^>>./.depend;
 
 clean:
-	$(RM) $(TARGET) $(OBJS)
+	$(RM) $(TARGET) $(OBJS) core || true
+
 
 dist-clean: clean
 	$(RM) *~ .dependtool
