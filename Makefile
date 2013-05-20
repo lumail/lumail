@@ -20,6 +20,7 @@ depend: .depend
 
 clean:
 	$(RM) $(TARGET) $(OBJS) core || true
+	cd ./test && make clean || true
 
 
 dist-clean: clean
