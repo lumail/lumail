@@ -508,6 +508,31 @@ int count_maildirs(lua_State *L)
     return 1;
 }
 
+/**
+ * Get the names of all currently visible maildirs
+ */
+int current_maildirs(lua_State *L)
+{
+    CGlobal *global = CGlobal::Instance();
+    std::vector < CMaildir > display = global->get_folders();
+    std::vector<CMaildir>::iterator it;
+
+    /**
+     * Create the table.
+     */
+    lua_newtable(L);
+
+    int i = 1;
+    for (it = display.begin(); it != display.end(); ++it)
+    {
+        lua_pushnumber(L,i);
+        lua_pushstring(L,(*it).path().c_str());
+        lua_settable(L,-3);
+        i++;
+    }
+
+    return 1;
+}
 
 /**
  * Get the currently highlighted message-path.
