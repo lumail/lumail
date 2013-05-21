@@ -512,3 +512,60 @@ function sleepy()
    msg( "2/2: OK" );
 end
 keymap['global']['S'] = 'sleepy()';
+
+
+
+
+--
+-- Dump a list of all folders with unread messages, along with the
+-- count of unread messages.
+--
+function dump_unread()
+
+   -- get the current state
+   mode  = global_mode()
+   limit = maildir_limit();
+
+   -- set the mode appropriately.
+   maildir_limit( "new" );
+   global_mode( "maildir" );
+
+   -- get all visible folders - i.e. with unread mails.
+   dirs = current_maildirs();
+
+   offset = 0;
+
+   -- where we log
+   ff = io.open( "/tmp/unread.log", "a");
+
+   -- Now for each one we'll open them.
+   while( offset <= (count_maildirs() - 1) ) do
+
+      -- jump to folder.
+      jump_maildir_to( offset )
+
+      -- we want to know the current folder name.
+      clear_selected_folders();
+      add_selected_folder()
+      sels = selected_folders();
+
+      -- Show the (single) selected folder name
+      for i,v in ipairs( sels ) do
+         ff:write( "Selected folder " .. v .. "\n" );
+      end
+
+      global_mode( "index" );
+      index_limit( "new" );
+      count = count_messages()
+      ff:write("\tFolder has " .. count .. " unread messages\n" );
+
+      global_mode( "maildir" );
+      offset = offset + 1;
+   end
+
+   ff:close();
+
+   -- restore
+   global_mode( mode );
+   maildir_limit( limit );
+end
