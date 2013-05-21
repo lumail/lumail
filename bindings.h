@@ -86,6 +86,9 @@ int prompt_yn(lua_State * L);
 /* clear the screen */
 int clear(lua_State * L);
 
+/* refresh the display */
+int refresh_display(lua_State * L);
+
 /* sleep */
 int sleep(lua_State *L );
 

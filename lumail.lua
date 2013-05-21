@@ -406,6 +406,8 @@ keymap['global']['I'] = 'index()';
 keymap['global']['v'] = 'show_version()'
 -- Jump to end
 keymap['global']['*'] = 'jump_to_end()'
+-- Refresh display
+keymap['global']['^R'] = 'refresh_display()'
 
 
 --

@@ -177,6 +177,17 @@ int clear(lua_State * L)
 
 
 /**
+ * Redraw the display.
+ */
+int refresh_display(lua_State * L)
+{
+    clear();
+    refresh();
+    return 0;
+}
+
+
+/**
  * Sleep.
  */
 int sleep(lua_State *L )
