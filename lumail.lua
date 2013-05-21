@@ -127,12 +127,16 @@ end
 -- Jump to the end of the list of messages/maildirs.
 --
 function jump_to_end()
-   if ( string.find( m, "maildir" ) ) then
+
+   mode = global_mode()
+   mode = string.lower( mode );
+
+   if ( string.find( mode, "maildir" ) ) then
       jump_maildir_to( count_maildirs() - 1 );
-   elseif (string.find(m, "index" ) ) then
+   elseif (string.find(mode, "index" ) ) then
       jump_index_to( count_messages() - 1 );
    else
-      msg( "jump_to_end not implemented for mode:" .. m );
+      msg( "jump_to_end not implemented for mode:" .. mode );
    end
 end
 
