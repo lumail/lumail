@@ -41,7 +41,11 @@ const char *get_key_name( char c )
     if ( c == 3 )
         return( "k" );
 
-    return( keyname( c ) );
+    const char *name = keyname( c );
+    if ( name == NULL )
+        return( "UnkSymbol" );
+     return name;
+    
 }
 
 
