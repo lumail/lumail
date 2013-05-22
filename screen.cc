@@ -25,6 +25,7 @@
 #include <cctype>
 #include <sys/ioctl.h>
 #include <ncurses.h>
+#include "lang.h"
 #include "lua.h"
 #include "global.h"
 #include "message.h"
@@ -193,7 +194,7 @@ void CScreen::drawIndex()
    */
     if (( messages == NULL ) ||  (messages->size() < 1)) {
       move(2, 2);
-      printw("No messages found in:");
+      printw( NO_MESSAGES_IN_FOLDERS );
 
       std::vector<std::string> folders = global->get_selected_folders();
       std::vector<std::string>::iterator it;
@@ -334,7 +335,7 @@ void CScreen::drawMessage()
     {
       clear();
       move(3,3);
-      printw("No selected message?!");
+      printw(NO_MESSAGES);
       return;
     }
 
@@ -428,8 +429,7 @@ void CScreen::Init()
    */
     if (!has_colors() || (start_color() != OK)) {
 	endwin();
-	std::cerr << "We don't have the required colour support available."
-	    << std::endl;
+	std::cerr << MISSING_COLOR_SUPPORT << std::endl;
 	exit(1);
     }
 
