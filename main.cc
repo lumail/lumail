@@ -40,6 +40,8 @@ const char *get_key_name( char c )
         return( "j" );
     if ( c == 3 )
         return( "k" );
+    if ( c == ' ' )
+        return ( "Space" );
 
     const char *name = keyname( c );
     if ( name == NULL )
