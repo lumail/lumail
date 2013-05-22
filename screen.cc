@@ -329,7 +329,7 @@ void CScreen::drawMessage()
   }
 
   CMessage *cur = NULL;
-  if ((selected) < count)
+  if (((selected) < count) && count > 0 )
     cur = messages->at(selected);
   else
     {
