@@ -95,7 +95,7 @@ void CScreen::drawMaildir()
     if ( count < 1 )
     {
       move(2, 2);
-      printw("No maildirs found matching the limit '%s'", limit->c_str());
+      printw("No maildirs found matching the limit '%s'.", limit->c_str());
       return;
     }
 
@@ -323,8 +323,8 @@ void CScreen::drawMessage()
    * Bound the selection.
    */
   if (selected >= count) {
-    global->set_selected_message(0);
-    selected = 0;
+      selected = count-1;
+      global->set_selected_message(selected);
   }
 
   CMessage *cur = NULL;
