@@ -401,7 +401,7 @@ keymap['global']['c'] = "compose()"
 -- repl-mode
 keymap['global'][':'] = "loadstring(prompt(\":\"))();";
 -- Execute-shell
-keymap['global']['!'] = "exec(prompt(\":\"));";
+keymap['global']['!'] = "exec(prompt(\"Shell command:\"));";
 -- Move to Maildir-mode
 keymap['global']['M']   = 'maildir()';
 -- Move to Index-mode
