@@ -1034,6 +1034,33 @@ int count_messages(lua_State * L)
  */
 int compose(lua_State * L)
 {
+    /**
+     * Prompt for the recipient
+     */
+    lua_pushstring(L, "To: " );
+    int ret = prompt( L);
+    if ( ret != 1 )
+    {
+        lua_pushstring(L, "Error recieving recipiient" );
+        return( msg(L ) );
+
+    }
+    const char *recipient = lua_tostring(L,-1);
+
+    /**
+     * Prompt for subject.
+     */
+    lua_pushstring(L, "Subject: " );
+    ret = prompt( L);
+    if ( ret != 1 )
+    {
+        lua_pushstring(L, "Error recieving subject" );
+        return( msg(L ) );
+
+    }
+    const char *subject = lua_tostring(L,-1);
+
+
 
   CGlobal *global = CGlobal::Instance();
   char filename[] = "/tmp/mytemp.XXXXXX";
@@ -1045,12 +1072,17 @@ int compose(lua_State * L)
   /**
    * TO
    */
-  write(fd, "To: \n", strlen( "To: \n"));
+  write(fd, "To: ", strlen( "To: "));
+  write(fd, recipient, strlen( recipient ));
+  write(fd, "\n", 1 );
 
   /**
    * Subject.
    */
-  write(fd, "Subject: New mail\n", strlen( "Subject: New mail\n" ) );
+  write(fd, "Subject: ", strlen( "Subject: " ) );
+  write(fd, subject, strlen( subject ) );
+  write(fd, "\n", 1 );
+
 
   /**
    * From
@@ -1089,10 +1121,8 @@ int compose(lua_State * L)
   system(cmd.c_str());
 
   /**
-   * TODO send the mail.
+   * TODO: prompt for y/n
    */
-
-  // TODO: prompt for y/n
 
   // get the sendmail path.
   std::string *sendmail = global->get_sendmail_path();
@@ -1128,6 +1158,9 @@ int compose(lua_State * L)
   pclose( pipe );
   fclose( file );
 
+  /**
+   * TODO: Write this to the sent-mail folder.
+   */
   unlink( filename );
 
   /**
