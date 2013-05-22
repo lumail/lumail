@@ -80,6 +80,7 @@ void CScreen::drawMaildir()
    */
     CGlobal *global = CGlobal::Instance();
     std::vector < CMaildir > display = global->get_folders();
+    std::string *limit = global->get_maildir_limit();
 
   /**
    * The number of items we've found, vs. the size of the screen.
@@ -87,6 +88,17 @@ void CScreen::drawMaildir()
     int count = display.size();
     int height = CScreen::height();
     int selected = global->get_selected_folder();
+
+  /**
+   * If we have no messages report that.
+   */
+    if ( count < 1 )
+    {
+      move(2, 2);
+      printw("No maildirs found matching the limit '%s'", limit->c_str());
+      return;
+    }
+
 
     /*
      * Bound the selection.
