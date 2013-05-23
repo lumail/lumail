@@ -28,5 +28,5 @@ table: table.cc
 	g++ -o table table.cc $(shell pkg-config --cflags --libs lua5.1)
 
 clean:
-	rm -f array-to-lua body str readline || true
+	rm -f core array-to-lua body str readline table || true
 	rm -rf es_MX.utf8/ i18n i18n.pot i18n_spanish.po || true
