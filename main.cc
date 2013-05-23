@@ -47,7 +47,7 @@ const char *get_key_name( char c )
     if ( name == NULL )
         return( "UnkSymbol" );
      return name;
-    
+
 }
 
 
@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
 
     bool version = false;       /* show version */
     std::string rcfile = "";    /* load rc file */
+    std::string eval = "";      /* code to evaluate */
     std::string folder = "";    /* open folder */
 
     while (1)
@@ -73,6 +74,7 @@ int main(int argc, char *argv[])
             {
                 {"version", no_argument, 0, 'v'},
                 {"rcfile", required_argument, 0, 'r'},
+                {"eval", required_argument, 0, 'e'},
                 {"folder", required_argument, 0, 'f'},
                 {0, 0, 0, 0}
             };
@@ -80,7 +82,7 @@ int main(int argc, char *argv[])
 	/* getopt_long stores the option index here. */
 	int option_index = 0;
 
-	c = getopt_long(argc, argv, "vr:f:", long_options, &option_index);
+	c = getopt_long(argc, argv, "vr:f:e:", long_options, &option_index);
 
 	/* Detect the end of the options. */
 	if (c == -1)
@@ -90,6 +92,9 @@ int main(int argc, char *argv[])
         {
 	case 'r':
 	    rcfile = optarg;
+	    break;
+	case 'e':
+	    eval = optarg;
 	    break;
 	case 'f':
 	    folder = optarg;
@@ -190,6 +195,14 @@ int main(int argc, char *argv[])
         }
     }
 
+    /**
+     * If evaluating code then do that now, then exit.
+     */
+    if ( !eval.empty() )
+    {
+        lua->execute( eval.c_str() );
+        lua->execute( "exit()" );
+    }
 
     /**
      * Now enter our event-loop
