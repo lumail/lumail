@@ -29,3 +29,4 @@ table: table.cc
 
 clean:
 	rm -f array-to-lua body str readline || true
+	rm -rf es_MX.utf8/ i18n i18n.pot i18n_spanish.po || true

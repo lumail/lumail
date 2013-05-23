@@ -3,6 +3,10 @@
 lumail
 TODO.local
 core
+test/i18n
+test/*.pot
+test/*.po
+test/es_MX.utf8/
 test/str
 test/body
 test/readline
