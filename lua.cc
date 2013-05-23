@@ -177,7 +177,6 @@ bool CLua::load_file(std::string filename)
 {
     struct stat sb;
 
-    std::cout << "Loading file " << filename << std::endl;
     if ((stat(filename.c_str(), &sb) == 0))
     {
 	if (luaL_loadfile(m_lua, filename.c_str())
