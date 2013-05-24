@@ -154,6 +154,9 @@ class CGlobal
   std::string * get_variable( std::string name );
   void set_variable( std::string name, std::string *value );
 
+  /**
+   * Get the table of all known settings.
+   */
   std::unordered_map<std::string, std::string *> get_variables();
 
 
