@@ -63,7 +63,6 @@ CGlobal::CGlobal()
     m_from_address   = new std::string( user + "@localhost" );
     m_sendmail_path  = new std::string( "/usr/lib/sendmail -t" );
     m_sent_mail      = NULL;
-    m_maildir_prefix = NULL;
     m_cur_folder     = 0;
     m_cur_message    = 0;
     m_messages       = NULL;
@@ -132,10 +131,7 @@ std::string *CGlobal::get_index_limit()
  */
 void CGlobal::set_maildir_prefix(std::string * prefix)
 {
-    if (m_maildir_prefix != NULL)
-	delete(m_maildir_prefix);
-
-    m_maildir_prefix = new std::string(prefix->c_str());
+    set_variable( "maildir_prefix", prefix );
 }
 
 /**
@@ -143,7 +139,7 @@ void CGlobal::set_maildir_prefix(std::string * prefix)
  */
 std::string * CGlobal::get_maildir_prefix()
 {
-    return (m_maildir_prefix);
+    return(get_variable( "maildir_prefix" ));
 }
 
 
@@ -182,8 +178,9 @@ std::vector<CMaildir> CGlobal::get_all_folders()
 {
     std::vector<CMaildir> maildirs;
 
+    std::string *prefix = get_maildir_prefix();
     std::vector<std::string> folders =
-	CMaildir::getFolders(*m_maildir_prefix);
+	CMaildir::getFolders(*prefix);
     std::vector < std::string >::iterator it;
     for (it = folders.begin(); it != folders.end(); ++it) {
 	maildirs.push_back(CMaildir(*it));
@@ -407,4 +404,27 @@ void CGlobal::set_sent_mail( std::string *path)
         delete( m_sent_mail );
 
     m_sent_mail = path;
+}
+
+std::string * CGlobal::get_variable( std::string name )
+{
+    /**
+     * Get the value.
+     */
+    return(m_variables[name]);
+}
+
+void CGlobal::set_variable( std::string name, std::string *value )
+{
+    /**
+     * Free the current value, if one is set.
+     */
+    std::string *current = m_variables[name];
+    if ( current != NULL )
+        delete( current );
+
+    /**
+     * Store new value.
+     */
+    m_variables[ name ] = value;
 }

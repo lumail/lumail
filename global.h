@@ -19,8 +19,9 @@
 #ifndef _global_h_
 #define _global_h_ 1
 
-#include <vector>
+#include <unordered_map>
 #include <string>
+#include <vector>
 #include "maildir.h"
 #include "message.h"
 
@@ -147,6 +148,12 @@ class CGlobal
   void set_sent_mail( std::string *path);
 
 
+  /**
+   * Get/Set an arbitrary setting.
+   */
+  std::string * get_variable( std::string name );
+  void set_variable( std::string name, std::string *value );
+
  protected:
 
   /**
@@ -184,11 +191,6 @@ class CGlobal
   std::string * m_maildir_limit;
 
   /**
-   * The maildir-prefix.
-   */
-  std::string * m_maildir_prefix;
-
-  /**
    * Currently selected folders.
    */
   std::vector < std::string > m_selected_folders;
@@ -222,6 +224,11 @@ class CGlobal
    * The list of currently visible messages.
    */
   std::vector<CMessage*> *m_messages;
+
+  /**
+   * The settings we hold.
+   */
+  std::unordered_map<std::string, std::string *> m_variables;
 
 };
 
