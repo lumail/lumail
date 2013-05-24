@@ -239,7 +239,7 @@ std::string CMessage::format( std::string fmt )
    */
   if ( result.empty() ) {
     CGlobal *global  = CGlobal::Instance();
-    std::string *fmt = global->get_index_format();
+    std::string *fmt = global->get_variable("index_format");
     result = std::string(*fmt);
   }
 

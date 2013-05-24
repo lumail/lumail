@@ -109,23 +109,6 @@ std::string * CGlobal::get_maildir_prefix()
 
 
 /**
- * Set the index format.
- */
-void CGlobal::set_index_format(std::string * fmt)
-{
-    set_variable( "index_format", fmt );
-}
-
-/**
- * Get the index format.
- */
-std::string * CGlobal::get_index_format()
-{
-    return( get_variable( "index_format" ) );
-}
-
-
-/**
  * Get all selected folders.
  */
 std::vector<std::string> CGlobal::get_selected_folders()

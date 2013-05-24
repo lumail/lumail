@@ -51,12 +51,6 @@ class CGlobal
   std::string * get_maildir_prefix();
 
   /**
-   * Get/Set the index-format.
-   */
-  void set_index_format(std::string * fmt);
-  std::string * get_index_format();
-
-  /**
    * Get all folders.
    */
   std::vector<CMaildir> get_all_folders();
