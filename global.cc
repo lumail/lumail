@@ -293,6 +293,10 @@ bool CGlobal::remove_folder(std::string path)
 
 }
 
+
+/**
+ * Get the value of the named string-variable.
+ */
 std::string * CGlobal::get_variable( std::string name )
 {
     /**
@@ -301,6 +305,10 @@ std::string * CGlobal::get_variable( std::string name )
     return(m_variables[name]);
 }
 
+
+/**
+ * Update the value of the named string variable.
+ */
 void CGlobal::set_variable( std::string name, std::string *value )
 {
     /**
