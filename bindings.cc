@@ -36,7 +36,12 @@
 #include "screen.h"
 
 
-
+/**
+ * Get/Set the value of a string variable.
+ *
+ * This function is called from all our lua-exposed functions that
+ * get/set a simple string value.
+ */
 int get_set_string_variable( lua_State *L, const char * name )
 {
     const char *str = lua_tostring(L, -1);
@@ -141,21 +146,21 @@ int index_limit(lua_State * L)
  */
 int clear(lua_State * L)
 {
-  /**
-   * Clear all the screen - but not the prompt.
-   */
-  int width = CScreen::width();
-  int height = CScreen::height();
+    /**
+     * Clear all the screen - but not the prompt.
+     */
+    int width = CScreen::width();
+    int height = CScreen::height();
 
-  std::string blank = "";
-  while( (int)blank.length() < width )
-    blank += " ";
+    std::string blank = "";
+    while( (int)blank.length() < width )
+        blank += " ";
 
-  for(int i = 0; i < ( height - 1 ); i++ )
-      mvprintw( i, 0, "%s", blank.c_str() );
+    for(int i = 0; i < ( height - 1 ); i++ )
+        mvprintw( i, 0, "%s", blank.c_str() );
 
-  refresh();
-  return 0;
+    refresh();
+    return 0;
 }
 
 
@@ -558,9 +563,9 @@ int current_message(lua_State * L)
  */
 int is_new(lua_State * L)
 {
-  /**
-   * See if we were passed a path.
-   */
+    /**
+     * See if we were passed a path.
+     */
     const char *str = lua_tostring(L, -1);
     if ( str != NULL )
     {
@@ -618,47 +623,47 @@ int is_new(lua_State * L)
  */
 int mark_read(lua_State * L)
 {
-  /**
-   * See if we were passed a path.
-   */
-  const char *str = lua_tostring(L, -1);
-  if ( str != NULL )
-  {
-      CMessage cur( str );
-      cur.mark_read();
-      return 0;
-  }
+    /**
+     * See if we were passed a path.
+     */
+    const char *str = lua_tostring(L, -1);
+    if ( str != NULL )
+    {
+        CMessage cur( str );
+        cur.mark_read();
+        return 0;
+    }
 
 
-  /**
-   * OK we're working with the currently selected message.
-   */
+    /**
+     * OK we're working with the currently selected message.
+     */
 
-  /**
-   * Get all messages from the currently selected messages.
-   */
-  CGlobal *global = CGlobal::Instance();
-  std::vector<CMessage *> *messages = global->get_messages();
+    /**
+     * Get all messages from the currently selected messages.
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
 
-  /**
-   * The number of items we've found, and the currently selected one.
-   */
-  int count    = messages->size();
-  int selected = global->get_selected_message();
+    /**
+     * The number of items we've found, and the currently selected one.
+     */
+    int count    = messages->size();
+    int selected = global->get_selected_message();
 
-  /**
-   * No messages?
-   */
-  if ( ( count < 1 ) || selected > count )
-      return 0;
+    /**
+     * No messages?
+     */
+    if ( ( count < 1 ) || selected > count )
+        return 0;
 
-  /**
-   * Mark read..
-   */
-  CMessage *cur = messages->at(selected);
-  cur->mark_read();
+    /**
+     * Mark read..
+     */
+    CMessage *cur = messages->at(selected);
+    cur->mark_read();
 
-  return 0;
+    return 0;
 }
 
 
@@ -1045,114 +1050,114 @@ int compose(lua_State * L)
 
 
 
-  CGlobal *global = CGlobal::Instance();
-  char filename[] = "/tmp/mytemp.XXXXXX";
-  int fd = mkstemp(filename);
+    CGlobal *global = CGlobal::Instance();
+    char filename[] = "/tmp/mytemp.XXXXXX";
+    int fd = mkstemp(filename);
 
-  if (fd == -1)
-      return luaL_error(L, "Failed to create a temporary file.");
+    if (fd == -1)
+        return luaL_error(L, "Failed to create a temporary file.");
 
-  /**
-   * TO
-   */
-  write(fd, "To: ", strlen( "To: "));
-  write(fd, recipient, strlen( recipient ));
-  write(fd, "\n", 1 );
+    /**
+     * TO
+     */
+    write(fd, "To: ", strlen( "To: "));
+    write(fd, recipient, strlen( recipient ));
+    write(fd, "\n", 1 );
 
-  /**
-   * Subject.
-   */
-  write(fd, "Subject: ", strlen( "Subject: " ) );
-  write(fd, subject, strlen( subject ) );
-  write(fd, "\n", 1 );
+    /**
+     * Subject.
+     */
+    write(fd, "Subject: ", strlen( "Subject: " ) );
+    write(fd, subject, strlen( subject ) );
+    write(fd, "\n", 1 );
 
 
-  /**
-   * From
-   */
-  write(fd, "From: " , strlen( "From: " ) );
-  std::string *from = global->get_variable( "from" );
-  write(fd, from->c_str(), strlen( from->c_str() ) );
-  write(fd, "\n", 1 );
+    /**
+     * From
+     */
+    write(fd, "From: " , strlen( "From: " ) );
+    std::string *from = global->get_variable( "from" );
+    write(fd, from->c_str(), strlen( from->c_str() ) );
+    write(fd, "\n", 1 );
 
-  /**
-   * Space
-   */
-  write(fd, "\n", 1 );
+    /**
+     * Space
+     */
+    write(fd, "\n", 1 );
 
-  /**
-   * Body
-   */
-  write(fd, "....\n", strlen("....\n" ) );
-  close(fd);
+    /**
+     * Body
+     */
+    write(fd, "....\n", strlen("....\n" ) );
+    close(fd);
 
-  /**
-   * Save the current state of the TTY
-   */
-  refresh();
-  def_prog_mode();
-  endwin();
+    /**
+     * Save the current state of the TTY
+     */
+    refresh();
+    def_prog_mode();
+    endwin();
 
-  /* Run the editor */
-  std::string cmd = "vim";
+    /* Run the editor */
+    std::string cmd = "vim";
 
-  if ( getenv( "EDITOR" ) )
-      cmd = getenv( "EDITOR" );
+    if ( getenv( "EDITOR" ) )
+        cmd = getenv( "EDITOR" );
 
-  cmd += " ";
-  cmd += filename;
-  system(cmd.c_str());
+    cmd += " ";
+    cmd += filename;
+    system(cmd.c_str());
 
-  /**
-   * TODO: prompt for y/n
-   */
+    /**
+     * TODO: prompt for y/n
+     */
 
-  // get the sendmail path.
-  std::string *sendmail = global->get_variable("sendmail_path");
+    // get the sendmail path.
+    std::string *sendmail = global->get_variable("sendmail_path");
 
-  char buf[4096];
-  ssize_t nread;
+    char buf[4096];
+    ssize_t nread;
 
-  // open the file
-  FILE *file = fopen( filename, "r" );
+    // open the file
+    FILE *file = fopen( filename, "r" );
 
-  // open the pipe
-  FILE *pipe = popen( sendmail->c_str(), "w" );
+    // open the pipe
+    FILE *pipe = popen( sendmail->c_str(), "w" );
 
-  // while read file:  send to pipe
-  while (nread = fread( buf, 1, sizeof buf, file), nread > 0)
-  {
-      char *out_ptr = buf;
-      ssize_t nwritten;
+    // while read file:  send to pipe
+    while (nread = fread( buf, 1, sizeof buf, file), nread > 0)
+    {
+        char *out_ptr = buf;
+        ssize_t nwritten;
 
-      do {
-          nwritten = fwrite(out_ptr, sizeof buf, nread, pipe);
+        do {
+            nwritten = fwrite(out_ptr, sizeof buf, nread, pipe);
 
-          if (nwritten >= 0)
-          {
-              nread -= nwritten;
-              out_ptr += nwritten;
-          }
-      } while (nread > 0);
-  }
+            if (nwritten >= 0)
+            {
+                nread -= nwritten;
+                out_ptr += nwritten;
+            }
+        } while (nread > 0);
+    }
 
-  // close the pipe
-  // close the file.
-  pclose( pipe );
-  fclose( file );
+    // close the pipe
+    // close the file.
+    pclose( pipe );
+    fclose( file );
 
-  /**
-   * TODO: Write this to the sent-mail folder.
-   */
-  unlink( filename );
+    /**
+     * TODO: Write this to the sent-mail folder.
+     */
+    unlink( filename );
 
-  /**
-   * Reset + redraw
-   */
-  reset_prog_mode();
-  refresh();
+    /**
+     * Reset + redraw
+     */
+    reset_prog_mode();
+    refresh();
 
-  return 0;
+    return 0;
 }
 
 
