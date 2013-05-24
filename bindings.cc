@@ -1207,6 +1207,22 @@ int sendmail_path(lua_State * L)
 
 
 /**
+ * Get, or set, the sent-folder path.
+ */
+int sent_mail(lua_State * L)
+{
+    const char *str = lua_tostring(L, -1);
+    CGlobal *g = CGlobal::Instance();
+
+    if (str != NULL)
+	g->set_sent_mail(new std::string(str));
+
+    std::string * s = g->get_sent_mail();
+    lua_pushstring(L, s->c_str());
+    return 1;
+}
+
+/**
  * Get the screen width.
  */
 int screen_width(lua_State * L)

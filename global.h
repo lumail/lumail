@@ -140,6 +140,12 @@ class CGlobal
   std::string * get_sendmail_path();
   void set_sendmail_path( std::string *path);
 
+  /**
+   * Get/Set the sent-mail path.
+   */
+  std::string * get_sent_mail();
+  void set_sent_mail( std::string *path);
+
 
  protected:
 
@@ -206,6 +212,11 @@ class CGlobal
    * The from-address of the user.
    */
   std::string * m_from_address;
+
+  /**
+   * The sent-mail path.
+   */
+  std::string * m_sent_mail;
 
   /**
    * The list of currently visible messages.

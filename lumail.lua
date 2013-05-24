@@ -26,6 +26,11 @@
 --
 maildir_prefix( os.getenv( "HOME" ) .. "/Maildir" );
 
+--
+-- The folder to use for storing sent-messages.
+--
+sent_mail( maildir_prefix() .. "/sent-mail" );
+
 
 --
 -- Set the from address for yourself, which will be used for
