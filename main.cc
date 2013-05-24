@@ -63,10 +63,11 @@ int main(int argc, char *argv[])
      */
     int c;
 
-    bool version = false;       /* show version */
-    std::string rcfile = "";    /* load rc file */
-    std::string eval = "";      /* code to evaluate */
-    std::string folder = "";    /* open folder */
+    bool version         = false; /* show version */
+    bool exit_after_eval = false; /* exit after eval? */
+    std::string rcfile   = "";    /* load rc file */
+    std::string eval     = "";    /* code to evaluate */
+    std::string folder   = "";    /* open folder */
 
     while (1)
     {
@@ -75,6 +76,7 @@ int main(int argc, char *argv[])
                 {"version", no_argument, 0, 'v'},
                 {"rcfile", required_argument, 0, 'r'},
                 {"eval", required_argument, 0, 'e'},
+                {"exit", no_argument, 0, 'x'},
                 {"folder", required_argument, 0, 'f'},
                 {0, 0, 0, 0}
             };
@@ -101,6 +103,9 @@ int main(int argc, char *argv[])
 	    break;
 	case 'v':
 	    version = true;
+	    break;
+	case 'x':
+	    exit_after_eval = true;
 	    break;
 	case '?':
 	    /* getopt_long already printed an error message. */
@@ -201,7 +206,9 @@ int main(int argc, char *argv[])
     if ( !eval.empty() )
     {
         lua->execute( eval.c_str() );
-        lua->execute( "exit()" );
+
+        if ( exit_after_eval )
+            lua->execute( "exit()" );
     }
 
     /**
