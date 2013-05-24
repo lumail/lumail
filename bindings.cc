@@ -1242,7 +1242,10 @@ int screen_height(lua_State * L)
     return 1;
 }
 
-
+/**
+ * Return a table of all known variables and their current
+ * settings.
+ */
 int get_variables(lua_State *L )
 {
     CGlobal *global = CGlobal::Instance();
@@ -1259,8 +1262,14 @@ int get_variables(lua_State *L )
     {
         std::string name = iter->first;
         std::string *val = iter->second;
+
         lua_pushstring(L,name.c_str() );
-        lua_pushstring(L,val->c_str());
+
+        if ( val != NULL )
+            lua_pushstring(L,val->c_str());
+        else
+            lua_pushstring(L, "NULL" );
+
         lua_settable(L,-3);
         i++;
     }
