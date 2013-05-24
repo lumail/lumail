@@ -39,15 +39,11 @@ class CGlobal
   static CGlobal *Instance();
 
   /**
-   * Get/Set the current lumail-mode: index/maildir/message
-   */
-  void set_mode(std::string * mode);
-  std::string * get_mode();
-
-  /**
    * Get/Set the maildir-prefix, which is where we find Maildir-folders beneath.
    */
+  // TODO: remove
   void set_maildir_prefix(std::string * prefix);
+  // TODO: remove
   std::string * get_maildir_prefix();
 
   /**

@@ -286,8 +286,8 @@ bool CLua::on_keypress(const char *keypress)
     /**
      * Get the current global-mode.
      */
-    CGlobal *g = CGlobal::Instance();
-    std::string *mode = g->get_mode();
+    CGlobal *global   = CGlobal::Instance();
+    std::string *mode = global->get_variable("global_mode");
 
     /**
      * Lookup the keypress in the current-mode-keymap.

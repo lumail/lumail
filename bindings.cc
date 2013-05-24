@@ -94,25 +94,7 @@ int index_format(lua_State * L)
  */
 int global_mode(lua_State * L)
 {
-    CGlobal *g = CGlobal::Instance();
-
-    /**
-     * get the argument, and if we have one set it.
-     */
-    const char *str = lua_tostring(L, -1);
-    if (str != NULL)
-    {
-        std::string *mode = new std::string(str);
-        std::transform(mode->begin(), mode->end(), mode->begin(), tolower);
-        g->set_mode(mode);
-    }
-
-    /**
-     * Return the current/updated value.
-     */
-    std::string * s = g->get_mode();
-    lua_pushstring(L, s->c_str());
-    return 1;
+    return( get_set_string_variable(L, "global_mode" ) );
 }
 
 

@@ -76,22 +76,6 @@ CGlobal::CGlobal()
 }
 
 /**
- * Set the new mode for the client.
- */
-void CGlobal::set_mode(std::string * mode)
-{
-    set_variable( "global_mode", mode );
-}
-
-/**
- * Get the current mode the client is in: index, maildir or message.
- */
-std::string * CGlobal::get_mode()
-{
-    return(get_variable( "global_mode" ));
-}
-
-/**
  * Set the prefix for our maildir folders.
  */
 void CGlobal::set_maildir_prefix(std::string * prefix)

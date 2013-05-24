@@ -53,8 +53,8 @@ void CScreen::refresh_display()
   /**
    * Get the current mode.
    */
-    CGlobal *g = CGlobal::Instance();
-    std::string * s = g->get_mode();
+    CGlobal *global = CGlobal::Instance();
+    std::string * s = global->get_variable("global_mode");
 
     if (strcmp(s->c_str(), "maildir") == 0)
 	drawMaildir();
