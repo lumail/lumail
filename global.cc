@@ -48,24 +48,26 @@ CGlobal *CGlobal::Instance()
  */
 CGlobal::CGlobal()
 {
-  /**
-   * Defaults.
-   */
-    m_mode          = new std::string("maildir");
-    m_maildir_limit = new std::string("all");
-    m_index_limit   = new std::string("all");
-    m_index_format  = new std::string( "[$FLAGS] $FROM - $SUBJECT" );
-
-    m_sent_mail      = NULL;
+    /**
+     * Defaults.
+     */
     m_cur_folder     = 0;
     m_cur_message    = 0;
     m_messages       = NULL;
 
     /**
-     * Defaults.
+     * Defaults as set in our variable hash-map.
      */
     set_variable( "sendmail_path", new std::string( "/usr/lib/sendmail -t" ) );
+    set_variable( "global_mode",   new std::string("maildir"));
+    set_variable( "maildir_limit", new std::string("all") );
+    set_variable( "index_limit",   new std::string("all") );
+    set_variable( "index_format",  new std::string( "[$FLAGS] $FROM - $SUBJECT" ) );
 
+
+    /**
+     * From address is a little fiddly.
+     */
     std::string user = "UNKNOWN";
     if ( getenv( "USER" ) )
       user = getenv( "USER" );
@@ -78,10 +80,7 @@ CGlobal::CGlobal()
  */
 void CGlobal::set_mode(std::string * mode)
 {
-    if (m_mode != NULL)
-	delete(m_mode);
-
-    m_mode = new std::string(mode->c_str());
+    set_variable( "global_mode", mode );
 }
 
 /**
@@ -89,7 +88,7 @@ void CGlobal::set_mode(std::string * mode)
  */
 std::string * CGlobal::get_mode()
 {
-    return (m_mode);
+    return(get_variable( "global_mode" ));
 }
 
 /**
@@ -97,10 +96,7 @@ std::string * CGlobal::get_mode()
  */
 void CGlobal::set_maildir_limit(std::string * limit)
 {
-    if (m_maildir_limit)
-	delete(m_maildir_limit);
-
-    m_maildir_limit = limit;
+    set_variable( "maildir_limit", limit );
 }
 
 /**
@@ -108,7 +104,7 @@ void CGlobal::set_maildir_limit(std::string * limit)
  */
 std::string * CGlobal::get_maildir_limit()
 {
-    return (m_maildir_limit);
+    return( get_variable( "maildir_limit" ) );
 }
 
 
@@ -117,10 +113,7 @@ std::string * CGlobal::get_maildir_limit()
  */
 void CGlobal::set_index_limit( std::string *limit)
 {
-    if (m_index_limit)
-	delete(m_index_limit);
-
-    m_index_limit = limit;
+    set_variable( "index_limit", limit );
 }
 
 /**
@@ -128,7 +121,7 @@ void CGlobal::set_index_limit( std::string *limit)
  */
 std::string *CGlobal::get_index_limit()
 {
-  return( m_index_limit );
+    return( get_variable( "index_limit" ) );
 }
 
 /**
@@ -153,10 +146,7 @@ std::string * CGlobal::get_maildir_prefix()
  */
 void CGlobal::set_index_format(std::string * fmt)
 {
-    if (m_index_format != NULL)
-	delete(m_index_format);
-
-    m_index_format = new std::string(fmt->c_str());
+    set_variable( "index_format", fmt );
 }
 
 /**
@@ -164,7 +154,7 @@ void CGlobal::set_index_format(std::string * fmt)
  */
 std::string * CGlobal::get_index_format()
 {
-    return (m_index_format);
+    return( get_variable( "index_format" ) );
 }
 
 
@@ -358,7 +348,7 @@ bool CGlobal::remove_folder(std::string path)
  */
 std::string * CGlobal::get_sent_mail()
 {
-    return( m_sent_mail );
+    return( get_variable( "sent_mail" ) );
 }
 
 /**
@@ -366,10 +356,7 @@ std::string * CGlobal::get_sent_mail()
  */
 void CGlobal::set_sent_mail( std::string *path)
 {
-    if ( m_sent_mail )
-        delete( m_sent_mail );
-
-    m_sent_mail = path;
+    set_variable( "sent_mail", path );
 }
 
 std::string * CGlobal::get_variable( std::string name )

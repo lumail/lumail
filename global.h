@@ -174,35 +174,11 @@ class CGlobal
    */
   int m_cur_message;
 
-  /**
-   * The mode the client is in: index, maildir, or message.
-   */
-  std::string * m_mode;
-
-  /**
-   * The limit-string for the display of folders.
-   */
-  std::string * m_maildir_limit;
 
   /**
    * Currently selected folders.
    */
   std::vector < std::string > m_selected_folders;
-
-  /**
-   * The index-format string.
-   */
-  std::string * m_index_format;
-
-  /**
-   * The index-limit string.
-   */
-  std::string * m_index_limit;
-
-  /**
-   * The sent-mail path.
-   */
-  std::string * m_sent_mail;
 
   /**
    * The list of currently visible messages.
