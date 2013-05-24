@@ -428,3 +428,9 @@ void CGlobal::set_variable( std::string name, std::string *value )
      */
     m_variables[ name ] = value;
 }
+
+
+std::unordered_map<std::string, std::string *> CGlobal::get_variables()
+{
+    return( m_variables );
+}

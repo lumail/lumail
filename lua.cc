@@ -176,6 +176,11 @@ CLua::CLua()
      * Set the sent-mail folder path.
      */
     lua_register(m_lua, "sent_mail", sent_mail );
+
+    /**
+     * Variables.
+     */
+    lua_register(m_lua, "get_variables", get_variables );
 }
 
 

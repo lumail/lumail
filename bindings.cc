@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <algorithm>
+#include <map>
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -1238,5 +1239,31 @@ int screen_width(lua_State * L)
 int screen_height(lua_State * L)
 {
     lua_pushinteger(L, CScreen::height() );
+    return 1;
+}
+
+
+int get_variables(lua_State *L )
+{
+    CGlobal *global = CGlobal::Instance();
+    std::unordered_map<std::string,std::string *>  vars = global->get_variables();
+    std::unordered_map<std::string, std::string *>::iterator iter;
+
+    /**
+     * Create the table.
+     */
+    lua_newtable(L);
+
+    int i = 1;
+    for (iter = vars.begin(); iter != vars.end(); ++iter )
+    {
+        std::string name = iter->first;
+        std::string *val = iter->second;
+        lua_pushstring(L,name.c_str() );
+        lua_pushstring(L,val->c_str());
+        lua_settable(L,-3);
+        i++;
+    }
+
     return 1;
 }

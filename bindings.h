@@ -102,6 +102,8 @@ int sendmail_path(lua_State *L);
 /* get/set the sent folder path */
 int sent_mail(lua_State *L);
 
+int get_variables(lua_State *L);
+
 /**
  * folder selection code.
  */

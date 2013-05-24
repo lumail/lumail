@@ -574,3 +574,19 @@ function dump_unread()
    global_mode( mode );
    maildir_limit( limit );
 end
+
+
+function dump_vars()
+
+   -- where we log
+   ff = io.open( "/tmp/vars.log", "w");
+
+   vars = get_variables();
+
+   for i,v in pairs( vars ) do
+      ff:write( "Setting " .. i .. " has value " .. v .. "\n" );
+   end
+   ff:write("End\n");
+   ff:close();
+
+end
