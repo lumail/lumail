@@ -102,7 +102,7 @@ class CGlobal
   }
 
   /**
-   * Get/Set the selected message.  Not used.
+   * Get/Set the selected message.
    */
   int get_selected_message() {
     return m_cur_message;
@@ -113,9 +113,13 @@ class CGlobal
 
 
   /**
-   * Get/Set an arbitrary setting.
+   * Get the value of an arbitrary setting.
    */
   std::string * get_variable( std::string name );
+
+  /**
+   * Set the value of a variable.
+   */
   void set_variable( std::string name, std::string *value );
 
   /**
