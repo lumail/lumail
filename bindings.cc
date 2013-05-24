@@ -1089,7 +1089,7 @@ int compose(lua_State * L)
    * From
    */
   write(fd, "From: " , strlen( "From: " ) );
-  std::string *from = global->get_default_from();
+  std::string *from = global->get_variable( "from" );
   write(fd, from->c_str(), strlen( from->c_str() ) );
   write(fd, "\n", 1 );
 
@@ -1126,7 +1126,7 @@ int compose(lua_State * L)
    */
 
   // get the sendmail path.
-  std::string *sendmail = global->get_sendmail_path();
+  std::string *sendmail = global->get_variable("sendmail_path");
 
   char buf[4096];
   ssize_t nread;
@@ -1183,9 +1183,9 @@ int from(lua_State * L)
     CGlobal *g = CGlobal::Instance();
 
     if (str != NULL)
-	g->set_default_from(new std::string(str));
+	g->set_variable( "from", new std::string(str));
 
-    std::string * s = g->get_default_from();
+    std::string * s = g->get_variable( "from");
     lua_pushstring(L, s->c_str());
     return 1;
 }
@@ -1199,9 +1199,9 @@ int sendmail_path(lua_State * L)
     CGlobal *g = CGlobal::Instance();
 
     if (str != NULL)
-	g->set_sendmail_path(new std::string(str));
+	g->set_variable( "sendmail_path", new std::string(str));
 
-    std::string * s = g->get_sendmail_path();
+    std::string * s = g->get_variable( "sendmail_path");
     lua_pushstring(L, s->c_str());
     return 1;
 }

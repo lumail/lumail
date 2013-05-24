@@ -56,16 +56,21 @@ CGlobal::CGlobal()
     m_index_limit   = new std::string("all");
     m_index_format  = new std::string( "[$FLAGS] $FROM - $SUBJECT" );
 
-    std::string user = "UNKNOWN";
-    if ( getenv( "USER" ) )
-      user = getenv( "USER" );
-
-    m_from_address   = new std::string( user + "@localhost" );
-    m_sendmail_path  = new std::string( "/usr/lib/sendmail -t" );
     m_sent_mail      = NULL;
     m_cur_folder     = 0;
     m_cur_message    = 0;
     m_messages       = NULL;
+
+    /**
+     * Defaults.
+     */
+    set_variable( "sendmail_path", new std::string( "/usr/lib/sendmail -t" ) );
+
+    std::string user = "UNKNOWN";
+    if ( getenv( "USER" ) )
+      user = getenv( "USER" );
+    std::string *from = new std::string( user + "@localhost" );
+    set_variable( "from", from );
 }
 
 /**
@@ -347,45 +352,6 @@ bool CGlobal::remove_folder(std::string path)
     return false;
 
 }
-
-/**
- * Get the from address.
- */
-std::string * CGlobal::get_default_from()
-{
-  return( m_from_address );
-}
-
-/**
- * Set the from-address.
- */
-void CGlobal::set_default_from( std::string *address)
-{
-    if (m_from_address)
-	delete(m_from_address);
-
-    m_from_address = address;
-}
-
-/**
- * Get the sendmail path
- */
-std::string * CGlobal::get_sendmail_path()
-{
-    return( m_sendmail_path );
-}
-
-/**
- * Set the sendmail path
- */
-void CGlobal::set_sendmail_path( std::string *path)
-{
-    if ( m_sendmail_path )
-        delete( m_sendmail_path );
-
-    m_sendmail_path = path;
-}
-
 
 /**
  * Get the sent-mail folder path
