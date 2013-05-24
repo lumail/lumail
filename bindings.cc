@@ -37,6 +37,22 @@
 
 
 
+int get_set_string_variable( lua_State *L, const char * name )
+{
+    const char *str = lua_tostring(L, -1);
+    CGlobal *g = CGlobal::Instance();
+
+    if (str != NULL)
+	g->set_variable( name, new std::string(str));
+
+    std::string * s = g->get_variable(name);
+    lua_pushstring(L, s->c_str());
+    return( 1 );
+}
+
+
+
+
 /**
  * Get, or set, the maildir-prefix
  */
@@ -64,15 +80,7 @@ int maildir_prefix(lua_State * L)
  */
 int index_format(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
-    CGlobal *g = CGlobal::Instance();
-
-    if (str != NULL)
-	g->set_index_format(new std::string(str));
-
-    std::string * s = g->get_index_format();
-    lua_pushstring(L, s->c_str());
-    return 1;
+    return( get_set_string_variable(L, "index_format" ) );
 }
 
 
@@ -108,15 +116,7 @@ int global_mode(lua_State * L)
  */
 int maildir_limit(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
-    CGlobal *g = CGlobal::Instance();
-
-    if (str != NULL)
-	g->set_variable( "maildir_limit", new std::string(str));
-
-    std::string * s = g->get_variable( "maildir_limit");
-    lua_pushstring(L, s->c_str());
-    return 1;
+    return( get_set_string_variable( L, "maildir_limit" ) );
 }
 
 
@@ -125,21 +125,14 @@ int maildir_limit(lua_State * L)
  */
 int index_limit(lua_State * L)
 {
-
-    const char *str = lua_tostring(L, -1);
-    CGlobal *g = CGlobal::Instance();
-
-    if (str != NULL)
-	g->set_variable( "index_limit", new std::string(str));
-
-    std::string * s = g->get_variable( "index_limit");
-    lua_pushstring(L, s->c_str());
+    int ret =  get_set_string_variable( L, "index_limit" );
 
     /**
      * Update the selected mesages.
      */
-    g->update_messages();
-    return 1;
+    CGlobal *global = CGlobal::Instance();
+    global->update_messages();
+    return ret;
 }
 
 
@@ -1168,15 +1161,7 @@ int compose(lua_State * L)
  */
 int from(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
-    CGlobal *g = CGlobal::Instance();
-
-    if (str != NULL)
-	g->set_variable( "from", new std::string(str));
-
-    std::string * s = g->get_variable( "from");
-    lua_pushstring(L, s->c_str());
-    return 1;
+    return( get_set_string_variable(L, "from" ) );
 }
 
 /**
@@ -1184,15 +1169,7 @@ int from(lua_State * L)
  */
 int sendmail_path(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
-    CGlobal *g = CGlobal::Instance();
-
-    if (str != NULL)
-	g->set_variable( "sendmail_path", new std::string(str));
-
-    std::string * s = g->get_variable( "sendmail_path");
-    lua_pushstring(L, s->c_str());
-    return 1;
+    return( get_set_string_variable( L, "sendmail_path" ) );
 }
 
 
@@ -1201,15 +1178,7 @@ int sendmail_path(lua_State * L)
  */
 int sent_mail(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
-    CGlobal *g = CGlobal::Instance();
-
-    if (str != NULL)
-	g->set_variable( "sent_mail", new std::string(str));
-
-    std::string * s = g->get_variable( "sent_mail");
-    lua_pushstring(L, s->c_str());
-    return 1;
+    return( get_set_string_variable( L, "sent_mail" ) );
 }
 
 /**
