@@ -39,14 +39,6 @@ class CGlobal
   static CGlobal *Instance();
 
   /**
-   * Get/Set the maildir-prefix, which is where we find Maildir-folders beneath.
-   */
-  // TODO: remove
-  void set_maildir_prefix(std::string * prefix);
-  // TODO: remove
-  std::string * get_maildir_prefix();
-
-  /**
    * Get all folders.
    */
   std::vector<CMaildir> get_all_folders();
@@ -70,7 +62,6 @@ class CGlobal
    * Update the list of messages.
    */
   void update_messages();
-
 
   /**
    * Remove all selected folders.

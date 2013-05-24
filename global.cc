@@ -76,23 +76,6 @@ CGlobal::CGlobal()
 }
 
 /**
- * Set the prefix for our maildir folders.
- */
-void CGlobal::set_maildir_prefix(std::string * prefix)
-{
-    set_variable( "maildir_prefix", prefix );
-}
-
-/**
- * Get the prefix for the maildir folders.
- */
-std::string * CGlobal::get_maildir_prefix()
-{
-    return(get_variable( "maildir_prefix" ));
-}
-
-
-/**
  * Get all selected folders.
  */
 std::vector<std::string> CGlobal::get_selected_folders()
@@ -107,7 +90,12 @@ std::vector<CMaildir> CGlobal::get_all_folders()
 {
     std::vector<CMaildir> maildirs;
 
-    std::string *prefix = get_maildir_prefix();
+    /**
+     * Maildir prefix.
+     */
+    CGlobal *global     = CGlobal::Instance();
+    std::string *prefix = global->get_variable( "maildir_prefix" );
+
     std::vector<std::string> folders =
 	CMaildir::getFolders(*prefix);
     std::vector < std::string >::iterator it;
