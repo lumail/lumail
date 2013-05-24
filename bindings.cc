@@ -108,19 +108,13 @@ int global_mode(lua_State * L)
  */
 int maildir_limit(lua_State * L)
 {
+    const char *str = lua_tostring(L, -1);
     CGlobal *g = CGlobal::Instance();
 
-    /**
-     * get the argument, and if we have one set it.
-     */
-    const char *str = lua_tostring(L, -1);
     if (str != NULL)
-	g->set_maildir_limit(new std::string(str));
+	g->set_variable( "maildir_limit", new std::string(str));
 
-    /**
-     * Return the current/updated value.
-     */
-    std::string * s = g->get_maildir_limit();
+    std::string * s = g->get_variable( "maildir_limit");
     lua_pushstring(L, s->c_str());
     return 1;
 }
@@ -131,25 +125,20 @@ int maildir_limit(lua_State * L)
  */
 int index_limit(lua_State * L)
 {
+
+    const char *str = lua_tostring(L, -1);
     CGlobal *g = CGlobal::Instance();
 
-    /**
-     * get the argument, and if we have one set it.
-     */
-    const char *str = lua_tostring(L, -1);
     if (str != NULL)
-	g->set_index_limit(new std::string(str));
+	g->set_variable( "index_limit", new std::string(str));
+
+    std::string * s = g->get_variable( "index_limit");
+    lua_pushstring(L, s->c_str());
 
     /**
      * Update the selected mesages.
      */
     g->update_messages();
-
-    /**
-     * Return the current/updated value.
-     */
-    std::string * s = g->get_index_limit();
-    lua_pushstring(L, s->c_str());
     return 1;
 }
 
@@ -1216,9 +1205,9 @@ int sent_mail(lua_State * L)
     CGlobal *g = CGlobal::Instance();
 
     if (str != NULL)
-	g->set_sent_mail(new std::string(str));
+	g->set_variable( "sent_mail", new std::string(str));
 
-    std::string * s = g->get_sent_mail();
+    std::string * s = g->get_variable( "sent_mail");
     lua_pushstring(L, s->c_str());
     return 1;
 }

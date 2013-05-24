@@ -92,39 +92,6 @@ std::string * CGlobal::get_mode()
 }
 
 /**
- * Set the maildir limit.
- */
-void CGlobal::set_maildir_limit(std::string * limit)
-{
-    set_variable( "maildir_limit", limit );
-}
-
-/**
- * Get the maildir limit
- */
-std::string * CGlobal::get_maildir_limit()
-{
-    return( get_variable( "maildir_limit" ) );
-}
-
-
-/**
- * Set the index-limit.
- */
-void CGlobal::set_index_limit( std::string *limit)
-{
-    set_variable( "index_limit", limit );
-}
-
-/**
- * Get the index-limit.
- */
-std::string *CGlobal::get_index_limit()
-{
-    return( get_variable( "index_limit" ) );
-}
-
-/**
  * Set the prefix for our maildir folders.
  */
 void CGlobal::set_maildir_prefix(std::string * prefix)
@@ -192,7 +159,7 @@ std::vector < CMaildir > CGlobal::get_folders()
   CGlobal *global = CGlobal::Instance();
   std::vector<CMaildir> folders = global->get_all_folders();
   std::vector<CMaildir> display;
-  std::string * filter = global->get_maildir_limit();
+  std::string * filter = global->get_variable("maildir_limit");
 
   /**
    * Filter the folders to those we can display
@@ -268,7 +235,7 @@ void CGlobal::update_messages()
    */
   CGlobal *global = CGlobal::Instance();
   std::vector<std::string> folders = global->get_selected_folders();
-  std::string * filter = global->get_index_limit();
+  std::string * filter = global->get_variable("index_limit" );
 
 
   /**
@@ -341,22 +308,6 @@ bool CGlobal::remove_folder(std::string path)
    */
     return false;
 
-}
-
-/**
- * Get the sent-mail folder path
- */
-std::string * CGlobal::get_sent_mail()
-{
-    return( get_variable( "sent_mail" ) );
-}
-
-/**
- * Set the sent-mail path
- */
-void CGlobal::set_sent_mail( std::string *path)
-{
-    set_variable( "sent_mail", path );
 }
 
 std::string * CGlobal::get_variable( std::string name )

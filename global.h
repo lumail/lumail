@@ -98,18 +98,6 @@ class CGlobal
   bool remove_folder(std::string path);
 
   /**
-   * Get/Set the maildir-display limit: new/all/pattern
-   */
-  std::string * get_maildir_limit();
-  void set_maildir_limit(std::string * limit);
-
-  /**
-   * Get/Set the index-limit: new/all/pattern.
-   */
-  std::string * get_index_limit();
-  void set_index_limit(std::string * limit);
-
-  /**
    * Get/set the selected folder, i.e. the one with the highlight.
    */
   int get_selected_folder() {
@@ -128,12 +116,6 @@ class CGlobal
   void set_selected_message(int offset) {
     m_cur_message = offset;
   }
-
-  /**
-   * Get/Set the sent-mail path.
-   */
-  std::string * get_sent_mail();
-  void set_sent_mail( std::string *path);
 
 
   /**

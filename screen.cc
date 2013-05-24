@@ -81,7 +81,7 @@ void CScreen::drawMaildir()
    */
     CGlobal *global = CGlobal::Instance();
     std::vector < CMaildir > display = global->get_folders();
-    std::string *limit = global->get_maildir_limit();
+    std::string *limit = global->get_variable("maildir_limit");
 
   /**
    * The number of items we've found, vs. the size of the screen.
