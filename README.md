@@ -1,28 +1,31 @@
-lumail
+Lumail
 ======
 
 lumail is a modal console-based email client, which has built in support for scripting
 via Lua.
 
-The email client is a modal application, which means that you're *always* in one of three
-states:
+The email client is a modal application, which means that you're *always* in one of three states:
 
-* Interacting with lists of mailboxes.
+* Interacting with lists of mailboxes.  Default keybindings include:
+   * Press `a` to view all mailboxes.
+   * Press `n` to view mailboxes containing new mail only.
    * This is the mode you'll start in.
    * Move around via `j`/`k`/`/`.
    * You may open the single selected folder by pressing `RETURN`.
    * Or you may toggle the selected state by pressing `SPACE` and jumping into index mode with `I` when you've selected all the folders you care about.
-* Interacting with lists of messages.
+* Interacting with lists of messages.  Default keybindings include:
    * Press `a` to view all messages.
    * Press `n` to view new messages only.
-* Interacting with a single message.
+   * Move around via `j`/`k`/`/`.
+* Interacting with a single message.  Default keybindings include:
+   * Move around via `j`/`k`.
 
 You'll find [a quick introduction to using lumail](http://lumail.org/getting-started/) on
 the [lumail website](http://lumail.org).
 
 
-Code
-----
+Building/Installation
+---------------------
 
 The application is developed in C++ and has intentionally minimal dependencies:
 
@@ -47,6 +50,7 @@ For coding-style we use the following [Emacs](http://www.gnu.org/software/emacs/
     (setq c-default-style "linux" c-basic-offset 4)
     (c-set-offset 'substatement-open 0)
 
+Installation should be as simple as copying the supplied configuration file to `/etc/lumail.lua` and copying the binary to `/usr/local/bin`.  If you run `make install` this will be done for you.
 
 
 Current Status
