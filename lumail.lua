@@ -346,15 +346,31 @@ function faves()
    maildir_limit( "all" );
    clear_selected_folders();
 
-   -- The first folder.
-   scroll_maildir_to( "/.steve.org.uk" );
-   add_selected_folder()
+   -- The folders we care about
+   interesting = { "/.steve.org.uk", "/.people.kirsi",  "/.edinburgh-portraits.com" };
 
-   -- The second folder.
-   scroll_maildir_to( "/.people.kirsi" );
-   add_selected_folder()
+   -- For each one we're going to open
+   for index,name in ipairs( interesting ) do
 
-   -- Now we've selected two folders, open them.
+      -- Jump to first folder.
+      jump_maildir_to( 0 )
+
+      -- Scroll forward until we find the matching folder
+      scroll_maildir_to( name );
+
+      --
+      -- TODO:
+      -- "current_maildir" will return the value we've found.
+      -- We should check if it matches.
+      -- In this case I know it always will.  Probably.
+      --
+
+      -- Add it to the selected set.
+      add_selected_folder()
+
+   end
+
+   -- Now we've selected our folders, open them.
    global_mode( "index" );
    clear();
 end
