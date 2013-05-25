@@ -550,14 +550,8 @@ function dump_unread()
       jump_maildir_to( offset )
 
       -- we want to know the current folder name.
-      clear_selected_folders();
-      add_selected_folder()
-      sels = selected_folders();
-
-      -- Show the (single) selected folder name
-      for i,v in ipairs( sels ) do
-         ff:write( "Selected folder " .. v .. "\n" );
-      end
+      current = current_maildir();
+      ff:write( "Selected folder " .. current .. "\n" );
 
       global_mode( "index" );
       index_limit( "new" );
