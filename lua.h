@@ -68,6 +68,11 @@ public:
     bool on_keypress(const char *keypress );
 
     /**
+     * Call the lua-function on_key()
+     */
+    bool on_key(const char *key );
+
+    /**
      * convert a table to an array of strings.
      */
     std::vector<std::string> table_to_array( std::string name );

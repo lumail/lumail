@@ -600,3 +600,13 @@ function dump_vars()
    ff:close();
 
 end
+
+
+function on_key( v )
+   if ( v == "x" ) then
+      msg("Steve pressed :" .. v );
+      return 1;
+   else
+      return 0;
+   end
+end

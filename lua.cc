@@ -316,6 +316,38 @@ bool CLua::on_keypress(const char *keypress)
     return( result != NULL );
 }
 
+/**
+ * Call the lua-function on_key()
+ */
+bool CLua::on_key(const char *key )
+{
+    /**
+     * Get the "on_key()" function, and see if it exists.
+     */
+    lua_getglobal( m_lua, "on_key" );
+    if(!lua_isfunction(m_lua,-1))
+        return false;
+
+
+    /**
+     * Push the key and call it.
+     */
+    lua_pushstring( m_lua, key );
+    lua_pcall(m_lua, 1, 1 , 0 ) ;
+
+    /**
+     * Get the return value.
+     */
+    int ret = lua_tointeger(m_lua,-1);
+    lua_pop(m_lua,1);
+    if ( ret )
+        return true;
+
+    /**
+     * Fail
+     */
+    return false;
+}
 
 /**
  * convert a table to an array of strings.

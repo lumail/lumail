@@ -235,11 +235,18 @@ int main(int argc, char *argv[])
              */
             const char *name = get_key_name( key );
 
-	    if (!lua->on_keypress(name))
+            /**
+             * See if we can handle it via our keyboard map, or
+             * the lua function "on_key".
+             */
+	    if ( (!lua->on_key( name )) && ( !lua->on_keypress(name)) )
             {
-		std::string foo = "msg(\"Unbound key: ";
+                /**
+                 * Both calls failed, so show a message.
+                 */
+                std::string foo = "msg(\"Unbound key: ";
                 foo += std::string(name) + "\");";
-		lua->execute(foo);
+                lua->execute(foo);
 	    }
 	}
 
