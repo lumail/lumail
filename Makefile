@@ -22,12 +22,13 @@ clean:
 	$(RM) $(TARGET) $(OBJS) core || true
 	cd ./test && make clean || true
 
-
 dist-clean: clean
 	$(RM) *~ .dependtool
 
-tidy:
-	indent -linux -i4 *.cc *.h
+install: all
+	if [ -e /etc/lumail.lua ]; then mv /etc/lumail.lua /etc/lumail.lua.old ; fi
+	cp ./lumail.lua /etc/lumail.lua
+	cp ./lumail /usr/local/bin
 
 
 include .depend
