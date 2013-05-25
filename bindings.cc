@@ -31,6 +31,7 @@
 
 
 #include "maildir.h"
+#include "lang.h"
 #include "lua.h"
 #include "global.h"
 #include "screen.h"
@@ -462,6 +463,57 @@ int current_maildir(lua_State * L)
     return 1;
 }
 
+
+/**
+ * Select a maildir by the path.
+ */
+int select_maildir(lua_State *L)
+{
+    const char *path = lua_tostring(L, -1);
+    if (path == NULL)
+	return luaL_error(L, "Missing argument to select_maildir(..)");
+
+
+    /**
+     * get the current folders.
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::vector < CMaildir > display = global->get_folders();
+    int count = display.size();
+
+    /**
+     * Iterate over each one, and if we have a match then
+     * set the selected one, and return true.
+     */
+    int i = 0;
+
+    for( i = 0; i < count; i++ )
+    {
+        CMaildir cur = display[i];
+
+        if ( strcmp( cur.path().c_str(), path ) == 0 )
+        {
+            /**
+             * The current folder has the correct
+             * path, so we'll select it.
+             */
+            global->set_selected_folder( i );
+
+            /**
+             * Return: 1.
+             */
+            lua_pushinteger(L,1);
+            return 1;
+
+        }
+    }
+
+    /**
+     * Return: 0
+     */
+    lua_pushinteger(L,0);
+    return 1;
+}
 
 /**
  * Count the visible maildir folders.
@@ -1104,7 +1156,7 @@ int compose(lua_State * L)
         reset_prog_mode();
         refresh();
 
-        lua_pushstring(L, SENDED_ABORTED);
+        lua_pushstring(L, SENDING_ABORTED);
         return( msg(L ) );
     }
 

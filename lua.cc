@@ -119,6 +119,7 @@ CLua::CLua()
     lua_register(m_lua, "current_maildir", current_maildir);
     lua_register(m_lua, "count_maildirs", count_maildirs );
     lua_register(m_lua, "current_maildirs", current_maildirs);
+    lua_register(m_lua, "select_maildir", select_maildir );
 
     /**
      * Get the current message

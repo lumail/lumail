@@ -65,6 +65,7 @@ int scroll_index_to(lua_State * L);
 int current_maildir(lua_State * L);
 int count_maildirs(lua_State *L);
 int current_maildirs(lua_State *L);
+int select_maildir(lua_State *L);
 
 /* get the current message path. */
 int current_message(lua_State * L);
