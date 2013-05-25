@@ -1087,7 +1087,7 @@ int compose(lua_State * L)
     system(cmd.c_str());
 
     /**
-     * TODO: prompt for y/n
+     * Prompt for confirmation.
      */
     lua_pushstring(L,"Send mail?  y/n>" );
     ret = prompt_yn( L);
