@@ -1023,7 +1023,6 @@ int compose(lua_State * L)
     {
         lua_pushstring(L, "Error recieving subject" );
         return( msg(L ) );
-
     }
     const char *subject = lua_tostring(L,-1);
 
@@ -1090,6 +1089,29 @@ int compose(lua_State * L)
     /**
      * TODO: prompt for y/n
      */
+    lua_pushstring(L,"Send mail?  y/n>" );
+    ret = prompt_yn( L);
+    if ( ret != 1 )
+    {
+        lua_pushstring(L, "Error recieving y/n confiramtion" );
+        return( msg(L ) );
+    }
+    int yn = lua_tointeger(L, -1);
+
+    // User entered [nN].
+    if ( yn == 0 ) {
+        unlink( filename );
+        reset_prog_mode();
+        refresh();
+
+        lua_pushstring(L, SENDED_ABORTED);
+        return( msg(L ) );
+    }
+
+
+    /**
+     * OK now we're going to send the mail.
+     */
 
     // get the sendmail path.
     std::string *sendmail = global->get_variable("sendmail_path");
@@ -1128,6 +1150,7 @@ int compose(lua_State * L)
     /**
      * TODO: Write this to the sent-mail folder.
      */
+
     unlink( filename );
 
     /**

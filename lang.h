@@ -39,4 +39,10 @@
  */
 #define NO_MESSAGES "No selected message?!"
 
+
+/**
+ * Displayed literally if sending a mail is aborted.
+ */
+#define SENDING_ABORTED "Sending email aborted by user."
+
 #endif /* _clang_h_ */
