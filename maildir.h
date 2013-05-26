@@ -73,6 +73,11 @@ class CMaildir
   bool matches_filter( std::string *filter );
 
   /**
+   * Generate a new filename in the given folder.
+   */
+  static std::string message_in(std::string path, bool is_new);
+
+  /**
    * Is the given path a Maildir?
    */
   static bool is_maildir(std::string path);

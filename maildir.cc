@@ -215,6 +215,58 @@ std::vector<CMessage *> CMaildir::getMessages()
   return result;
 }
 
+
+/**
+ * Generate a new filename in the given folder.
+ */
+std::string CMaildir::message_in(std::string path, bool is_new)
+{
+    /**
+     * Ensure the path is a maildir.
+     */
+    if (! CMaildir::is_maildir(path) )
+        return "";
+
+    /**
+     * Generate the path.
+     */
+    if ( is_new )
+        path += "/new/";
+    else
+        path += "/cur/";
+
+
+    /**
+     * Filename is: $time.xxx.$hostname.
+     */
+    char hostname[256];
+    gethostname(hostname, (sizeof hostname) -1 );
+    time_t current_time = time(NULL);
+
+    /**
+     * Convert the seconds to a string.
+     */
+    std::stringstream ss;
+    ss << current_time;
+    std::string since_epoch = ss.str();
+
+    path += since_epoch;
+    path += ".";
+    path += hostname;
+
+    /**
+     * Generate the temporary file.
+     */
+    path += ":2";
+
+    if ( is_new )
+        path += ",N";
+    else
+        path += ",S";
+
+    return( path );
+}
+
 /**
  * Is the given path a Maildir?
  */
