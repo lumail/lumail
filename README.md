@@ -74,13 +74,8 @@ The following features are missing:
 
 * The ability to reply to a message.
 
-
-Screenshots
------------
-
-* [Showing all folders](img/all.png).
-* [Showing all folders with new mail](img/new.png).
-* [Showing all folders which match a pattern](img/lj.png).
+You can [view screenshots](http://lumail.org/screenshots/) on the
+[lumail website](http://lumail.org).
 
 
 Configuration & Lua-Primitives
