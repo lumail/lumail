@@ -1,3 +1,9 @@
+lumail (0.06) stable; urgency=low
+
+  * New release now that message-composing wowks.
+
+ -- Steve Kemp <steve@steve.org.uk>  Thu, 26 May 2013 13:44:31 +0000
+
 lumail (0.04) stable; urgency=low
 
   * New release now that message-reading wroks.

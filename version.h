@@ -17,5 +17,5 @@
  */
 
 #ifndef    LUMAIL_VERSION
-# define   LUMAIL_VERSION "0.05"
+# define   LUMAIL_VERSION "0.06"
 #endif	/* LUMAIL_VERSION */
