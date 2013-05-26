@@ -1190,13 +1190,13 @@ int compose(lua_State * L)
     /**
      * While we read from the file send to pipe.
      */
-    while (nread = fread( buf, 1, sizeof buf, file), nread > 0)
+    while( (nread = fread( buf, sizeof(char), sizeof buf, file) ) > 0 )
     {
         char *out_ptr = buf;
         ssize_t nwritten;
 
         do {
-            nwritten = fwrite(out_ptr, sizeof buf, nread, pipe);
+            nwritten = fwrite(out_ptr, sizeof(char), nread, pipe);
 
             if (nwritten >= 0)
             {
@@ -1204,6 +1204,8 @@ int compose(lua_State * L)
                 out_ptr += nwritten;
             }
         } while (nread > 0);
+
+        memset(buf, '\0', sizeof(buf));
     }
 
     pclose( pipe );
@@ -1215,9 +1217,14 @@ int compose(lua_State * L)
     std::string archive = CMaildir::message_in( *sent_path, true );
     if ( archive.empty() )
     {
+        unlink( filename );
+        reset_prog_mode();
+        refresh();
+
         lua_pushstring(L, "error finding save path");
         return( msg(L ) );
     }
+
 
     /**
      * If we got a filename then copy the mail there.
@@ -1229,10 +1236,6 @@ int compose(lua_State * L)
     cmd += " ";
     cmd += archive;
     system( cmd.c_str() );
-
-    lua_pushstring(L, cmd.c_str() );
-    msg(L );
-    sleep(3);
 
     unlink( filename );
 
