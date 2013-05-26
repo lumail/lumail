@@ -1078,8 +1078,9 @@ int compose(lua_State * L)
     }
     const char *subject = lua_tostring(L,-1);
 
-
-
+    /**
+     * Generate a temporary file for the message body.
+     */
     CGlobal *global = CGlobal::Instance();
     char filename[] = "/tmp/mytemp.XXXXXX";
     int fd = mkstemp(filename);
@@ -1088,7 +1089,7 @@ int compose(lua_State * L)
         return luaL_error(L, "Failed to create a temporary file.");
 
     /**
-     * TO
+     * To
      */
     write(fd, "To: ", strlen( "To: "));
     write(fd, recipient, strlen( recipient ));
@@ -1100,7 +1101,6 @@ int compose(lua_State * L)
     write(fd, "Subject: ", strlen( "Subject: " ) );
     write(fd, subject, strlen( subject ) );
     write(fd, "\n", 1 );
-
 
     /**
      * From
@@ -1118,7 +1118,7 @@ int compose(lua_State * L)
     /**
      * Body
      */
-    write(fd, "....\n", strlen("....\n" ) );
+    write(fd, "-- \n", strlen("-- \n" ) );
     close(fd);
 
     /**
@@ -1128,12 +1128,17 @@ int compose(lua_State * L)
     def_prog_mode();
     endwin();
 
-    /* Run the editor */
+    /**
+     * Run vim by default
+     */
     std::string cmd = "vim";
 
     if ( getenv( "EDITOR" ) )
         cmd = getenv( "EDITOR" );
 
+    /**
+     * Run the editor.
+     */
     cmd += " ";
     cmd += filename;
     system(cmd.c_str());
@@ -1150,7 +1155,9 @@ int compose(lua_State * L)
     }
     int yn = lua_tointeger(L, -1);
 
-    // User entered [nN].
+    /**
+     * User entered [nN].  Cleanup.
+     */
     if ( yn == 0 ) {
         unlink( filename );
         reset_prog_mode();
@@ -1162,22 +1169,20 @@ int compose(lua_State * L)
 
 
     /**
-     * OK now we're going to send the mail.
+     * OK now we're going to send the mail.  Get some settings.
      */
+    std::string *sendmail  = global->get_variable("sendmail_path");
+    std::string *sent_path = global->get_variable("sent_mail");
 
-    // get the sendmail path.
-    std::string *sendmail = global->get_variable("sendmail_path");
-
-    char buf[4096];
+    char buf[4096] = { '\0' };
     ssize_t nread;
 
-    // open the file
     FILE *file = fopen( filename, "r" );
-
-    // open the pipe
     FILE *pipe = popen( sendmail->c_str(), "w" );
 
-    // while read file:  send to pipe
+    /**
+     * While we read from the file send to pipe.
+     */
     while (nread = fread( buf, 1, sizeof buf, file), nread > 0)
     {
         char *out_ptr = buf;
@@ -1194,14 +1199,33 @@ int compose(lua_State * L)
         } while (nread > 0);
     }
 
-    // close the pipe
-    // close the file.
     pclose( pipe );
     fclose( file );
 
     /**
-     * TODO: Write this to the sent-mail folder.
+     * Get a filename in the sentmail path.
      */
+    std::string archive = CMaildir::message_in( *sent_path, true );
+    if ( archive.empty() )
+    {
+        lua_pushstring(L, "error finding save path");
+        return( msg(L ) );
+    }
+
+    /**
+     * If we got a filename then copy the mail there.
+     *
+     * TODO: A real copy
+     */
+    cmd = "cp ";
+    cmd += filename;
+    cmd += " ";
+    cmd += archive;
+    system( cmd.c_str() );
+
+    lua_pushstring(L, cmd.c_str() );
+    msg(L );
+    sleep(3);
 
     unlink( filename );
 
