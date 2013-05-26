@@ -280,12 +280,19 @@ int prompt_yn(lua_State * L)
 
     echo();
 
-    move(CScreen::height() - 1, 0);
-    printw(str);
+    int height = CScreen::height();
     timeout(-1000);
 
     while (true)
     {
+        /**
+         * Refresh the prompt.
+         */
+        CScreen::clear_status();
+        move(height - 1, 0);
+        printw(str);
+
+
 	char key = getch();
         if ( key == 'y' || key == 'Y' )
         {
