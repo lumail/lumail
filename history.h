@@ -77,7 +77,7 @@ class CHistory
   /**
    * List of history items.
    */
-  std::vector<std::string> m_map;
+  std::vector<std::string> m_history;
 
 };
 

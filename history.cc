@@ -51,7 +51,7 @@ CHistory::CHistory()
  */
 int CHistory::size()
 {
-    return( m_map.size() );
+    return( m_history.size() );
 }
 
 
@@ -60,7 +60,7 @@ int CHistory::size()
  */
 std::string CHistory::at( int offset )
 {
-    return( m_map.at( offset ) );
+    return( m_history.at( offset ) );
 }
 
 
@@ -69,7 +69,7 @@ std::string CHistory::at( int offset )
  */
 void CHistory::add( std::string entry)
 {
-    m_map.push_back(entry);
+    m_history.push_back(entry);
 }
 
 
@@ -78,5 +78,5 @@ void CHistory::add( std::string entry)
  */
 void CHistory::clear()
 {
-    m_map.clear();
+    m_history.clear();
 }
