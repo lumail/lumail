@@ -314,6 +314,71 @@ int prompt_yn(lua_State * L)
 }
 
 
+int prompt_maildir(lua_State * L)
+{
+    CGlobal *global = CGlobal::Instance();
+    int selected = 0;
+    int height = CScreen::height();
+
+
+    while (true)
+    {
+        clear();
+
+        std::vector<CMaildir> folders = global->get_all_folders();
+
+        int count = folders.size();
+        if ( count < 1 )
+        {
+            lua_pushnil(L);
+            return 1;
+        }
+
+        if ( selected > count )
+            selected = count;
+        if ( selected < 0 )
+            selected = 0;
+
+
+        /**
+         * Current selection
+         */
+        CMaildir current = folders.at(selected);
+
+        move(0,0);
+        printw("Select a folder:");
+
+        for (int row = 0; row < (height - 3); row++)
+        {
+            CMaildir *cur = NULL;
+            if ((row + selected) < count)
+            {
+                cur = &folders[row + selected];
+
+                move( row+2, 0 );
+                printw( "%s", cur->path().c_str() );
+            }
+        }
+
+	char key = getch();
+	if (key == ERR)
+        {
+            // NOP
+        }
+        if ( key == 'j' )
+            selected += 1;
+        if ( key == 'k' )
+            selected -= 1;
+        if ( key == '\n' )
+        {
+            lua_pushstring(L, current.path().c_str() );
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 /**
  * scroll up/down the maildir list.
  */

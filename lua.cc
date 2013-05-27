@@ -79,6 +79,7 @@ CLua::CLua()
     lua_register(m_lua, "msg", msg);
     lua_register(m_lua, "prompt", prompt);
     lua_register(m_lua, "prompt_yn", prompt_yn);
+    lua_register(m_lua, "prompt_maildir", prompt_maildir);
     lua_register(m_lua, "sleep", sleep);
 
     /**
