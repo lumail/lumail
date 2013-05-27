@@ -826,6 +826,80 @@ int delete_message( lua_State *L )
 
 
 /**
+ * Save the current message to a new location.
+ */
+int save_message( lua_State *L )
+{
+    const char *str = lua_tostring(L, -1);
+
+    if (str == NULL)
+	return luaL_error(L, "Missing argument to save_message(..)");
+
+    if ( !CMaildir::is_directory( str ) )
+        return luaL_error(L, "The specified destination is not a Maildir" );
+
+    /**
+     * Get all messages from the currently selected messages.
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
+
+    /**
+     * The number of items we've found, and the currently selected one.
+     */
+    int count    = messages->size();
+    int selected = global->get_selected_message();
+
+    /**
+     * No messages?
+     */
+    if ( ( count < 1 ) || selected > count )
+        return 0;
+
+    /**
+     * Get the value.
+     */
+    CMessage *msg = messages->at(selected);
+
+    /**
+     * Got a message ?
+     */
+    std::string source = msg->path();
+
+    /**
+     * The new path.
+     */
+    std::string dest = CMaildir::message_in( str, ( msg->is_new() ) );
+
+    /**
+     * Copy from source to destination.
+     *
+     * TODO: Do neatly.
+     */
+    std::string cmd = "/bin/cp ";
+    cmd += source;
+    cmd += " ";
+    cmd += dest;
+    system( cmd.c_str() );
+
+    /**
+     * Remove source.
+     */
+    unlink( source.c_str() );
+
+    /**
+     * Update messages
+     */
+    global->update_messages();
+
+    /**
+     * We're done.
+     */
+    return 0;
+}
+
+
+/**
  * Search for the next message matching the pattern.
  */
 int scroll_index_to(lua_State * L)
