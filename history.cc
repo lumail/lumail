@@ -19,10 +19,12 @@
 
 #include "history.h"
 
+
 /**
  * Instance-handle.
  */
 CHistory *CHistory::pinstance = NULL;
+
 
 /**
  * Get access to our singleton-object.
@@ -35,6 +37,7 @@ CHistory *CHistory::Instance()
     return pinstance;
 }
 
+
 /**
  * Constructor - This is private as this class is a singleton.
  */
@@ -43,17 +46,37 @@ CHistory::CHistory()
 }
 
 
+/**
+ * Return the size of the history.
+ */
 int CHistory::size()
 {
     return( m_map.size() );
 }
 
+
+/**
+ * Get the Nth piece of history.
+ */
 std::string CHistory::at( int offset )
 {
     return( m_map.at( offset ) );
 }
 
+
+/**
+ * Add a new string to the history.
+ */
 void CHistory::add( std::string entry)
 {
     m_map.push_back(entry);
+}
+
+
+/**
+ * Clear the history.
+ */
+void CHistory::clear()
+{
+    m_map.clear();
 }

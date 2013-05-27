@@ -36,11 +36,26 @@ class CHistory
    */
   static CHistory *Instance();
 
-
+  /**
+   * Return the size of the history.
+   */
   int size();
+
+  /**
+   * Get the Nth piece of history.
+   */
   std::string at( int offset );
+
+  /**
+   * Add a new string to the history.
+   */
   void add( std::string entry);
 
+
+  /**
+   * Clear the history.
+   */
+  void clear();
 
  protected:
 
