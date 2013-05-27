@@ -1,7 +1,7 @@
 #
 #  Source objects.
 #
-SRCS= bindings.cc global.cc lua.cc maildir.cc message.cc main.cc screen.cc
+SRCS= bindings.cc global.cc history.cc lua.cc maildir.cc message.cc main.cc screen.cc
 OBJS=$(subst .cc,.o,$(SRCS))
 CPPFLAGS=-std=gnu++0x -g -Wall -Werror $(shell pkg-config --cflags lua5.1)
 LDLIBS=$(shell pkg-config --libs lua5.1) -lcurses -lmimetic

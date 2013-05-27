@@ -28,6 +28,7 @@
 #include "lang.h"
 #include "lua.h"
 #include "global.h"
+#include "history.h"
 #include "message.h"
 #include "screen.h"
 
@@ -488,7 +489,13 @@ void CScreen::readline(char *buffer, int buflen)
   int pos = 0;
   int len = 0;
   int x, y;
-  static char *prev = NULL;
+
+  /**
+   * Offset into history.
+   */
+  CHistory *hist = CHistory::Instance();
+  int hoff = hist->size();
+
 
   getyx(stdscr, y, x);
   for (;;) {
@@ -515,15 +522,30 @@ void CScreen::readline(char *buffer, int buflen)
     } else if (c == KEY_LEFT) {
       if (pos > 0) pos -= 1; else beep();
     } else if ( c == KEY_UP ) {
-      if ( prev != NULL )
+        hoff -= 1;
+        if ( hoff >= 0 )
         {
-          strcpy( buffer, prev );
-          pos = len = strlen(buffer);
+            std::string ent = hist->at( hoff );
+            strcpy( buffer, ent.c_str() );
+            pos = len = strlen(ent.c_str());
         }
-      else {
-        beep();
-      }
-
+        else {
+            hoff = 0;
+            beep();
+        }
+    }
+    else if ( c == KEY_DOWN ) {
+        hoff += 1;
+        if ( hoff < hist->size() )
+        {
+            std::string ent = hist->at( hoff );
+            strcpy( buffer, ent.c_str() );
+            pos = len = strlen(ent.c_str());
+        }
+        else {
+            hoff = hist->size();
+            beep();
+        }
     }
     else if (c == KEY_RIGHT) {
       if (pos < len) pos += 1; else beep();
@@ -549,7 +571,5 @@ void CScreen::readline(char *buffer, int buflen)
   buffer[len] = '\0';
   if (old_curs != ERR) curs_set(old_curs);
 
-  if ( prev != NULL )
-    free( prev );
-  prev = strdup( buffer);
+  hist->add( buffer );
 }
