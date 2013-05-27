@@ -1,17 +1,23 @@
 --
 -- When lumail launches it will look for two configuration files, and
--- load them both if they exist:
+-- load them both in turn if they exist:
 --
 --   /etc/lumail.lua
 --   ~/.lumail/config.lua
 --
--- Historically it has also loaded ./lumail.lua, but this is deprecated.
--- If you wish to load it please run:
+-- If you wish to load an additional configuration file you may do so
+-- via the --rcfile argument:
 --
 --   $ lumail --rcfile ./lumail.lua
 --
 --
--- Primitives called here are documented online at:
+--
+-- The configuration file is responsible for determining which keystrokes
+-- are recognized, and what they will do.  The configuration file can
+-- contain functions you define yourself, as this one does, and also make
+-- use of the Lua primitives that lumail implements internally.
+--
+-- The lumail primitives are documented online here:
 --
 --   http://lumail.org/lua/
 --
@@ -24,10 +30,15 @@
 --
 -- This setting is used to specify the prefix for your maildir hierarchy.
 --
+-- (The directory specified will be processed recursively.)
+--
 maildir_prefix( os.getenv( "HOME" ) .. "/Maildir" );
 
 --
--- The folder to use for storing sent-messages.
+-- There is only one folder which is special, and that is the one where
+-- lumail will record copies of outgoing mail(s).
+--
+-- The sent-mail folder may be specified here:
 --
 sent_mail( maildir_prefix() .. "/sent-mail" );
 
@@ -36,7 +47,9 @@ sent_mail( maildir_prefix() .. "/sent-mail" );
 -- Set the from address for yourself, which will be used for
 -- composing/replying when they are implemented.
 --
--- This can be changed in the `on_select_folder()` function, as shown later.
+-- This can be changed in one of the available hooks.
+--
+-- In this configuration file we use the `on_select_folder()` function later.
 --
 default_email = "Steve Kemp <steve@steve.org.uk>";
 from( default_email );
@@ -46,7 +59,8 @@ from( default_email );
 -- Show all folders by default
 --
 -- When called wiht no arguments this function will return the current
--- setting, otherwise it will update it.
+-- setting, otherwise it will update it.  This is a common pattern for lumail,
+-- each of the functions which can get or set a value works in the same way.
 --
 -- The maildir limit can be set to three values:
 --
@@ -54,7 +68,8 @@ from( default_email );
 --    new  -> Show all maildir folders which contain unread messages.
 --   "str" -> Show all maildir folders which match the substring "str".
 --
--- See "all" , "new", and "livejournal" functions for example of use.
+-- See "all_folders" , "new_folders", and "livejournal_folders" functions for
+-- example of use.
 --
 maildir_limit( "all" );
 
@@ -82,7 +97,6 @@ index_limit( "all" );
 --   $SUBJECT
 --   $TO
 --
--- TODO: Make the date more selectable: $MONTH, $YEAR, $DAY, etc.
 --
 index_format( "[$FLAGS] $FROM - $SUBJECT" );
 
@@ -90,7 +104,10 @@ index_format( "[$FLAGS] $FROM - $SUBJECT" );
 --
 -- The headers we show when displaying a mail.
 --
+-- (The headers listed are shown in the order they are specified here.)
+--
 headers = { "$TO", "$FROM", "$DATE", "$SUBJECT" }
+
 
 --
 -- This function is called when the client is launched.
@@ -112,7 +129,7 @@ end
 -- Remember: More than one folder might be selected.
 --
 function on_select_folder( folder )
-msg( "Selected folder: " .. folder );
+
    --
    -- Change the email address we use depending on our folder.
    --
@@ -152,8 +169,9 @@ end
 -- The argument is the path to the message on-disk.
 --
 -- Here we use the "is_new()" and "mark_read()" functions with that
--- path.  If the path were omitted then the current-message would be
--- implicit, so there is no difference.
+-- path.
+--
+-- (If the path were omitted then the current-message would be implicit.)
 --
 -- We mark any new message(s) read when we read them here.
 --
@@ -180,8 +198,8 @@ end
 function on_exit()
    print("print: on_exit");
    io.write( "io.write: on_exit\n")
-   io.write("The global mode is: '" .. global_mode() .. "'.\n");
-   io.write("The limit is " .. maildir_limit() .. "\n" );
+   io.write("The global mode was: '" .. global_mode() .. "'.\n");
+   io.write("The maildir_limit setting was '" .. maildir_limit() .. "'\n" );
 end
 
 
@@ -276,12 +294,14 @@ function maildir_down()
    scroll_maildir_down( 1 );
 end
 function maildir_page_down()
+   -- The minus-two is to account for the status-area
    scroll_maildir_down( screen_height() - 2  );
 end
 function maildir_up()
    scroll_maildir_up(1);
 end
 function maildir_page_up()
+   -- The minus-two is to account for the status-area
    scroll_maildir_up( screen_height() -2 );
 end
 
@@ -294,12 +314,14 @@ function message_down()
    scroll_index_down( 1 );
 end
 function message_page_down()
+   -- The minus-two is to account for the status-area
    scroll_index_down( screen_height() - 2 );
 end
 function message_up()
    scroll_index_up(1);
 end
 function message_page_up()
+   -- The minus-two is to account for the status-area
    scroll_index_up( screen_height() - 2 );
 end
 
@@ -344,6 +366,8 @@ function faves()
 
    -- ensure all folders are available
    maildir_limit( "all" );
+
+   -- clear the currently selected folders.
    clear_selected_folders();
 
    -- The folders we care about
@@ -385,7 +409,7 @@ function mark_all_read()
 
    while( i < count ) do
       jump_index_to( i )
-      mark_read();
+      mark_read()
       i = i + 1
    end
 
@@ -400,7 +424,7 @@ end
 --
 -- However to avoid duplication there is a global keymap.
 --
---   For example:
+--   For example this works in all modes:
 --      kemymap['global']['Q'] = 'exit()';
 --
 keymap = {}
@@ -442,7 +466,7 @@ keymap['global']['^R'] = 'refresh_display()'
 keymap['message']['q'] = "index()"
 --  If viewing a folder quit means return to the maildir list.
 keymap['index']['q'] = "maildir()"
--- If viewing a maildir list then q means nop.
+-- If viewing a maildir list then q means exit.
 keymap['maildir']['q'] = "exit();"
 
 
@@ -473,7 +497,7 @@ keymap['index']['k'] = 'message_up()'
 keymap['index']['K'] = 'message_page_up()'
 keymap['index']['/'] = 'search_next()'
 
-keymap['index']['Space']     = 'view_message()'
+keymap['index']['Space'] = 'view_message()'
 keymap['index']['Enter'] = 'view_message()'
 
 --
@@ -488,7 +512,7 @@ keymap['index']['n'] = 'index_limit("new");'
 --  "space" will toggle the current folder as selected.
 --  "return" will open the selected folder exclusively.
 --
-keymap['maildir']['Space']     = 'toggle_selected_folder()'
+keymap['maildir']['Space'] = 'toggle_selected_folder()'
 keymap['maildir']['Enter'] = 'open_folder()'
 
 
@@ -521,9 +545,12 @@ function debugy()
    end
    ff:close();
 end
-
 keymap['maildir']['D'] = 'debugy()';
 
+
+--
+-- Test our sleep primitive.
+--
 function sleepy()
    clear()
    sleep( 1 );
@@ -586,6 +613,10 @@ function dump_unread()
 end
 
 
+
+--
+-- Dump all variables we know about.
+--
 function dump_vars()
 
    -- where we log
@@ -602,6 +633,15 @@ function dump_vars()
 end
 
 
+--
+-- By default the keyboard handling will lookup a function to
+-- execute in the keymaps we've defined above.
+--
+-- But it is possible to override that here, if you wish.
+--
+-- Returning 1 will stop further processing.  Returning 0 will
+-- allow the normal handling to continue.
+--
 function on_key( v )
    if ( v == "x" ) then
       msg("Steve pressed :" .. v );
