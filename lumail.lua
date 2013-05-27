@@ -457,6 +457,7 @@ keymap['global']['v'] = 'show_version()'
 keymap['global']['*'] = 'jump_to_end()'
 -- Refresh display
 keymap['global']['^R'] = 'refresh_display()'
+keymap['global']['^L'] = 'refresh_display()'
 
 
 --
