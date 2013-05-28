@@ -1389,6 +1389,16 @@ int compose(lua_State * L)
 
 
 /**
+ * Reply to an existing mail.
+ */
+int reply(lua_State * L)
+{
+    CLua *lua = CLua::Instance();
+    lua->execute( "msg(\"not implemented!\");" );
+    return( 0 );
+}
+
+/**
  * Get, or set, the default from address.
  */
 int from(lua_State * L)

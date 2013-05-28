@@ -153,10 +153,11 @@ CLua::CLua()
     lua_register(m_lua, "index_limit", index_limit);
 
     /**
-     * Compose a new mail.
+     * Compose a new mail/reply to an existing one.
      */
     lua_register(m_lua, "compose", compose);
-    // TODO: reply()
+    lua_register(m_lua, "reply", reply);
+
 
     /**
      * Get screen dimensions.
