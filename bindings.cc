@@ -58,6 +58,53 @@ int get_set_string_variable( lua_State *L, const char * name )
 
 
 
+/**
+ * Get a message from the given path.
+ *
+ * If the path is NULL then we allocate the message from the heap as the
+ * currently selected message.
+ */
+CMessage *get_message_for_operation( const char *path )
+{
+    CMessage *msg = NULL;
+
+    /**
+     * Given a path?  Use it.
+     */
+    if ( path != NULL )
+    {
+        msg = new CMessage( path );
+        return(msg);
+    }
+
+
+    /**
+     * OK we're working with the currently selected message.
+     */
+
+    /**
+     * Get all messages from the currently selected messages.
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
+
+    /**
+     * The number of items we've found, and the currently selected one.
+     */
+    int count    = messages->size();
+    int selected = global->get_selected_message();
+
+    /**
+     * No messages?
+     */
+    if ( ( count < 1 ) || selected > count )
+        return NULL;
+    else
+        return(  messages->at(selected) );
+
+}
+
+
 
 /**
  * Get, or set, the maildir-prefix
@@ -120,6 +167,31 @@ int index_limit(lua_State * L)
     return ret;
 }
 
+
+/**
+ * Get, or set, the default from address.
+ */
+int from(lua_State * L)
+{
+    return( get_set_string_variable(L, "from" ) );
+}
+
+/**
+ * Get, or set, the sendmail path.
+ */
+int sendmail_path(lua_State * L)
+{
+    return( get_set_string_variable( L, "sendmail_path" ) );
+}
+
+
+/**
+ * Get, or set, the sent-folder path.
+ */
+int sent_mail(lua_State * L)
+{
+    return( get_set_string_variable( L, "sent_mail" ) );
+}
 
 /**
  * Clear the screen; but not the prompt.
@@ -661,64 +733,35 @@ int current_message(lua_State * L)
 
 
 
+
+
 /**
  * Is the named/current message new?
  */
 int is_new(lua_State * L)
 {
     /**
-     * See if we were passed a path.
+     * Get the path (optional).
      */
     const char *str = lua_tostring(L, -1);
-    if ( str != NULL )
+    int ret = 0;
+
+    CMessage *msg = get_message_for_operation( str );
+    if ( msg != NULL )
     {
-        CMessage cur( str );
-        if ( cur.is_new() )
+        if ( msg->is_new() )
             lua_pushinteger(L,1);
         else
             lua_pushinteger(L,0);
 
-        return 1;
+        ret = 1;
     }
 
-    /**
-     * OK we're working with the currently selected message.
-     */
+    if ( str != NULL )
+        delete( msg );
 
-
-    /**
-     * Get all messages from the currently selected messages.
-     */
-    CGlobal *global = CGlobal::Instance();
-    std::vector<CMessage *> *messages = global->get_messages();
-
-    /**
-     * The number of items we've found, and the currently selected one.
-     */
-    int count    = messages->size();
-    int selected = global->get_selected_message();
-
-    /**
-     * No messages?
-     */
-    if ( ( count < 1 ) || selected > count )
-    {
-        lua_pushinteger(L, 0);
-        return 1;
-    }
-
-    /**
-     * Get the value.
-     */
-    CMessage *cur = messages->at(selected);
-    if ( cur->is_new() )
-        lua_pushinteger(L,1);
-    else
-        lua_pushinteger(L,0);
-
-    return 1;
+    return( ret );
 }
-
 
 
 /**
@@ -727,46 +770,18 @@ int is_new(lua_State * L)
 int mark_read(lua_State * L)
 {
     /**
-     * See if we were passed a path.
+     * Get the path (optional).
      */
     const char *str = lua_tostring(L, -1);
+
+    CMessage *msg = get_message_for_operation( str );
+    if ( msg != NULL )
+        msg->mark_read();
+
     if ( str != NULL )
-    {
-        CMessage cur( str );
-        cur.mark_read();
-        return 0;
-    }
+        delete( msg );
 
-
-    /**
-     * OK we're working with the currently selected message.
-     */
-
-    /**
-     * Get all messages from the currently selected messages.
-     */
-    CGlobal *global = CGlobal::Instance();
-    std::vector<CMessage *> *messages = global->get_messages();
-
-    /**
-     * The number of items we've found, and the currently selected one.
-     */
-    int count    = messages->size();
-    int selected = global->get_selected_message();
-
-    /**
-     * No messages?
-     */
-    if ( ( count < 1 ) || selected > count )
-        return 0;
-
-    /**
-     * Mark read..
-     */
-    CMessage *cur = messages->at(selected);
-    cur->mark_read();
-
-    return 0;
+    return( 0 );
 }
 
 
@@ -777,43 +792,17 @@ int mark_read(lua_State * L)
 int mark_new(lua_State * L)
 {
     /**
-     * See if we were passed a path.
+     * Get the path (optional).
      */
     const char *str = lua_tostring(L, -1);
+
+    CMessage *msg = get_message_for_operation( str );
+    if ( msg != NULL )
+        msg->mark_new();
+
     if ( str != NULL )
-    {
-        CMessage cur( str );
-        cur.mark_new();
-        return 0;
-    }
+        delete( msg );
 
-    /**
-     * OK we're working with the currently selected message.
-     */
-
-    /**
-     * Get all messages from the currently selected messages.
-     */
-    CGlobal *global = CGlobal::Instance();
-    std::vector<CMessage *> *messages = global->get_messages();
-
-    /**
-     * The number of items we've found, and the currently selected one.
-     */
-    int count    = messages->size();
-    int selected = global->get_selected_message();
-
-    /**
-     * No messages?
-     */
-    if ( ( count < 1 ) || selected > count )
-        return 0;
-
-    /**
-     * Mark the message
-     */
-    CMessage *cur = messages->at(selected);
-    cur->mark_new();
     return( 0 );
 }
 
@@ -824,57 +813,23 @@ int mark_new(lua_State * L)
 int delete_message( lua_State *L )
 {
     /**
-     * See if we were passed a path.
+     * Get the path (optional).
      */
     const char *str = lua_tostring(L, -1);
 
-    CMessage *msg = NULL;
-    int allocated = false;
+    CMessage *msg = get_message_for_operation( str );
+    if ( msg != NULL )
+    {
+        unlink( msg->path().c_str() );
 
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"Deleted: " + msg->path() + "\");" );
+    }
+
+    /**
+     * Free the message.
+     */
     if ( str != NULL )
-    {
-        msg = new CMessage( str );
-        allocated = true;
-    }
-
-    /**
-     * Get all messages from the currently selected messages.
-     */
-    if ( msg == NULL )
-    {
-        CGlobal *global = CGlobal::Instance();
-        std::vector<CMessage *> *messages = global->get_messages();
-
-        /**
-         * The number of items we've found, and the currently selected one.
-         */
-        int count    = messages->size();
-        int selected = global->get_selected_message();
-
-        /**
-         * No messages?
-         */
-        if ( ( count < 1 ) || selected > count )
-        {
-            return 0;
-        }
-
-        /**
-         * Get the value.
-         */
-        msg = messages->at(selected);
-    }
-
-    /**
-     * Got a message ?
-     */
-    std::string path = msg->path();
-    unlink( path.c_str() );
-
-    CLua *lua = CLua::Instance();
-    lua->execute( "msg(\"Deleted: " + path + "\");" );
-
-    if ( allocated )
         delete( msg );
 
     /**
@@ -904,27 +859,9 @@ int save_message( lua_State *L )
         return luaL_error(L, "The specified destination is not a Maildir" );
 
     /**
-     * Get all messages from the currently selected messages.
+     * Get the message
      */
-    CGlobal *global = CGlobal::Instance();
-    std::vector<CMessage *> *messages = global->get_messages();
-
-    /**
-     * The number of items we've found, and the currently selected one.
-     */
-    int count    = messages->size();
-    int selected = global->get_selected_message();
-
-    /**
-     * No messages?
-     */
-    if ( ( count < 1 ) || selected > count )
-        return 0;
-
-    /**
-     * Get the value.
-     */
-    CMessage *msg = messages->at(selected);
+    CMessage *msg = get_message_for_operation( NULL );
 
     /**
      * Got a message ?
@@ -952,9 +889,13 @@ int save_message( lua_State *L )
      */
     unlink( source.c_str() );
 
+
+    delete( msg );
+
     /**
      * Update messages
      */
+    CGlobal *global = CGlobal::Instance();
     global->update_messages();
 
     /**
@@ -1396,31 +1337,6 @@ int reply(lua_State * L)
     CLua *lua = CLua::Instance();
     lua->execute( "msg(\"not implemented!\");" );
     return( 0 );
-}
-
-/**
- * Get, or set, the default from address.
- */
-int from(lua_State * L)
-{
-    return( get_set_string_variable(L, "from" ) );
-}
-
-/**
- * Get, or set, the sendmail path.
- */
-int sendmail_path(lua_State * L)
-{
-    return( get_set_string_variable( L, "sendmail_path" ) );
-}
-
-
-/**
- * Get, or set, the sent-folder path.
- */
-int sent_mail(lua_State * L)
-{
-    return( get_set_string_variable( L, "sent_mail" ) );
 }
 
 /**
