@@ -98,7 +98,7 @@ index_limit( "all" );
 --   $TO
 --
 --
-index_format( "[$FLAGS] $FROM - $SUBJECT" );
+index_format( "[$FLAGS] $DATE $FROM - $SUBJECT" );
 
 
 --

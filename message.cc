@@ -246,7 +246,7 @@ std::string CMessage::format( std::string fmt )
     /**
      * The variables we know about.
      */
-    const char *fields[6] = { "FLAGS", "FROM", "TO", "SUBJECT",  "DATE", 0 };
+    const char *fields[7] = { "FLAGS", "FROM", "TO", "SUBJECT",  "DATE", "YEAR", 0 };
     const char **std_name = fields;
 
 
@@ -283,6 +283,9 @@ std::string CMessage::format( std::string fmt )
             }
             if ( strcmp(std_name[i] , "SUBJECT" ) == 0 ) {
                 body = subject();
+            }
+            if ( strcmp(std_name[i],  "YEAR" ) == 0 ) {
+                body = date(EYEAR);
             }
 
             result = before + body + after;
@@ -323,7 +326,7 @@ std::string CMessage::from()
  *
  * TODO: ctime vs localtime
  */
-std::string CMessage::date()
+std::string CMessage::date(TDate fmt)
 {
     std::string date = header("Date");
 
@@ -337,8 +340,11 @@ std::string CMessage::date()
             date = ctime(&modt);
         }
     }
-
-    return( date );
+    if ( fmt == EFULL ) 
+    	return( date );
+    if ( fmt == EYEAR )
+        return std::string("$YEAR");
+    return std::string("");
 }
 
 
