@@ -890,9 +890,6 @@ int save_message( lua_State *L )
      */
     unlink( source.c_str() );
 
-
-    delete( msg );
-
     /**
      * Update messages
      */
@@ -1339,6 +1336,13 @@ int reply(lua_State * L)
      * Get the message we're replying to.
      */
     CMessage *mssg = get_message_for_operation( NULL );
+    if ( mssg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"Finding the current message failed\");" );
+        return( 0 );
+    }
+
 
     /**
      * Get the subject, and sender.
@@ -1357,7 +1361,6 @@ int reply(lua_State * L)
 
     if (fd == -1)
     {
-        delete( mssg );
         return luaL_error(L, "Failed to create a temporary file.");
     }
 
@@ -1423,7 +1426,7 @@ int reply(lua_State * L)
     int ret = prompt_yn( L);
     if ( ret != 1 )
     {
-        lua_pushstring(L, "Error recieving y/n confiramtion" );
+        lua_pushstring(L, "Error recieving y/n confiramtion." );
         return( msg(L ) );
     }
     int yn = lua_tointeger(L, -1);
@@ -1432,7 +1435,6 @@ int reply(lua_State * L)
      * User entered [nN].  Cleanup.
      */
     if ( yn == 0 ) {
-        delete(mssg);
         unlink( filename );
         reset_prog_mode();
         refresh();
@@ -1490,7 +1492,6 @@ int reply(lua_State * L)
     std::string archive = CMaildir::message_in( *sent_path, true );
     if ( archive.empty() )
     {
-        delete( mssg );
         unlink( filename );
         reset_prog_mode();
         refresh();
@@ -1519,7 +1520,6 @@ int reply(lua_State * L)
     reset_prog_mode();
     refresh();
 
-    delete( mssg );
     return( 0 );
 }
 
