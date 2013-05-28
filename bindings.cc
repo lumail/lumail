@@ -193,6 +193,7 @@ int sent_mail(lua_State * L)
     return( get_set_string_variable( L, "sent_mail" ) );
 }
 
+
 /**
  * Clear the screen; but not the prompt.
  */
@@ -1334,8 +1335,191 @@ int compose(lua_State * L)
  */
 int reply(lua_State * L)
 {
-    CLua *lua = CLua::Instance();
-    lua->execute( "msg(\"not implemented!\");" );
+    /**
+     * Get the message we're replying to.
+     */
+    CMessage *mssg = get_message_for_operation( NULL );
+
+    /**
+     * Get the subject, and sender.
+     */
+    std::string subject = mssg->subject();
+    std::string to      = mssg->from();
+
+    CGlobal *global     = CGlobal::Instance();
+    std::string *from   = global->get_variable( "from" );
+
+    /**
+     * Generate a temporary file for the message body.
+     */
+    char filename[] = "/tmp/lumail.reply.XXXXXX";
+    int fd = mkstemp(filename);
+
+    if (fd == -1)
+    {
+        delete( mssg );
+        return luaL_error(L, "Failed to create a temporary file.");
+    }
+
+    /**
+     * To
+     */
+    write(fd, "To: ", strlen( "To: "));
+    write(fd, to.c_str(), strlen( to.c_str() ));
+    write(fd, "\n", 1 );
+
+    /**
+     * Subject.
+     */
+    write(fd, "Subject: ", strlen( "Subject: " ) );
+    write(fd, subject.c_str(), strlen( subject.c_str() ) );
+    write(fd, "\n", 1 );
+
+    /**
+     * From
+     */
+    write(fd, "From: " , strlen( "From: " ) );
+    write(fd, from->c_str(), strlen( from->c_str() ) );
+    write(fd, "\n", 1 );
+
+    /**
+     * Space
+     */
+    write(fd, "\n", 1 );
+
+    /**
+     * Body
+     */
+    write(fd, "TODO: Quote body\n",  strlen("TODO: Quote body\n" ) );
+    write(fd, "-- \n", strlen("-- \n" ) );
+    close(fd);
+
+    /**
+     * Save the current state of the TTY
+     */
+    refresh();
+    def_prog_mode();
+    endwin();
+
+    /**
+     * Run vim by default
+     */
+    std::string cmd = "vim";
+
+    if ( getenv( "EDITOR" ) )
+        cmd = getenv( "EDITOR" );
+
+    /**
+     * Run the editor.
+     */
+    cmd += " ";
+    cmd += filename;
+    system(cmd.c_str());
+
+    /**
+     * Prompt for confirmation.
+     */
+    lua_pushstring(L,"Send reply?  y/n>" );
+    int ret = prompt_yn( L);
+    if ( ret != 1 )
+    {
+        lua_pushstring(L, "Error recieving y/n confiramtion" );
+        return( msg(L ) );
+    }
+    int yn = lua_tointeger(L, -1);
+
+    /**
+     * User entered [nN].  Cleanup.
+     */
+    if ( yn == 0 ) {
+        delete(mssg);
+        unlink( filename );
+        reset_prog_mode();
+        refresh();
+
+        lua_pushstring(L, REPLY_ABORTED);
+        return( msg(L ) );
+    }
+
+
+    /**
+     * OK now we're going to send the mail.  Get some settings.
+     */
+    std::string *sent_path = global->get_variable("sent_mail");
+
+#if 0
+    /**
+     * OK now we're going to send the mail.  Get some settings.
+     */
+    std::string *sendmail  = global->get_variable("sendmail_path");
+
+    char buf[4096] = { '\0' };
+    ssize_t nread;
+
+    FILE *file = fopen( filename, "r" );
+    FILE *pipe = popen( sendmail->c_str(), "w" );
+
+    /**
+     * While we read from the file send to pipe.
+     */
+    while( (nread = fread( buf, sizeof(char), sizeof buf, file) ) > 0 )
+    {
+        char *out_ptr = buf;
+        ssize_t nwritten;
+
+        do {
+            nwritten = fwrite(out_ptr, sizeof(char), nread, pipe);
+
+            if (nwritten >= 0)
+            {
+                nread -= nwritten;
+                out_ptr += nwritten;
+            }
+        } while (nread > 0);
+
+        memset(buf, '\0', sizeof(buf));
+    }
+
+    pclose( pipe );
+    fclose( file );
+#endif
+
+    /**
+     * Get a filename in the sentmail path.
+     */
+    std::string archive = CMaildir::message_in( *sent_path, true );
+    if ( archive.empty() )
+    {
+        delete( mssg );
+        unlink( filename );
+        reset_prog_mode();
+        refresh();
+
+        lua_pushstring(L, "error finding save path");
+        return( msg(L ) );
+    }
+
+
+    /**
+     * If we got a filename then copy the mail there.
+     *
+     * TODO: A real copy
+     */
+    cmd = "cp ";
+    cmd += filename;
+    cmd += " ";
+    cmd += archive;
+    system( cmd.c_str() );
+
+    unlink( filename );
+
+    /**
+     * Reset + redraw
+     */
+    reset_prog_mode();
+    refresh();
+
+    delete( mssg );
     return( 0 );
 }
 

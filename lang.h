@@ -45,4 +45,11 @@
  */
 #define SENDING_ABORTED "Sending email aborted by user."
 
+
+/**
+ * Displayed literally if sending a mail is aborted.
+ */
+#define REPLY_ABORTED "Sending reply aborted by user."
+
+
 #endif /* _clang_h_ */
