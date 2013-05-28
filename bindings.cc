@@ -1393,7 +1393,15 @@ int reply(lua_State * L)
     /**
      * Body
      */
-    write(fd, "TODO: Quote body\n",  strlen("TODO: Quote body\n" ) );
+    std::vector<std::string> body = mssg->body();
+    int lines =(int)body.size();
+    for( int i = 0; i < lines; i++ )
+    {
+        write(fd, "> ", 2 );
+        write(fd, body[i].c_str(), strlen(body[i].c_str() ));
+        write(fd, "\n", 1 );
+    }
+
     write(fd, "-- \n", strlen("-- \n" ) );
     close(fd);
 
