@@ -20,6 +20,37 @@
 #define _bindings_h  1
 
 #include "lua.h"
+class CMessage;
+
+
+/**
+ **
+ **  Helper functions.
+ **
+ **/
+
+
+/**
+ * Get or set the value of the given string variable.
+ */
+int get_set_string_variable( lua_State *L, const char * name );
+
+/**
+ * Get a message object for the given path.
+ *
+ * If the path is NULL then find and return the currently selected
+ * message instead.
+ */
+CMessage *get_message_for_operation( const char *path );
+
+
+
+/**
+ **
+ **  Lua primitive implementations.
+ **
+ **/
+
 
 /* exit the program */
 int exit(lua_State * L);
