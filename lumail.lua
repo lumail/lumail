@@ -44,8 +44,8 @@ sent_mail( maildir_prefix() .. "/sent-mail" );
 
 
 --
--- Set the from address for yourself, which will be used for
--- composing/replying when they are implemented.
+-- Set the from address for yourself, which is used for
+-- composing/replying.
 --
 -- This can be changed in one of the available hooks.
 --
@@ -500,6 +500,7 @@ keymap['index']['/'] = 'search_next()'
 
 keymap['index']['Space'] = 'view_message()'
 keymap['index']['Enter'] = 'view_message()'
+keymap['index']['r'] = 'reply()'
 
 --
 -- View all/new messages only.
@@ -524,6 +525,7 @@ keymap['maildir']['Enter'] = 'open_folder()'
 keymap['message']['j'] = 'message_down()'
 keymap['message']['k'] = 'message_up()'
 keymap['message']['/'] = 'search_next()'
+keymap['message']['r'] = 'reply()'
 
 -----
 -----
