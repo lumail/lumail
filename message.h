@@ -56,6 +56,10 @@ class CMessage
    */
   std::string path();
 
+  /**
+   * Update the path to the message, on-disk.
+   */
+  void path( std::string new_path );
 
   /**
    * Format the message for display in the header - via the lua format string.
@@ -66,6 +70,11 @@ class CMessage
    * Get the flags for this message.
    */
   std::string flags();
+
+  /**
+   * Add a flag to a message.
+   */
+  void add_flag( char c );
 
   /**
    * Does this message match the given filter?

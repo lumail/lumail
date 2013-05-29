@@ -64,19 +64,25 @@ std::string CMessage::path()
 }
 
 
+void CMessage::path( std::string new_path )
+{
+    m_path = new_path;
+}
+
 /**
  * Get the flags for this message.
  */
 std::string CMessage::flags()
 {
     std::string flags = "";
+    std::string pth   = path();
 
-    if (m_path.empty())
+    if (pth.empty())
         return (flags);
 
-    size_t offset = m_path.find(":2,");
+    size_t offset = pth.find(":2,");
     if (offset != std::string::npos)
-        flags = m_path.substr(offset + 3);
+        flags = pth.substr(offset + 3);
 
     if ( flags.size() > 3)
         flags = "";
@@ -84,7 +90,7 @@ std::string CMessage::flags()
     /**
      * Sleazy Hack.
      */
-    if ( m_path.find( "/new/" ) != std::string::npos )
+    if ( pth.find( "/new/" ) != std::string::npos )
         flags += "N";
 
     /**
@@ -94,6 +100,65 @@ std::string CMessage::flags()
         flags += " ";
 
     return flags;
+}
+
+
+/**
+ * Add a flag to a message.
+ */
+void CMessage::add_flag( char c )
+{
+    /**
+     * Get the path and ensure it is present.
+     */
+    std::string p = path();
+
+    if (p.empty())
+        return;
+
+    /**
+     * Get the current flags.
+     */
+    size_t offset     = p.find(":2,");
+    std::string base  = p;
+    std::string flags = "";
+
+    /**
+     * If we found flags then add the new one.
+     */
+    if (offset != std::string::npos)
+    {
+        flags = p.substr(offset);
+        base  = p.substr(0,offset);
+    }
+    else
+    {
+        flags = ":2,";
+    }
+
+    /**
+     * Sleazy Hack.
+     */
+    if ( p.find( "/new/" ) != std::string::npos )
+        flags += "N";
+
+    /**
+     * Add the new-flag.
+     */
+    flags += c;
+
+    std::string cmd = "/bin/mv ";
+    cmd += p ;
+    cmd += " ";
+    cmd += base;
+    cmd += flags;
+
+    system( cmd.c_str() );
+
+    /**
+     * Update the path.
+     */
+    path( p );
 }
 
 
@@ -144,7 +209,7 @@ bool CMessage::mark_read()
     /*
      * Get the current path, and build a new one.
      */
-    std::string c_path = m_path;
+    std::string c_path = path();
     std::string n_path = "";
 
     size_t offset = std::string::npos;
@@ -162,7 +227,7 @@ bool CMessage::mark_read()
 
         n_path = before + "/cur/" + after;
         if ( rename(  c_path.c_str(), n_path.c_str() )  == 0 ) {
-            m_path = n_path;
+            path(n_path);
             return true;
         }
         else {
@@ -189,7 +254,7 @@ bool CMessage::mark_new()
     /*
      * Get the current path, and build a new one.
      */
-    std::string c_path = m_path;
+    std::string c_path = path();
     std::string n_path = "";
 
     size_t offset = std::string::npos;
@@ -207,7 +272,7 @@ bool CMessage::mark_new()
 
         n_path = before + "/new/" + after;
         if ( rename(  c_path.c_str(), n_path.c_str() )  == 0 ) {
-            m_path = n_path;
+            path( n_path );
             return true;
         }
         else {
@@ -340,7 +405,7 @@ std::string CMessage::date(TDate fmt)
             date = ctime(&modt);
         }
     }
-    if ( fmt == EFULL ) 
+    if ( fmt == EFULL )
     	return( date );
     if ( fmt == EYEAR )
         return std::string("$YEAR");
