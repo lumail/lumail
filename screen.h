@@ -1,5 +1,5 @@
 /**
- * screen.h - Utility functions related to the screen size.
+ * screen.h - Utility functions related to the screen.
  *
  * This file is part of lumail: http://lumail.org/
  *
@@ -23,7 +23,7 @@
 #include "maildir.h"
 
 /**
- * Class contains only static methods relating to the screen dimensions.
+ * This class contains simple functions relating to the screen-handling.
  */
 class CScreen
 {

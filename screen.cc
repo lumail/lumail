@@ -1,5 +1,5 @@
 /**
- * screen.cc - Utility functions related to the screen size.
+ * screen.cc - Utility functions related to the screen.
  *
  * This file is part of lumail: http://lumail.org/
  *
