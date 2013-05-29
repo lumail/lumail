@@ -132,7 +132,7 @@ int refresh_display(lua_State * L);
 /* sleep */
 int sleep(lua_State *L );
 
-/* set the default from address */
+/* get/set the default from address */
 int from(lua_State * L);
 
 /* get/set the path to sendmail */
