@@ -1547,6 +1547,13 @@ int reply(lua_State * L)
     unlink( filename );
 
     /**
+     * Now we're all cleaned up mark the orignal message
+     * as being replied to.
+     */
+    mssg->add_flag( 'R' );
+
+
+    /**
      * Reset + redraw
      */
     reset_prog_mode();
