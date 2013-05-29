@@ -126,6 +126,7 @@ CLua::CLua()
     lua_register(m_lua, "count_messages", count_messages );
     lua_register(m_lua, "current_message", current_message);
     lua_register(m_lua, "delete", delete_message);
+    lua_register(m_lua, "header", header);
     lua_register(m_lua, "is_new", is_new);
     lua_register(m_lua, "mark_new", mark_new);
     lua_register(m_lua, "mark_read", mark_read);

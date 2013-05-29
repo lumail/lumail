@@ -798,6 +798,43 @@ int mark_read(lua_State * L)
 }
 
 
+/**
+ * Get a header from the current/specified message.
+ */
+int header(lua_State * L)
+{
+    /**
+     * Get the path (optional), and the header (required)
+     */
+    const char *header = lua_tostring(L, 1);
+    const char *path   = lua_tostring(L, 2);
+    if ( header == NULL )
+        return luaL_error(L, "Missing header" );
+
+    /**
+     * Get the message
+     */
+    CMessage *msg = get_message_for_operation( path );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+    /**
+     * Get the header.
+     */
+    std::string value = msg->header( header );
+    lua_pushstring(L, value.c_str() );
+
+
+    if ( path != NULL )
+        delete( msg );
+
+    return( 1 );
+}
+
 
 /**
  * Mark the message as new.

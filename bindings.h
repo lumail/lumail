@@ -108,6 +108,7 @@ int current_message(lua_State * L);
 int is_new(lua_State *L);
 int mark_new(lua_State *L);
 int mark_read(lua_State *L);
+int header(lua_State *L);
 
 /* delete a message */
 int delete_message(lua_State *L);
