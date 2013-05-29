@@ -116,6 +116,17 @@ std::string CMessage::flags()
 void CMessage::add_flag( char c )
 {
     /**
+     * Flags are upper-case.
+     */
+    c = toupper(c);
+
+    /**
+     * If the flag is already present, return.
+     */
+    if ( flags().find( c ) == std::string::npos)
+        return;
+
+    /**
      * Get the path and ensure it is present.
      */
     std::string p = path();
