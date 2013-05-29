@@ -748,7 +748,13 @@ int is_new(lua_State * L)
     int ret = 0;
 
     CMessage *msg = get_message_for_operation( str );
-    if ( msg != NULL )
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+    else
     {
         if ( msg->is_new() )
             lua_pushinteger(L,1);
@@ -776,7 +782,13 @@ int mark_read(lua_State * L)
     const char *str = lua_tostring(L, -1);
 
     CMessage *msg = get_message_for_operation( str );
-    if ( msg != NULL )
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+    else
         msg->mark_read();
 
     if ( str != NULL )
@@ -798,7 +810,13 @@ int mark_new(lua_State * L)
     const char *str = lua_tostring(L, -1);
 
     CMessage *msg = get_message_for_operation( str );
-    if ( msg != NULL )
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+    else
         msg->mark_new();
 
     if ( str != NULL )
@@ -819,7 +837,13 @@ int delete_message( lua_State *L )
     const char *str = lua_tostring(L, -1);
 
     CMessage *msg = get_message_for_operation( str );
-    if ( msg != NULL )
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+    else
     {
         unlink( msg->path().c_str() );
 
@@ -863,6 +887,12 @@ int save_message( lua_State *L )
      * Get the message
      */
     CMessage *msg = get_message_for_operation( NULL );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
 
     /**
      * Got a message ?
@@ -1339,7 +1369,7 @@ int reply(lua_State * L)
     if ( mssg == NULL )
     {
         CLua *lua = CLua::Instance();
-        lua->execute( "msg(\"Finding the current message failed\");" );
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
         return( 0 );
     }
 

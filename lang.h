@@ -52,4 +52,11 @@
 #define REPLY_ABORTED "Sending reply aborted by user."
 
 
+/**
+ * Displayed literally if an operation is carried out on the current
+ * message, but no message is currently selected.
+ */
+#define MISSING_MESSAGE "Finding the current message failed."
+
+
 #endif /* _clang_h_ */
