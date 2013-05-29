@@ -93,6 +93,13 @@ std::string CMessage::flags()
     if ( pth.find( "/new/" ) != std::string::npos )
         flags += "N";
 
+
+    /**
+     * Sort the flags, and remove duplicates
+     */
+    std::sort( flags.begin(), flags.end());
+    flags.erase(std::unique(flags.begin(), flags.end()), flags.end());
+
     /**
      * Pad.
      */
