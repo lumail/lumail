@@ -73,67 +73,62 @@ CLua::CLua()
      * Register our primitives - the basic ones.
      */
     lua_register(m_lua, "clear", clear);
-    lua_register(m_lua, "refresh_display", refresh_display);
     lua_register(m_lua, "exec", exec);
     lua_register(m_lua, "exit", exit);
     lua_register(m_lua, "msg", msg);
     lua_register(m_lua, "prompt", prompt);
-    lua_register(m_lua, "prompt_yn", prompt_yn);
     lua_register(m_lua, "prompt_maildir", prompt_maildir);
+    lua_register(m_lua, "prompt_yn", prompt_yn);
+    lua_register(m_lua, "refresh_display", refresh_display);
     lua_register(m_lua, "sleep", sleep);
 
     /**
-     * Get/Set the global mode.
+     * Get/Set various strings.
      */
+    lua_register(m_lua, "from", from);
     lua_register(m_lua, "global_mode", global_mode);
-
-    /**
-     * Get/Set the maildir prefix.
-     */
-    lua_register(m_lua, "maildir_prefix", maildir_prefix);
-
-    /**
-     * Get/Set the index format.
-     */
     lua_register(m_lua, "index_format", index_format);
+    lua_register(m_lua, "index_limit", index_limit);
+    lua_register(m_lua, "maildir_limit", maildir_limit);
+    lua_register(m_lua, "maildir_prefix", maildir_prefix);
+    lua_register(m_lua, "sendmail_path", sendmail_path );
+    lua_register(m_lua, "sent_mail", sent_mail );
 
 
     /**
      * Scroll mailboxes up/down/to a pattern.
      */
-    lua_register(m_lua, "scroll_maildir_down", scroll_maildir_down);
-    lua_register(m_lua, "scroll_maildir_up", scroll_maildir_up);
-    lua_register(m_lua, "scroll_maildir_to", scroll_maildir_to);
     lua_register(m_lua, "jump_maildir_to", jump_maildir_to);
+    lua_register(m_lua, "scroll_maildir_down", scroll_maildir_down);
+    lua_register(m_lua, "scroll_maildir_to", scroll_maildir_to);
+    lua_register(m_lua, "scroll_maildir_up", scroll_maildir_up);
 
     /**
      * Scroll index up/down/to a pattern.
      */
-    lua_register(m_lua, "scroll_index_down", scroll_index_down);
-    lua_register(m_lua, "scroll_index_up", scroll_index_up);
-    lua_register(m_lua, "scroll_index_to", scroll_index_to);
     lua_register(m_lua, "jump_index_to", jump_index_to );
+    lua_register(m_lua, "scroll_index_down", scroll_index_down);
+    lua_register(m_lua, "scroll_index_to", scroll_index_to);
+    lua_register(m_lua, "scroll_index_up", scroll_index_up);
 
     /**
-     * Get the current maildir.
+     * Maildir-related functions.
      */
-    lua_register(m_lua, "current_maildir", current_maildir);
     lua_register(m_lua, "count_maildirs", count_maildirs );
+    lua_register(m_lua, "current_maildir", current_maildir);
     lua_register(m_lua, "current_maildirs", current_maildirs);
     lua_register(m_lua, "select_maildir", select_maildir );
 
-    /**
-     * Get the current message
-     */
-    lua_register(m_lua, "current_message", current_message);
 
     /**
-     * Message status manipulation.
+     * Message-related functions.
      */
+    lua_register(m_lua, "count_messages", count_messages );
+    lua_register(m_lua, "current_message", current_message);
+    lua_register(m_lua, "delete", delete_message);
     lua_register(m_lua, "is_new", is_new);
     lua_register(m_lua, "mark_new", mark_new);
     lua_register(m_lua, "mark_read", mark_read);
-    lua_register(m_lua, "delete", delete_message);
 
     /**
      * save is new, save_message is depreciated.
@@ -144,18 +139,11 @@ CLua::CLua()
     /**
      * Folder selection.
      */
-    lua_register(m_lua, "selected_folders", selected_folders);
-    lua_register(m_lua, "clear_selected_folders", clear_selected_folders);
     lua_register(m_lua, "add_selected_folder", add_selected_folder);
-    lua_register(m_lua, "toggle_selected_folder", toggle_selected_folder);
+    lua_register(m_lua, "clear_selected_folders", clear_selected_folders);
+    lua_register(m_lua, "selected_folders", selected_folders);
     lua_register(m_lua, "set_selected_folder", set_selected_folder);
-    lua_register(m_lua, "count_messages", count_messages );
-
-    /**
-     * Get/Set the maildir-limit & index-limit.
-     */
-    lua_register(m_lua, "maildir_limit", maildir_limit);
-    lua_register(m_lua, "index_limit", index_limit);
+    lua_register(m_lua, "toggle_selected_folder", toggle_selected_folder);
 
     /**
      * Compose a new mail/reply to an existing one.
@@ -169,22 +157,6 @@ CLua::CLua()
      */
     lua_register(m_lua, "screen_width", screen_width);
     lua_register(m_lua, "screen_height", screen_height);
-
-
-    /**
-     * Set the From: address for the user.
-     */
-    lua_register(m_lua, "from", from);
-
-    /**
-     * Set the sendmail binary & args.
-     */
-    lua_register(m_lua, "sendmail_path", sendmail_path );
-
-    /**
-     * Set the sent-mail folder path.
-     */
-    lua_register(m_lua, "sent_mail", sent_mail );
 
     /**
      * Variables.
