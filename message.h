@@ -31,7 +31,7 @@
  * The constructor will be passed a reference to a filename, which is assumed to be file
  * beneath a Maildir folder.
  *
- * Using the mimetic library we'll parse the message and make verious fields available.
+ * Using the mimetic library we'll parse the message and make various fields available.
  *
  */
 class CMessage
