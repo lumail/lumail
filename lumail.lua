@@ -653,3 +653,34 @@ function on_key( v )
       return 0;
    end
 end
+
+--
+--  Steve has configured his mailserver to record the remote IP
+-- of a mail submitter to the header "X-Remote-IP".
+--
+--  If we find such an IP in the current message then we'll blacklist
+-- it from future mail attempts.
+--
+function mark_spam_ip()
+   mode = global_mode()
+   mode = string.lower( mode );
+   val  = ""
+
+   if ( string.find( mode, "message" ) ) then
+      val = header( "X-Remote-IP" )
+   elseif (string.find(mode, "index" ) ) then
+      val = header( "X-Remote-IP" )
+   else
+      msg( "mark_spam_ip() not present for mode:" .. mode );
+   end
+
+   if ( val == "" ) then
+      msg( "IP address not found in message." );
+   else
+      ff = io.open( "/etc/blacklist.d/" .. val , "a");
+      ff:write( "\n" )
+      ff:close();
+      msg( "blacklisted IP: " .. val );
+   end
+end
+keymap['global']['F'] = 'mark_spam_ip()'
