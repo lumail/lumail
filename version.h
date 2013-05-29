@@ -16,6 +16,12 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
+
+/**
+ * This version number is updated when we generate a tarball-release
+ * via "make release".
+ */
+
 #ifndef    LUMAIL_VERSION
 # define   LUMAIL_VERSION "__UNRELEASED__"
 #endif	/* LUMAIL_VERSION */
