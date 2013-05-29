@@ -1456,11 +1456,6 @@ int reply(lua_State * L)
      * OK now we're going to send the mail.  Get some settings.
      */
     std::string *sent_path = global->get_variable("sent_mail");
-
-#if 0
-    /**
-     * OK now we're going to send the mail.  Get some settings.
-     */
     std::string *sendmail  = global->get_variable("sendmail_path");
 
     char buf[4096] = { '\0' };
@@ -1492,7 +1487,6 @@ int reply(lua_State * L)
 
     pclose( pipe );
     fclose( file );
-#endif
 
     /**
      * Get a filename in the sentmail path.
