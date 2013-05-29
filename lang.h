@@ -1,4 +1,3 @@
-
 /**
  * lang.h - Text Strings for i18n.
  *
