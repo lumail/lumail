@@ -23,6 +23,7 @@
 #include <fstream>
 #include <getopt.h>
 
+#include "file.h"
 #include "lua.h"
 #include "message.h"
 #include "maildir.h"
@@ -145,7 +146,7 @@ int main(int argc, char *argv[])
      * Load the init-file from the users home-directory, if we can.
      */
     std::string home = getenv( "HOME" );
-    if ( CMaildir::is_directory( home + "/.lumail" ) )
+    if ( CFile::is_directory( home + "/.lumail" ) )
         if ( lua->load_file( home + "/.lumail/config.lua") )
             init += 1;
 
@@ -182,7 +183,7 @@ int main(int argc, char *argv[])
      */
     if ( !folder.empty() )
     {
-        if ( CMaildir::is_directory( folder ) )
+        if ( CFile::is_directory( folder ) )
         {
             /**
              * This should be simplifiable.
