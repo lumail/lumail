@@ -28,6 +28,7 @@
 #include <sys/stat.h>
 #include <time.h>
 
+#include "file.h"
 #include "message.h"
 #include "global.h"
 
@@ -169,18 +170,12 @@ void CMessage::add_flag( char c )
      */
     flags += c;
 
-    std::string cmd = "/bin/mv ";
-    cmd += p ;
-    cmd += " ";
-    cmd += base;
-    cmd += flags;
-
-    system( cmd.c_str() );
+    CFile::move( p, base + flags );
 
     /**
      * Update the path.
      */
-    path( p );
+    path( base + flags );
 }
 
 
@@ -239,18 +234,12 @@ void CMessage::remove_flag( char c )
     /**
      * Move the file.
      */
-    std::string cmd = "/bin/mv ";
-    cmd += p ;
-    cmd += " ";
-    cmd += base;
-    cmd += flags;
-
-    system( cmd.c_str() );
+    CFile::move( p, base + flags );
 
     /**
      * Update the path.
      */
-    path( p );
+    path( base + flags );
 }
 
 

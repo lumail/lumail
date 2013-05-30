@@ -29,7 +29,7 @@
 #include <ncurses.h>
 #include <unistd.h>
 
-
+#include "file.h"
 #include "maildir.h"
 #include "lang.h"
 #include "lua.h"
@@ -943,14 +943,8 @@ int save_message( lua_State *L )
 
     /**
      * Copy from source to destination.
-     *
-     * TODO: Do neatly.
      */
-    std::string cmd = "/bin/cp ";
-    cmd += source;
-    cmd += " ";
-    cmd += dest;
-    system( cmd.c_str() );
+    CFile::copy( source, dest );
 
     /**
      * Remove source.
@@ -1373,14 +1367,8 @@ int compose(lua_State * L)
 
     /**
      * If we got a filename then copy the mail there.
-     *
-     * TODO: A real copy
      */
-    cmd = "cp ";
-    cmd += filename;
-    cmd += " ";
-    cmd += archive;
-    system( cmd.c_str() );
+    CFile::copy( filename, archive );
 
     unlink( filename );
 
@@ -1572,14 +1560,8 @@ int reply(lua_State * L)
 
     /**
      * If we got a filename then copy the mail there.
-     *
-     * TODO: A real copy
      */
-    cmd = "cp ";
-    cmd += filename;
-    cmd += " ";
-    cmd += archive;
-    system( cmd.c_str() );
+    CFile::copy( filename, archive );
 
     unlink( filename );
 
