@@ -17,6 +17,7 @@
  */
 
 #include <stdint.h>
+#include <cstdlib>
 #include <iostream>
 #include <iostream>
 #include <fstream>
@@ -392,7 +393,7 @@ std::string CMessage::format( std::string fmt )
     /**
      * The variables we know about.
      */
-    const char *fields[7] = { "FLAGS", "FROM", "TO", "SUBJECT",  "DATE", "YEAR", 0 };
+    const char *fields[9] = { "FLAGS", "FROM", "TO", "SUBJECT",  "DATE", "YEAR", "MONTH", "DAY", 0 };
     const char **std_name = fields;
 
 
@@ -433,6 +434,12 @@ std::string CMessage::format( std::string fmt )
             if ( strcmp(std_name[i],  "YEAR" ) == 0 ) {
                 body = date(EYEAR);
             }
+            if ( strcmp(std_name[i],  "MONTH" ) == 0 ) {
+                body = date(EMONTH);
+            }
+            if ( strcmp(std_name[i],  "DAY" ) == 0 ) {
+                body = date(EDAY);
+            }
 
             result = before + body + after;
         }
@@ -466,7 +473,6 @@ std::string CMessage::from()
     return( header( "From" ) );
 }
 
-
 /**
  * Get the date of the message.
  *
@@ -489,7 +495,57 @@ std::string CMessage::date(TDate fmt)
     if ( fmt == EFULL )
     	return( date );
     if ( fmt == EYEAR )
-        return std::string("$YEAR");
+    {
+        struct tm tm;
+
+        if (strptime(date.c_str(), "%a, %d %b %Y %H:%M:%S", &tm) != NULL)
+        {
+            char buff[20] = { '\0' };
+            snprintf(buff, sizeof(buff)-1, "%d", ( 1900 + tm.tm_year ) );
+
+            return( std::string(buff) );
+        }
+        else
+            return std::string("$YEAR");
+    }
+    if ( fmt == EMONTH )
+    {
+        const char *months[] = { "January",
+                                 "February",
+                                 "March",
+                                 "April",
+                                 "May",
+                                 "June",
+                                 "July",
+                                 "August",
+                                 "September",
+                                 "October",
+                                 "November",
+                                 "December" };
+        struct tm tm;
+
+        if (strptime(date.c_str(), "%a, %d %b %Y %H:%M:%S", &tm) != NULL)
+        {
+            return( std::string(months[tm.tm_mon]) );
+        }
+        else
+            return std::string("$MONTH");
+    }
+    if ( fmt == EDAY )
+    {
+        struct tm tm;
+
+        if (strptime(date.c_str(), "%a, %d %b %Y %H:%M:%S", &tm) != NULL)
+        {
+            char buff[20] = { '\0' };
+            snprintf(buff, sizeof(buff)-1, "%d", ( tm.tm_mday ) );
+
+            return( std::string(buff) );
+        }
+        else
+            return std::string("$DAY");
+    }
+
     return std::string("");
 }
 

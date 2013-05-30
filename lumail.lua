@@ -91,6 +91,7 @@ index_limit( "all" );
 --
 -- Valid options are currently limited to:
 --
+--   $DAY, $MONTH, $YEAR
 --   $DATE
 --   $FLAGS
 --   $FROM
@@ -98,7 +99,7 @@ index_limit( "all" );
 --   $TO
 --
 --
-index_format( "[$FLAGS] $DATE $FROM - $SUBJECT" );
+index_format( "[$FLAGS] $DAY/$MONTH/$YEAR $DATE $FROM - $SUBJECT" );
 
 
 --
