@@ -20,15 +20,14 @@
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
 
 
-#include "lua.h"
 #include "bindings.h"
+#include "file.h"
 #include "global.h"
+#include "lua.h"
 #include "version.h"
 
 
@@ -171,9 +170,7 @@ CLua::CLua()
  */
 bool CLua::load_file(std::string filename)
 {
-    struct stat sb;
-
-    if ((stat(filename.c_str(), &sb) == 0))
+    if (CFile::exists( filename ) )
     {
 	if (luaL_loadfile(m_lua, filename.c_str())
 	    || lua_pcall(m_lua, 0, 0, 0))

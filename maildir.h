@@ -83,11 +83,6 @@ class CMaildir
   static bool is_maildir(std::string path);
 
   /**
-   * Is the given path a directory?
-   */
-  static bool is_directory(std::string path);
-
-  /**
    * Return a sorted list of maildirs beneath the given path.
    */
   static std::vector < std::string > getFolders(std::string path);

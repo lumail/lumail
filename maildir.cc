@@ -18,11 +18,10 @@
 
 #include <vector>
 #include <algorithm>
-#include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
-#include <sys/types.h>
 
+#include "file.h"
 #include "global.h"
 #include "maildir.h"
 #include "message.h"
@@ -115,7 +114,7 @@ int CMaildir::countFiles(std::string path)
       if (de == NULL)
         break;
 
-      if (!CMaildir::is_directory(std::string(path + "/" + de->d_name)))
+      if (!CFile::is_directory(std::string(path + "/" + de->d_name)))
         count += 1;
     }
     closedir(dp);
@@ -204,7 +203,7 @@ std::vector<CMessage *> CMaildir::getMessages()
         if (de == NULL)
           break;
 
-        if (!CMaildir::is_directory (std::string(path + de->d_name))) {
+        if (!CFile::is_directory (std::string(path + de->d_name))) {
           CMessage *t = new CMessage(std::string(path + de->d_name));
           result.push_back(t);
         }
@@ -280,22 +279,8 @@ bool CMaildir::is_maildir(std::string path)
 
   std::vector < std::string >::iterator it;
   for (it = dirs.begin(); it != dirs.end(); ++it) {
-    if (!CMaildir::is_directory(*it))
+    if (!CFile::is_directory(*it))
       return false;
   }
   return true;
-}
-
-/**
- * Is the given path a directory?
- */
-bool CMaildir::is_directory(std::string path)
-{
-  struct stat sb;
-
-  if (stat(path.c_str(), &sb) < 0)
-    return 0;
-
-  return (S_ISDIR(sb.st_mode));
-
 }
