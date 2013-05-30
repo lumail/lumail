@@ -57,7 +57,7 @@ depend: .depend
 #
 clean:
 	$(RM) $(TARGET) $(OBJS) core || true
-	cd ./test && make clean || true
+	cd ./tests && make clean || true
 
 dist-clean: clean
 	$(RM) *~ .dependtool
