@@ -16,11 +16,41 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-
+#include <cstdlib>
 #include <string>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "file.h"
 
+
+/**
+ * Test if a file exists.
+ */
+bool CFile::exists( std::string path )
+{
+    struct stat sb;
+
+    if ((stat(path.c_str(), &sb) == 0))
+        return true;
+    else
+        return false;
+}
+
+
+/**
+ * Is the given path a directory?
+ */
+bool CFile::is_directory(std::string path)
+{
+  struct stat sb;
+
+  if (stat(path.c_str(), &sb) < 0)
+    return 0;
+
+  return (S_ISDIR(sb.st_mode));
+
+}
 
 /**
  * Copy a file.
