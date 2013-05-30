@@ -1,1 +1,0 @@
-for i,v in ipairs(array) do print(i,v) end

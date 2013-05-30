@@ -3,15 +3,6 @@
 lumail
 TODO.local
 core
-test/i18n
-test/*.pot
-test/*.po
-test/es_MX.utf8/
-test/str
-test/body
-test/readline
-test/table
-test/array-to-lua
 debian/files
 debian/*.substvars
 debian/*.log
