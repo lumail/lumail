@@ -64,10 +64,14 @@ std::string CMessage::path()
 }
 
 
+/**
+ * Update the path to the message.
+ */
 void CMessage::path( std::string new_path )
 {
     m_path = new_path;
 }
+
 
 /**
  * Get the flags for this message.
@@ -181,6 +185,76 @@ void CMessage::add_flag( char c )
 
 
 /**
+ * Remove a flag from a message.
+ */
+void CMessage::remove_flag( char c )
+{
+    /**
+     * Flags are upper-case.
+     */
+    c = toupper(c);
+
+    /**
+     * If the flag is not present, return.
+     */
+    if ( flags().find( c ) == std::string::npos)
+        return;
+
+    /**
+     * Get the path and ensure it is present.
+     */
+    std::string p = path();
+
+    if (p.empty())
+        return;
+
+    /**
+     * Find the flags.
+     */
+    size_t offset     = p.find(":2,");
+    std::string base  = p;
+    std::string flags = "";
+
+    /**
+     * If we found flags then add the new one.
+     */
+    if (offset != std::string::npos)
+    {
+        flags = p.substr(offset);
+        base  = p.substr(0,offset);
+    }
+    else
+    {
+        flags = ":2,";
+    }
+
+    /**
+     * Remove the flag.
+     */
+    std::string::size_type k = 0;
+    while((k=flags.find(c,k))!=flags.npos) {
+        flags.erase(k, 1);
+    }
+
+    /**
+     * Move the file.
+     */
+    std::string cmd = "/bin/mv ";
+    cmd += p ;
+    cmd += " ";
+    cmd += base;
+    cmd += flags;
+
+    system( cmd.c_str() );
+
+    /**
+     * Update the path.
+     */
+    path( p );
+}
+
+
+/**
  * Does this message match the given filter?
  */
 bool CMessage::matches_filter( std::string *filter )
@@ -254,12 +328,13 @@ bool CMessage::mark_read()
     }
     else {
         /**
-         * The file is new, but not in the new folder.  That means we need to remove "N" from
-         * the flag-component of the path.
+         * The file is new, but not in the new folder.
          *
-         * TODO
+         * That means we need to remove "N" from the flag-component of the path.
+         *
          */
-        return false;
+        remove_flag( 'N' );
+        return true;
     }
 }
 
@@ -299,12 +374,11 @@ bool CMessage::mark_new()
     }
     else {
         /**
-         * The file is old, but not in the old folder.  That means we need to add "N" to
-         * the flag-component of the path.
-         *
-         * TODO
+         * The file is old, but not in the old folder.  That means we need to
+         * add "N" to the flag-component of the path.
          */
-        return false;
+        add_flag( 'N' );
+        return true;
     }
 }
 

@@ -77,6 +77,11 @@ class CMessage
   void add_flag( char c );
 
   /**
+   * Remove a flag from a message.
+   */
+  void remove_flag( char c );
+
+  /**
    * Does this message match the given filter?
    */
   bool matches_filter( std::string *filter );
