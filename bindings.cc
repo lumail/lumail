@@ -117,7 +117,7 @@ int maildir_prefix(lua_State * L)
     const char *str = lua_tostring(L, -1);
     if (str != NULL)
     {
-        if ( !CMaildir::is_directory( str ) )
+        if ( !CFile::is_directory( str ) )
             return luaL_error(L, "The specified prefix is not a Maildir" );
     }
 
@@ -917,7 +917,7 @@ int save_message( lua_State *L )
     if (str == NULL)
 	return luaL_error(L, "Missing argument to save(..)");
 
-    if ( !CMaildir::is_directory( str ) )
+    if ( !CFile::is_directory( str ) )
         return luaL_error(L, "The specified destination is not a Maildir" );
 
     /**
