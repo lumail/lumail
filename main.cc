@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
      * Initialize the screen.
      */
     CScreen screen = CScreen();
-    screen.Init();
+    screen.setup();
 
     /**
      * Number of init-files we've loaded.

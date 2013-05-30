@@ -48,7 +48,7 @@ class CScreen
   /**
    * Setup the screen.
    */
-  void Init();
+  void setup();
 
   /**
    * Return the width of the screen.

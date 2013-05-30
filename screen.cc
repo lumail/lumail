@@ -418,17 +418,18 @@ void CScreen::drawMessage()
 /**
  * Setup the curses/screen.
  */
-void CScreen::Init()
+void CScreen::setup()
 {
-  /**
-   * Setup ncurses.
-   */
+    /**
+     * Setup ncurses.
+     */
     initscr();
 
-  /**
-   * Make sure we have colours.
-   */
-    if (!has_colors() || (start_color() != OK)) {
+    /**
+     * Make sure we have colours.
+     */
+    if (!has_colors() || (start_color() != OK))
+    {
 	endwin();
 	std::cerr << MISSING_COLOR_SUPPORT << std::endl;
 	exit(1);
@@ -440,9 +441,9 @@ void CScreen::Init()
     curs_set(0);
     timeout(1000);
 
-  /**
-   * We want (red + black) + (white + black)
-   */
+    /**
+     * We want (red + black) + (white + black)
+     */
     init_pair(1, COLOR_RED, COLOR_BLACK);
     init_pair(2, COLOR_WHITE, COLOR_BLACK);
 
