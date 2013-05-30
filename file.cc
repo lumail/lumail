@@ -17,12 +17,7 @@
  */
 
 
-#include <iostream>
-#include <cstdlib>
-#include <fstream>
-#include <string.h>
-#include <stdlib.h>
-
+#include <string>
 
 #include "file.h"
 
@@ -32,6 +27,12 @@
  */
 void CFile::copy( std::string src, std::string dst )
 {
+    std::string cmd = "/bin/cp ";
+    cmd += src;
+    cmd += " ";
+    cmd += dst;
+
+    system( cmd.c_str() );
 }
 
 
@@ -40,4 +41,10 @@ void CFile::copy( std::string src, std::string dst )
  */
 void CFile::move( std::string src, std::string dst )
 {
+    std::string cmd = "/bin/mv ";
+    cmd += src;
+    cmd += " ";
+    cmd += dst;
+
+    system( cmd.c_str() );
 }
