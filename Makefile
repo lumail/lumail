@@ -16,7 +16,7 @@ VERSION     = $(shell sh -c 'git describe --abbrev=0 --tags | tr -d "release-"')
 #
 #  Source objects.
 #
-SRCS= bindings.cc global.cc history.cc lua.cc maildir.cc message.cc main.cc screen.cc
+SRCS= bindings.cc file.cc global.cc history.cc lua.cc maildir.cc message.cc main.cc screen.cc
 OBJS=$(subst .cc,.o,$(SRCS))
 TARGET=lumail
 
