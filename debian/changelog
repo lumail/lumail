@@ -1,3 +1,9 @@
+lumail (0.07) stable; urgency=low
+
+  * First stable binary release.
+
+ -- Steve Kemp <steve@steve.org.uk>  Fri, 31 May 2013 09:09:09 +0000
+
 lumail (0.06) stable; urgency=low
 
   * New release now that message-composing wowks.
