@@ -65,14 +65,17 @@ Because lumail is modal application the coding has been split into sections:
     * This is functional.
     * You may scroll/search/limit the display of messages.  (But such searches are slow.)
 * Code the display/manipulation of a single mail message.
+    * This is functional.
     * You may view the first screen-ful of a message.  If it is text/plain.
-    * Once viewed a message is marked as read.
 
 Missing functionality largely relates to using this client for real.
 
 The following features are missing:
 
-* The ability to reply to a message.
+* Threaded-message viewing.
+    * All mails are shown in oldest to newest order.
+* The ability to operate upon more than one message at a time.
+    * i.e. The `tag-*` functions in mutt are not supported.
 
 You can [view screenshots](http://lumail.org/screenshots/) on the
 [lumail website](http://lumail.org).
