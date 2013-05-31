@@ -22,6 +22,23 @@
 #include <string>
 
 
+
+/**
+ * Simple macro to make logging as simple as:
+ *
+ *      DEBUG_LOG( "Some string" );
+ *
+ */
+#ifndef DEBUG_LOG
+#define DEBUG_LOG(x)                     \
+    do {                                 \
+        CDebug *d = CDebug::Instance();  \
+        d->debug(x);                     \
+    } while(0);
+#endif
+
+
+
 /**
  * Singleton class to maintain debug-log of execution.
  */
