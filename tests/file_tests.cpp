@@ -5,6 +5,10 @@
 #include <sys/stat.h>
 
 
+/**
+ * Using common Unix files validate that CFile::exists works
+ * sensibly.
+ */
 TEST_CASE( "file/exists", "CFile::exists tests" )
 {
     /**
@@ -21,6 +25,10 @@ TEST_CASE( "file/exists", "CFile::exists tests" )
 }
 
 
+/**
+ * Using common Unix-names validate that CFile::is_directory
+ * behaves in a sane fashion.
+ */
 TEST_CASE( "file/is_directory", "CFile::is_directory tests" )
 {
     /**
@@ -37,6 +45,9 @@ TEST_CASE( "file/is_directory", "CFile::is_directory tests" )
 }
 
 
+/**
+ * Test the CFile::copy primitive.
+ */
 TEST_CASE( "file/copy", "CFile::copy tests" )
 {
     /**
@@ -46,11 +57,11 @@ TEST_CASE( "file/copy", "CFile::copy tests" )
     char filename[] = "/tmp/file.test.XXXXXX";
     int fd          = mkstemp(filename);
 
-    REQUIRE( fd != -1 );
 
     /**
      * OK the file should now exist.
      */
+    REQUIRE( fd != -1 );
     REQUIRE( CFile::exists( filename ) );
 
     /**
@@ -60,10 +71,24 @@ TEST_CASE( "file/copy", "CFile::copy tests" )
     REQUIRE_FALSE( CFile::exists( filename ) );
 
     /**
-     * Copy the real file there.
+     * Copy a real file there.
      */
     CFile::copy( "/etc/fstab", filename );
     REQUIRE( CFile::exists( filename ) );
+
+    /**
+     * Compare details from both files.
+     */
+    struct stat st1;
+    struct stat st2;
+    REQUIRE( stat("/etc/fstab", &st1) == 0 );
+    REQUIRE( stat(filename, &st2) == 0 );
+
+    /**
+     * Size & mode must match.
+     */
+    REQUIRE( st1.st_size == st2.st_size );
+    REQUIRE( st1.st_mode == st2.st_mode );
 
     /**
      * Cleanup and ensure we're clean.
