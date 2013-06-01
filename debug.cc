@@ -47,6 +47,22 @@ CDebug::CDebug()
 
 
 /**
+ * Get the date/time stamp.
+ */
+std::string CDebug::timestamp()
+{
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+
+    strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
+
+    return buf;
+}
+
+
+/**
  * Add a new string to the log.
  */
 void CDebug::debug( std::string line)
@@ -56,7 +72,7 @@ void CDebug::debug( std::string line)
     std::fstream fs;
     fs.open ("/home/skx/lumail.log",  std::fstream::out | std::fstream::app);
 
-    fs << line << "\n";
+    fs << timestamp() << line << "\n";
     fs.close();
 
 #endif

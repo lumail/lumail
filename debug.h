@@ -53,6 +53,11 @@ class CDebug
   static CDebug *Instance();
 
   /**
+   * Get a date/timestamp.
+   */
+  std::string timestamp();
+
+  /**
    * Add a new string to the log.
    */
   void debug( std::string line );
