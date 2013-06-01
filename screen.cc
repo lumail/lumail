@@ -342,8 +342,6 @@ void CScreen::drawMessage()
 
   /**
    * Now we have a message - display it.
-   *
-   * TODO: Do this properly.
    */
 
 
