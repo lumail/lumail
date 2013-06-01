@@ -25,6 +25,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "debug.h"
 #include "global.h"
 
 /**
@@ -70,7 +71,7 @@ CGlobal::CGlobal()
      */
     std::string user = "UNKNOWN";
     if ( getenv( "USER" ) )
-      user = getenv( "USER" );
+        user = getenv( "USER" );
     std::string *from = new std::string( user + "@localhost" );
     set_variable( "from", from );
 }
@@ -111,23 +112,23 @@ std::vector<CMaildir> CGlobal::get_all_folders()
  */
 std::vector < CMaildir > CGlobal::get_folders()
 {
-  CGlobal *global = CGlobal::Instance();
-  std::vector<CMaildir> folders = global->get_all_folders();
-  std::vector<CMaildir> display;
-  std::string * filter = global->get_variable("maildir_limit");
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMaildir> folders = global->get_all_folders();
+    std::vector<CMaildir> display;
+    std::string * filter = global->get_variable("maildir_limit");
 
-  /**
-   * Filter the folders to those we can display
-   */
-  std::vector<CMaildir>::iterator it;
-  for (it = folders.begin(); it != folders.end(); ++it) {
-    CMaildir x = *it;
+    /**
+     * Filter the folders to those we can display
+     */
+    std::vector<CMaildir>::iterator it;
+    for (it = folders.begin(); it != folders.end(); ++it) {
+        CMaildir x = *it;
 
-    if ( x.matches_filter( filter ) )
-      display.push_back(x);
-  }
+        if ( x.matches_filter( filter ) )
+            display.push_back(x);
+    }
 
-  return (display);
+    return (display);
 }
 
 /**
@@ -135,9 +136,9 @@ std::vector < CMaildir > CGlobal::get_folders()
  */
 bool my_sort(CMessage *a, CMessage *b)
 {
-  /**
-   * Stat both files.
-   */
+    /**
+     * Stat both files.
+     */
     struct stat us;
     struct stat them;
 
@@ -159,7 +160,7 @@ bool my_sort(CMessage *a, CMessage *b)
  */
 std::vector<CMessage *>* CGlobal::get_messages()
 {
-  return( m_messages );
+    return( m_messages );
 }
 
 
@@ -168,57 +169,57 @@ std::vector<CMessage *>* CGlobal::get_messages()
  */
 void CGlobal::update_messages()
 {
-  /**
-   * If we have items already then free each of them.
-   */
-  if ( m_messages != NULL ) {
-    std::vector<CMessage *>::iterator it;
-    for (it = m_messages->begin(); it != m_messages->end(); ++it) {
-      delete( *it );
+    /**
+     * If we have items already then free each of them.
+     */
+    if ( m_messages != NULL ) {
+        std::vector<CMessage *>::iterator it;
+        for (it = m_messages->begin(); it != m_messages->end(); ++it) {
+            delete( *it );
+        }
+        delete( m_messages );
     }
-    delete( m_messages );
-  }
-
-  /**
-   * create a new store.
-   */
-  m_messages = new std::vector<CMessage *>;
-
-
-  /**
-   * Get the selected maildirs.
-   */
-  CGlobal *global = CGlobal::Instance();
-  std::vector<std::string> folders = global->get_selected_folders();
-  std::string * filter = global->get_variable("index_limit" );
-
-
-  /**
-   * For each selected maildir read the messages.
-   */
-  std::vector<std::string>::iterator it;
-  for (it = folders.begin(); it != folders.end(); ++it) {
 
     /**
-     * get the messages from this folder.
+     * create a new store.
      */
-    CMaildir tmp = CMaildir(*it);
-    std::vector<CMessage *> contents = tmp.getMessages();
+    m_messages = new std::vector<CMessage *>;
+
 
     /**
-     * Append to the list of messages combined.
+     * Get the selected maildirs.
      */
-    std::vector<CMessage *>::iterator mit;
-    for (mit = contents.begin(); mit != contents.end(); ++mit) {
-      if ( (*mit)->matches_filter( filter ) )
-        m_messages->push_back(*mit) ;
-    }
-  }
+    CGlobal *global = CGlobal::Instance();
+    std::vector<std::string> folders = global->get_selected_folders();
+    std::string * filter = global->get_variable("index_limit" );
 
-  /*
-   * Sort?
-   */
-  std::sort(m_messages->begin(), m_messages->end(), my_sort);
+
+    /**
+     * For each selected maildir read the messages.
+     */
+    std::vector<std::string>::iterator it;
+    for (it = folders.begin(); it != folders.end(); ++it) {
+
+        /**
+         * get the messages from this folder.
+         */
+        CMaildir tmp = CMaildir(*it);
+        std::vector<CMessage *> contents = tmp.getMessages();
+
+        /**
+         * Append to the list of messages combined.
+         */
+        std::vector<CMessage *>::iterator mit;
+        for (mit = contents.begin(); mit != contents.end(); ++mit) {
+            if ( (*mit)->matches_filter( filter ) )
+                m_messages->push_back(*mit) ;
+        }
+    }
+
+    /*
+     * Sort?
+     */
+    std::sort(m_messages->begin(), m_messages->end(), my_sort);
 
 }
 
@@ -245,22 +246,22 @@ bool CGlobal::remove_folder(std::string path)
 {
     std::vector<std::string>::iterator it;
 
-  /**
-   * Find the folder.
-   */
+    /**
+     * Find the folder.
+     */
     it = std::find(m_selected_folders.begin(), m_selected_folders.end(), path);
 
-  /**
-   * If we found it reemove it.
-   */
+    /**
+     * If we found it reemove it.
+     */
     if (it != m_selected_folders.end()) {
 	m_selected_folders.erase(it);
 	return true;
     }
 
-  /**
-   * Failed to find it.
-   */
+    /**
+     * Failed to find it.
+     */
     return false;
 
 }
@@ -271,10 +272,28 @@ bool CGlobal::remove_folder(std::string path)
  */
 std::string * CGlobal::get_variable( std::string name )
 {
+
+    std::string *value = m_variables[name];
+
+#ifdef LUMAIL_DEBUG
+
+    std::string dm = "Get variable named '";
+    dm += name ;
+    dm += "' value is " ;
+
+    if ( value != NULL )
+        dm += *value;
+    else
+        dm += " NULL";
+
+    DEBUG_LOG( dm );
+
+#endif /* LUMAIL_DEBUG */
+
     /**
      * Get the value.
      */
-    return(m_variables[name]);
+    return( value );
 }
 
 
@@ -294,6 +313,16 @@ void CGlobal::set_variable( std::string name, std::string *value )
      * Store new value.
      */
     m_variables[ name ] = value;
+
+
+    std::string dm = "Set variable named '" ;
+    dm += name ;
+    dm += "' to value '";
+    dm += *value;
+    dm += "'";
+
+    DEBUG_LOG( dm );
+
 }
 
 
