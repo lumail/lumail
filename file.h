@@ -38,9 +38,9 @@ public:
      */
     static bool exists( std::string path );
 
-   /**
-    * Is the given path a directory?
-    */
+    /**
+     * Is the given path a directory?
+     */
     static bool is_directory(std::string path);
 
     /**

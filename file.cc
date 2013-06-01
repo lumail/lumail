@@ -43,14 +43,14 @@ bool CFile::exists( std::string path )
  */
 bool CFile::is_directory(std::string path)
 {
-  struct stat sb;
+    struct stat sb;
 
-  if (stat(path.c_str(), &sb) < 0)
-    return 0;
+    if (stat(path.c_str(), &sb) < 0)
+      return 0;
 
-  return (S_ISDIR(sb.st_mode));
-
+    return (S_ISDIR(sb.st_mode));
 }
+
 
 /**
  * Copy a file.
