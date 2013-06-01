@@ -99,7 +99,7 @@ index_limit( "all" );
 --   $TO
 --
 --
-index_format( "[$FLAGS] $DAY/$MONTH/$YEAR $DATE $FROM - $SUBJECT" );
+index_format( "[$FLAGS] $DAY/$MONTH/$YEAR $FROM - $SUBJECT" );
 
 
 --
