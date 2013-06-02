@@ -25,6 +25,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+
+#include "debug.h"
 #include "file.h"
 
 
@@ -61,6 +63,16 @@ bool CFile::is_directory(std::string path)
  */
 void CFile::copy( std::string src, std::string dst )
 {
+
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CFile::copy(";
+    dm += src ;
+    dm += ",";
+    dm += dst;
+    dm += ");";
+    DEBUG_LOG( dm );
+#endif
+
     std::ifstream isrc(src, std::ios::binary);
     std::ofstream odst(dst, std::ios::binary);
 
@@ -79,5 +91,14 @@ void CFile::copy( std::string src, std::string dst )
  */
 bool CFile::move( std::string src, std::string dst )
 {
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CFile::move(";
+    dm += src ;
+    dm += ",";
+    dm += dst;
+    dm += ");";
+    DEBUG_LOG( dm );
+#endif
+
     return( rename( src.c_str(), dst.c_str() ) == 0 );
 }
