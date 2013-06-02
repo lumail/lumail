@@ -342,15 +342,11 @@ std::vector<std::string> CLua::table_to_array( std::string name )
         return results;
 
     lua_pushnil(m_lua);
-    int index = 0;
 
     while (lua_next(m_lua, -2))
     {
         const char *d  = lua_tostring(m_lua, -1);
-
         results.push_back( d );
-        index++;
-
         lua_pop( m_lua , 1);
     }
 
