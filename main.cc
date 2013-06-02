@@ -118,12 +118,12 @@ int main(int argc, char *argv[])
 	    break;
 	case '?':
 	    /* getopt_long already printed an error message. */
-	    exit(3);
+	    exit(1);
             break;
 
 	default:
 	    std::cerr << "Unknown argument" << std::endl;
-	    exit (3);
+	    exit (1);
 	}
     }
 
