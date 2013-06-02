@@ -359,36 +359,43 @@ std::vector<std::string> CLua::table_to_array( std::string name )
 
 
 /**
- * Dump the stack contents.
+ * Dump the stack contents - only in debug-builds.
  */
 void CLua::dump_stack()
 {
+#ifdef LUMAIL_DEBUG
 
-    int i;
+    /**
+     * Top of the stack.
+     */
     int top = lua_gettop(m_lua);
 
-    for (i = 1; i <= top; i++) {  /* repeat for each level */
+    /* Repeat for each level */
+    for (int i = 1; i <= top; i++)
+    {
         int t = lua_type(m_lua, i);
-        switch (t) {
-
-        case LUA_TSTRING:  /* strings */
+        switch (t)
+        {
+        case LUA_TSTRING:
             printf("`%s'", lua_tostring(m_lua, i));
             break;
 
-        case LUA_TBOOLEAN:  /* booleans */
+        case LUA_TBOOLEAN:
             printf(lua_toboolean(m_lua, i) ? "true" : "false");
             break;
 
-        case LUA_TNUMBER:  /* numbers */
+        case LUA_TNUMBER:
             printf("%g", lua_tonumber(m_lua, i));
             break;
 
-        default:  /* other values */
+        default:
             printf("%s", lua_typename(m_lua, t));
             break;
 
         }
-        printf("  ");  /* put a separator */
+        printf("  ");
     }
-    printf("\n");  /* end the listing */
+    printf("\n");
+#endif
+
 }

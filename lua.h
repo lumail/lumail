@@ -77,6 +77,9 @@ public:
      */
     std::vector<std::string> table_to_array( std::string name );
 
+    /**
+     * Dump the stack contents - only in debug-builds.
+     */
     void dump_stack();
 
  protected:
