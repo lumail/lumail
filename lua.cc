@@ -350,6 +350,45 @@ std::vector<std::string> CLua::table_to_array( std::string name )
         lua_pop( m_lua , 1);
     }
 
-    lua_settop(m_lua, 0);
+    /**
+     * Cleanup stack.
+     */
+    lua_pop( m_lua , 2);
     return( results );
+}
+
+
+/**
+ * Dump the stack contents.
+ */
+void CLua::dump_stack()
+{
+
+    int i;
+    int top = lua_gettop(m_lua);
+
+    for (i = 1; i <= top; i++) {  /* repeat for each level */
+        int t = lua_type(m_lua, i);
+        switch (t) {
+
+        case LUA_TSTRING:  /* strings */
+            printf("`%s'", lua_tostring(m_lua, i));
+            break;
+
+        case LUA_TBOOLEAN:  /* booleans */
+            printf(lua_toboolean(m_lua, i) ? "true" : "false");
+            break;
+
+        case LUA_TNUMBER:  /* numbers */
+            printf("%g", lua_tonumber(m_lua, i));
+            break;
+
+        default:  /* other values */
+            printf("%s", lua_typename(m_lua, t));
+            break;
+
+        }
+        printf("  ");  /* put a separator */
+    }
+    printf("\n");  /* end the listing */
 }
