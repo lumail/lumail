@@ -76,9 +76,7 @@ int main(int argc, char *argv[])
     {
 	static struct option long_options[] =
             {
-#ifdef LUMAIL_DEBUG
                 {"debug", required_argument, 0, 'd'},
-#endif
                 {"eval", required_argument, 0, 'e'},
                 {"exit", no_argument, 0, 'x'},
                 {"folder", required_argument, 0, 'f'},
@@ -99,7 +97,12 @@ int main(int argc, char *argv[])
 	switch (c)
         {
 	case 'd':
+#ifdef LUMAIL_DEBUG
 	    debug = optarg;
+#else
+            std::cout << "Debug support was not compiled in." << std::endl;
+            exit(1);
+#endif
 	    break;
 	case 'e':
 	    eval = optarg;
