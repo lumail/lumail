@@ -37,6 +37,8 @@ Upon a Debian GNU/Linux system you may install all required packages with:
 
      # apt-get install libncurses-dev liblua5.1-0-dev lua5.1 libmimetic-dev
 
+> There are find [binary packages for Debian GNU/linux](http://packages.steve.org.uk/lumail/), compiled by the author.
+
 Although we might become more complex in the future the code currently builds
 via a simple `Makefile`, and running `make` with no arguments should be sufficient.
 
@@ -76,6 +78,7 @@ The following features are missing:
     * All mails are shown in oldest to newest order.
 * The ability to operate upon more than one message at a time.
     * i.e. The `tag-*` functions in mutt are not supported.
+* Attachment handling is entirely absent.
 
 You can [view screenshots](http://lumail.org/screenshots/) on the
 [lumail website](http://lumail.org).
