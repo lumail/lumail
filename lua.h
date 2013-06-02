@@ -77,6 +77,8 @@ public:
      */
     std::vector<std::string> table_to_array( std::string name );
 
+    void dump_stack();
+
  protected:
 
     /**
