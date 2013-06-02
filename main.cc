@@ -76,14 +76,14 @@ int main(int argc, char *argv[])
     {
 	static struct option long_options[] =
             {
-                {"version", no_argument, 0, 'v'},
-                {"rcfile", required_argument, 0, 'r'},
 #ifdef LUMAIL_DEBUG
                 {"debug", required_argument, 0, 'd'},
 #endif
                 {"eval", required_argument, 0, 'e'},
                 {"exit", no_argument, 0, 'x'},
                 {"folder", required_argument, 0, 'f'},
+                {"rcfile", required_argument, 0, 'r'},
+                {"version", no_argument, 0, 'v'},
                 {0, 0, 0, 0}
             };
 
@@ -98,8 +98,8 @@ int main(int argc, char *argv[])
 
 	switch (c)
         {
-	case 'r':
-	    rcfile = optarg;
+	case 'd':
+	    debug = optarg;
 	    break;
 	case 'e':
 	    eval = optarg;
@@ -107,22 +107,23 @@ int main(int argc, char *argv[])
 	case 'f':
 	    folder = optarg;
 	    break;
+	case 'r':
+	    rcfile = optarg;
+	    break;
 	case 'v':
 	    version = true;
-	    break;
-	case 'd':
-	    debug = optarg;
 	    break;
 	case 'x':
 	    exit_after_eval = true;
 	    break;
 	case '?':
 	    /* getopt_long already printed an error message. */
-	    break;
+	    exit(3);
+            break;
 
 	default:
 	    std::cerr << "Unknown argument" << std::endl;
-	    return (2);
+	    exit (3);
 	}
     }
 
