@@ -23,6 +23,7 @@
 #include <fstream>
 #include <getopt.h>
 
+#include "debug.h"
 #include "file.h"
 #include "lua.h"
 #include "message.h"
@@ -69,6 +70,7 @@ int main(int argc, char *argv[])
     std::string rcfile   = "";    /* load rc file */
     std::string eval     = "";    /* code to evaluate */
     std::string folder   = "";    /* open folder */
+    std::string debug    = "";    /* debug-log */
 
     while (1)
     {
@@ -76,6 +78,9 @@ int main(int argc, char *argv[])
             {
                 {"version", no_argument, 0, 'v'},
                 {"rcfile", required_argument, 0, 'r'},
+#ifdef LUMAIL_DEBUG
+                {"debug", required_argument, 0, 'd'},
+#endif
                 {"eval", required_argument, 0, 'e'},
                 {"exit", no_argument, 0, 'x'},
                 {"folder", required_argument, 0, 'f'},
@@ -105,6 +110,9 @@ int main(int argc, char *argv[])
 	case 'v':
 	    version = true;
 	    break;
+	case 'd':
+	    debug = optarg;
+	    break;
 	case 'x':
 	    exit_after_eval = true;
 	    break;
@@ -122,6 +130,15 @@ int main(int argc, char *argv[])
     {
 	std::cout << "lumail v" << LUMAIL_VERSION << std::endl;
 	return 0;
+    }
+
+    /**
+     * Set the debug-logfile name.
+     */
+    if ( !debug.empty() )
+    {
+        CDebug *d = CDebug::Instance();
+        d->set_logfile( debug );
     }
 
     /**

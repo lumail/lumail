@@ -43,8 +43,24 @@ CDebug *CDebug::Instance()
  */
 CDebug::CDebug()
 {
+    /**
+     * Get the user's home-directory for the logfile.
+     */
+    std::string home = getenv( "HOME" );
+    if ( !home.empty() )
+    {
+        home += "/lumail.log";
+        m_logfile = home;
+    }
 }
 
+/**
+ * Set the logfile.
+ */
+void CDebug::set_logfile( std::string path )
+{
+    m_logfile = path;
+}
 
 /**
  * Get the date/time stamp.
@@ -70,20 +86,16 @@ void CDebug::debug( std::string line)
 #ifdef LUMAIL_DEBUG
 
     /**
-     * Get the user's home-directory.
-     *
-     * If this fails, return.
+     * If we don't have a filename retrun.
      */
-    std::string home = getenv( "HOME" );
-    if ( home.empty() )
+    if ( m_logfile.empty() )
         return;
-
 
     /**
      * Open the file.
      */
     std::fstream fs;
-    fs.open ( home + "/lumail.log",  std::fstream::out | std::fstream::app);
+    fs.open ( m_logfile,  std::fstream::out | std::fstream::app);
 
     /**
      * Log the timestamp + mesage.

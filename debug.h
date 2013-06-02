@@ -53,9 +53,9 @@ class CDebug
   static CDebug *Instance();
 
   /**
-   * Get a date/timestamp.
+   * Set the logfile.
    */
-  std::string timestamp();
+  void set_logfile( std::string path );
 
   /**
    * Add a new string to the log.
@@ -73,10 +73,21 @@ class CDebug
 
  private:
 
+
+  /**
+   * Get a date/timestamp.
+   */
+  std::string timestamp();
+
   /**
    * The single instance of this class.
    */
   static CDebug *pinstance;
+
+  /**
+   * The filename we log to.
+   */
+  std::string m_logfile;
 
 };
 
