@@ -16,6 +16,10 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <iterator>
 #include <cstdlib>
 #include <string>
 #include <sys/stat.h>
@@ -57,14 +61,18 @@ bool CFile::is_directory(std::string path)
  */
 void CFile::copy( std::string src, std::string dst )
 {
-    std::string cmd = "/bin/cp ";
-    cmd += src;
-    cmd += " ";
-    cmd += dst;
+    std::ifstream isrc(src, std::ios::binary);
+    std::ofstream odst(dst, std::ios::binary);
 
-    system( cmd.c_str() );
+    std::istreambuf_iterator<char> begin_source(isrc);
+    std::istreambuf_iterator<char> end_source;
+    std::ostreambuf_iterator<char> begin_dest(odst);
+
+    std::copy(begin_source, end_source, begin_dest);
+
+    isrc.close();
+    odst.close();
 }
-
 
 /**
  * Move a file.
