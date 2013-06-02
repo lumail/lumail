@@ -350,5 +350,6 @@ std::vector<std::string> CLua::table_to_array( std::string name )
         lua_pop( m_lua , 1);
     }
 
+    lua_settop(m_lua, 0);
     return( results );
 }
