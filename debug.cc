@@ -69,10 +69,30 @@ void CDebug::debug( std::string line)
 {
 #ifdef LUMAIL_DEBUG
 
-    std::fstream fs;
-    fs.open ("/home/skx/lumail.log",  std::fstream::out | std::fstream::app);
+    /**
+     * Get the user's home-directory.
+     *
+     * If this fails, return.
+     */
+    std::string home = getenv( "HOME" );
+    if ( home.empty() )
+        return;
 
-    fs << timestamp() << line << "\n";
+
+    /**
+     * Open the file.
+     */
+    std::fstream fs;
+    fs.open ( home + "/lumail.log",  std::fstream::out | std::fstream::app);
+
+    /**
+     * Log the timestamp + mesage.
+     */
+    fs << timestamp() << " " << line << "\n";
+
+    /**
+     * Cleanup.
+     */
     fs.close();
 
 #endif
