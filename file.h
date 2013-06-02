@@ -51,7 +51,7 @@ public:
     /**
      * Move a file.
      */
-    static void move( std::string src, std::string dest );
+    static bool move( std::string src, std::string dest );
 
 };
 

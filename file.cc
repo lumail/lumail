@@ -69,12 +69,7 @@ void CFile::copy( std::string src, std::string dst )
 /**
  * Move a file.
  */
-void CFile::move( std::string src, std::string dst )
+bool CFile::move( std::string src, std::string dst )
 {
-    std::string cmd = "/bin/mv ";
-    cmd += src;
-    cmd += " ";
-    cmd += dst;
-
-    system( cmd.c_str() );
+    return( rename( src.c_str(), dst.c_str() ) == 0 );
 }
