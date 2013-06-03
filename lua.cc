@@ -84,6 +84,7 @@ CLua::CLua()
     /**
      * Get/Set various strings.
      */
+    lua_register(m_lua, "editor", editor);
     lua_register(m_lua, "from", from);
     lua_register(m_lua, "global_mode", global_mode);
     lua_register(m_lua, "index_format", index_format);
@@ -339,7 +340,7 @@ std::vector<std::string> CLua::table_to_array( std::string name )
      */
     lua_getglobal(m_lua, name.c_str() );
     if (lua_type(m_lua, -1)!=LUA_TTABLE) {
-        lua_pop(m_lua, 1);  
+        lua_pop(m_lua, 1);
         return results;
     }
 
@@ -349,10 +350,10 @@ std::vector<std::string> CLua::table_to_array( std::string name )
     {
         const char *d  = lua_tostring(m_lua, -1);
         results.push_back( d );
-        lua_pop( m_lua , 1); 
+        lua_pop( m_lua , 1);
     }
 
-    lua_pop( m_lua , 1); // pop nil 
+    lua_pop( m_lua , 1); // pop nil
     return( results );
 }
 

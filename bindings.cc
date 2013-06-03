@@ -107,6 +107,35 @@ CMessage *get_message_for_operation( const char *path )
 
 
 /**
+ * Get the user's selected editor.
+ */
+std::string get_editor()
+{
+    /**
+     * If this has been set use the editor
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::string *cmd  = global->get_variable("editor");
+    if ( ( cmd != NULL ) && ( ! cmd->empty() ) )
+        return( *cmd );
+
+    /**
+     * If there is an $EDITOR variable defined, use that.
+     */
+    std::string env = getenv( "EDITOR" );
+    if ( !env.empty() )
+        return( env );
+
+    /**
+     * Fall back to vim.
+     */
+    return( "vim" );
+
+}
+
+
+
+/**
  * Get, or set, the maildir-prefix
  */
 int maildir_prefix(lua_State * L)
@@ -131,6 +160,15 @@ int maildir_prefix(lua_State * L)
 int index_format(lua_State * L)
 {
     return( get_set_string_variable(L, "index_format" ) );
+}
+
+
+/**
+ * Get, or set, the editor
+ */
+int editor(lua_State * L)
+{
+    return( get_set_string_variable(L, "editor" ) );
 }
 
 
@@ -1275,12 +1313,9 @@ int compose(lua_State * L)
     endwin();
 
     /**
-     * Run vim by default
+     * Get the editor.
      */
-    std::string cmd = "vim";
-
-    if ( getenv( "EDITOR" ) )
-        cmd = getenv( "EDITOR" );
+    std::string cmd = get_editor();
 
     /**
      * Run the editor.
@@ -1468,12 +1503,9 @@ int reply(lua_State * L)
     endwin();
 
     /**
-     * Run vim by default
+     * Get the editor.
      */
-    std::string cmd = "vim";
-
-    if ( getenv( "EDITOR" ) )
-        cmd = getenv( "EDITOR" );
+    std::string cmd = get_editor();
 
     /**
      * Run the editor.

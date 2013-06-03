@@ -59,6 +59,7 @@ CGlobal::CGlobal()
     /**
      * Defaults as set in our variable hash-map.
      */
+    set_variable( "editor", new std::string("/usr/bin/vim") );
     set_variable( "sendmail_path", new std::string( "/usr/lib/sendmail -t" ) );
     set_variable( "global_mode",   new std::string("maildir"));
     set_variable( "maildir_limit", new std::string("all") );
