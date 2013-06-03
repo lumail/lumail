@@ -338,8 +338,10 @@ std::vector<std::string> CLua::table_to_array( std::string name )
      * Ensure we have a table.
      */
     lua_getglobal(m_lua, name.c_str() );
-    if (lua_type(m_lua, -1)!=LUA_TTABLE)
+    if (lua_type(m_lua, -1)!=LUA_TTABLE) {
+        lua_pop(m_lua, 1);
         return results;
+    }
 
     lua_pushnil(m_lua);
 
