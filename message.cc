@@ -625,14 +625,58 @@ std::vector<std::string> CMessage::body()
      * If we have a message_filter set then we should pipe this
      * through it.
      *
-     * Issue #33
-     *
-     *  1.  Open a temporary file.
-     *  2.  Write body.c_str to it.
-     *  3.  popen( "cat $tmp | message_filter ", "r");
-     *  5.  read the output into body()
-     *  6.  pclose().
      */
+    CGlobal     *global = CGlobal::Instance();
+    std::string *filter = global->get_variable("message_filter");
+    if ( ( filter != NULL ) && ( ! ( filter->empty() ) ) )
+    {
+        /**
+         * Write out the body to a temporary file.
+         */
+        char filename[] = "/tmp/msg.filter.XXXXXX";
+        __attribute__((__unused__)) int fd  = mkstemp(filename);
+
+        ofstream on;
+        on.open(filename, ios::binary);
+        on.write(body.c_str(), body.size());
+        on.close();
+
+        /**
+         * Build up the command to execute.
+         */
+        std::string cmd = "/bin/cat " ;
+        cmd += filename;
+        cmd += "|";
+        cmd += *filter;
+
+        /**
+         * Run through the popen dance.
+         */
+        FILE* pipe = popen(cmd.c_str(), "r");
+        if (pipe)
+        {
+            char buffer[2048] = { '\0' };
+            std::string tmp = "";
+
+            while(!feof(pipe))
+            {
+                if(fgets(buffer, 128, pipe) != NULL)
+                    tmp += buffer;
+            }
+            pclose(pipe);
+
+            /**
+             * Replace the body we previously generated
+             * with that we've read from popen.
+             */
+            body = tmp;
+        }
+
+        /**
+         * Don't leak the temporary file.
+         */
+        unlink( filename );
+    }
 
     /**
      * Split the body into an array, by newlines.
