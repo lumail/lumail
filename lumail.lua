@@ -130,6 +130,10 @@ headers = { "$TO", "$FROM", "$DATE", "$SUBJECT" }
 --
 --     message_filter( "-prot -cmekatlS --bigq --pgp-move-vrf -Mmutt -L/etc/t-prot/footers -A/etc/t-prot/ads" );
 --
+-- The following would convert each message to be 100% upper-case
+--
+--     message_filter( "tr '[:lower:]' '[:upper:]'" );
+--
 -- Note: There is no filter by default.
 --
 
