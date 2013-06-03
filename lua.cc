@@ -339,7 +339,7 @@ std::vector<std::string> CLua::table_to_array( std::string name )
      */
     lua_getglobal(m_lua, name.c_str() );
     if (lua_type(m_lua, -1)!=LUA_TTABLE) {
-        lua_pop(m_lua, 1);
+        lua_pop(m_lua, 1);  
         return results;
     }
 
@@ -349,13 +349,10 @@ std::vector<std::string> CLua::table_to_array( std::string name )
     {
         const char *d  = lua_tostring(m_lua, -1);
         results.push_back( d );
-        lua_pop( m_lua , 1);
+        lua_pop( m_lua , 1); 
     }
 
-    /**
-     * Cleanup stack.
-     */
-    lua_pop( m_lua , 2);
+    lua_pop( m_lua , 1); // pop nil 
     return( results );
 }
 
