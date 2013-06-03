@@ -634,7 +634,12 @@ std::vector<std::string> CMessage::body()
          * Write out the body to a temporary file.
          */
         char filename[] = "/tmp/msg.filter.XXXXXX";
-        __attribute__((__unused__)) int fd  = mkstemp(filename);
+        int fd  = mkstemp(filename);
+
+        /**
+         * Avoid "unused variable" warning.
+         */
+        (void)(fd);
 
         ofstream on;
         on.open(filename, ios::binary);
