@@ -610,9 +610,6 @@ function dump_unread()
    maildir_limit( "new" );
    global_mode( "maildir" );
 
-   -- get all visible folders - i.e. with unread mails.
-   dirs = current_maildirs();
-
    offset = 0;
 
    -- where we log
@@ -724,9 +721,6 @@ function global_unread()
    -- set the mode appropriately.
    maildir_limit( "new" );
    global_mode( "maildir" );
-
-   -- get all visible folders - i.e. those containing unread mails.
-   dirs = current_maildirs();
 
    -- ensure we have no selected folders.
    clear_selected_folders();
