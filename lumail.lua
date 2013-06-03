@@ -56,6 +56,15 @@ from( default_email );
 
 
 --
+-- Specify the editor to use for composing/replying to email messages.
+--
+-- If this isn't set lumail will default to using the value of the
+-- environmental variable "EDITOR", and if that is unset it will use
+-- /usr/bin/vim.
+--
+editor( "/usr/bin/vim" )
+
+--
 -- Show all folders by default
 --
 -- When called wiht no arguments this function will return the current
