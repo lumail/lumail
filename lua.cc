@@ -91,6 +91,7 @@ CLua::CLua()
     lua_register(m_lua, "index_limit", index_limit);
     lua_register(m_lua, "maildir_limit", maildir_limit);
     lua_register(m_lua, "maildir_prefix", maildir_prefix);
+    lua_register(m_lua, "message_filter", message_filter);
     lua_register(m_lua, "sendmail_path", sendmail_path );
     lua_register(m_lua, "sent_mail", sent_mail );
 

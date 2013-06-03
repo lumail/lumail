@@ -173,6 +173,15 @@ int editor(lua_State * L)
 
 
 /**
+ * Get, or set, the message-filter.
+ */
+int message_filter(lua_State * L)
+{
+    return( get_set_string_variable(L, "message_filter" ) );
+}
+
+
+/**
  * Get, or set, the global lumail mode.
  */
 int global_mode(lua_State * L)
