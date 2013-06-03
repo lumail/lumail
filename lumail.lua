@@ -120,6 +120,21 @@ headers = { "$TO", "$FROM", "$DATE", "$SUBJECT" }
 
 
 --
+-- When viewing the contents of a message it is possible to pipe
+-- the body through a filter.  Filters can be useful for trimming
+-- excessive quotes, etc.
+--
+-- The utility "t-prot" is a well-known example of a filter that
+-- can make an email nicer to view, and it can be used with a
+-- setting such as this one:
+--
+--     message_filter( "-prot -cmekatlS --bigq --pgp-move-vrf -Mmutt -L/etc/t-prot/footers -A/etc/t-prot/ads" );
+--
+-- Note: There is no filter by default.
+--
+
+
+--
 -- This function is called when the client is launched.
 --
 -- You might consider something useful like this:
