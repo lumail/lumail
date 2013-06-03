@@ -184,46 +184,47 @@ void CScreen::drawMaildir()
  */
 void CScreen::drawIndex()
 {
-  /**
-   * Get all messages from the currently selected maildirs.
-   */
+    /**
+     * Get all messages from the currently selected maildirs.
+     */
     CGlobal *global = CGlobal::Instance();
     std::vector<CMessage*> *messages = global->get_messages();
 
-  /**
-   * If we have no messages report that.
-   */
+    /**
+     * If we have no messages report that.
+     */
     if (( messages == NULL ) ||  (messages->size() < 1)) {
-      move(2, 2);
-      printw( NO_MESSAGES_IN_FOLDERS );
+        clear();
+        move(2, 2);
+        printw( NO_MESSAGES_IN_FOLDERS );
 
-      std::vector<std::string> folders = global->get_selected_folders();
-      std::vector<std::string>::iterator it;
-      int height = CScreen::height();
-      int row = 4;
+        std::vector<std::string> folders = global->get_selected_folders();
+        std::vector<std::string>::iterator it;
+        int height = CScreen::height();
+        int row = 4;
 
-      for (it = folders.begin(); it != folders.end(); ++it) {
+        for (it = folders.begin(); it != folders.end(); ++it) {
 
-        /**
-         * Avoid drawing into the status area.
-         */
-        if ( row >= (height-1) )
-          break;
+            /**
+             * Avoid drawing into the status area.
+             */
+            if ( row >= (height-1) )
+                break;
 
-        /**
-         * Show the name of the folder.
-         */
-        std::string name = (*it);
-        move( row, 5 );
-        printw("%s", name.c_str() );
-        row+=1;
-      }
-      return;
+            /**
+             * Show the name of the folder.
+             */
+            std::string name = (*it);
+            move( row, 5 );
+            printw("%s", name.c_str() );
+            row+=1;
+        }
+        return;
     }
 
-  /**
-   * The number of items we've found, vs. the size of the screen.
-   */
+    /**
+     * The number of items we've found, vs. the size of the screen.
+     */
     int count = messages->size();
     int height = CScreen::height();
     int selected = global->get_selected_message();
@@ -232,44 +233,44 @@ void CScreen::drawIndex()
      * Bound the selection.
      */
     if (selected >= count) {
-      selected = count-1;
-      global->set_selected_message(selected);
+        selected = count-1;
+        global->set_selected_message(selected);
     }
 
-  /**
-   * OK so we have (at least one) selected maildir and we have messages.
-   */
+    /**
+     * OK so we have (at least one) selected maildir and we have messages.
+     */
     int row = 0;
 
     for (row = 0; row < (height - 1); row++) {
-    /**
-     * What we'll output for this row.
-     */
+        /**
+         * What we'll output for this row.
+         */
 	char buf[250] = { '\0' };
 
-    /**
-     * The current object.
-     */
+        /**
+         * The current object.
+         */
 	CMessage *cur = NULL;
 	if ((row + selected) < count)
-          cur = messages->at(row + selected);
+            cur = messages->at(row + selected);
 
         bool unread = false;
         if ( cur != NULL ) {
-          std::string flags = cur->flags();
-          if ( flags.find( "N" ) != std::string::npos )
-            unread = true;
+            std::string flags = cur->flags();
+            if ( flags.find( "N" ) != std::string::npos )
+                unread = true;
         }
 
 	if ( unread ) {
-          if (row == 0)
-	    attrset(COLOR_PAIR(1)|A_REVERSE);
-          else
-	    attrset(COLOR_PAIR(1));
+            if (row == 0)
+                attrset(COLOR_PAIR(1)|A_REVERSE);
+            else
+                attrset(COLOR_PAIR(1));
         }
         else {
-          if (row == 0)
-	    attrset(A_REVERSE);
+            if (row == 0)
+                attrset(A_REVERSE);
         }
 
 	std::string path = "";
@@ -277,15 +278,15 @@ void CScreen::drawIndex()
 	if (cur != NULL)
 	    snprintf(buf, sizeof(buf) - 1, "%s", (*cur).format().c_str());
 
-    /**
-     * Pad.
-     */
+        /**
+         * Pad.
+         */
 	while ((int)strlen(buf) < (CScreen::width() - 3))
 	    strcat(buf, " ");
 
-    /**
-     * Truncate.
-     */
+        /**
+         * Truncate.
+         */
 	if ((int)strlen(buf) > (CScreen::width() - 3))
 	    buf[(CScreen::width() - 3)] = '\0';
 
@@ -294,14 +295,15 @@ void CScreen::drawIndex()
 
         attrset( COLOR_PAIR(2) );
 
-    /**
-     * Remove the inverse.
-     */
+        /**
+         * Remove the inverse.
+         */
 	if (row == 0)
 	    attroff(A_REVERSE);
     }
-
 }
+
+
 
 /**
  * Draw the message mode.
