@@ -620,6 +620,21 @@ std::vector<std::string> CMessage::body()
 
 
     /**
+     * At this point we have a std::string containing the body.
+     *
+     * If we have a message_filter set then we should pipe this
+     * through it.
+     *
+     * Issue #33
+     *
+     *  1.  Open a temporary file.
+     *  2.  Write body.c_str to it.
+     *  3.  popen( "cat $tmp | message_filter ", "r");
+     *  5.  read the output into body()
+     *  6.  pclose().
+     */
+
+    /**
      * Split the body into an array, by newlines.
      */
     std::stringstream stream(body);
