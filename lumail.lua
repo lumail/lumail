@@ -393,10 +393,10 @@ function faves()
       scroll_maildir_to( name );
 
       --
-      -- TODO:
-      -- "current_maildir" will return the value we've found.
-      -- We should check if it matches.
-      -- In this case I know it always will.  Probably.
+      -- Note: "current_maildir" will return the value we've found.
+      --
+      -- We could check if the folder returned matches that which
+      -- we've found here.  In my case I don't need to.
       --
 
       -- Add it to the selected set.
