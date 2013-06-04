@@ -1151,6 +1151,13 @@ int clear_selected_folders(lua_State * L)
     global->unset_folders();
     global->set_selected_message(0);
     global->update_messages();
+
+    /**
+     * Call our update with an empty path.
+     */
+    CLua *lua = CLua::Instance();
+    lua->execute("on_folder_selection(\"\");");
+
     return 0;
 }
 
