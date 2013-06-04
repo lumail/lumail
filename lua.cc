@@ -71,6 +71,7 @@ CLua::CLua()
     /**
      * Register our primitives - the basic ones.
      */
+    lua_register(m_lua, "abort", abort);
     lua_register(m_lua, "clear", clear);
     lua_register(m_lua, "exec", exec);
     lua_register(m_lua, "exit", exit);

@@ -55,6 +55,9 @@ CMessage *get_message_for_operation( const char *path );
 /* exit the program */
 int exit(lua_State * L);
 
+/* exit abnormally */
+int abort(lua_State * L);
+
 /* compose a new mail. */
 int compose(lua_State *i);
 

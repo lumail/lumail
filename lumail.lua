@@ -35,7 +35,13 @@
 --
 -- (The directory specified will be processed recursively.)
 --
-maildir_prefix( os.getenv( "HOME" ) .. "/Maildir" );
+prefix = os.getenv( "HOME" ) .. "/Maildir"
+
+if ( is_directory(prefix) ) then
+   maildir_prefix(prefix)
+else
+   abort( "The specified Maildir prefix isn't a directory: " .. prefix );
+end
 
 
 --

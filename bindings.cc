@@ -305,6 +305,27 @@ int exit(lua_State * L)
 
 
 /**
+ * Exit the program, abnormally.
+ */
+int abort(lua_State * L)
+{
+    const char *str = lua_tostring(L, -1);
+
+    endwin();
+
+    if (str != NULL)
+        std::cerr << str << std::endl;
+
+    exit(1);
+
+    /**
+     * Never reached.
+     */
+    return 0;
+}
+
+
+/**
  * Execute a program, resetting curses first.
  */
 int exec(lua_State * L)
