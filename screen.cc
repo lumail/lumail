@@ -125,7 +125,7 @@ void CScreen::drawMaildir()
     /**
      * What we'll output for this row.
      */
-	char buf[250] = { '\0' };
+        std::string buf;
         int unread = 0;
 
 
@@ -152,12 +152,14 @@ void CScreen::drawMaildir()
 
 	std::string path = "";
 
-	if (cur != NULL)
-	    snprintf(buf, sizeof(buf) - 1, "%s - %-70s", found.c_str(),
-		     cur->path().c_str());
+	if (cur != NULL) {
+            std::ostringstream fmt;
+            fmt << found << " - " << cur->path();
+            buf = fmt.str();
+       }
 
-	while ((int)strlen(buf) < (CScreen::width() - 3))
-	    strcat(buf, " ");
+	while (buf.length() < (CScreen::width() - 3))
+	   buf += std::string(" ");
 
 	move(row, 2);
 
@@ -167,7 +169,7 @@ void CScreen::drawMaildir()
           else
             attrset( COLOR_PAIR(1) );
         }
-	printw("%s", buf);
+	printw("%s", buf.c_str());
 
         attrset( COLOR_PAIR(2) );
 
@@ -262,7 +264,7 @@ void CScreen::drawIndex()
         /**
          * What we'll output for this row.
          */
-	char buf[250] = { '\0' };
+	std::string  buf;
 
         /**
          * The current object.
@@ -292,22 +294,21 @@ void CScreen::drawIndex()
 	std::string path = "";
 
 	if (cur != NULL)
-	    snprintf(buf, sizeof(buf) - 1, "%s", (*cur).format().c_str());
+            buf =  cur->format();
 
         /**
          * Pad.
          */
-	while ((int)strlen(buf) < (CScreen::width() - 3))
-	    strcat(buf, " ");
-
+	while (buf.length() < (CScreen::width() - 3))
+            buf += std::string(" ");
         /**
          * Truncate.
          */
-	if ((int)strlen(buf) > (CScreen::width() - 3))
+	if (buf.length() > (CScreen::width() - 3))
 	    buf[(CScreen::width() - 3)] = '\0';
 
 	move(row, 2);
-	printw("%s", buf);
+	printw("%s", buf.c_str());
 
         attrset( COLOR_PAIR(2) );
 
