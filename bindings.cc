@@ -532,6 +532,7 @@ int scroll_maildir_up(lua_State * L)
 	cur = 0;
 
     global->set_selected_folder(cur);
+
     return (0);
 }
 
@@ -563,6 +564,11 @@ int scroll_index_down(lua_State * L)
 
     global->set_selected_message(cur);
 
+    /**
+     * We've changed messages, so reset the current position.
+     */
+    global->set_message_offset(0);
+
     return 0;
 }
 
@@ -582,6 +588,12 @@ int scroll_index_up(lua_State * L)
 	cur = 0;
 
     global->set_selected_message(cur);
+
+    /**
+     * We've changed messages, so reset the current position.
+     */
+    global->set_message_offset(0);
+
     return (0);
 }
 
@@ -629,6 +641,12 @@ int jump_index_to(lua_State * L)
 
     CGlobal *global = CGlobal::Instance();
     global->set_selected_message(offset);
+
+    /**
+     * We've changed messages, so reset the current position.
+     */
+    global->set_message_offset(0);
+
     return (0);
 }
 
@@ -1088,6 +1106,11 @@ int scroll_index_to(lua_State * L)
         if (i >= max)
             i = 0;
     }
+
+    /**
+     * We've changed messages, so reset the current position.
+     */
+    global->set_message_offset(0);
     return 0;
 }
 

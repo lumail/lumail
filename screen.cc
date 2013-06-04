@@ -422,9 +422,9 @@ void CScreen::drawMessage()
   /**
    * How many lines to draw?
    */
-  int max = std::min((int)body.size(), (int)(CScreen::height() - headers.size()));
+  int max = std::min((int)body.size(), (int)(CScreen::height() - headers.size()) );
 
-  for( int i = 0; i < max; i++ )
+  for( int i = 0; i < (max-2); i++ )
   {
       move( i + ( headers.size() + 1 ), 0 );
 

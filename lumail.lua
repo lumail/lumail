@@ -567,8 +567,11 @@ keymap['maildir']['Enter'] = 'open_folder()'
 --
 -- Message-scrolling.
 --
-keymap['message']['j'] = 'message_down()'
-keymap['message']['k'] = 'message_up()'
+keymap['message']['j'] = 'scroll_message_down(1)'
+keymap['message']['k'] = 'scroll_message_up(1)'
+keymap['message']['Space'] = 'scroll_message_down(screen_height()-2)'
+keymap['message']['J'] = 'message_down()'
+keymap['message']['K'] = 'message_up()'
 keymap['message']['/'] = 'search_next()'
 keymap['message']['r'] = 'reply()'
 keymap['message']['d'] = 'delete()'
