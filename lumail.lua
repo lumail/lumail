@@ -233,28 +233,43 @@ end
 
 
 --
--- This function is called when the client is idle.
+-- This function is called when the client is idle, roughly once a second.
 --
--- You might run something like:
+-- This demonstration just updates the status-area to show a message
+-- every second.  Once every five minutes we shell out to call
+-- imapsync.
 --
---   if the current-time is a multiple of five-minutes
---     os.execute("imapsync ..")
---
--- (Of course you may prefer to call fetchmail, or similar.)
---
-function on_idle()
-   m = global_mode()
-   m = string.lower( m );
+do
 
-   str = ""
+   -- Last sync time, in seconds-past-epoch.
+   local ls = os.time()
 
-   if ( string.find( m, "maildir" ) ) then
-      str = "mode:" .. m ..  " limit:" .. maildir_limit();
-   else
-      str = "mode:" .. m ;
+   function on_idle()
+      m = global_mode()
+      m = string.lower( m );
+
+      str = ""
+
+      -- Set the message we'll display
+      if ( string.find( m, "maildir" ) ) then
+         str = "mode:" .. m ..  " limit:" .. maildir_limit();
+      else
+         str = "mode:" .. m ;
+      end
+
+      -- Show the message & the time.
+      msg( str .. " time:" .. os.date("%X" ) );
+
+      --
+      -- If the time between the last sync is more than
+      -- five minutes resync mail.
+      --
+      ct = os.time()
+      if ( ( ct - ls ) >=  ( 60 * 5 ) ) then
+         ls = ct
+         os.execute( "imapsync" );
+      end
    end
-
-   msg( str .. " time:" .. os.date("%X" ) );
 end
 
 
