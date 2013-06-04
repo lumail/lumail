@@ -594,38 +594,6 @@ keymap['message']['d'] = 'delete()'
 -----
 
 --
--- Debug Code ; test getting the selected folders works.
---
-function debugy()
-   sels = selected_folders();
-
-   ff = io.open( "/tmp/log.lua", "a");
-
-   for i,v in ipairs( sels ) do
-      ff:write( "Value " .. i .. " is " .. v .. "\n" );
-   end
-   ff:close();
-end
-keymap['maildir']['D'] = 'debugy()';
-
-
---
--- Test our sleep primitive.
---
-function sleepy()
-   clear()
-   sleep( 1 );
-   msg( "1/2: Cleared" )
-   clear();
-   sleep( 1 );
-   msg( "2/2: OK" );
-end
-keymap['global']['S'] = 'sleepy()';
-
-
-
-
---
 -- Dump a list of all folders with unread messages, along with the
 -- count of unread messages.
 --
@@ -683,7 +651,7 @@ function dump_vars()
    vars = get_variables();
 
    for i,v in pairs( vars ) do
-      ff:write( "Setting " .. i .. " has value " .. v .. "\n" );
+      ff:write( "Variable '" .. i .. "' has value '" .. v .. "'\n" );
    end
    ff:write("End\n");
    ff:close();
@@ -709,73 +677,3 @@ function on_key( v )
    end
 end
 
---
---  Steve has configured his mailserver to record the remote IP
--- of a mail submitter to the header "X-Remote-IP".
---
---  If we find such an IP in the current message then we'll blacklist
--- it from future mail attempts.
---
-function mark_spam_ip()
-   mode = global_mode()
-   mode = string.lower( mode );
-   val  = ""
-
-   if ( string.find( mode, "message" ) ) then
-      val = header( "X-Remote-IP" )
-   elseif (string.find(mode, "index" ) ) then
-      val = header( "X-Remote-IP" )
-   else
-      msg( "mark_spam_ip() not present for mode:" .. mode );
-   end
-
-   if ( val == "" ) then
-      msg( "IP address not found in message." );
-   else
-      ff = io.open( "/etc/blacklist.d/" .. val , "a");
-      ff:write( "\n" )
-      ff:close();
-      msg( "blacklisted IP: " .. val );
-   end
-end
-keymap['global']['F'] = 'mark_spam_ip()'
-
-
-
---
--- Open all folders that contain unread messages, and view them  all.
---
-function global_unread()
-
-   -- set the mode appropriately.
-   maildir_limit( "new" );
-   global_mode( "maildir" );
-
-   -- ensure we have no selected folders.
-   clear_selected_folders();
-
-   offset = 0;
-
-   -- Now for each one we'll add it to the selected set.
-   while( offset <= (count_maildirs() - 1) ) do
-
-      -- jump to folder.
-      jump_maildir_to( offset )
-
-      -- Added the folder to the selected set.
-      add_selected_folder()
-
-      -- move to the next.
-      offset = offset + 1;
-   end
-
-   --
-   -- Now we've added all maildirs with new mail to the list
-   -- of selected maildirs.
-   --
-   -- Jump to the global index-mode, and view only new mails.
-   --
-   --
-   global_mode( "index" );
-   index_limit( "new" );
-end
