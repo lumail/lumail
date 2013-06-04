@@ -1,23 +1,26 @@
 --
--- When lumail launches it will look for two configuration files, and
--- load them both in turn if they exist:
+-- When lumail launches it will look for two configuration files, if they
+-- exist they will be loaded in turn:
 --
 --   /etc/lumail.lua
 --   ~/.lumail/config.lua
 --
--- If you wish to load an additional configuration file you may do so
--- via the --rcfile argument:
+-- If you wish to load an additional configuration file you add it via the
+-- --rcfile argument:
 --
 --   $ lumail --rcfile ./lumail.lua
 --
 --
--- The configuration file is responsible for determining which keystrokes
+-- The configuration file(s) are responsible for determining which keystrokes
 -- are recognized, and what they will do.
 --
--- The configuration file can contain functions you define yourself, as
--- this one does, and using the Lua primitives that lumail implements internally.
+-- The configuration file(s) can contain functions you define yourself, using
+-- the Lua primitives that lumail implements internally.  You can see several
+-- examples online here:
 --
--- The lumail primitives are documented online here:
+--   http://lumail.org/examples/
+--
+-- The lumail primitives are documented here:
 --
 --   http://lumail.org/lua/
 --
