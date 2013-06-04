@@ -53,7 +53,7 @@ sent_mail( maildir_prefix() .. "/sent-mail" );
 --
 -- This can be changed in one of the available hooks.
 --
--- In this configuration file we use the `on_select_folder()` function later.
+-- In this configuration file we use the `on_folder_selection()` function later.
 --
 default_email = "Steve Kemp <steve@steve.org.uk>";
 from( default_email );
@@ -156,13 +156,13 @@ end
 
 
 --
--- This function is called when a folder is selected.
+-- This function is called when a folder is added/removed to the selected set.  Or toggled.
 --
 -- It is where you can run per-folder hooks.
 --
--- Remember: More than one folder might be selected.
+-- Remember: More than one folder might be selected at any given time.
 --
-function on_select_folder( folder )
+function on_folder_selection( folder )
 
    --
    -- Change the email address we use depending on our folder.
