@@ -54,6 +54,7 @@ CGlobal::CGlobal()
      */
     m_cur_folder     = 0;
     m_cur_message    = 0;
+    m_msg_offset     = 0;
     m_messages       = NULL;
 
     /**

@@ -98,6 +98,17 @@ class CGlobal
     m_cur_message = offset;
   }
 
+  /**
+   * Get/set the message offset.
+   */
+  int get_message_offset() {
+    return m_msg_offset;
+  }
+  void set_message_offset(int offset) {
+    m_msg_offset = offset;
+  }
+
+
 
   /**
    * Get the value of an arbitrary setting.
@@ -140,6 +151,12 @@ class CGlobal
    * The selected message.
    */
   int m_cur_message;
+
+
+  /**
+   * The line-number of the message to start drawing at.
+   */
+  int m_msg_offset;
 
 
   /**
