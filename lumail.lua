@@ -530,6 +530,7 @@ keymap['index']['/'] = 'search_next()'
 keymap['index']['Space'] = 'view_message()'
 keymap['index']['Enter'] = 'view_message()'
 keymap['index']['r'] = 'reply()'
+keymap['index']['d'] = 'delete()'
 
 --
 -- View all/new messages only.
@@ -555,6 +556,7 @@ keymap['message']['j'] = 'message_down()'
 keymap['message']['k'] = 'message_up()'
 keymap['message']['/'] = 'search_next()'
 keymap['message']['r'] = 'reply()'
+keymap['message']['d'] = 'delete()'
 
 -----
 -----
