@@ -11,11 +11,11 @@
 --   $ lumail --rcfile ./lumail.lua
 --
 --
---
 -- The configuration file is responsible for determining which keystrokes
--- are recognized, and what they will do.  The configuration file can
--- contain functions you define yourself, as this one does, and also make
--- use of the Lua primitives that lumail implements internally.
+-- are recognized, and what they will do.
+--
+-- The configuration file can contain functions you define yourself, as
+-- this one does, and using the Lua primitives that lumail implements internally.
 --
 -- The lumail primitives are documented online here:
 --
@@ -33,6 +33,7 @@
 -- (The directory specified will be processed recursively.)
 --
 maildir_prefix( os.getenv( "HOME" ) .. "/Maildir" );
+
 
 --
 -- There is only one folder which is special, and that is the one where
@@ -60,9 +61,10 @@ from( default_email );
 --
 -- If this isn't set lumail will default to using the value of the
 -- environmental variable "EDITOR", and if that is unset it will use
--- /usr/bin/vim.
+-- "vim".
 --
 editor( "/usr/bin/vim" )
+
 
 --
 -- Show all folders by default
@@ -197,8 +199,7 @@ end
 --
 -- The argument is the path to the message on-disk.
 --
--- Here we use the "is_new()" and "mark_read()" functions with that
--- path.
+-- Here we use the "is_new()" and "mark_read()" functions with that path.
 --
 -- (If the path were omitted then the current-message would be implicit.)
 --
@@ -225,19 +226,17 @@ end
 -- It could also be used to run an imap-sync, or similar hook at exit-time.
 --
 function on_exit()
-   print("print: on_exit");
-   io.write( "io.write: on_exit\n")
-   io.write("The global mode was: '" .. global_mode() .. "'.\n");
-   io.write("The maildir_limit setting was '" .. maildir_limit() .. "'\n" );
+   print("Lumail has now terminated.");
+   io.write( "That's it man, game over man, game over!\n")
 end
 
 
 --
 -- This function is called when the client is idle, roughly once a second.
 --
--- This demonstration just updates the status-area to show a message
--- every second.  Once every five minutes we shell out to call
--- imapsync.
+-- Every second we update the status-area to show a message.
+--
+-- Once every five minutes we shell out to call imapsync.
 --
 do
 
@@ -481,8 +480,6 @@ keymap['maildir'] = {}
 --
 -- Global Bindings
 --
--- Debug message.
-keymap['global']['G'] = 'msg("Global-Steve");';
 -- Quit
 keymap['global']['Q'] = "exit()"
 -- Compose a new message.
@@ -565,16 +562,28 @@ keymap['maildir']['Enter'] = 'open_folder()'
 
 
 --
--- Message-scrolling.
+-- Message-handling.
 --
+--
+-- Scroll up/down in the currnet message.
 keymap['message']['j'] = 'scroll_message_down(1)'
 keymap['message']['k'] = 'scroll_message_up(1)'
 keymap['message']['Space'] = 'scroll_message_down(screen_height()-2)'
+
+--
+-- scroll to the next/prev message
+--
 keymap['message']['J'] = 'message_down()'
 keymap['message']['K'] = 'message_up()'
-keymap['message']['/'] = 'search_next()'
+
+-- Actions
 keymap['message']['r'] = 'reply()'
 keymap['message']['d'] = 'delete()'
+
+
+
+
+
 
 -----
 -----
