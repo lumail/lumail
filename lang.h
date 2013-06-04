@@ -33,6 +33,11 @@
 
 
 /**
+ * Displayed literally when no folders are selected in index-mode.
+ */
+#define NO_MESSAGES_NO_FOLDERS "No messages were found, because no folders are selected"
+
+/**
  * Displayed literally if we're in message-mode but there is no current
  * message.
  */

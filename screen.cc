@@ -194,11 +194,27 @@ void CScreen::drawIndex()
      * If we have no messages report that.
      */
     if (( messages == NULL ) ||  (messages->size() < 1)) {
+
+        std::vector<std::string> folders = global->get_selected_folders();
+
+        if ( folders.size() < 1 )
+        {
+            /**
+             * No folders selected, and no messages.
+             */
+            clear();
+            move(2,2);
+            printw( NO_MESSAGES_NO_FOLDERS );
+            return;
+        }
+
+        /**
+         * Show the selected folders.
+         */
         clear();
         move(2, 2);
         printw( NO_MESSAGES_IN_FOLDERS );
 
-        std::vector<std::string> folders = global->get_selected_folders();
         std::vector<std::string>::iterator it;
         int height = CScreen::height();
         int row = 4;
