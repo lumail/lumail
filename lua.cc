@@ -160,6 +160,14 @@ CLua::CLua()
     lua_register(m_lua, "screen_width", screen_width);
     lua_register(m_lua, "screen_height", screen_height);
 
+
+    /**
+     * File/Utility handlers. Useful for writing portable configuration files.
+     */
+    lua_register(m_lua, "file_exists", file_exists);
+    lua_register(m_lua, "is_directory", is_directory);
+    lua_register(m_lua, "executable", executable);
+
     /**
      * Variables.
      */
