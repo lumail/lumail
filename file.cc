@@ -45,6 +45,34 @@ bool CFile::exists( std::string path )
 
 
 /**
+ * Is the given file executable?
+ */
+bool CFile::executable( std::string path )
+{
+    struct stat sb;
+
+    /**
+     * Fail to stat?  Then not executable.
+     */
+    if (stat(path.c_str(), &sb) < 0)
+        return false;
+
+    /**
+     * If directory then not executable.
+     */
+    if (S_ISDIR(sb.st_mode))
+        return false;
+
+    /**
+     * Otherwise check the mode-bits
+     */
+    if ((sb.st_mode & S_IEXEC) != 0)
+        return true;
+    return false;
+}
+
+
+/**
  * Is the given path a directory?
  */
 bool CFile::is_directory(std::string path)

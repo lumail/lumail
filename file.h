@@ -38,15 +38,24 @@ public:
      */
     static bool exists( std::string path );
 
+
+    /**
+     * Is the given file executable?
+     */
+    static bool executable( std::string path );
+
+
     /**
      * Is the given path a directory?
      */
     static bool is_directory(std::string path);
 
+
     /**
      * Copy a file.
      */
     static void copy( std::string src, std::string dest );
+
 
     /**
      * Move a file.
