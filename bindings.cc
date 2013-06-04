@@ -587,6 +587,40 @@ int scroll_index_up(lua_State * L)
 
 
 /**
+ * Scroll the message down.
+ */
+int scroll_message_down(lua_State *L)
+{
+    int step = lua_tonumber(L, -1);
+
+    CGlobal *global = CGlobal::Instance();
+    int cur = global->get_message_offset();
+    cur += step;
+
+    global->set_message_offset(cur);
+    return (0);
+}
+
+/**
+ * Scroll the message up.
+ */
+int scroll_message_up(lua_State *L)
+{
+    int step = lua_tonumber(L, -1);
+
+    CGlobal *global = CGlobal::Instance();
+    int cur = global->get_message_offset();
+    cur -= step;
+
+    if ( cur < 0 )
+        cur = 0;
+
+    global->set_message_offset(cur);
+    return (0);
+}
+
+
+/**
  * Jump to the given message.
  */
 int jump_index_to(lua_State * L)
@@ -1755,3 +1789,5 @@ int executable(lua_State *L)
 
     return 1;
 }
+
+

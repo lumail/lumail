@@ -113,6 +113,13 @@ CLua::CLua()
     lua_register(m_lua, "scroll_index_up", scroll_index_up);
 
     /**
+     * Scroll message up/down.
+     */
+    lua_register(m_lua, "scroll_message_down", scroll_message_down);
+    lua_register(m_lua, "scroll_message_up", scroll_message_up);
+
+
+    /**
      * Maildir-related functions.
      */
     lua_register(m_lua, "count_maildirs", count_maildirs );
