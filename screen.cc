@@ -333,6 +333,11 @@ void CScreen::drawMessage()
   std::vector<CMessage *> *messages = global->get_messages();
 
   /**
+   * How many lines we've scrolled down the message.
+   */
+  int offset = global->get_message_offset();
+
+  /**
    * The number of items we've found, vs. the size of the screen.
    */
   int count = messages->size();
@@ -417,12 +422,17 @@ void CScreen::drawMessage()
   /**
    * How many lines to draw?
    */
-  int max = std::min((int)body.size(), CScreen::height()-6);
+  int max = std::min((int)body.size(), (int)(CScreen::height() - headers.size()));
 
   for( int i = 0; i < max; i++ )
   {
       move( i + ( headers.size() + 1 ), 0 );
-      printw( "%s", body[i].c_str() );
+
+      std::string line = "";
+      if ( (i + offset) < (int)body.size() )
+          line = body[i+offset];
+
+      printw( "%s", line.c_str() );
   }
 
   /**
