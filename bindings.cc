@@ -1721,9 +1721,9 @@ int file_exists(lua_State *L)
 	return luaL_error(L, "Missing argument to file_exists(..)");
 
     if ( CFile::exists( str ) )
-        lua_pushinteger(L,1);
+        lua_pushboolean(L,1);
     else
-        lua_pushinteger(L,0);
+        lua_pushboolean(L,0);
 
     return 1;
 }
@@ -1735,9 +1735,9 @@ int is_directory(lua_State *L)
 	return luaL_error(L, "Missing argument to is_directory(..)");
 
     if ( CFile::is_directory( str ) )
-        lua_pushinteger(L,1);
+        lua_pushboolean(L,1);
     else
-        lua_pushinteger(L,0);
+        lua_pushboolean(L,0);
 
     return 1;
 }
@@ -1749,9 +1749,9 @@ int executable(lua_State *L)
 	return luaL_error(L, "Missing argument to is_directory(..)");
 
     if ( CFile::executable( str ) )
-        lua_pushinteger(L,1);
+        lua_pushboolean(L,1);
     else
-        lua_pushinteger(L,0);
+        lua_pushboolean(L,0);
 
     return 1;
 }
