@@ -1444,10 +1444,12 @@ int reply(lua_State * L)
 
 
     /**
-     * Get the subject, and sender.
+     * Get the subject, and sender, etc.
      */
     std::string subject = mssg->subject();
     std::string to      = mssg->from();
+    std::string ref     = mssg->header( "Message-ID" );
+
 
     CGlobal *global     = CGlobal::Instance();
     std::string *from   = global->get_variable( "from" );
@@ -1483,6 +1485,37 @@ int reply(lua_State * L)
     write(fd, "From: " , strlen( "From: " ) );
     write(fd, from->c_str(), strlen( from->c_str() ) );
     write(fd, "\n", 1 );
+
+    /**
+     * If we have a message-id add that to the references.
+     */
+    if ( !ref.empty() )
+    {
+        /**
+         * Message-ID might look like this:
+         *
+         * Message-ID: <"str"> ("comment")
+         *
+         * Remove the comment.
+         */
+        unsigned int start = 0;
+        if ( ( ref.find('(') ) != std::string::npos )
+        {
+            unsigned int end = ref.find(')',start);
+            if ( end != std::string::npos )
+                ref.erase(start,end-start+1);
+        }
+
+        /**
+         * If still non-empty ..
+         */
+        if ( !ref.empty() )
+        {
+            write(fd, "References: " , strlen( "References: " ) );
+            write(fd, ref.c_str(), strlen( ref.c_str() ) );
+            write(fd, "\n", 1 );
+        }
+    }
 
     /**
      * Space
