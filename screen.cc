@@ -158,7 +158,7 @@ void CScreen::drawMaildir()
             buf = fmt.str();
        }
 
-	while (buf.length() < (CScreen::width() - 3))
+	while ((int)buf.size() < (CScreen::width() - 3))
 	   buf += std::string(" ");
 
 	move(row, 2);
@@ -299,12 +299,12 @@ void CScreen::drawIndex()
         /**
          * Pad.
          */
-	while (buf.length() < (CScreen::width() - 3))
+	while ((int)buf.size() < (CScreen::width() - 3))
             buf += std::string(" ");
         /**
          * Truncate.
          */
-	if (buf.length() > (CScreen::width() - 3))
+	if ((int)buf.size() > (CScreen::width() - 3))
 	    buf[(CScreen::width() - 3)] = '\0';
 
 	move(row, 2);
