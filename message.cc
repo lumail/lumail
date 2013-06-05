@@ -660,13 +660,15 @@ std::vector<std::string> CMessage::body()
         FILE* pipe = popen(cmd.c_str(), "r");
         if (pipe)
         {
-            char buffer[2048] = { '\0' };
+            char buffer[16384] = { '\0' };
             std::string tmp = "";
 
             while(!feof(pipe))
             {
-                if(fgets(buffer, 128, pipe) != NULL)
+                if(fgets(buffer, sizeof(buffer)-1, pipe) != NULL)
                     tmp += buffer;
+
+                memset(buffer, '\0', sizeof(buffer));
             }
             pclose(pipe);
 
