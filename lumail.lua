@@ -275,7 +275,11 @@ do
       ct = os.time()
       if ( ( ct - ls ) >=  ( 60 * 5 ) ) then
          ls = ct
-         os.execute( "imapsync" );
+         if ( executable( "/usr/bin/imapsync" ) ) then
+            os.execute( "imapsync" );
+         else
+            msg("/usr/bin/imapsync not installed" )
+         end
       end
    end
 end
