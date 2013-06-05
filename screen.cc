@@ -51,9 +51,9 @@ CScreen::~CScreen()
  */
 void CScreen::refresh_display()
 {
-  /**
-   * Get the current mode.
-   */
+    /**
+     * Get the current mode.
+     */
     CGlobal *global = CGlobal::Instance();
     std::string * s = global->get_variable("global_mode");
 
@@ -64,10 +64,10 @@ void CScreen::refresh_display()
     else if (strcmp(s->c_str(), "message") == 0)
 	drawMessage();
     else {
-      CLua *lua = CLua::Instance();
-      lua->execute( "clear();" );
-      move(3, 3);
-      printw("UNKNOWN MODE: '%s'", s->c_str());
+        CLua *lua = CLua::Instance();
+        lua->execute( "clear();" );
+        move(3, 3);
+        printw("UNKNOWN MODE: '%s'", s->c_str());
     }
 }
 
@@ -76,33 +76,32 @@ void CScreen::refresh_display()
  */
 void CScreen::drawMaildir()
 {
-
-  /**
-   * Get all known folders + the current display mode
-   */
+    /**
+     * Get all known folders + the current display mode
+     */
     CGlobal *global = CGlobal::Instance();
     std::vector < CMaildir > display = global->get_folders();
     std::string *limit = global->get_variable("maildir_limit");
 
-  /**
-   * The number of items we've found, vs. the size of the screen.
-   */
+    /**
+     * The number of items we've found, vs. the size of the screen.
+     */
     int count = display.size();
     int height = CScreen::height();
     int selected = global->get_selected_folder();
 
-  /**
-   * If we have no messages report that.
-   */
+    /**
+     * If we have no messages report that.
+     */
     if ( count < 1 )
     {
-      move(2, 2);
-      printw("No maildirs found matching the limit '%s'.", limit->c_str());
-      return;
+        move(2, 2);
+        printw("No maildirs found matching the limit '%s'.", limit->c_str());
+        return;
     }
 
 
-    /*
+    /**
      * Bound the selection.
      */
     if (selected >= count) {
@@ -110,28 +109,24 @@ void CScreen::drawMaildir()
 	selected = 0;
     }
 
-  /**
-   * Something here is screwy - segfaults if the number of folders
-   * is not less larger than the height of the screen.
-   */
     int row = 0;
 
-  /**
-   * Selected folders.
-   */
+    /**
+     * Selected folders.
+     */
     std::vector < std::string > sfolders = global->get_selected_folders();
 
     for (row = 0; row < (height - 1); row++) {
-    /**
-     * What we'll output for this row.
-     */
+        /**
+         * What we'll output for this row.
+         */
         std::string buf;
         int unread = 0;
 
 
-    /**
-     * The current object.
-     */
+        /**
+         * The current object.
+         */
 	CMaildir *cur = NULL;
 	if ((row + selected) < count) {
 	    cur = &display[row + selected];
@@ -144,9 +139,9 @@ void CScreen::drawMaildir()
 		found = "[x]";
 	}
 
-    /**
-     * First row is the current one.
-     */
+        /**
+         * First row is the current one.
+         */
 	if (row == 0)
           attron(A_STANDOUT);
 
@@ -156,26 +151,27 @@ void CScreen::drawMaildir()
             std::ostringstream fmt;
             fmt << found << " - " << cur->path();
             buf = fmt.str();
-       }
+        }
 
 	while ((int)buf.size() < (CScreen::width() - 3))
-	   buf += std::string(" ");
+            buf += std::string(" ");
 
 	move(row, 2);
 
-        if ( unread ) {
-          if ( row == 0 )
-            attrset( COLOR_PAIR(1) |A_REVERSE );
-          else
-            attrset( COLOR_PAIR(1) );
+        if ( unread )
+        {
+            if ( row == 0 )
+                attrset( COLOR_PAIR(1) |A_REVERSE );
+            else
+                attrset( COLOR_PAIR(1) );
         }
 	printw("%s", buf.c_str());
 
         attrset( COLOR_PAIR(2) );
 
-    /**
-     * Remove the inverse.
-     */
+        /**
+         * Remove the inverse.
+         */
 	if (row == 0)
 	    attroff(A_STANDOUT);
     }
@@ -195,8 +191,8 @@ void CScreen::drawIndex()
     /**
      * If we have no messages report that.
      */
-    if (( messages == NULL ) ||  (messages->size() < 1)) {
-
+    if (( messages == NULL ) ||  (messages->size() < 1))
+    {
         std::vector<std::string> folders = global->get_selected_folders();
 
         if ( folders.size() < 1 )
@@ -240,6 +236,7 @@ void CScreen::drawIndex()
         return;
     }
 
+
     /**
      * The number of items we've found, vs. the size of the screen.
      */
@@ -260,7 +257,9 @@ void CScreen::drawIndex()
      */
     int row = 0;
 
-    for (row = 0; row < (height - 1); row++) {
+    for (row = 0; row < (height - 1); row++)
+    {
+
         /**
          * What we'll output for this row.
          */
@@ -327,119 +326,118 @@ void CScreen::drawIndex()
  */
 void CScreen::drawMessage()
 {
-  /**
-   * Get all messages from the currently selected maildirs.
-   */
-  CGlobal *global = CGlobal::Instance();
-  std::vector<CMessage *> *messages = global->get_messages();
+    /**
+     * Get all messages from the currently selected maildirs.
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
 
-  /**
-   * How many lines we've scrolled down the message.
-   */
-  int offset = global->get_message_offset();
+    /**
+     * How many lines we've scrolled down the message.
+     */
+    int offset = global->get_message_offset();
 
-  /**
-   * The number of items we've found, vs. the size of the screen.
-   */
-  int count = messages->size();
-  int selected = global->get_selected_message();
+    /**
+     * The number of items we've found, vs. the size of the screen.
+     */
+    int count = messages->size();
+    int selected = global->get_selected_message();
 
 
-  /**
-   * Bound the selection.
-   */
-  if (selected >= count) {
-      selected = count-1;
-      global->set_selected_message(selected);
-  }
-
-  CMessage *cur = NULL;
-  if (((selected) < count) && count > 0 )
-    cur = messages->at(selected);
-  else
-    {
-      clear();
-      move(3,3);
-      printw(NO_MESSAGES);
-      return;
+    /**
+     * Bound the selection.
+     */
+    if (selected >= count) {
+        selected = count-1;
+        global->set_selected_message(selected);
     }
 
-  /**
-   * Now we have a message - display it.
-   */
-
-
-  /**
-   * Clear the screen.
-   */
-  CLua *lua = CLua::Instance();
-  lua->execute( "clear();" );
-
-
-  /**
-   * The headers we'll print.
-   */
-  std::vector<std::string> headers = lua->table_to_array( "headers" );
-
-  /**
-   * If there are no values then use the defaults.
-   */
-  if ( headers.empty() )
-  {
-      headers.push_back( "$DATE" );
-      headers.push_back( "$FROM" );
-      headers.push_back( "$TO" );
-      headers.push_back( "$SUBJECT" );
-  }
-
-  std::vector<std::string>::iterator it;
-  int row = 0;
-  for (it = headers.begin(); it != headers.end(); ++it) {
-    move( row, 0 );
+    CMessage *cur = NULL;
+    if (((selected) < count) && count > 0 )
+        cur = messages->at(selected);
+    else
+    {
+        clear();
+        move(3,3);
+        printw(NO_MESSAGES);
+        return;
+    }
 
     /**
-     * The header-name, in useful format.
+     * Now we have a message - display it.
      */
-    std::string name = (*it);
-    name = name.substr(1);
-    std::transform(name.begin(), name.end(), name.begin(), tolower);
-    name[0] = toupper(name[0]);
+
 
     /**
-     * The header-value.
+     * Clear the screen.
      */
-    std::string value = cur->format( *it );
-    value = value.substr(0, (CScreen::width() - name.size() - 4 ) );
+    CLua *lua = CLua::Instance();
+    lua->execute( "clear();" );
 
-    printw( "%s: %s", name.c_str(), value.c_str() );
-    row += 1;
-  }
+    /**
+     * The headers we'll print.
+     */
+    std::vector<std::string> headers = lua->table_to_array( "headers" );
 
-  /**
-   * Now draw the body.
-   */
-  std::vector<std::string> body = cur->body();
+    /**
+     * If there are no values then use the defaults.
+     */
+    if ( headers.empty() )
+    {
+        headers.push_back( "$DATE" );
+        headers.push_back( "$FROM" );
+        headers.push_back( "$TO" );
+        headers.push_back( "$SUBJECT" );
+    }
 
-  /**
-   * How many lines to draw?
-   */
-  int max = std::min((int)body.size(), (int)(CScreen::height() - headers.size()) );
+    std::vector<std::string>::iterator it;
+    int row = 0;
+    for (it = headers.begin(); it != headers.end(); ++it) {
+        move( row, 0 );
 
-  for( int i = 0; i < (max-2); i++ )
-  {
-      move( i + ( headers.size() + 1 ), 0 );
+        /**
+         * The header-name, in useful format.
+         */
+        std::string name = (*it);
+        name = name.substr(1);
+        std::transform(name.begin(), name.end(), name.begin(), tolower);
+        name[0] = toupper(name[0]);
 
-      std::string line = "";
-      if ( (i + offset) < (int)body.size() )
-          line = body[i+offset];
+        /**
+         * The header-value.
+         */
+        std::string value = cur->format( *it );
+        value = value.substr(0, (CScreen::width() - name.size() - 4 ) );
 
-      printw( "%s", line.c_str() );
-  }
+        printw( "%s: %s", name.c_str(), value.c_str() );
+        row += 1;
+    }
 
-  /**
-   * We're reading a message so call our hook.
-   */
-  lua->execute( "on_read_message(\"" + cur->path() + "\");" );
+    /**
+     * Now draw the body.
+     */
+    std::vector<std::string> body = cur->body();
+
+    /**
+     * How many lines to draw?
+     */
+    int max = std::min((int)body.size(), (int)(CScreen::height() - headers.size()) );
+
+    for( int i = 0; i < (max-2); i++ )
+    {
+        move( i + ( headers.size() + 1 ), 0 );
+
+        std::string line = "";
+        if ( (i + offset) < (int)body.size() )
+            line = body[i+offset];
+
+        printw( "%s", line.c_str() );
+    }
+
+    /**
+     * We're reading a message so call our hook.
+     */
+    lua->execute( "on_read_message(\"" + cur->path() + "\");" );
 }
 
 /**
