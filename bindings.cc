@@ -877,9 +877,9 @@ int is_new(lua_State * L)
     else
     {
         if ( msg->is_new() )
-            lua_pushinteger(L,1);
+            lua_pushboolean(L,1);
         else
-            lua_pushinteger(L,0);
+            lua_pushboolean(L,0);
 
         ret = 1;
     }

@@ -215,7 +215,7 @@ end
 -- We mark any new message(s) read when we read them here.
 --
 function on_read_message( path )
-   if ( is_new() == 1 ) then
+   if ( is_new()  ) then
       mark_read();
    end
 end
