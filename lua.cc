@@ -127,6 +127,7 @@ CLua::CLua()
     lua_register(m_lua, "current_maildir", current_maildir);
     lua_register(m_lua, "current_maildirs", current_maildirs);
     lua_register(m_lua, "select_maildir", select_maildir );
+    lua_register(m_lua, "maildirs_matching", maildirs_matching );
 
 
     /**

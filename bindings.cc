@@ -781,6 +781,65 @@ int select_maildir(lua_State *L)
     return 1;
 }
 
+
+/**
+ * Return maildirs matching a given pattern.
+ */
+int maildirs_matching(lua_State *L)
+{
+    const char *pattern = lua_tostring(L, -1);
+    if (pattern == NULL)
+	return luaL_error(L, "Missing argument to maildirs_matching(..)");
+
+    /**
+     * Get all maildirs.
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMaildir> folders = global->get_all_folders();
+    std::vector<CMaildir>::iterator it;
+
+    /**
+     * create a new table.
+     */
+    lua_newtable(L);
+
+    /**
+     * Lua indexes start at one.
+     */
+    int i = 1;
+
+    /**
+     * We need to use a pointer to string for our
+     * testing-function.
+     */
+    std::string *filter  = new std::string( pattern );
+
+    /**
+     * For each maildir - add it to the table if it matches.
+     */
+    for (it = folders.begin(); it != folders.end(); ++it)
+    {
+        CMaildir f = (*it);
+
+
+        if ( f.matches_filter( filter ) )
+        {
+            lua_pushnumber(L,i);
+            lua_pushstring(L,(*it).path().c_str());
+            lua_settable(L,-3);
+            i++;
+        }
+    }
+
+    /**
+     * Avoid leaking the filter.
+     */
+    delete( filter );
+
+    return 1;
+}
+
+
 /**
  * Count the visible maildir folders.
  */
