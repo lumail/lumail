@@ -1829,6 +1829,9 @@ int file_exists(lua_State *L)
     return 1;
 }
 
+/**
+ * Is the given path a directory.
+ */
 int is_directory(lua_State *L)
 {
     const char *str = lua_tostring(L, -1);
@@ -1843,6 +1846,9 @@ int is_directory(lua_State *L)
     return 1;
 }
 
+/**
+ * Is the given path an executable?
+ */
 int executable(lua_State *L)
 {
     const char *str = lua_tostring(L, -1);
