@@ -25,6 +25,7 @@
 
 
 #include "bindings.h"
+#include "debug.h"
 #include "file.h"
 #include "global.h"
 #include "lua.h"
@@ -210,7 +211,19 @@ bool CLua::load_file(std::string filename)
  */
 void CLua::execute(std::string lua)
 {
-    luaL_dostring(m_lua, lua.c_str());
+    if ( luaL_dostring(m_lua, lua.c_str()))
+    {
+
+#ifdef LUMAIL_DEBUG
+        std::string dm = "CLua::execute(\"";
+        dm += lua;
+        dm += "\"); -> ";
+
+        const char *err = lua_tostring(m_lua, -1);
+        dm += err;
+        DEBUG_LOG( dm );
+#endif
+    }
 }
 
 /**
