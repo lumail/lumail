@@ -99,11 +99,11 @@ void CFile::copy( std::string src, std::string dst )
 {
 
 #ifdef LUMAIL_DEBUG
-    std::string dm = "CFile::copy(";
+    std::string dm = "CFile::copy(\"";
     dm += src ;
-    dm += ",";
+    dm += "\",\"";
     dm += dst;
-    dm += ");";
+    dm += "\");";
     DEBUG_LOG( dm );
 #endif
 
@@ -126,11 +126,11 @@ void CFile::copy( std::string src, std::string dst )
 bool CFile::move( std::string src, std::string dst )
 {
 #ifdef LUMAIL_DEBUG
-    std::string dm = "CFile::move(";
+    std::string dm = "CFile::move(\"";
     dm += src ;
-    dm += ",";
+    dm += "\",\"";
     dm += dst;
-    dm += ");";
+    dm += "\");";
     DEBUG_LOG( dm );
 #endif
 
@@ -142,6 +142,16 @@ bool CFile::move( std::string src, std::string dst )
  */
 bool CFile::file_to_pipe( std::string src, std::string cmd )
 {
+
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CFile::file_to_pipe(\"";
+    dm += src ;
+    dm += "\",\"";
+    dm += cmd;
+    dm += "\");";
+    DEBUG_LOG( dm );
+#endif
+
     char buf[FILE_READ_BUFFER] = { '\0' };
     ssize_t nread;
 
