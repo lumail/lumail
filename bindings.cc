@@ -37,6 +37,7 @@
 #include "screen.h"
 
 
+
 /**
  * Get/Set the value of a string variable.
  *
@@ -1465,35 +1466,10 @@ int compose(lua_State * L)
     std::string *sendmail  = global->get_variable("sendmail_path");
     std::string *sent_path = global->get_variable("sent_mail");
 
-    char buf[4096] = { '\0' };
-    ssize_t nread;
-
-    FILE *file = fopen( filename, "r" );
-    FILE *pipe = popen( sendmail->c_str(), "w" );
-
     /**
-     * While we read from the file send to pipe.
+     * Send the mail.
      */
-    while( (nread = fread( buf, sizeof(char), sizeof buf, file) ) > 0 )
-    {
-        char *out_ptr = buf;
-        ssize_t nwritten;
-
-        do {
-            nwritten = fwrite(out_ptr, sizeof(char), nread, pipe);
-
-            if (nwritten >= 0)
-            {
-                nread -= nwritten;
-                out_ptr += nwritten;
-            }
-        } while (nread > 0);
-
-        memset(buf, '\0', sizeof(buf));
-    }
-
-    pclose( pipe );
-    fclose( file );
+    CFile::file_to_pipe( filename, *sendmail );
 
     /**
      * Get a filename in the sentmail path.
@@ -1688,38 +1664,13 @@ int reply(lua_State * L)
     std::string *sent_path = global->get_variable("sent_mail");
     std::string *sendmail  = global->get_variable("sendmail_path");
 
-    char buf[4096] = { '\0' };
-    ssize_t nread;
-
-    FILE *file = fopen( filename, "r" );
-    FILE *pipe = popen( sendmail->c_str(), "w" );
-
     /**
-     * While we read from the file send to pipe.
+     * Send the mail.
      */
-    while( (nread = fread( buf, sizeof(char), sizeof buf, file) ) > 0 )
-    {
-        char *out_ptr = buf;
-        ssize_t nwritten;
-
-        do {
-            nwritten = fwrite(out_ptr, sizeof(char), nread, pipe);
-
-            if (nwritten >= 0)
-            {
-                nread -= nwritten;
-                out_ptr += nwritten;
-            }
-        } while (nread > 0);
-
-        memset(buf, '\0', sizeof(buf));
-    }
-
-    pclose( pipe );
-    fclose( file );
+    CFile::file_to_pipe( filename, *sendmail );
 
     /**
-     * Get a filename in the sentmail path.
+     * Get a filename in the sent-mail path.
      */
     std::string archive = CMaildir::message_in( *sent_path, true );
     if ( archive.empty() )
