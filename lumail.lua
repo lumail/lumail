@@ -458,13 +458,11 @@ end
 function mark_all_read()
    count = count_messages()
    i = 0
-
    while( i < count ) do
       jump_index_to( i )
       mark_read()
       i = i + 1
    end
-
 end
 
 
@@ -596,4 +594,22 @@ keymap['message']['d'] = 'delete()'
 --
 ---
 
+--
+-- Mark all messages in the folders matching the pattern
+-- "/.machines" as read.
+--
+function mark_machines_read()
+   test = maildirs_matching( "/.machines." );
 
+   -- for each matching maildir
+   for index,name in ipairs( test ) do
+      -- select it
+      if ( select_maildir( name ) == 1 ) then
+         -- open it.
+         clear_selected_folders();
+         add_selected_folder()
+         -- mark them read, using the previously defined function.
+         mark_all_read();
+      end
+   end
+end
