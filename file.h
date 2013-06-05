@@ -62,6 +62,12 @@ public:
      */
     static bool move( std::string src, std::string dest );
 
+
+    /**
+     * Send the contents of a file to the given command, via popen.
+     */
+    static bool file_to_pipe( std::string src, std::string cmd );
+
 };
 
 #endif /* _file_h_ */

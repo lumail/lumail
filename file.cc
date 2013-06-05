@@ -16,18 +16,24 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
 #include <iterator>
 #include <cstdlib>
-#include <string>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
 
 #include "debug.h"
 #include "file.h"
+
+#ifndef FILE_READ_BUFFER
+# define FILE_READ_BUFFER 16384
+#endif
+
 
 
 /**
@@ -129,4 +135,47 @@ bool CFile::move( std::string src, std::string dst )
 #endif
 
     return( rename( src.c_str(), dst.c_str() ) == 0 );
+}
+
+/**
+ * Send the contents of a file to the given command, via popen.
+ */
+bool CFile::file_to_pipe( std::string src, std::string cmd )
+{
+    char buf[FILE_READ_BUFFER] = { '\0' };
+    ssize_t nread;
+
+    FILE *file = fopen( src.c_str(), "r" );
+    if ( file == NULL )
+        return false;
+
+    FILE *pipe = popen( cmd.c_str(), "w" );
+    if ( pipe == NULL )
+        return false;
+
+    /**
+     * While we read from the file send to pipe.
+     */
+    while( (nread = fread( buf, sizeof(char), sizeof buf-1, file) ) > 0 )
+    {
+        char *out_ptr = buf;
+        ssize_t nwritten;
+
+        do {
+            nwritten = fwrite(out_ptr, sizeof(char), nread, pipe);
+
+            if (nwritten >= 0)
+            {
+                nread -= nwritten;
+                out_ptr += nwritten;
+            }
+        } while (nread > 0);
+
+        memset(buf, '\0', sizeof(buf));
+    }
+
+    pclose( pipe );
+    fclose( file );
+
+    return true;
 }
