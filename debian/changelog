@@ -1,3 +1,17 @@
+lumail (0.08) stable; urgency=low
+
+  * New release, fixing several bugs.  References here are to hose
+    on the Github repository:  https://github.com/skx/lumail/issues
+     - #37 - Missing primitive maildirs_matching
+     - #35 - Crashes on displays wider than 250 characters.
+     - #34 - Better display for empty folders.
+     - #33 - Allow message filtering to be applied via t-prot, etc.
+     - #32 - Allow the editor to be configured more easily.
+     - #30 - Set references: header when replying to mail
+     - #29 - Scrolling messages works.
+
+ -- Steve Kemp <steve@steve.org.uk>  Thu, 06 Jun 2013 05:12:05 +0000
+
 lumail (0.07) stable; urgency=low
 
   * First stable binary release.
