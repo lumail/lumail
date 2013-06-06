@@ -766,18 +766,18 @@ int select_maildir(lua_State *L)
             global->set_selected_folder( i );
 
             /**
-             * Return: 1.
+             * Return: true
              */
-            lua_pushinteger(L,1);
+            lua_pushboolean(L,1);
             return 1;
 
         }
     }
 
     /**
-     * Return: 0
+     * Return: false
      */
-    lua_pushinteger(L,0);
+    lua_pushboolean(L,0);
     return 1;
 }
 
