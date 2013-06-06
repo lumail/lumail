@@ -1430,17 +1430,37 @@ int compose(lua_State * L)
         lua_pushstring(L, "Error recieving subject" );
         return( msg(L ) );
     }
+
     const char *subject = lua_tostring(L,-1);
+
+    CGlobal *global = CGlobal::Instance();
+    std::string *from   = global->get_variable( "from" );
 
     /**
      * Generate a temporary file for the message body.
      */
-    CGlobal *global = CGlobal::Instance();
     char filename[] = "/tmp/mytemp.XXXXXX";
     int fd = mkstemp(filename);
 
     if (fd == -1)
         return luaL_error(L, "Failed to create a temporary file.");
+
+    /**
+     * .signature handling.
+     */
+    std::string sig = "";
+
+    lua_getglobal(L, "get_signature" );
+    if (lua_isfunction(L, -1))
+    {
+        lua_pushstring(L, from->c_str() );
+        lua_pushstring(L, recipient );
+        lua_pushstring(L, subject );
+	if (! lua_pcall(L, 3, 1, 0) )
+        {
+            sig = lua_tostring(L,-1);
+        }
+    }
 
     /**
      * To
@@ -1460,7 +1480,6 @@ int compose(lua_State * L)
      * From
      */
     write(fd, "From: " , strlen( "From: " ) );
-    std::string *from = global->get_variable( "from" );
     write(fd, from->c_str(), strlen( from->c_str() ) );
     write(fd, "\n", 1 );
 
@@ -1470,9 +1489,21 @@ int compose(lua_State * L)
     write(fd, "\n", 1 );
 
     /**
-     * Body
+     * Body:  User will fill out.
      */
-    write(fd, "-- \n", strlen("-- \n" ) );
+
+    /**
+     * .sig
+     */
+    if ( sig.empty() )
+    {
+        write(fd, "\n-- \n", strlen("\n-- \n" ) );
+    }
+    else
+    {
+        write(fd, sig.c_str(), sig.size() );
+    }
+
     close(fd);
 
     /**

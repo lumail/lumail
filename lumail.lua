@@ -617,3 +617,8 @@ function mark_machines_read()
       end
    end
 end
+
+
+function get_signature( from, to, subject )
+   return( "FROM:" .. from .. " TO:" .. to .. " SUBJECT:" .. subject );
+end
