@@ -127,8 +127,8 @@ CLua::CLua()
     lua_register(m_lua, "count_maildirs", count_maildirs );
     lua_register(m_lua, "current_maildir", current_maildir);
     lua_register(m_lua, "current_maildirs", current_maildirs);
-    lua_register(m_lua, "select_maildir", select_maildir );
     lua_register(m_lua, "maildirs_matching", maildirs_matching );
+    lua_register(m_lua, "select_maildir", select_maildir );
 
 
     /**
@@ -174,9 +174,9 @@ CLua::CLua()
     /**
      * File/Utility handlers. Useful for writing portable configuration files.
      */
+    lua_register(m_lua, "executable", executable);
     lua_register(m_lua, "file_exists", file_exists);
     lua_register(m_lua, "is_directory", is_directory);
-    lua_register(m_lua, "executable", executable);
 
     /**
      * Variables.
