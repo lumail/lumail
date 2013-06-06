@@ -78,7 +78,7 @@ editor( "/usr/bin/vim" )
 --
 -- Show all folders by default
 --
--- When called wiht no arguments this function will return the current
+-- When called with no arguments this function will return the current
 -- setting, otherwise it will update it.  This is a common pattern for lumail,
 -- each of the functions which can get or set a value works in the same way.
 --
@@ -471,6 +471,96 @@ end
 
 
 --
+-- Return contents of the given file.
+--
+-- Note: Called by on_signature
+--
+function file_contents(file)
+    local f = io.open(file, "rb")
+    if ( f ) then
+       local content = f:read("*all")
+       f:close()
+       return( content );
+    else
+       return( "Error reading file: \"" .. file .. "\"" )
+    end
+end
+
+
+--
+-- This function is called when you compose an email, the return value
+-- is the signature text to insert at the end of the new mail.
+--
+-- In this example we try to lookup a signature based on the domains of
+-- the sender and the recipient.  We stop at the first match.
+--
+-- If neither of those succeed we return the content of ~/.signature,
+-- if it is present.
+--
+-- For example:
+--
+--   Given a sender of "steve@steve.org.uk", and recipient of bob@example.com
+--
+--   1. We'd read and return the contents of  ~/.sigs/example.com if present.
+--
+--   2. If not we'd read and return the contents of  ~/.sigs/steve.org.uk if present.
+--
+--   3. If not we'd read and return the contents of ~/.signature
+--
+--   4. We give up and return "".
+--
+function get_signature( from, to, subject )
+
+   --
+   -- Get the home directory, if this fails we'll return
+   -- an empty string.
+   --
+   home = os.getenv( "HOME" )
+   if ( not home ) then
+      return ""
+   end
+
+   --
+   -- The two addresses we'll try to process.
+   --
+   addresses = {}
+   addresses[1] = to
+   addresses[2] = from
+
+   for offset,addr in pairs(addresses) do
+
+      -- strip anything except the address, by looking between: <>
+      -- i.e. "Steve Kemp" <steve@example.com> becomes steve@example.com
+      email = string.match(addr, "<(.*)>" ) or addr
+
+      -- get the domain, lowercase it.
+      domain = string.sub( email, string.find( email, "@" )+1 )
+      domain = string.lower(domain)
+
+      -- Look for the domain-file beneath ~/.sigs/
+      file = home .. "/.sigs/" .. domain
+      if ( file_exists( file ) ) then
+         return( file_contents( file ) )
+      end
+   end
+
+   --
+   -- Fallback to ~/.signature if present
+   --
+   if ( file_exists( home .. "/.signature" ) ) then
+      return( file_contents( home .. "/.signature" ) )
+   else
+      --
+      -- No signature found.  Return empty text.
+      --
+      return ""
+   end
+
+end
+
+
+
+--
 -- Now setup keymaps for the different modes.
 --
 -- The same keypress might do different things in different modes,
@@ -597,28 +687,3 @@ keymap['message']['d'] = 'delete()'
 --   Further examples are available online:  http://lumail.org/examples/
 --
 ---
-
---
--- Mark all messages in the folders matching the pattern
--- "/.machines" as read.
---
-function mark_machines_read()
-   test = maildirs_matching( "/.machines." );
-
-   -- for each matching maildir
-   for index,name in ipairs( test ) do
-      -- select it
-      if ( select_maildir( name ) == 1 ) then
-         -- open it.
-         clear_selected_folders();
-         add_selected_folder()
-         -- mark them read, using the previously defined function.
-         mark_all_read();
-      end
-   end
-end
-
-
-function get_signature( from, to, subject )
-   return( "FROM:" .. from .. " TO:" .. to .. " SUBJECT:" .. subject );
-end
