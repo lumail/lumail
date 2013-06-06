@@ -687,3 +687,18 @@ keymap['message']['d'] = 'delete()'
 --   Further examples are available online:  http://lumail.org/examples/
 --
 ---
+
+
+--
+-- Send a test mail.
+--
+function send()
+   mail = {
+      ["to"]      = "steve@steve.org.uk",
+      ["subject"] = "I like cake",
+      ["from"]    = "me@example.com",
+      ["body"]    = "This is the body\nThis is the text\n",
+   }
+
+   send_email( mail );
+end

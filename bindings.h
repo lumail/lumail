@@ -64,6 +64,9 @@ int compose(lua_State *i);
 /* reply to an existing mail */
 int reply(lua_State *i);
 
+/* send a mail via script */
+int send_email(lua_State *L);
+
 /* execute a program */
 int exec(lua_State * L);
 

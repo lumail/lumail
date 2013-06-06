@@ -1797,6 +1797,160 @@ int reply(lua_State * L)
     return( 0 );
 }
 
+
+/**
+ * Send an email via lua-script.
+ */
+int send_email(lua_State *L)
+{
+    /**
+     * Get the values.
+     */
+    lua_pushstring(L, "to" );
+    lua_gettable(L,-2);
+    const char *to = lua_tostring(L, -1);
+    lua_pop(L, 1);
+    if (to == NULL) {
+	return luaL_error(L, "Missing recipient.");
+    }
+
+    lua_pushstring(L, "from" );
+    lua_gettable(L,-2);
+    const char *from = lua_tostring(L, -1);
+    lua_pop(L, 1);
+    if (from == NULL) {
+	return luaL_error(L, "Missing sender.");
+    }
+
+    lua_pushstring(L, "subject" );
+    lua_gettable(L,-2);
+    const char *subject = lua_tostring(L, -1);
+    lua_pop(L, 1);
+    if (subject == NULL) {
+	return luaL_error(L, "Missing subject.");
+    }
+
+    lua_pushstring(L, "body" );
+    lua_gettable(L,-2);
+    const char *body = lua_tostring(L, -1);
+    lua_pop(L, 1);
+    if (body == NULL) {
+	return luaL_error(L, "Missing body.");
+    }
+
+
+    /**
+     * Now send the mail.
+     */
+    char filename[] = "/tmp/mytemp.XXXXXX";
+    int fd = mkstemp(filename);
+    if (fd == -1)
+        return luaL_error(L, "Failed to create a temporary file.");
+
+    /**
+     * .signature handling.
+     */
+    std::string sig = "";
+
+    lua_getglobal(L, "get_signature" );
+    if (lua_isfunction(L, -1))
+    {
+        lua_pushstring(L, from );
+        lua_pushstring(L, to );
+        lua_pushstring(L, subject );
+	if (! lua_pcall(L, 3, 1, 0) )
+        {
+            sig = lua_tostring(L,-1);
+        }
+    }
+
+    /**
+     * To
+     */
+    write(fd, "To: ", strlen( "To: "));
+    write(fd, to, strlen( to ));
+    write(fd, "\n", 1 );
+
+    /**
+     * Subject.
+     */
+    write(fd, "Subject: ", strlen( "Subject: " ) );
+    write(fd, subject, strlen( subject ) );
+    write(fd, "\n", 1 );
+
+    /**
+     * From
+     */
+    write(fd, "From: " , strlen( "From: " ) );
+    write(fd, from, strlen( from ) );
+    write(fd, "\n", 1 );
+
+    /**
+     * Space
+     */
+    write(fd, "\n", 1 );
+
+    /**
+     * Body.
+     */
+    write(fd, body, strlen( body ) );
+
+    /**
+     * .sig
+     */
+    if ( sig.empty() )
+    {
+        write(fd, "\n\n-- \n", strlen("\n\n-- \n" ) );
+    }
+    else
+    {
+        write(fd, "\n", 1 );
+        write(fd, "\n", 1 );
+        write(fd, sig.c_str(), sig.size() );
+    }
+
+    close(fd);
+
+
+    /**
+     * OK now we're going to send the mail.  Get some settings.
+     */
+    CGlobal *global        = CGlobal::Instance();
+    std::string *sendmail  = global->get_variable("sendmail_path");
+    std::string *sent_path = global->get_variable("sent_mail");
+
+    /**
+     * Send the mail.
+     */
+    CFile::file_to_pipe( filename, *sendmail );
+
+    /**
+     * Get a filename in the sentmail path.
+     */
+    std::string archive = CMaildir::message_in( *sent_path, true );
+    if ( archive.empty() )
+    {
+        unlink( filename );
+        reset_prog_mode();
+        refresh();
+
+        lua_pushstring(L, "error finding save path");
+        return( msg(L ) );
+    }
+
+
+    /**
+     * If we got a filename then copy the mail there.
+     */
+    CFile::copy( filename, archive );
+
+    unlink( filename );
+
+
+    return 0;
+}
+
+
 /**
  * Get the screen width.
  */

@@ -162,6 +162,7 @@ CLua::CLua()
      */
     lua_register(m_lua, "compose", compose);
     lua_register(m_lua, "reply", reply);
+    lua_register(m_lua, "send_email", send_email );
 
 
     /**
