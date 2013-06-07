@@ -395,25 +395,46 @@ void CScreen::drawMessage()
         headers.push_back( "$SUBJECT" );
     }
 
-    std::vector<std::string>::iterator it;
     int row = 0;
-    for (it = headers.begin(); it != headers.end(); ++it) {
+
+    /**
+     * For each header.
+     */
+    std::vector<std::string>::iterator it;
+    for (it = headers.begin(); it != headers.end(); ++it)
+    {
         move( row, 0 );
 
         /**
-         * The header-name, in useful format.
+         * The header-name, in useful format - i.e. without the '$' prefix
+         * and in lower-case.
          */
         std::string name = (*it);
         name = name.substr(1);
         std::transform(name.begin(), name.end(), name.begin(), tolower);
+
+        /**
+         * Upper-case first character.
+         */
         name[0] = toupper(name[0]);
 
         /**
-         * The header-value.
+         * Now we've gone from "$DATE" -> "Date", etc.
+         */
+
+        /**
+         * Get the header-value, via the formatter.
          */
         std::string value = cur->format( *it );
+
+        /**
+         * Truncate to avoid long-wraps.
+         */
         value = value.substr(0, (CScreen::width() - name.size() - 4 ) );
 
+        /**
+         * Show it.
+         */
         printw( "%s: %s", name.c_str(), value.c_str() );
         row += 1;
     }
