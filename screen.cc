@@ -117,12 +117,7 @@ void CScreen::drawMaildir()
     std::vector < std::string > sfolders = global->get_selected_folders();
 
     for (row = 0; row < (height - 1); row++) {
-        /**
-         * What we'll output for this row.
-         */
-        std::string buf;
         int unread = 0;
-
 
         /**
          * The current object.
@@ -132,11 +127,14 @@ void CScreen::drawMaildir()
 	    cur = &display[row + selected];
             unread = cur->newMessages();
         }
-	std::string found = "[ ]";
+
+        /**
+         * Is this folder part of our selected set?
+         */
+        bool selected = false;
 	if (cur != NULL) {
-	    if (std::find(sfolders.begin(), sfolders.end(), cur->path()) !=
-		sfolders.end())
-		found = "[x]";
+	    if (std::find(sfolders.begin(), sfolders.end(), cur->path()) != sfolders.end())
+		selected = true;
 	}
 
         /**
@@ -145,16 +143,23 @@ void CScreen::drawMaildir()
 	if (row == 0)
           attron(A_STANDOUT);
 
-	std::string path = "";
 
-	if (cur != NULL) {
-            std::ostringstream fmt;
-            fmt << found << " - " << cur->path();
-            buf = fmt.str();
-        }
+        /**
+         * The item we'll draw for this row.
+         */
+        std::string display = "";
 
-	while ((int)buf.size() < (CScreen::width() - 3))
-            buf += std::string(" ");
+        /**
+         * Format.
+         */
+        if ( cur != NULL )
+            display = cur->format( selected );
+
+        /**
+         * Overwrite the full length.
+         */
+	while ((int)display.size() < (CScreen::width() - 3))
+            display += std::string(" ");
 
 	move(row, 2);
 
@@ -165,7 +170,7 @@ void CScreen::drawMaildir()
             else
                 attrset( COLOR_PAIR(1) );
         }
-	printw("%s", buf.c_str());
+	printw("%s", display.c_str());
 
         attrset( COLOR_PAIR(2) );
 

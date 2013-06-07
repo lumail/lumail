@@ -68,6 +68,11 @@ class CMaildir
   std::string path();
 
   /**
+   * Format this maildir for display in maildir-mode.
+   */
+  std::string format( bool selected, std::string fmt = "" );
+
+  /**
    * Does this maildir match the given filter?
    */
   bool matches_filter( std::string *filter );

@@ -18,6 +18,9 @@
 
 #include <vector>
 #include <algorithm>
+
+#include <sstream>
+#include <iomanip>
 #include <sys/types.h>
 #include <dirent.h>
 
@@ -72,6 +75,101 @@ std::string CMaildir::name()
 std::string CMaildir::path()
 {
   return (m_path);
+}
+
+
+/**
+ * Format this maildir for display in maildir-mode.
+ */
+std::string CMaildir::format( bool selected, std::string fmt )
+{
+    std::string result;
+
+    /**
+     * Get the format-string we'll expand from the global
+     * setting, if it wasn't supplied.
+     */
+    if ( fmt.empty() )
+    {
+        CGlobal *global  = CGlobal::Instance();
+        std::string *fmt = global->get_variable("maildir_format");
+        result = std::string(*fmt);
+    }
+    else
+    {
+        result = fmt;
+    }
+
+
+    /**
+     * The variables we know about.
+     */
+    const char *fields[8] = { "$CHECK",
+                              "$TOTAL",
+                              "$READ",
+                              "$NEW",
+                              "$UNREAD",
+                              "$PATH",
+                              "$NAME",
+                              0 };
+    const char **std_name = fields;
+
+
+    /**
+     * Iterate over everything we could possibly-expand.
+     */
+    for( int i = 0 ; std_name[i] ; ++i) {
+
+        size_t offset = result.find( std_name[i], 0 );
+
+        if ( ( offset != std::string::npos ) && ( offset < result.size() ) ) {
+
+            /**
+             * Remove the part we don't care about.
+             */
+            result.erase( offset, strlen( std_name[i] ) );
+
+            /**
+             * Conversion helper.
+             */
+            std::ostringstream convert;
+
+            /**
+             * Expand the specific variables.
+             */
+            if ( strcmp(std_name[i] , "$CHECK" ) == 0 ) {
+                if ( selected )
+                    result.insert(offset, "[X]" );
+                else
+                    result.insert(offset, "[ ]" );
+            }
+            if ( strcmp(std_name[i] , "$TOTAL" ) == 0 ) {
+                int total = availableMessages() + newMessages();
+                convert << std::setfill('0') << std::setw(4) << total;
+                result.insert(offset, convert.str());
+
+            }
+            if ( strcmp(std_name[i] , "$READ" ) == 0 ) {
+                int read = availableMessages() - newMessages();;
+                convert << std::setfill('0') << std::setw(4) << read;
+                result.insert(offset, convert.str());
+            }
+            if ( ( strcmp(std_name[i] , "$NEW" ) == 0 ) ||
+                 ( strcmp(std_name[i] , "$UNREAD" ) == 0 ) ) {
+                int unread = newMessages();
+                convert << std::setfill('0') << std::setw(4) << unread;
+                result.insert(offset, convert.str());
+            }
+            if ( strcmp(std_name[i] , "$PATH" ) == 0 ) {
+                result.insert(offset, path());
+            }
+            if ( strcmp(std_name[i] , "$NAME" ) == 0 ) {
+                result.insert(offset, name());
+            }
+        }
+    }
+    return( result );
+
 }
 
 
