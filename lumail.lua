@@ -257,11 +257,13 @@ end
 
 
 --
--- This function is called when the client is idle, roughly once a second.
+-- The 'on_idle()' function is called approximately once a second,
+-- when the client is idle.
 --
--- Every second we update the status-area to show a message.
+-- Here we wrap that function up a little such that we can regularly
+-- shell out to sync our mail from the remote location it is delivered.
 --
--- Once every five minutes we shell out to call imapsync.
+-- Every second we also update the status-area to show a message.
 --
 do
 
@@ -292,7 +294,7 @@ do
       if ( ( ct - ls ) >=  ( 60 * 5 ) ) then
          ls = ct
          if ( executable( "/usr/bin/imapsync" ) ) then
-            os.execute( "imapsync" );
+            os.execute( "/usr/bin/imapsync" );
          else
             msg("/usr/bin/imapsync not installed" )
          end
