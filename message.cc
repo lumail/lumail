@@ -445,6 +445,19 @@ std::string CMessage::format( std::string fmt )
             result = before + body + after;
         }
     }
+
+    /**
+     * If the value is still unchanged ..
+     */
+    if ( result.at(0) == '$' )
+    {
+        /**
+         * See if it is header value we can find.
+         */
+        result = header( result.substr(1) );
+        if ( result.empty() )
+            result = "[unset]";
+    }
     return( result );
 }
 
