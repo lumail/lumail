@@ -95,6 +95,22 @@ maildir_limit( "all" );
 
 
 --
+-- The maildir format controls how maildirs are displayed in maildir-mode.
+--
+-- Valid options are currently limited to:
+--
+--   $CHECK  - "[x]" if the folder is selected, "[ ]" otherwise.
+--   $TOTAL  - The total number of messages in the maildir.
+--   $NEW    - The number of unread/new messages in the maildir.
+--   $UNREAD - The number of unread/new messages in the maildir.
+--   $READ   - The number of read/old messages in the maildir.
+--   $PATH   - The maildir path.
+--   $NAME   - The maildir name (i.e. dirname($PATH)).
+--
+maildir_format( "$CHECK - $UNREAD/$TOTAL - $PATH" );
+
+
+--
 -- When opening folders we'll show all messages.
 --
 -- Valid options are:
