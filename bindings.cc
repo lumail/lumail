@@ -192,6 +192,14 @@ int global_mode(lua_State * L)
 
 
 /**
+ * The format-string for maildir-display.
+ */
+int maildir_format(lua_State *L )
+{
+    return( get_set_string_variable( L, "maildir_format" ) );
+}
+
+/**
  * Get, or set, the maildir limit.
  */
 int maildir_limit(lua_State * L)

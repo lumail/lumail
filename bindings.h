@@ -73,6 +73,9 @@ int exec(lua_State * L);
 /* get/set the global mode: maildir/index/message */
 int global_mode(lua_State * L);
 
+/* the format-string for the maildir-display. */
+int maildir_format(lua_State * L);
+
 /* limit the display of folders. */
 int maildir_limit(lua_State * L);
 

@@ -91,6 +91,7 @@ CLua::CLua()
     lua_register(m_lua, "global_mode", global_mode);
     lua_register(m_lua, "index_format", index_format);
     lua_register(m_lua, "index_limit", index_limit);
+    lua_register(m_lua, "maildir_format", maildir_format);
     lua_register(m_lua, "maildir_limit", maildir_limit);
     lua_register(m_lua, "maildir_prefix", maildir_prefix);
     lua_register(m_lua, "message_filter", message_filter);
