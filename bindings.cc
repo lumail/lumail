@@ -1437,7 +1437,7 @@ int compose(lua_State * L)
     int ret = prompt( L);
     if ( ret != 1 )
     {
-        lua_pushstring(L, "Error recieving recipiient" );
+        lua_pushstring(L, "Error recieving recipient" );
         return( msg(L ) );
 
     }
