@@ -1398,6 +1398,21 @@ int toggle_selected_folder(lua_State * L)
 
 
 /**
+ * Handle adding attachments to a plain mail.
+ *
+ * Given a file containing an email to be sent we must parse it sufficiently
+ * well to build a MIME-based message instead.
+ *
+ * TODO.
+ */
+bool handle_attachments( char *filename, std::vector<std::string> files )
+{
+    return true;
+}
+
+
+
+/**
  * Count messages in the selected folder(s).
  */
 int count_messages(lua_State * L)
@@ -1533,28 +1548,75 @@ int compose(lua_State * L)
     cmd += filename;
     system(cmd.c_str());
 
+
+    /**
+     * Attachments associated with this mail.
+     */
+    std::vector<std::string> attachments;
+
+
     /**
      * Prompt for confirmation.
      */
-    lua_pushstring(L,"Send mail?  y/n>" );
-    ret = prompt_yn( L);
-    if ( ret != 1 )
+    bool cont = true;
+
+
+    while( cont )
     {
-        lua_pushstring(L, "Error recieving y/n confiramtion" );
-        return( msg(L ) );
+        lua_pushstring(L,"Send mail?  y/n/a>" );
+        ret = prompt( L);
+        if ( ret != 1 )
+        {
+            lua_pushstring(L, "Error recieving confiramtion." );
+            return( msg(L ) );
+        }
+        const char * response = lua_tostring(L, -1);
+
+
+        if ( response[0] == 'y' )
+        {
+            cont = false;
+        }
+        if ( response[0] == 'n' )
+        {
+            cont = false;
+            unlink( filename );
+            reset_prog_mode();
+            refresh();
+
+            lua_pushstring(L, SENDING_ABORTED);
+            return( msg(L ) );
+        }
+        if ( response[0] == 'a' )
+        {
+            /**
+             * Add attachment.
+             */
+            lua_pushstring(L,"Path to attachment?" );
+            ret = prompt( L);
+            if ( ret != 1 )
+            {
+                unlink( filename );
+                reset_prog_mode();
+                refresh();
+                lua_pushstring(L, "Error receiving attachment." );
+                return( msg(L ) );
+            }
+            const char * path = lua_tostring(L, -1);
+            if ( path != NULL )
+            {
+                attachments.push_back( path );
+            }
+        }
     }
-    int yn = lua_tointeger(L, -1);
+
 
     /**
-     * User entered [nN].  Cleanup.
+     * If attachments are non-empty we need to hadnle them.
      */
-    if ( yn == 0 ) {
-        unlink( filename );
-        reset_prog_mode();
-        refresh();
-
-        lua_pushstring(L, SENDING_ABORTED);
-        return( msg(L ) );
+    if ( attachments.size() > 0 )
+    {
+        handle_attachments( filename, attachments );
     }
 
 
@@ -1731,36 +1793,84 @@ int reply(lua_State * L)
     cmd += filename;
     system(cmd.c_str());
 
+
+    /**
+     * Attachments associated with this mail.
+     */
+    std::vector<std::string> attachments;
+
+
     /**
      * Prompt for confirmation.
      */
-    lua_pushstring(L,"Send reply?  y/n>" );
-    int ret = prompt_yn( L);
-    if ( ret != 1 )
+    bool cont = true;
+    int ret;
+
+
+    while( cont )
     {
-        lua_pushstring(L, "Error recieving y/n confiramtion." );
-        return( msg(L ) );
+        lua_pushstring(L,"Send mail?  y/n/a>" );
+        ret = prompt( L);
+        if ( ret != 1 )
+        {
+            lua_pushstring(L, "Error recieving confiramtion." );
+            return( msg(L ) );
+        }
+
+        const char * response = lua_tostring(L, -1);
+
+
+        if ( response[0] == 'y' )
+        {
+            cont = false;
+        }
+        if ( response[0] == 'n' )
+        {
+            cont = false;
+            unlink( filename );
+            reset_prog_mode();
+            refresh();
+
+            lua_pushstring(L, SENDING_ABORTED);
+            return( msg(L ) );
+        }
+        if ( response[0] == 'a' )
+        {
+            /**
+             * Add attachment.
+             */
+            lua_pushstring(L,"Path to attachment?" );
+            ret = prompt( L);
+            if ( ret != 1 )
+            {
+                unlink( filename );
+                reset_prog_mode();
+                refresh();
+                lua_pushstring(L, "Error receiving attachment." );
+                return( msg(L ) );
+            }
+            const char * path = lua_tostring(L, -1);
+            if ( path != NULL )
+            {
+                attachments.push_back( path );
+            }
+        }
     }
-    int yn = lua_tointeger(L, -1);
 
     /**
-     * User entered [nN].  Cleanup.
+     * If attachments are non-empty we need to hadnle them.
      */
-    if ( yn == 0 ) {
-        unlink( filename );
-        reset_prog_mode();
-        refresh();
-
-        lua_pushstring(L, REPLY_ABORTED);
-        return( msg(L ) );
+    if ( attachments.size() > 0 )
+    {
+        handle_attachments( filename, attachments );
     }
-
 
     /**
      * OK now we're going to send the mail.  Get some settings.
      */
     std::string *sent_path = global->get_variable("sent_mail");
     std::string *sendmail  = global->get_variable("sendmail_path");
+
 
     /**
      * Send the mail.
