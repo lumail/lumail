@@ -29,6 +29,7 @@
 #include <ncurses.h>
 #include <unistd.h>
 
+#include "bindings.h"
 #include "file.h"
 #include "maildir.h"
 #include "lang.h"
@@ -428,39 +429,35 @@ int prompt_yn(lua_State * L)
     if (str == NULL)
 	str = def_prompt;
 
-    echo();
+    /**
+     * Push the characters and the prompt.
+     */
+    lua_pushstring(L, str);
+    lua_pushstring(L,"ynYN");
 
-    int height = CScreen::height();
-    timeout(-1000);
-
-    while (true)
+    /**
+     * Now we need to remap the return value:
+     *
+     *   y/Y -> true
+     *   n/N -> false
+     */
+    if ( prompt_chars( L ) == 1 )
     {
-        /**
-         * Refresh the prompt.
-         */
-        CScreen::clear_status();
-        move(height - 1, 0);
-        printw(str);
-
-
-	char key = getch();
-        if ( key == 'y' || key == 'Y' )
+        const char *response = lua_tostring(L,-1);
+        if ( response != NULL &&
+             ( response[0] == 'y' || response[0] == 'Y' ) )
         {
             lua_pushinteger(L, 1 );
-            break;
+            return 1;
         }
-        if ( key == 'n' || key == 'N' )
+        if ( response != NULL &&
+             ( response[0] == 'n' || response[0] == 'N' ) )
         {
             lua_pushinteger(L, 0 );
-            break;
+            return 1;
         }
     }
-    noecho();
-    curs_set(0);
-    timeout(1000);
-
-    CScreen::clear_status();
-    return 1;
+                 return( 0 );
 }
 
 
