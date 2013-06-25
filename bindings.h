@@ -141,6 +141,7 @@ int msg(lua_State * L);
 
 /* prompt for input */
 int prompt(lua_State * L);
+int prompt_chars(lua_State *L);
 int prompt_yn(lua_State * L);
 int prompt_maildir(lua_State *L);
 

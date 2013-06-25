@@ -78,6 +78,7 @@ CLua::CLua()
     lua_register(m_lua, "exit", exit);
     lua_register(m_lua, "msg", msg);
     lua_register(m_lua, "prompt", prompt);
+    lua_register(m_lua, "prompt_chars", prompt_chars);
     lua_register(m_lua, "prompt_maildir", prompt_maildir);
     lua_register(m_lua, "prompt_yn", prompt_yn);
     lua_register(m_lua, "refresh_display", refresh_display);

@@ -464,6 +464,70 @@ int prompt_yn(lua_State * L)
 }
 
 
+/**
+ * Prompt for a single character from the set.
+ */
+int prompt_chars(lua_State *L)
+{
+    /**
+     * Get the prompt string, and response set.
+     */
+    const char *str = lua_tostring(L, -2);
+    const char *chars = lua_tostring(L, -1);
+
+    /**
+     * Ensure both were set.
+     */
+    if (str == NULL)
+	return luaL_error(L, "Missing prompt to function prompt_chars(..)");
+    if (chars == NULL)
+	return luaL_error(L, "Missing characters to function prompt_chars(..)");
+
+    /**
+     * Now show the prompt.
+     */
+    echo();
+
+    int height = CScreen::height();
+    timeout(-1000);
+
+    bool done = true;
+
+    while (done)
+    {
+        /**
+         * Refresh the prompt.
+         */
+        CScreen::clear_status();
+        move(height - 1, 0);
+        printw(str);
+
+	char key = getch();
+
+        /**
+         * See if the character was in the input string.
+         */
+        for( unsigned int i = 0; i < strlen(chars); i++ )
+        {
+            if ( chars[i] == key )
+            {
+                char resp[2] = { '\0' };
+                resp[0] = key;
+                resp[1] = '\0';
+                lua_pushstring(L, resp );
+                done = false;
+            }
+        }
+    }
+    noecho();
+    curs_set(0);
+    timeout(1000);
+
+    CScreen::clear_status();
+    return 1;
+}
+
+
 int prompt_maildir(lua_State * L)
 {
     CGlobal *global = CGlobal::Instance();
@@ -1564,7 +1628,7 @@ int compose(lua_State * L)
     while( cont )
     {
         lua_pushstring(L,"Send mail?  y/n/a>" );
-        ret = prompt( L);
+        ret = prompt(L);
         if ( ret != 1 )
         {
             lua_pushstring(L, "Error recieving confiramtion." );
