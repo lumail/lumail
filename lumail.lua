@@ -716,6 +716,7 @@ function send()
       ["subject"] = "I like cake",
       ["from"]    = "me@example.com",
       ["body"]    = "This is the body\nThis is the text\n",
+--      ["attachments"] = { "/etc/passwd", "/etc/motd", "/etc/fstab" }
    }
 
    send_email( mail );

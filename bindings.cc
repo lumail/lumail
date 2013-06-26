@@ -2262,6 +2262,28 @@ int send_email(lua_State *L)
 	return luaL_error(L, "Missing body.");
     }
 
+    /**
+     * Optional attachments.
+     */
+    lua_pushstring(L,"attachments" );
+    lua_gettable(L,-2);
+    std::vector<std::string> filenames;
+    if ( lua_istable(L, -1 ) )
+    {
+        lua_pushnil(L);
+
+        while (lua_next(L, -2))
+        {
+            const char *path  = lua_tostring(L, -1);
+            filenames.push_back( path );
+            lua_pop( L , 1);
+        }
+
+        lua_pop(L , 1); // pop nil
+    }
+    else
+        lua_pop(L, 1);
+
 
     /**
      * Now send the mail.
@@ -2342,6 +2364,12 @@ int send_email(lua_State *L)
     CGlobal *global        = CGlobal::Instance();
     std::string *sendmail  = global->get_variable("sendmail_path");
     std::string *sent_path = global->get_variable("sent_mail");
+
+    if ( filenames.size() > 0 )
+    {
+        handle_attachments( L, filename, filenames );
+    }
+
 
     /**
      * Send the mail.
