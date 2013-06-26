@@ -1465,25 +1465,82 @@ int toggle_selected_folder(lua_State * L)
  * TODO: Complete.
  * TODO: Export to lua
  */
-std::string get_mime_type(std::string file)
+int mime_type(lua_State *L)
 {
-    return  "application/octet-stream";
+    const char *file = lua_tostring(L, -1);
+    if (file == NULL)
+	return luaL_error(L, "Missing argument to mime_type(..)");
+
+    /**
+     * Get the extension.
+     */
+    std::string filename(file);
+    size_t offset = filename.rfind('.');
+
+    if(offset != std::string::npos)
+    {
+        std::string extension = filename.substr(offset+1);
+        std::transform(extension.begin(), extension.end(), extension.begin(), tolower);
+
+        if ( strcmp( extension.c_str(), "txt" ) == 0 )
+        {
+            lua_pushstring(L, "text/plain");
+            return(1);
+        }
+        else if ( strcmp( extension.c_str(), "gif" ) == 0 )
+        {
+            lua_pushstring(L, "image/gif" );
+            return(1);
+        }
+        else if ( strcmp( extension.c_str(), "jpg" ) == 0 )
+        {
+            lua_pushstring(L, "image/jpeg" );
+            return(1);
+        }
+        else if ( strcmp( extension.c_str(), "png" ) == 0 )
+        {
+            lua_pushstring(L, "image/png" );
+            return(1);
+        }
+        else {
+            lua_pushstring(L, "application/octet-stream");
+            return(1);
+        }
+    }
+    else
+    {
+        /**
+         * No extension found.
+         */
+        lua_pushstring(L, "application/octet-stream");
+        return(1);
+    }
+
 }
 
 
 /**
  * Attach a file via a mime-entity.
  */
-bool mimetic_attach_file(mimetic::MimeEntity *m, char* filename)
+bool mimetic_attach_file(lua_State *L, mimetic::MimeEntity *m, char* filename)
 {
     std::filebuf ifile;
     std::ostringstream encoded;
+
+    /**
+     * Get the MIME-type of the file.
+     */
+    lua_pushstring(L, filename );
+    if ( mime_type( L ) != 1 )
+        return false;
+
+    const char *type = lua_tostring(L,-1);
 
     ifile.open(filename, std::ios::in);
     if (ifile.is_open())
     {
         std::istream is(&ifile);
-        mimetic::Attachment *at = new mimetic::Attachment(filename, mimetic::ContentType(get_mime_type(filename)));
+        mimetic::Attachment *at = new mimetic::Attachment(filename, mimetic::ContentType(type));
         mimetic::Base64::Encoder b64;
         std::ostreambuf_iterator<char> oi(encoded);
         std::istreambuf_iterator<char> ibegin(is), iend;
@@ -1510,7 +1567,7 @@ bool mimetic_attach_file(mimetic::MimeEntity *m, char* filename)
  * This is horrid..
  *
  */
-bool handle_attachments( char *filename, std::vector<std::string> files )
+bool handle_attachments( lua_State *L, char *filename, std::vector<std::string> files )
 {
     mimetic::MimeEntity *message = 0;
     mimetic::MimeVersion v1("1.0");
@@ -1578,7 +1635,7 @@ bool handle_attachments( char *filename, std::vector<std::string> files )
             message = new mimetic::MultipartMixed();
             message->header().mimeVersion(v1);
             message->body().parts().push_back(m);
-            mimetic_attach_file(message, (char *)path.c_str() );
+            mimetic_attach_file(L, message, (char *)path.c_str() );
         }
 
         /**
@@ -1849,7 +1906,7 @@ int compose(lua_State * L)
      */
     if ( attachments.size() > 0 )
     {
-        handle_attachments( filename, attachments );
+        handle_attachments( L, filename, attachments );
     }
 
 
@@ -2103,7 +2160,7 @@ int reply(lua_State * L)
      */
     if ( attachments.size() > 0 )
     {
-        handle_attachments( filename, attachments );
+        handle_attachments( L, filename, attachments );
     }
 
     /**

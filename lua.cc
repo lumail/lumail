@@ -76,6 +76,7 @@ CLua::CLua()
     lua_register(m_lua, "clear", clear);
     lua_register(m_lua, "exec", exec);
     lua_register(m_lua, "exit", exit);
+    lua_register(m_lua, "mime_type", mime_type);
     lua_register(m_lua, "msg", msg);
     lua_register(m_lua, "prompt", prompt);
     lua_register(m_lua, "prompt_chars", prompt_chars);

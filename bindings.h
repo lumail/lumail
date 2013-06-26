@@ -139,6 +139,9 @@ int save_message( lua_State *L );
 /* draw a string at the foot of the screen. */
 int msg(lua_State * L);
 
+/* get the mime-type of a file. */
+int mime_type(lua_State *L);
+
 /* prompt for input */
 int prompt(lua_State * L);
 int prompt_chars(lua_State *L);
