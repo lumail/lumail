@@ -1460,16 +1460,179 @@ int toggle_selected_folder(lua_State * L)
 
 
 /**
+ * Get the MIME-type of a file.
+ *
+ * TODO: Complete.
+ * TODO: Export to lua
+ */
+std::string get_mime_type(std::string file)
+{
+    return  "application/octet-stream";
+}
+
+
+/**
+ * Attach a file via a mime-entity.
+ */
+bool mimetic_attach_file(mimetic::MimeEntity *m, char* filename)
+{
+    std::filebuf ifile;
+    std::ostringstream encoded;
+
+    ifile.open(filename, std::ios::in);
+    if (ifile.is_open())
+    {
+        std::istream is(&ifile);
+        mimetic::Attachment *at = new mimetic::Attachment(filename, mimetic::ContentType(get_mime_type(filename)));
+        mimetic::Base64::Encoder b64;
+        std::ostreambuf_iterator<char> oi(encoded);
+        std::istreambuf_iterator<char> ibegin(is), iend;
+        encode(ibegin, iend, b64, oi);
+        at->body().assign(encoded.str());
+        m->body().parts().push_back(at);
+        ifile.close();
+        return true;
+    }
+    else {
+        return false;
+    }
+    return false;
+}
+
+/**
  * Handle adding attachments to a plain mail.
  *
  * Given a file containing an email to be sent we must parse it sufficiently
  * well to build a MIME-based message instead.
  *
- * TODO.
+ * Then add any referenced files to it.
+ *
+ * This is horrid..
+ *
  */
 bool handle_attachments( char *filename, std::vector<std::string> files )
 {
-    return true;
+    mimetic::MimeEntity *message = 0;
+    mimetic::MimeVersion v1("1.0");
+
+    /**
+     * Open the file, and parse it into header + body.
+     */
+    bool in_header = true;
+
+    std::ifstream input (filename);
+    if ( !input.is_open() )
+        return false;
+
+    /**
+     * Headers + body text.
+     */
+    std::vector<std::string> headers;
+    std::string text;
+
+    /**
+     * Read line by line.
+     */
+    while( input.good() )
+    {
+        std::string line;
+        getline( input, line );
+
+        /**
+         * If we're in the header store it away.
+         */
+        if ( in_header )
+        {
+            if ( line.length() <= 0 )
+                in_header = false;
+            else
+                headers.push_back( line );
+        }
+        else
+        {
+            text += line;
+            text += "\n";
+        }
+    }
+    input.close();
+
+
+    try {
+
+        message = new  mimetic::MimeEntity;
+
+        message->body().assign(text);
+        message->header().contentType("text/plain; charset=utf-8");
+        message->header().contentTransferEncoding("8bit");
+        message->header().mimeVersion(v1);
+
+        /**
+         * Add files.
+         */
+        std::vector<std::string>::iterator it;
+        for (it = files.begin(); it != files.end(); ++it)
+        {
+            std::string path = (*it);
+
+            mimetic::MimeEntity *m = message;
+            message = new mimetic::MultipartMixed();
+            message->header().mimeVersion(v1);
+            message->body().parts().push_back(m);
+            mimetic_attach_file(message, (char *)path.c_str() );
+        }
+
+        /**
+         * OK iterate over the headers we've received.
+         */
+        for (it = headers.begin(); it != headers.end(); ++it)
+        {
+            std::string head = (*it);
+
+            std::size_t offset = head.find(":");
+            if ( offset != std::string::npos )
+            {
+                std::string header = head.substr(0, offset);
+                std::string value  = head.substr(offset+1);
+
+                message->header().field( header ).value( value );
+            }
+
+        }
+
+        /**
+         * Get the message in a way we can examine.
+         */
+        std::ostringstream output;
+        output << *message << std::endl;
+        delete message;
+
+        /**
+         * Now overwrite our temporary file with the updated
+         * version.
+         */
+        std::string content = output.str();
+        std::ofstream myfile;
+        myfile.open (filename);
+        myfile << output.str();
+        myfile.close();
+        return( true );
+
+    }
+    catch(std::exception &e) {
+        if (message)
+            delete message;
+        return false;
+    }
+    catch(std::string &e) {
+        if (message)
+            delete message;
+        return false;
+    }
+    catch (...) {
+        if (message)
+            delete message;
+        return false;
+    }
 }
 
 
