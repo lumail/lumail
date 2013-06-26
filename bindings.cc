@@ -1789,10 +1789,12 @@ int compose(lua_State * L)
     while( cont )
     {
         /**
-         * TODO: Use prompt_chars()
+         * Use prompt_chars() to get the input
          */
         lua_pushstring(L,"Send mail?  y/n/a>" );
-        ret = prompt(L);
+        lua_pushstring(L,"anyANY");
+
+        ret = prompt_chars(L);
         if ( ret != 1 )
         {
             lua_pushstring(L, "Error recieving confiramtion." );
@@ -1801,11 +1803,13 @@ int compose(lua_State * L)
         const char * response = lua_tostring(L, -1);
 
 
-        if ( response[0] == 'y' )
+        if (  ( response[0] == 'y' ) ||
+              ( response[0] == 'Y' ) )
         {
             cont = false;
         }
-        if ( response[0] == 'n' )
+        if ( ( response[0] == 'n' ) ||
+             ( response[0] == 'N' ) )
         {
             cont = false;
             unlink( filename );
@@ -1815,7 +1819,8 @@ int compose(lua_State * L)
             lua_pushstring(L, SENDING_ABORTED);
             return( msg(L ) );
         }
-        if ( response[0] == 'a' )
+        if (  ( response[0] == 'a' ) ||
+              ( response[0] == 'A' ) )
         {
             /**
              * Add attachment.
@@ -2038,10 +2043,12 @@ int reply(lua_State * L)
     while( cont )
     {
         /**
-         * TODO: Use prompt_chars()
+         * Use prompt_chars() to get the input
          */
         lua_pushstring(L,"Send mail?  y/n/a>" );
-        ret = prompt( L);
+        lua_pushstring(L,"anyANY");
+
+        ret = prompt_chars(L);
         if ( ret != 1 )
         {
             lua_pushstring(L, "Error recieving confiramtion." );
@@ -2051,11 +2058,13 @@ int reply(lua_State * L)
         const char * response = lua_tostring(L, -1);
 
 
-        if ( response[0] == 'y' )
+        if (  ( response[0] == 'y' ) ||
+              ( response[0] == 'Y' ) )
         {
             cont = false;
         }
-        if ( response[0] == 'n' )
+        if ( ( response[0] == 'n' ) ||
+             ( response[0] == 'N' ) )
         {
             cont = false;
             unlink( filename );
@@ -2065,7 +2074,8 @@ int reply(lua_State * L)
             lua_pushstring(L, SENDING_ABORTED);
             return( msg(L ) );
         }
-        if ( response[0] == 'a' )
+        if ( ( response[0] == 'a' ) ||
+             ( response[0] == 'A' ) )
         {
             /**
              * Add attachment.
