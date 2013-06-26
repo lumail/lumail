@@ -469,7 +469,7 @@ int prompt_chars(lua_State *L)
     /**
      * Get the prompt string, and response set.
      */
-    const char *str = lua_tostring(L, -2);
+    const char *str   = lua_tostring(L, -2);
     const char *chars = lua_tostring(L, -1);
 
     /**
@@ -480,9 +480,7 @@ int prompt_chars(lua_State *L)
     if (chars == NULL)
 	return luaL_error(L, "Missing characters to function prompt_chars(..)");
 
-    /**
-     * Now show the prompt.
-     */
+
     echo();
 
     int height = CScreen::height();
@@ -525,6 +523,9 @@ int prompt_chars(lua_State *L)
 }
 
 
+/**
+ * Undocumented: TODO.
+ */
 int prompt_maildir(lua_State * L)
 {
     CGlobal *global = CGlobal::Instance();
@@ -1624,6 +1625,9 @@ int compose(lua_State * L)
 
     while( cont )
     {
+        /**
+         * TODO: Use prompt_chars()
+         */
         lua_pushstring(L,"Send mail?  y/n/a>" );
         ret = prompt(L);
         if ( ret != 1 )
@@ -1870,6 +1874,9 @@ int reply(lua_State * L)
 
     while( cont )
     {
+        /**
+         * TODO: Use prompt_chars()
+         */
         lua_pushstring(L,"Send mail?  y/n/a>" );
         ret = prompt( L);
         if ( ret != 1 )
