@@ -1462,10 +1462,12 @@ int toggle_selected_folder(lua_State * L)
 /**
  * Get the MIME-type of a file, based upon suffix.
  *
- * TODO: Use /etc/mime.types to do this properly with an unordered_map.
+ * TODO: Use /etc/mime.types to do this properly.
  */
 int mime_type(lua_State *L)
 {
+    const char *default_type = "application/octet-stream";
+
     const char *file = lua_tostring(L, -1);
     if (file == NULL)
 	return luaL_error(L, "Missing argument to mime_type(..)");
@@ -1476,42 +1478,49 @@ int mime_type(lua_State *L)
     std::string filename(file);
     size_t offset = filename.rfind('.');
 
+    /**
+     * If we found it.
+     */
     if(offset != std::string::npos)
     {
+        /**
+         * Get the lower-case version.
+         */
         std::string extension = filename.substr(offset+1);
         std::transform(extension.begin(), extension.end(), extension.begin(), tolower);
 
-        if ( strcmp( extension.c_str(), "txt" ) == 0 )
-        {
-            lua_pushstring(L, "text/plain");
-            return(1);
-        }
-        else if ( strcmp( extension.c_str(), "gif" ) == 0 )
-        {
-            lua_pushstring(L, "image/gif" );
-            return(1);
-        }
-        else if ( strcmp( extension.c_str(), "jpg" ) == 0 )
-        {
-            lua_pushstring(L, "image/jpeg" );
-            return(1);
-        }
-        else if ( strcmp( extension.c_str(), "png" ) == 0 )
-        {
-            lua_pushstring(L, "image/png" );
-            return(1);
-        }
-        else {
-            lua_pushstring(L, "application/octet-stream");
-            return(1);
-        }
+        /**
+         * Fixed list of suffixes & types.
+         */
+        std::map< std::string, std::string> table;
+        table[ "conf" ] = "text/plain";
+        table[ "gif" ]  = "image/gif";
+        table[ "htm" ]  = "text/html";
+        table[ "html" ] = "text/html";
+        table[ "jpeg" ] = "image/jpg";
+        table[ "jpg" ]  = "image/jpg";
+        table[ "png" ]  = "image/png";
+        table[ "text" ] = "text/plain";
+        table[ "txt" ]  = "text/plain";
+
+
+
+        /**
+         * Lookup the value, and revert if we can't find one.
+         */
+        std::string value = table[ extension ];
+        if ( value.empty() )
+            value = default_type;
+
+        lua_pushstring(L, value.c_str());
+        return(1);
     }
     else
     {
         /**
          * No extension found.
          */
-        lua_pushstring(L, "application/octet-stream");
+        lua_pushstring(L, default_type );
         return(1);
     }
 
