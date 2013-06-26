@@ -1460,10 +1460,9 @@ int toggle_selected_folder(lua_State * L)
 
 
 /**
- * Get the MIME-type of a file.
+ * Get the MIME-type of a file, based upon suffix.
  *
- * TODO: Complete.
- * TODO: Export to lua
+ * TODO: Use /etc/mime.types to do this properly with an unordered_map.
  */
 int mime_type(lua_State *L)
 {
