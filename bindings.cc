@@ -26,6 +26,7 @@
 #include <fstream>
 #include <string.h>
 #include <stdlib.h>
+#include <pcrecpp.h>
 #include <ncurses.h>
 #include <unistd.h>
 
@@ -1462,7 +1463,7 @@ int toggle_selected_folder(lua_State * L)
 /**
  * Get the MIME-type of a file, based upon suffix.
  *
- * TODO: Use /etc/mime.types to do this properly.
+ * We use /etc/mime.types to do this properly.
  */
 int mime_type(lua_State *L)
 {
@@ -1493,16 +1494,57 @@ int mime_type(lua_State *L)
          * Fixed list of suffixes & types.
          */
         std::map< std::string, std::string> table;
-        table[ "conf" ] = "text/plain";
-        table[ "gif" ]  = "image/gif";
-        table[ "htm" ]  = "text/html";
-        table[ "html" ] = "text/html";
-        table[ "jpeg" ] = "image/jpg";
-        table[ "jpg" ]  = "image/jpg";
-        table[ "png" ]  = "image/png";
-        table[ "text" ] = "text/plain";
-        table[ "txt" ]  = "text/plain";
 
+        /**
+         * Attempt to parse /etc/mime.types.
+         */
+        if ( CFile::exists("/etc/mime.types" ) )
+        {
+            std::vector<std::string> data;
+            pcrecpp::RE regex("(.+?)(?:[\\r\\n\\t]+|$)");
+
+            std::ifstream file("/etc/mime.types", std::ios::in);
+            if (file.is_open())
+            {
+                std::string line;
+                std::string piece;
+
+                while (!file.eof())
+                {
+                    getline(file, line);
+                    pcrecpp::StringPiece input(line.c_str());
+                    while (regex.Consume(&input, &piece))
+                        data.push_back(piece);
+                    for (size_t i = 1; i < data.size(); i++)
+                        table[data[i]] = data[0];
+                    data.clear();
+                }
+                file.close();
+            }
+        }
+
+        /**
+         * The previous code should have opened /etc/mime.types
+         * and parsed it.
+         *
+         * However that file might be missing, or the parsing might
+         * have failed.
+         *
+         * If that is the case then the map will be empty, so we'll
+         * add some simple entries and leave it at that.
+         */
+        if ( table.size() < 1 )
+        {
+            table[ "conf" ] = "text/plain";
+            table[ "gif" ]  = "image/gif";
+            table[ "htm" ]  = "text/html";
+            table[ "html" ] = "text/html";
+            table[ "jpeg" ] = "image/jpg";
+            table[ "jpg" ]  = "image/jpg";
+            table[ "png" ]  = "image/png";
+            table[ "text" ] = "text/plain";
+            table[ "txt" ]  = "text/plain";
+        }
 
 
         /**
