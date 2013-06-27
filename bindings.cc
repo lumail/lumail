@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include "bindings.h"
+#include "debug.h"
 #include "file.h"
 #include "maildir.h"
 #include "lang.h"
@@ -1467,20 +1468,33 @@ int toggle_selected_folder(lua_State * L)
  */
 int mime_type(lua_State *L)
 {
+    /**
+     * Map of file-suffix to MIME-types.
+     */
+    static std::map< std::string, std::string> table;
+
+
+    /**
+     * Default MIME-type if we can't find the real one.
+     */
     const char *default_type = "application/octet-stream";
 
+
+    /**
+     * Get the file to test.
+     */
     const char *file = lua_tostring(L, -1);
     if (file == NULL)
 	return luaL_error(L, "Missing argument to mime_type(..)");
 
     /**
-     * Get the extension.
+     * Attempt to find the extension.
      */
     std::string filename(file);
     size_t offset = filename.rfind('.');
 
     /**
-     * If we found it.
+     * If we found one.
      */
     if(offset != std::string::npos)
     {
@@ -1490,67 +1504,77 @@ int mime_type(lua_State *L)
         std::string extension = filename.substr(offset+1);
         std::transform(extension.begin(), extension.end(), extension.begin(), tolower);
 
-        /**
-         * Fixed list of suffixes & types.
-         */
-        std::map< std::string, std::string> table;
 
         /**
-         * Attempt to parse /etc/mime.types.
+         * If we've not already populated our map..
          */
-        if ( CFile::exists("/etc/mime.types" ) )
+        if ( table.size() < 1 )
         {
-            std::vector<std::string> data;
-            pcrecpp::RE regex("(.+?)(?:[\\r\\n\\t]+|$)");
+            DEBUG_LOG( "MIME-type table empty.  Populating" );
 
-            std::ifstream file("/etc/mime.types", std::ios::in);
-            if (file.is_open())
+            /**
+             * Attempt to parse /etc/mime.types.
+             */
+            if ( CFile::exists("/etc/mime.types" ) )
             {
-                std::string line;
-                std::string piece;
+                DEBUG_LOG( "/etc/mime.types is present.  Using it." );
 
-                while (!file.eof())
+                std::vector<std::string> data;
+                pcrecpp::RE regex("(.+?)(?:[\\r\\n\\t]+|$)");
+
+                std::ifstream file("/etc/mime.types", std::ios::in);
+                if (file.is_open())
                 {
-                    getline(file, line);
-                    pcrecpp::StringPiece input(line.c_str());
-                    while (regex.Consume(&input, &piece))
-                        data.push_back(piece);
-                    for (size_t i = 1; i < data.size(); i++)
-                        table[data[i]] = data[0];
-                    data.clear();
+                    std::string line;
+                    std::string piece;
+
+                    while (!file.eof())
+                    {
+                        getline(file, line);
+                        pcrecpp::StringPiece input(line.c_str());
+                        while (regex.Consume(&input, &piece))
+                            data.push_back(piece);
+                        for (size_t i = 1; i < data.size(); i++)
+                            table[data[i]] = data[0];
+                        data.clear();
+                    }
+                    file.close();
                 }
-                file.close();
+            }
+
+            /**
+             * The previous code should have opened /etc/mime.types
+             * and parsed it.
+             *
+             * However that file might be missing, or the parsing might
+             * have failed.
+             *
+             * If that is the case then the map will be empty, so we'll
+             * add some simple entries and leave it at that.
+             */
+            if ( table.size() < 1 )
+            {
+                DEBUG_LOG( "MIME-table empty.  Using our fixed list." );
+
+                table[ "conf" ] = "text/plain";
+                table[ "gif" ]  = "image/gif";
+                table[ "htm" ]  = "text/html";
+                table[ "html" ] = "text/html";
+                table[ "jpeg" ] = "image/jpg";
+                table[ "jpg" ]  = "image/jpg";
+                table[ "png" ]  = "image/png";
+                table[ "text" ] = "text/plain";
+                table[ "txt" ]  = "text/plain";
             }
         }
 
         /**
-         * The previous code should have opened /etc/mime.types
-         * and parsed it.
-         *
-         * However that file might be missing, or the parsing might
-         * have failed.
-         *
-         * If that is the case then the map will be empty, so we'll
-         * add some simple entries and leave it at that.
-         */
-        if ( table.size() < 1 )
-        {
-            table[ "conf" ] = "text/plain";
-            table[ "gif" ]  = "image/gif";
-            table[ "htm" ]  = "text/html";
-            table[ "html" ] = "text/html";
-            table[ "jpeg" ] = "image/jpg";
-            table[ "jpg" ]  = "image/jpg";
-            table[ "png" ]  = "image/png";
-            table[ "text" ] = "text/plain";
-            table[ "txt" ]  = "text/plain";
-        }
-
-
-        /**
-         * Lookup the value, and revert if we can't find one.
+         * Lookup the value, and use the default if we can't find a match.
          */
         std::string value = table[ extension ];
+
+        DEBUG_LOG( "MIME type of " + filename + " is " + value );
+
         if ( value.empty() )
             value = default_type;
 
@@ -1565,7 +1589,6 @@ int mime_type(lua_State *L)
         lua_pushstring(L, default_type );
         return(1);
     }
-
 }
 
 
