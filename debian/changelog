@@ -12,7 +12,7 @@ lumail (0.09) stable; urgency=low
    * Build-Depend upon libpcre++-dev.
    * New primitive: prompt_chars().
 
- -- Steve Kemp <steve@steve.org.uk>  Thu, 27 Jun 2013 21:55:12 +0000
+ -- Steve Kemp <steve@steve.org.uk>  Sat, 29 Jun 2013 22:33:22 +0000
 
 lumail (0.08) stable; urgency=low
 
