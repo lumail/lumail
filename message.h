@@ -137,6 +137,11 @@ class CMessage
    */
   std::vector<std::string> attachments();
 
+  /**
+   * Save the given attachment.
+   */
+  bool save_attachment( int offset, std::string output_path );
+
  private:
 
 

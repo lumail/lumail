@@ -750,3 +750,54 @@ std::vector<std::string> CMessage::attachments()
 
     return( paths );
 }
+
+/**
+ * Save the given attachment.
+ */
+bool CMessage::save_attachment( int offset, std::string output_path )
+{
+    bool ret = false;
+
+    /**
+     * Parse if we've not done so.
+     */
+    if ( m_me == NULL ) {
+        ifstream file(path().c_str());
+        m_me = new MimeEntity(file);
+    }
+
+    /**
+     * Iterate over every part.
+     */
+    mimetic::MimeEntityList& parts = m_me->body().parts();
+    mimetic::MimeEntityList::iterator mbit = parts.begin(), meit = parts.end();
+    int m_off = 1;
+
+    for(; mbit != meit; ++mbit)
+    {
+        MimeEntity *p = *mbit;
+        const mimetic::ContentDisposition& cd = p->header().contentDisposition();
+        string fn = cd.param("filename");
+
+        if ( ! fn.empty() )
+        {
+            if ( m_off == offset )
+            {
+                std::string body = p->body();
+
+                std::ofstream myfile;
+                myfile.open(output_path, ios::binary|ios::out);
+
+                myfile << body;
+                myfile.close();
+
+                ret = true;
+            }
+            m_off += 1;
+        }
+
+    }
+
+
+    return( ret );
+}

@@ -196,5 +196,6 @@ int executable(lua_State *L);
  * Attachment handling.
  */
 int count_attachments(lua_State *L);
+int save_attachment(lua_State *L);
 
 #endif				/* _bindings_h */
