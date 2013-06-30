@@ -192,4 +192,9 @@ int file_exists(lua_State *L);
 int is_directory(lua_State *L);
 int executable(lua_State *L);
 
+/**
+ * Attachment handling.
+ */
+int count_attachments(lua_State *L);
+
 #endif				/* _bindings_h */

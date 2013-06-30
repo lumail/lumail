@@ -710,3 +710,14 @@ std::vector<std::string> CMessage::body()
 
     return(result);
 }
+
+
+/**
+ * Get the names of attachments to this message.
+ */
+std::vector<std::string> CMessage::attachments()
+{
+    std::vector<std::string> paths;
+
+    return( paths );
+}

@@ -132,6 +132,11 @@ class CMessage
   std::vector<std::string> body();
 
 
+  /**
+   * Get the names of attachments to this message.
+   */
+  std::vector<std::string> attachments();
+
  private:
 
 

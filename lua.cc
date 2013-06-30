@@ -186,6 +186,12 @@ CLua::CLua()
      * Variables.
      */
     lua_register(m_lua, "get_variables", get_variables );
+
+    /**
+     * Attachment handling.
+     */
+    lua_register(m_lua, "count_attachments", count_attachments );
+
 }
 
 

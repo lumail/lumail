@@ -2575,4 +2575,43 @@ int executable(lua_State *L)
     return 1;
 }
 
+/**
+ * Attachment handling.
+ */
+int count_attachments(lua_State *L)
+{
+    /**
+     * Get the path (optional).
+     */
+    const char *str = lua_tostring(L, -1);
+    int ret = 0;
+
+    CMessage *msg = get_message_for_operation( str );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+    else
+    {
+        /**
+         * Count the attachments.
+         */
+        std::vector<std::string> attachments = msg->attachments();
+        int count = attachments.size();
+
+        /**
+         * Setup the return values.
+         */
+        lua_pushinteger(L, count );
+        ret = 1;
+    }
+
+    if ( str != NULL )
+        delete( msg );
+
+    return( ret );
+
+}
 
