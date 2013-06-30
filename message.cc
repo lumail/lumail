@@ -714,12 +714,39 @@ std::vector<std::string> CMessage::body()
 
 /**
  * Get the names of attachments to this message.
- *
- * TODO: Implement.
  */
 std::vector<std::string> CMessage::attachments()
 {
     std::vector<std::string> paths;
+
+
+    /**
+     * Parse if we've not done so.
+     */
+    if ( m_me == NULL ) {
+        ifstream file(path().c_str());
+        m_me = new MimeEntity(file);
+    }
+
+    /**
+     * Iterate over every part.
+     */
+    mimetic::MimeEntityList& parts = m_me->body().parts();
+    mimetic::MimeEntityList::iterator mbit = parts.begin(), meit = parts.end();
+    for(; mbit != meit; ++mbit)
+    {
+        MimeEntity *p = *mbit;
+        const mimetic::ContentDisposition& cd = p->header().contentDisposition();
+        string fn = cd.param("filename");
+
+        /**
+         * Store the filename.
+         */
+        if ( ! fn.empty() )
+        {
+            paths.push_back( fn );
+        }
+    }
 
     return( paths );
 }
