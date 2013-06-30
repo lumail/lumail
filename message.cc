@@ -714,6 +714,8 @@ std::vector<std::string> CMessage::body()
 
 /**
  * Get the names of attachments to this message.
+ *
+ * TODO: Implement.
  */
 std::vector<std::string> CMessage::attachments()
 {
