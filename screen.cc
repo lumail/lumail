@@ -439,6 +439,20 @@ void CScreen::drawMessage()
         row += 1;
     }
 
+   /**
+    * Draw the attachments.
+    */
+    std::vector<std::string> attachments = cur->attachments();
+    int acount = 1;
+    for (it = attachments.begin(); it != attachments.end(); ++it)
+    {
+        std::string path = (*it);
+        move( row, 0 );
+        printw( "Attachment %d - %s", acount, path.c_str() );
+        acount += 1;
+        row += 1;
+    }
+
     /**
      * Now draw the body.
      */
@@ -447,11 +461,11 @@ void CScreen::drawMessage()
     /**
      * How many lines to draw?
      */
-    int max = std::min((int)body.size(), (int)(CScreen::height() - headers.size()) );
+    int max = std::min((int)body.size(), (int)(CScreen::height() - headers.size() - attachments.size() ) );
 
     for( int i = 0; i < (max-2); i++ )
     {
-        move( i + ( headers.size() + 1 ), 0 );
+        move( i + ( headers.size() + attachments.size() + 1 ), 0 );
 
         std::string line = "";
         if ( (i + offset) < (int)body.size() )
