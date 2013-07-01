@@ -193,6 +193,13 @@ CLua::CLua()
     lua_register(m_lua, "count_attachments", count_attachments );
     lua_register(m_lua, "save_attachment",   save_attachment );
 
+    /**
+     * Debug code.
+     */
+#ifdef LUMAIL_DEBUG
+    lua_register(m_lua, "dump_stack", lua_dump_stack );
+#endif
+
 }
 
 
@@ -407,6 +414,8 @@ void CLua::dump_stack()
 {
 #ifdef LUMAIL_DEBUG
 
+    DEBUG_LOG( "dump_stack() - start" );
+
     /**
      * Top of the stack.
      */
@@ -415,29 +424,33 @@ void CLua::dump_stack()
     /* Repeat for each level */
     for (int i = 1; i <= top; i++)
     {
+        char buf[1024]={'\0'};
+
         int t = lua_type(m_lua, i);
         switch (t)
         {
         case LUA_TSTRING:
-            printf("`%s'", lua_tostring(m_lua, i));
+            snprintf(buf, sizeof(buf)-1,"`%s'", lua_tostring(m_lua, i));
             break;
 
         case LUA_TBOOLEAN:
-            printf(lua_toboolean(m_lua, i) ? "true" : "false");
+            snprintf(buf, sizeof(buf)-1,lua_toboolean(m_lua, i) ? "true" : "false");
             break;
 
         case LUA_TNUMBER:
-            printf("%g", lua_tonumber(m_lua, i));
+            snprintf(buf, sizeof(buf)-1,"%g", lua_tonumber(m_lua, i));
             break;
 
         default:
-            printf("%s", lua_typename(m_lua, t));
+            snprintf(buf, sizeof(buf)-1,"%s", lua_typename(m_lua, t));
             break;
 
         }
-        printf("  ");
+
+        DEBUG_LOG( buf );
     }
-    printf("\n");
+
+    DEBUG_LOG( "dump_stack() - end" );
 #endif
 
 }

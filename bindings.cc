@@ -2668,3 +2668,13 @@ int save_attachment(lua_State *L)
 
 }
 
+
+/**
+ * Dump the Lua stack to our debug file; only present if compiled in debug-mode.
+ */
+int lua_dump_stack(lua_State *L)
+{
+    CLua *lua = CLua::Instance();
+    lua->dump_stack();
+    return 0;
+}
