@@ -526,7 +526,7 @@ int prompt_chars(lua_State *L)
 
 
 /**
- * Undocumented: TODO.
+ * Prompt for a maildir.
  */
 int prompt_maildir(lua_State * L)
 {
