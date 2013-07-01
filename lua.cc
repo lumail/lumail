@@ -196,9 +196,7 @@ CLua::CLua()
     /**
      * Debug code.
      */
-#ifdef LUMAIL_DEBUG
     lua_register(m_lua, "dump_stack", lua_dump_stack );
-#endif
 
 }
 

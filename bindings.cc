@@ -2674,7 +2674,9 @@ int save_attachment(lua_State *L)
  */
 int lua_dump_stack(lua_State *L)
 {
+#ifdef LUMAIL_DEBUG
     CLua *lua = CLua::Instance();
     lua->dump_stack();
+#endif
     return 0;
 }
