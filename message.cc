@@ -16,6 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
+#include <algorithm>
 #include <stdint.h>
 #include <cstdlib>
 #include <iostream>
@@ -608,7 +609,8 @@ std::vector<std::string> CMessage::body()
      */
     mimetic::MimeEntityList& parts = m_me->body().parts();
     mimetic::MimeEntityList::iterator mbit = parts.begin(), meit = parts.end();
-    for(; mbit != meit; ++mbit) {
+    for(; mbit != meit; ++mbit)
+    {
 
         /**
          * Get the content-type.
@@ -704,7 +706,8 @@ std::vector<std::string> CMessage::body()
      */
     std::stringstream stream(body);
     std::string line;
-    while (std::getline(stream, line)) {
+    while (std::getline(stream, line))
+    {
         result.push_back( line );
     }
 
@@ -723,7 +726,8 @@ std::vector<std::string> CMessage::attachments()
     /**
      * Parse if we've not done so.
      */
-    if ( m_me == NULL ) {
+    if ( m_me == NULL )
+    {
         ifstream file(path().c_str());
         m_me = new MimeEntity(file);
     }
@@ -750,6 +754,7 @@ std::vector<std::string> CMessage::attachments()
 
     return( paths );
 }
+
 
 /**
  * Save the given attachment.
@@ -784,11 +789,32 @@ bool CMessage::save_attachment( int offset, std::string output_path )
             if ( m_off == offset )
             {
                 std::string body = p->body();
+                std::string decoded;
+
+                /**
+                 * Encoding type.
+                 */
+                std::string enc = p->header().contentTransferEncoding().mechanism();
+
 
                 std::ofstream myfile;
                 myfile.open(output_path, ios::binary|ios::out);
 
-                myfile << body;
+
+                if (strcasecmp(enc.c_str(), "quoted-printable" ) == 0 )
+                {
+                    mimetic::QP::Decoder qp;
+                    decode(body.begin(), body.end(), qp, std::back_inserter(decoded));
+                }
+                if (strcasecmp(enc.c_str(), "base64" ) == 0 )
+                {
+
+                    mimetic::Base64::Decoder b64;
+                    decode(body.begin(), body.end(), b64, std::back_inserter(decoded));
+                }
+
+
+                myfile << decoded;
                 myfile.close();
 
                 ret = true;
