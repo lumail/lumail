@@ -706,18 +706,3 @@ keymap['message']['d'] = 'delete()'
 --
 ---
 
-
---
--- Send a test mail.
---
-function send()
-   mail = {
-      ["to"]      = "steve@steve.org.uk",
-      ["subject"] = "I like cake",
-      ["from"]    = "me@example.com",
-      ["body"]    = "This is the body\nThis is the text\n",
---      ["attachments"] = { "/etc/passwd", "/etc/motd", "/etc/fstab" }
-   }
-
-   send_email( mail );
-end
