@@ -2578,6 +2578,66 @@ int executable(lua_State *L)
 /**
  * Attachment handling.
  */
+int attachments(lua_State *L)
+{
+    /**
+     * Get the path (optional).
+     */
+    const char *str = lua_tostring(L, -1);
+
+    CMessage *msg = get_message_for_operation( str );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+    else
+    {
+        /**
+         * Count the attachments.
+         */
+        std::vector<std::string> attachments = msg->attachments();
+        std::vector<std::string>::iterator it;
+
+
+        /**
+         * create a new table.
+         */
+        lua_newtable(L);
+
+        /**
+         * Lua indexes start at one.
+         */
+        int i = 1;
+
+
+        /**
+         * For each attachment, add it to the table.
+         */
+        for (it = attachments.begin(); it != attachments.end(); ++it)
+        {
+            std::string name = (*it);
+
+
+            lua_pushnumber(L,i);
+            lua_pushstring(L,name.c_str());
+            lua_settable(L,-3);
+            i++;
+        }
+    }
+
+    if ( str != NULL )
+        delete( msg );
+
+    return( 1 );
+
+}
+
+
+/**
+ * Attachment handling.
+ */
 int count_attachments(lua_State *L)
 {
     /**

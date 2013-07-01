@@ -190,6 +190,7 @@ CLua::CLua()
     /**
      * Attachment handling.
      */
+    lua_register(m_lua, "attachments",       attachments );
     lua_register(m_lua, "count_attachments", count_attachments );
     lua_register(m_lua, "save_attachment",   save_attachment );
 
