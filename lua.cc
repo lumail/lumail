@@ -38,6 +38,115 @@
 CLua *CLua::pinstance = NULL;
 
 
+
+/**
+ * This is a list of all the functions that we export to our
+ * embedded lua-intepreter.
+ *
+ * The function is externally declared in our header so that we
+ * can access it from elsewhere.
+ *
+ * (Specifically we want to make the function-names available to
+ * our TAB-completion code.
+ *
+ */
+struct CLuaMapping primitive_list[] = {
+
+// Basic primitives
+    {"abort", (lua_CFunction) abort },
+    {"clear", (lua_CFunction) clear },
+    {"dump_stack", (lua_CFunction) lua_dump_stack },
+    {"exec", (lua_CFunction) exec },
+    {"exit", (lua_CFunction) exit },
+    {"mime_type", (lua_CFunction) mime_type },
+    {"msg", (lua_CFunction) msg },
+    {"refresh_display", (lua_CFunction) refresh_display },
+    {"screen_height", (lua_CFunction) screen_height },
+    {"screen_width", (lua_CFunction) screen_width },
+    {"sleep", (lua_CFunction) sleep },
+
+// File/Path utilities
+    {"executable", (lua_CFunction) executable },
+    {"file_exists", (lua_CFunction) file_exists },
+    {"is_directory", (lua_CFunction) is_directory },
+
+// Folder Selection
+    {"add_selected_folder", (lua_CFunction) add_selected_folder},
+    {"clear_selected_folders", (lua_CFunction) clear_selected_folders},
+    {"selected_folders", (lua_CFunction) selected_folders },
+    {"set_selected_folder", (lua_CFunction) set_selected_folder},
+    {"toggle_selected_folder", (lua_CFunction) toggle_selected_folder },
+
+// Get/Set variables
+    { "editor", (lua_CFunction) editor },
+    { "from", (lua_CFunction) from },
+    { "global_mode", (lua_CFunction) global_mode },
+    { "index_format", (lua_CFunction) index_format },
+    { "index_limit", (lua_CFunction) index_limit },
+    { "maildir_format", (lua_CFunction) maildir_format },
+    { "maildir_limit", (lua_CFunction) maildir_limit},
+    { "maildir_prefix",(lua_CFunction) maildir_prefix},
+    { "message_filter",(lua_CFunction) message_filter},
+    { "sendmail_path",(lua_CFunction) sendmail_path},
+    { "sent_mail",(lua_CFunction) sent_mail},
+    { "get_variables", (lua_CFunction) get_variables },
+
+// Index functions
+    { "jump_index_to", (lua_CFunction) jump_index_to},
+    { "scroll_index_down", (lua_CFunction) scroll_index_down},
+    { "scroll_index_up", (lua_CFunction) scroll_index_up},
+    { "scroll_index_to", (lua_CFunction)scroll_index_to },
+
+// Message-Related functions
+    { "compose",(lua_CFunction) compose },
+    { "count_messages",(lua_CFunction) count_messages },
+    { "current_message",(lua_CFunction) current_message },
+    { "delete",(lua_CFunction) delete_message },
+    { "header",(lua_CFunction) header },
+    { "is_new",(lua_CFunction) is_new },
+    { "mark_new",(lua_CFunction) mark_new },
+    { "mark_red",(lua_CFunction) mark_read },
+    { "reply",(lua_CFunction) reply  },
+    { "save",(lua_CFunction) save_message },
+    { "save_message",(lua_CFunction) save_message },
+    { "scroll_message_down",(lua_CFunction) scroll_message_down },
+    { "scroll_message_up",(lua_CFunction) scroll_message_up },
+    { "send_email",(lua_CFunction) send_email },
+
+// Maildirs
+    { "count_maildirs",(lua_CFunction) count_maildirs },
+    { "current_maildir",(lua_CFunction) current_maildir },
+    { "current_maildirs",(lua_CFunction)  current_maildirs},
+    { "jump_maildir_to",(lua_CFunction) jump_maildir_to },
+    { "maildirs_matching",(lua_CFunction) maildirs_matching },
+    { "scroll_maildir_down",(lua_CFunction) scroll_maildir_down },
+    { "scroll_maildir_to",(lua_CFunction) scroll_maildir_to },
+    { "scroll_maildir_up",(lua_CFunction) scroll_maildir_up },
+    { "select_maildir",(lua_CFunction) select_maildir },
+
+
+// prompts.
+    {"prompt", (lua_CFunction) prompt },
+    {"prompt_chars", (lua_CFunction) prompt_chars },
+    {"prompt_maildir", (lua_CFunction) prompt_maildir },
+    {"prompt_yn", (lua_CFunction) prompt_yn },
+
+// Attachments
+    {"attachments", (lua_CFunction) attachments },
+    {"count_attachments", (lua_CFunction) count_attachments },
+    {"save_attachment", (lua_CFunction) save_attachment },
+
+
+};
+
+
+/**
+ * The size of our primitives table
+ */
+int primitive_count = (sizeof(primitive_list)/sizeof(struct CLuaMapping));
+
+
+
 /**
  * Get access to our LUA intepreter.
  */
@@ -50,6 +159,7 @@ CLua *CLua::Instance()
 }
 
 
+
 /**
  * Constructor - This is private as this class is a singleton.
  */
@@ -60,144 +170,27 @@ CLua::CLua()
      */
     m_lua = lua_open();
 
+    /**
+     * Register the libraries.
+     */
     luaopen_base(m_lua);
     luaL_openlibs(m_lua);
+
+    /**
+     * Now register our primitives.
+     */
+    for(int i = 0; i < primitive_count; i++ )
+    {
+        lua_pushcfunction(m_lua, primitive_list[i].func);
+        lua_setglobal(m_lua, primitive_list[i].name);
+    }
+
 
     /**
      * Set a global variable into the Lua environment.
      */
     lua_pushstring(m_lua, LUMAIL_VERSION );
     lua_setglobal(m_lua, "VERSION" );
-
-    /**
-     * Register our primitives - the basic ones.
-     */
-    lua_register(m_lua, "abort", abort);
-    lua_register(m_lua, "clear", clear);
-    lua_register(m_lua, "exec", exec);
-    lua_register(m_lua, "exit", exit);
-    lua_register(m_lua, "mime_type", mime_type);
-    lua_register(m_lua, "msg", msg);
-    lua_register(m_lua, "prompt", prompt);
-    lua_register(m_lua, "prompt_chars", prompt_chars);
-    lua_register(m_lua, "prompt_maildir", prompt_maildir);
-    lua_register(m_lua, "prompt_yn", prompt_yn);
-    lua_register(m_lua, "refresh_display", refresh_display);
-    lua_register(m_lua, "sleep", sleep);
-
-    /**
-     * Get/Set various strings.
-     */
-    lua_register(m_lua, "editor", editor);
-    lua_register(m_lua, "from", from);
-    lua_register(m_lua, "global_mode", global_mode);
-    lua_register(m_lua, "index_format", index_format);
-    lua_register(m_lua, "index_limit", index_limit);
-    lua_register(m_lua, "maildir_format", maildir_format);
-    lua_register(m_lua, "maildir_limit", maildir_limit);
-    lua_register(m_lua, "maildir_prefix", maildir_prefix);
-    lua_register(m_lua, "message_filter", message_filter);
-    lua_register(m_lua, "sendmail_path", sendmail_path );
-    lua_register(m_lua, "sent_mail", sent_mail );
-
-
-    /**
-     * Scroll mailboxes up/down/to a pattern.
-     */
-    lua_register(m_lua, "jump_maildir_to", jump_maildir_to);
-    lua_register(m_lua, "scroll_maildir_down", scroll_maildir_down);
-    lua_register(m_lua, "scroll_maildir_to", scroll_maildir_to);
-    lua_register(m_lua, "scroll_maildir_up", scroll_maildir_up);
-
-    /**
-     * Scroll index up/down/to a pattern.
-     */
-    lua_register(m_lua, "jump_index_to", jump_index_to );
-    lua_register(m_lua, "scroll_index_down", scroll_index_down);
-    lua_register(m_lua, "scroll_index_to", scroll_index_to);
-    lua_register(m_lua, "scroll_index_up", scroll_index_up);
-
-    /**
-     * Scroll message up/down.
-     */
-    lua_register(m_lua, "scroll_message_down", scroll_message_down);
-    lua_register(m_lua, "scroll_message_up", scroll_message_up);
-
-
-    /**
-     * Maildir-related functions.
-     */
-    lua_register(m_lua, "count_maildirs", count_maildirs );
-    lua_register(m_lua, "current_maildir", current_maildir);
-    lua_register(m_lua, "current_maildirs", current_maildirs);
-    lua_register(m_lua, "maildirs_matching", maildirs_matching );
-    lua_register(m_lua, "select_maildir", select_maildir );
-
-
-    /**
-     * Message-related functions.
-     */
-    lua_register(m_lua, "count_messages", count_messages );
-    lua_register(m_lua, "current_message", current_message);
-    lua_register(m_lua, "delete", delete_message);
-    lua_register(m_lua, "header", header);
-    lua_register(m_lua, "is_new", is_new);
-    lua_register(m_lua, "mark_new", mark_new);
-    lua_register(m_lua, "mark_read", mark_read);
-
-    /**
-     * save is new, save_message is depreciated.
-     */
-    lua_register(m_lua, "save", save_message);
-    lua_register(m_lua, "save_message", save_message);
-
-    /**
-     * Folder selection.
-     */
-    lua_register(m_lua, "add_selected_folder", add_selected_folder);
-    lua_register(m_lua, "clear_selected_folders", clear_selected_folders);
-    lua_register(m_lua, "selected_folders", selected_folders);
-    lua_register(m_lua, "set_selected_folder", set_selected_folder);
-    lua_register(m_lua, "toggle_selected_folder", toggle_selected_folder);
-
-    /**
-     * Compose a new mail/reply to an existing one.
-     */
-    lua_register(m_lua, "compose", compose);
-    lua_register(m_lua, "reply", reply);
-    lua_register(m_lua, "send_email", send_email );
-
-
-    /**
-     * Get screen dimensions.
-     */
-    lua_register(m_lua, "screen_width", screen_width);
-    lua_register(m_lua, "screen_height", screen_height);
-
-
-    /**
-     * File/Utility handlers. Useful for writing portable configuration files.
-     */
-    lua_register(m_lua, "executable", executable);
-    lua_register(m_lua, "file_exists", file_exists);
-    lua_register(m_lua, "is_directory", is_directory);
-
-    /**
-     * Variables.
-     */
-    lua_register(m_lua, "get_variables", get_variables );
-
-    /**
-     * Attachment handling.
-     */
-    lua_register(m_lua, "attachments",       attachments );
-    lua_register(m_lua, "count_attachments", count_attachments );
-    lua_register(m_lua, "save_attachment",   save_attachment );
-
-    /**
-     * Debug code.
-     */
-    lua_register(m_lua, "dump_stack", lua_dump_stack );
 
 }
 
@@ -344,7 +337,7 @@ bool CLua::on_keypress(const char *keypress)
 }
 
 /**
- * Call the lua-function on_key()
+ * Invoke the lua-defined on_key() callback.
  */
 bool CLua::on_key(const char *key )
 {

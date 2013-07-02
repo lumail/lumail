@@ -30,8 +30,43 @@ extern "C" {
 #include <vector>
 
 
+
+
+/**
+ * A structure for storing the mapping between Lua-function names,
+ * and their C-implemenations.
+ */
+struct CLuaMapping
+{
+    const char *name;
+    lua_CFunction func;
+};
+
+
+
+
+/**
+ * A list of all the primitives we export to Lua.
+ */
+extern struct CLuaMapping primitive_list[];
+
+
+
+
+/**
+ * The number of primitives we've exported.
+ */
+extern int primitive_count;
+
+
+
+
 /**
  * A singleton class holding a Lua intepreter.
+ *
+ * This is used to invoke Lua functions/methods from the rest of the code,
+ * and to lookup keybindings, etc.
+ *
  */
 class CLua
 {
@@ -59,6 +94,8 @@ public:
 
     /**
      * Lookup a value in a nested table.
+     *
+     * (Used for keybinding lookups.)
      */
     char *get_nested_table( std::string table, std::string key, std::string subkey );
 
@@ -68,7 +105,7 @@ public:
     bool on_keypress(const char *keypress );
 
     /**
-     * Call the lua-function on_key()
+     * Invoke the on_key() lua-defined callback.
      */
     bool on_key(const char *key );
 
