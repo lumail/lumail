@@ -24,6 +24,7 @@
 #include <string.h>
 #include <cctype>
 #include <sys/ioctl.h>
+#include <dirent.h>
 #include <ncurses.h>
 
 #include "lang.h"
@@ -628,7 +629,7 @@ char *CScreen::get_completion( const char *input, size_t size, int position )
              * Add the extra section.
              */
             strcat(ret, primitive_list[i].name );
-            strncat(ret, "( ", 2 );
+            strncat(ret, "(", 1 );
             return( strdup( ret ) );
         }
     }
@@ -653,20 +654,86 @@ char *CScreen::get_completion( const char *input, size_t size, int position )
              * Add the extra section.
              */
             strcat(ret, (*it).c_str());
-            strncat(ret, "( ", 2 );
+            strncat(ret, "(", 1 );
             return( strdup( ret ) );
         }
     }
 
 
     /**
-     * File/Path expansion.
+     * File/Path expansion.  This is a little hairy.
      */
     if ( strncmp( p, "/", 1 ) == 0 )
     {
         /**
-         * TODO
+         * Split the string into "dir/file"
          */
+        char dir[1024] = { '\0' };
+        char fil[1024] = { '\0' };
+
+        /**
+         * The right-most "/" will be used to split the path.
+         */
+        const char *slash = strrchr( p, '/' );
+        if ( slash == NULL )
+            return NULL;
+
+        /**
+         * Copy the directory part.
+         */
+        strncpy(dir,p, slash-p+1);
+
+        /**
+         * Copy the file part - this is broken for reasons I don't understand.
+         */
+        strncpy(fil, slash+1 , strlen(slash)-2);
+
+        /**
+         * Fixup the broken-trailing whitespace.
+         */
+        for( int i = 0; i < (int)strlen(fil); i ++ )
+        {
+            if ( ( fil[i] == ' ' ) || ( fil[i] == '\t' ) )
+                fil[i] = '\0';
+        }
+
+
+        /**
+         * Open the directory.
+         */
+        DIR *dp = opendir(dir);
+        if ( dp == NULL )
+            return NULL;
+
+
+        while (true)
+        {
+            dirent *de = readdir(dp);
+            if (de == NULL)
+                break;
+
+            if( strncmp( fil, de->d_name, strlen(fil) ) == 0 )
+            {
+                closedir(dp);
+
+                /**
+                 * Copy the leading section of the input.
+                 */
+                strncpy(ret,input, p-input );
+
+                /**
+                 * Add the extra section, the dir-name which is fixed.
+                 */
+                strcat(ret, dir);
+
+                /**
+                 * And the path we've found via readdir.
+                 */
+                strcat(ret, de->d_name );
+                return( strdup( ret ) );
+            }
+        }
+        closedir(dp);
     }
 
 
