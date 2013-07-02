@@ -105,7 +105,7 @@ struct CLuaMapping primitive_list[] = {
     { "header",(lua_CFunction) header },
     { "is_new",(lua_CFunction) is_new },
     { "mark_new",(lua_CFunction) mark_new },
-    { "mark_red",(lua_CFunction) mark_read },
+    { "mark_read",(lua_CFunction) mark_read },
     { "reply",(lua_CFunction) reply  },
     { "save",(lua_CFunction) save_message },
     { "save_message",(lua_CFunction) save_message },
@@ -369,17 +369,25 @@ bool CLua::on_key(const char *key )
     return false;
 }
 
-/**
- * convert a table to an array of strings.
- */
-std::vector<std::string> CLua::table_to_array( std::string name )
+
+std::vector<std::string> CLua::on_complete()
 {
     std::vector<std::string> results;
 
     /**
-     * Ensure we have a table.
+     * If the global isn't defined then we return
+     * an empty set.
      */
-    lua_getglobal(m_lua, name.c_str() );
+    lua_getglobal( m_lua, "on_complete" );
+    if(!lua_isfunction(m_lua,-1))
+        return results;
+
+    /**
+     * Call it.
+     */
+    lua_pcall(m_lua, 0, 1 , 0 ) ;
+
+
     if (lua_type(m_lua, -1)!=LUA_TTABLE) {
         lua_pop(m_lua, 1);
         return results;
@@ -393,6 +401,59 @@ std::vector<std::string> CLua::table_to_array( std::string name )
         results.push_back( d );
         lua_pop( m_lua , 1);
     }
+    return( results );
+}
+
+
+/**
+ * convert a table to an array of strings.
+ */
+std::vector<std::string> CLua::table_to_array( std::string name )
+{
+    std::vector<std::string> results;
+
+#ifdef LUMAIL_DEBUG
+    std::string ds = "table_to_array(";
+    ds += name;
+    ds += ") - start";
+    DEBUG_LOG( ds );
+#endif
+
+    /**
+     * Ensure we have a table.
+     */
+    lua_getglobal(m_lua, name.c_str() );
+    if (lua_type(m_lua, -1)!=LUA_TTABLE) {
+        lua_pop(m_lua, 1);
+        return results;
+    }
+
+    lua_pushnil(m_lua);
+
+
+    while (lua_next(m_lua, -2))
+    {
+        const char *d  = lua_tostring(m_lua, -1);
+
+#ifdef LUMAIL_DEBUG
+        std::string dm = "\tFound:";
+        dm += d;
+        DEBUG_LOG( dm );
+#endif
+
+        results.push_back( d );
+        lua_pop( m_lua , 1);
+    }
+
+
+
+#ifdef LUMAIL_DEBUG
+    std::string de = "table_to_array(";
+    de += name;
+    de += ") - end";
+    DEBUG_LOG( de );
+#endif
+
 
     lua_pop( m_lua , 1); // pop nil
     return( results );
