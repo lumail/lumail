@@ -166,9 +166,9 @@ CLua *CLua::Instance()
 CLua::CLua()
 {
     /**
-     * Create LUA object.
+     * Create a new LUA object.
      */
-    m_lua = lua_open();
+    m_lua = luaL_newstate();
 
     /**
      * Register the libraries.
