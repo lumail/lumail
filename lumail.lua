@@ -245,6 +245,27 @@ function show_version()
 end
 
 
+
+
+--
+-- This function is called at run-time when TAB-completion is invoked.
+--
+-- The function is expected to return a Lua table, the values of which
+-- will be used for completion.  (The keys being ignored.)
+--
+-- Here we add any user-defined function the to the completion set.
+-- This works because Lua uses the global "_G" table to store functions, etc.
+--
+--
+function on_complete()
+   ret = {}
+
+   for k,v in pairs(_G) do
+      ret[k] = k
+   end
+   return(ret)
+end
+
 --
 -- This function is called when the client exits.
 --
