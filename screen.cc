@@ -556,6 +556,74 @@ void CScreen::readline(char *buffer, int buflen)
   int len = 0;
   int x, y;
 
+  const char *functions[] = {
+      "abort",
+      "clear",
+      "exec",
+      "exit",
+      "mime_type",
+      "msg",
+      "prompt",
+      "prompt_chars",
+      "prompt_maildir",
+      "prompt_yn",
+      "refresh_display",
+      "sleep",
+      "editor",
+      "from",
+      "global_mode",
+      "index_format",
+      "index_limit",
+      "maildir_format",
+      "maildir_limit",
+      "maildir_prefix",
+      "message_filter",
+      "sendmail_path",
+      "sent_mail",
+      "jump_maildir_to",
+      "scroll_maildir_down",
+      "scroll_maildir_to",
+      "scroll_maildir_up",
+      "jump_index_to",
+      "scroll_index_down",
+      "scroll_index_to",
+      "scroll_index_up",
+      "scroll_message_down",
+      "scroll_message_up",
+      "count_maildirs",
+      "current_maildir",
+      "current_maildirs",
+      "maildirs_matching",
+      "select_maildir",
+      "count_messages",
+      "current_message",
+      "delete",
+      "header",
+      "is_new",
+      "mark_new",
+      "mark_read",
+      "save",
+      "save_message",
+      "add_selected_folder",
+      "clear_selected_folders",
+      "selected_folders",
+      "set_selected_folder",
+      "toggle_selected_folder",
+      "compose",
+      "reply",
+      "send_email",
+      "screen_width",
+      "screen_height",
+      "executable",
+      "file_exists",
+      "is_directory",
+      "get_variables",
+      "attachments",
+      "count_attachments",
+      "save_attachment",
+      "dump_stack",
+      NULL };
+
   /**
    * Offset into history.
    */
@@ -585,6 +653,28 @@ void CScreen::readline(char *buffer, int buflen)
       } else {
         beep();
       }
+    }
+    else if ( c == '\t' ) /* TAB-completion */
+    {
+        if ( ( len > 0 ) && ( pos > 0 ) )
+        {
+            for( int i = 0; ; i ++ )
+            {
+                if ( functions[i] == NULL )
+                    break;
+
+                if ( functions[i] != NULL )
+                {
+                    if( strncmp( buffer, functions[i], pos ) == 0 )
+                    {
+                        strcpy(buffer, functions[i] );
+                        pos = strlen(functions[i]);
+                        len = pos;
+                        break;
+                    }
+                }
+            }
+        }
     } else if (c == 1 ) { /* ctrl-a */
         pos = 0;
     } else if (c == 5 ) { /* ctrl-e */
