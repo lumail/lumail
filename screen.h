@@ -66,6 +66,12 @@ class CScreen
   static void clear_status();
 
   /**
+   * Handle TAB-expansion of an input string.
+   * Return memory the caller must free.
+   */
+  static char *get_completion( const char *input, size_t size, int position );
+
+  /**
    * Read a line of input.
    */
   static void readline( char *buffer, int buflen );

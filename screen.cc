@@ -25,6 +25,7 @@
 #include <cctype>
 #include <sys/ioctl.h>
 #include <ncurses.h>
+
 #include "lang.h"
 #include "lua.h"
 #include "global.h"
@@ -546,20 +547,69 @@ void CScreen::clear_status()
 
 }
 
+
+
+
 /**
  * Given the input text return a single completion.
  *
- * TODO:  Use the position to we know *where* we're copmleting from.
- *
+ * NOTE: The caller must free the returned string.
  */
-static char *get_completion( const char *input, size_t size, int position )
+char *CScreen::get_completion( const char *input, size_t size, int position )
 {
+    char ret[1024] = { '\0' };
+
+    /**
+     * So we have a string and we know the cursor is at position "position".
+     *
+     * We want to walk backwards until we find the preceeding space/tab/( to
+     * know where to expand from.
+     */
+    const char *p = input + position - 1;
+
+    while ( ( p[0] != ' ' ) &&
+            ( p[0] != '\\' ) &&
+            ( p[0] != '(' ) &&
+            ( p[0] != '"' ) &&
+            ( p[0] != '\'' ) &&
+            ( p >= input ) )
+        p -=1;
+
+
+    /**
+     * Ensure we didn't go too far.
+     */
+    if ( p < input )
+        p = input;
+    else
+        p += 1;
+
+    /**
+     * Now we have the input buffer and a sized string to remove.
+     *
+     * We want to replace whatever is between "p" and "start+size".
+     *
+     */
+    size_t span = size - ( p - input );
+
+
     /**
      * tilde expansion.
      */
-    if (  ( strncmp( input, "~", 1 ) == 0 ) &&
+    if (  ( strncmp( p, "~", 1 ) == 0 ) &&
           ( getenv( "HOME") != NULL ) )
-        return(strdup( getenv( "HOME" ) ) );
+    {
+        /**
+         * Copy the leading section of the input.
+         */
+        strncpy(ret,input, p-input );
+
+        /**
+         * Add the extra section.
+         */
+        strcat(ret, getenv( "HOME" ) );
+        return( strdup( ret ) );
+    }
 
 
     /**
@@ -567,19 +617,65 @@ static char *get_completion( const char *input, size_t size, int position )
      */
     for( int i = 0; i < primitive_count ; i ++ )
     {
-        if( strncmp( input, primitive_list[i].name, size ) == 0 )
-            return( strdup( primitive_list[i].name ) );
+        if( strncmp( p, primitive_list[i].name, span ) == 0 )
+        {
+            /**
+             * Copy the leading section of the input.
+             */
+            strncpy(ret,input, p-input );
+
+            /**
+             * Add the extra section.
+             */
+            strcat(ret, primitive_list[i].name );
+            strncat(ret, "( ", 2 );
+            return( strdup( ret ) );
+        }
     }
 
     /**
-     * TODO: File/Path expansion.
+     * See if we can complete on a user-called function.
      */
+    CLua *lua = CLua::Instance();
+    std::vector<std::string> f = lua->on_complete();
+    std::vector<std::string>::iterator it;
+
+    for (it = f.begin(); it != f.end(); ++it)
+    {
+        if( strncmp( p, (*it).c_str(), span ) == 0 )
+        {
+            /**
+             * Copy the leading section of the input.
+             */
+            strncpy(ret,input, p-input );
+
+            /**
+             * Add the extra section.
+             */
+            strcat(ret, (*it).c_str());
+            strncat(ret, "( ", 2 );
+            return( strdup( ret ) );
+        }
+    }
+
+
+    /**
+     * File/Path expansion.
+     */
+    if ( strncmp( p, "/", 1 ) == 0 )
+    {
+        /**
+         * TODO
+         */
+    }
+
 
     /**
      * No match.
      */
     return NULL;
 }
+
 
 
 /* Read up to buflen-1 characters into `buffer`.
@@ -627,8 +723,7 @@ void CScreen::readline(char *buffer, int buflen)
         if ( ( len > 0 ) && ( pos > 0 ) )
         {
             /**
-             * TODO: Handle tokens not the starting
-             * buffer only.
+             * Handle the expansion..
              */
             char *reply = get_completion( buffer, len, pos );
             if ( reply != NULL )
