@@ -110,6 +110,11 @@ public:
     bool on_key(const char *key );
 
     /**
+     * Call the completion function from Lua.
+     */
+    std::vector<std::string> on_complete();
+
+    /**
      * convert a table to an array of strings.
      */
     std::vector<std::string> table_to_array( std::string name );
