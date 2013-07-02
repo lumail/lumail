@@ -548,77 +548,12 @@ void CScreen::clear_status()
 
 /**
  * Given the input text return a single completion.
+ *
+ * TODO:  Use the position to we know *where* we're copmleting from.
+ *
  */
-static char *get_completion( const char *input, size_t size )
+static char *get_completion( const char *input, size_t size, int position )
 {
-    const char *functions[] = {
-        "abort",
-        "add_selected_folder",
-        "attachments",
-        "clear",
-        "clear_selected_folders",
-        "compose",
-        "count_attachments",
-        "count_maildirs",
-        "count_messages",
-        "current_maildir",
-        "current_maildirs",
-        "current_message",
-        "delete",
-        "dump_stack",
-        "editor",
-        "exec",
-        "executable",
-        "exit",
-        "file_exists",
-        "from",
-        "get_variables",
-        "global_mode",
-        "header",
-        "index_format",
-        "index_limit",
-        "is_directory",
-        "is_new",
-        "jump_index_to",
-        "jump_maildir_to",
-        "maildir_format",
-        "maildir_limit",
-        "maildir_prefix",
-        "maildirs_matching",
-        "mark_new",
-        "mark_read",
-        "message_filter",
-        "mime_type",
-        "msg",
-        "prompt",
-        "prompt_chars",
-        "prompt_maildir",
-        "prompt_yn",
-        "refresh_display",
-        "reply",
-        "save",
-        "save_attachment",
-        "save_message",
-        "screen_height",
-        "screen_width",
-        "scroll_index_down",
-        "scroll_index_to",
-        "scroll_index_up",
-        "scroll_maildir_down",
-        "scroll_maildir_to",
-        "scroll_maildir_up",
-        "scroll_message_down",
-        "scroll_message_up",
-        "select_maildir",
-        "selected_folders",
-        "send_email",
-        "sendmail_path",
-        "sent_mail",
-        "set_selected_folder",
-        "sleep",
-        "toggle_selected_folder",
-        NULL };
-
     /**
      * tilde expansion.
      */
@@ -626,16 +561,14 @@ static char *get_completion( const char *input, size_t size )
           ( getenv( "HOME") != NULL ) )
         return(strdup( getenv( "HOME" ) ) );
 
+
     /**
      * Primitive expansion.
      */
-    for( int i = 0; ; i ++ )
+    for( int i = 0; i < primitive_count ; i ++ )
     {
-        if ( functions[i] == NULL )
-            return NULL;
-
-        if( strncmp( input, functions[i], size ) == 0 )
-            return( strdup( functions[i] ) );
+        if( strncmp( input, primitive_list[i].name, size ) == 0 )
+            return( strdup( primitive_list[i].name ) );
     }
 
     /**
@@ -697,7 +630,7 @@ void CScreen::readline(char *buffer, int buflen)
              * TODO: Handle tokens not the starting
              * buffer only.
              */
-            char *reply = get_completion( buffer, len );
+            char *reply = get_completion( buffer, len, pos );
             if ( reply != NULL )
             {
                 strcpy( buffer, reply );
