@@ -3,7 +3,7 @@
 #include "catch.hpp"
 #include "file.h"
 #include <sys/stat.h>
-
+#include <unistd.h>
 
 /**
  * Using common Unix files validate that CFile::exists works
