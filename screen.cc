@@ -585,7 +585,12 @@ void CScreen::readline(char *buffer, int buflen)
       } else {
         beep();
       }
-    } else if (c == KEY_LEFT) {
+    } else if (c == 1 ) { /* ctrl-a */
+        pos = 0;
+    } else if (c == 5 ) { /* ctrl-e */
+        pos = len;
+    }
+      else if (c == KEY_LEFT) {
       if (pos > 0) pos -= 1; else beep();
     } else if ( c == KEY_UP ) {
         hoff -= 1;
