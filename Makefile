@@ -21,12 +21,19 @@ OBJS=$(subst .cc,.o,$(SRCS))
 TARGET=lumail
 
 #
+#  The version of Lua we're building against.
+#  Valid options are "lua5.1" & "lua5.2".
+#
+LVER=lua5.1
+
+
+#
 # Flags.
 #
 # NOTE: We use "-std=gnu++0x" so we can use "unordered_map".
 #
-CPPFLAGS?=-std=gnu++0x -g -Wall -Werror $(shell pkg-config --cflags lua5.1) $(shell pcre++-config --cflags)
-LDLIBS?=$(shell pkg-config --libs lua5.1) -lpcrecpp  -lcurses -lmimetic
+CPPFLAGS?=-std=gnu++0x -g -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre++-config --cflags)
+LDLIBS?=$(shell pkg-config --libs ${LVER}) -lpcrecpp  -lcurses -lmimetic
 
 
 #
