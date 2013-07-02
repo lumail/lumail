@@ -546,6 +546,108 @@ void CScreen::clear_status()
 
 }
 
+/**
+ * Given the input text return a single completion.
+ */
+static char *get_completion( const char *input, size_t size )
+{
+    const char *functions[] = {
+        "abort",
+        "add_selected_folder",
+        "attachments",
+        "clear",
+        "clear_selected_folders",
+        "compose",
+        "count_attachments",
+        "count_maildirs",
+        "count_messages",
+        "current_maildir",
+        "current_maildirs",
+        "current_message",
+        "delete",
+        "dump_stack",
+        "editor",
+        "exec",
+        "executable",
+        "exit",
+        "file_exists",
+        "from",
+        "get_variables",
+        "global_mode",
+        "header",
+        "index_format",
+        "index_limit",
+        "is_directory",
+        "is_new",
+        "jump_index_to",
+        "jump_maildir_to",
+        "maildir_format",
+        "maildir_limit",
+        "maildir_prefix",
+        "maildirs_matching",
+        "mark_new",
+        "mark_read",
+        "message_filter",
+        "mime_type",
+        "msg",
+        "prompt",
+        "prompt_chars",
+        "prompt_maildir",
+        "prompt_yn",
+        "refresh_display",
+        "reply",
+        "save",
+        "save_attachment",
+        "save_message",
+        "screen_height",
+        "screen_width",
+        "scroll_index_down",
+        "scroll_index_to",
+        "scroll_index_up",
+        "scroll_maildir_down",
+        "scroll_maildir_to",
+        "scroll_maildir_up",
+        "scroll_message_down",
+        "scroll_message_up",
+        "select_maildir",
+        "selected_folders",
+        "send_email",
+        "sendmail_path",
+        "sent_mail",
+        "set_selected_folder",
+        "sleep",
+        "toggle_selected_folder",
+        NULL };
+
+    /**
+     * tilde expansion.
+     */
+    if (  ( strncmp( input, "~", 1 ) == 0 ) &&
+          ( getenv( "HOME") != NULL ) )
+        return(strdup( getenv( "HOME" ) ) );
+
+    /**
+     * Primitive expansion.
+     */
+    for( int i = 0; ; i ++ )
+    {
+        if ( functions[i] == NULL )
+            return NULL;
+
+        if( strncmp( input, functions[i], size ) == 0 )
+            return( strdup( functions[i] ) );
+    }
+
+    /**
+     * TODO: File/Path expansion.
+     */
+
+    /**
+     * No match.
+     */
+    return NULL;
+}
+
 
 /* Read up to buflen-1 characters into `buffer`.
  * A terminating '\0' character is added after the input.  */
@@ -556,73 +658,6 @@ void CScreen::readline(char *buffer, int buflen)
   int len = 0;
   int x, y;
 
-  const char *functions[] = {
-      "abort",
-      "clear",
-      "exec",
-      "exit",
-      "mime_type",
-      "msg",
-      "prompt",
-      "prompt_chars",
-      "prompt_maildir",
-      "prompt_yn",
-      "refresh_display",
-      "sleep",
-      "editor",
-      "from",
-      "global_mode",
-      "index_format",
-      "index_limit",
-      "maildir_format",
-      "maildir_limit",
-      "maildir_prefix",
-      "message_filter",
-      "sendmail_path",
-      "sent_mail",
-      "jump_maildir_to",
-      "scroll_maildir_down",
-      "scroll_maildir_to",
-      "scroll_maildir_up",
-      "jump_index_to",
-      "scroll_index_down",
-      "scroll_index_to",
-      "scroll_index_up",
-      "scroll_message_down",
-      "scroll_message_up",
-      "count_maildirs",
-      "current_maildir",
-      "current_maildirs",
-      "maildirs_matching",
-      "select_maildir",
-      "count_messages",
-      "current_message",
-      "delete",
-      "header",
-      "is_new",
-      "mark_new",
-      "mark_read",
-      "save",
-      "save_message",
-      "add_selected_folder",
-      "clear_selected_folders",
-      "selected_folders",
-      "set_selected_folder",
-      "toggle_selected_folder",
-      "compose",
-      "reply",
-      "send_email",
-      "screen_width",
-      "screen_height",
-      "executable",
-      "file_exists",
-      "is_directory",
-      "get_variables",
-      "attachments",
-      "count_attachments",
-      "save_attachment",
-      "dump_stack",
-      NULL };
 
   /**
    * Offset into history.
@@ -658,21 +693,17 @@ void CScreen::readline(char *buffer, int buflen)
     {
         if ( ( len > 0 ) && ( pos > 0 ) )
         {
-            for( int i = 0; ; i ++ )
+            /**
+             * TODO: Handle tokens not the starting
+             * buffer only.
+             */
+            char *reply = get_completion( buffer, len );
+            if ( reply != NULL )
             {
-                if ( functions[i] == NULL )
-                    break;
-
-                if ( functions[i] != NULL )
-                {
-                    if( strncmp( buffer, functions[i], pos ) == 0 )
-                    {
-                        strcpy(buffer, functions[i] );
-                        pos = strlen(functions[i]);
-                        len = pos;
-                        break;
-                    }
-                }
+                strcpy( buffer, reply );
+                pos = strlen(reply );
+                len = pos;
+                free( reply );
             }
         }
     } else if (c == 1 ) { /* ctrl-a */
