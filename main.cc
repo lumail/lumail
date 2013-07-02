@@ -132,7 +132,8 @@ int main(int argc, char *argv[])
 
     if (version)
     {
-	std::cout << "lumail v" << LUMAIL_VERSION << std::endl;
+	std::cout << "lumail v" << LUMAIL_VERSION ;
+        std::cout << " compiled against " << LUA_VERSION << "." << std::endl;
 	return 0;
     }
 
