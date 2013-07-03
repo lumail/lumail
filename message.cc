@@ -450,7 +450,7 @@ std::string CMessage::format( std::string fmt )
     /**
      * If the value is still unchanged ..
      */
-    if ( result.at(0) == '$' )
+    if ( result.size() > 1 && result.at(0) == '$' )
     {
         /**
          * See if it is header value we can find.
