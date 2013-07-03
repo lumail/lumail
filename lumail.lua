@@ -5,11 +5,14 @@
 --   /etc/lumail.lua
 --   ~/.lumail/config.lua
 --
--- If you wish to load an additional configuration file you add it via the
--- --rcfile argument:
+-- If you wish to load an additional configuration file you can add it via
+-- the --rcfile argument:
 --
 --   $ lumail --rcfile ./lumail.lua
 --
+--
+-- NOTE: This fille will also ensure that each file matching *.lua
+--       beneath ~/.lumail/ will be loaded.
 --
 -- The configuration file(s) are responsible for determining which keystrokes
 -- are recognized, and what they will do.
@@ -27,6 +30,9 @@
 -- Steve
 -- --
 --
+
+
+
 
 
 
@@ -721,18 +727,23 @@ keymap['message']['r'] = 'reply()'
 keymap['message']['d'] = 'delete()'
 
 
+
+---
+--
+-- Load any local files.
+--
+-- This will load ~/.lumail/*.lua
+--
+---
+
+if ( is_directory( os.getenv( "HOME" ) .. "/.lumail" ) ) then
+   load_directory( os.getenv( "HOME" ) .. "/.lumail" )
+end
+
+
 ---
 --
 --   Further examples are available online:  http://lumail.org/examples/
 --
 ---
 
-
---
--- If ~/.lumail/ exists then load all files from beneath it.
---
--- NOTE: We only load *.lua
---
-if ( is_directory( os.getenv( "HOME" ) .. "/.lumail" ) ) then
-   load_directory( os.getenv( "HOME" ) .. "/.lumail" )
-end
