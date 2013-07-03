@@ -43,7 +43,7 @@ binary-indep: build install
 	dh_installinit
 	dh_compress
 	dh_fixperms
-	dh_strip
+	dh_strip --dbg-package=lumail-debug
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
