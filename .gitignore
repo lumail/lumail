@@ -6,7 +6,7 @@ TODO.local
 core
 debian/files
 debian/lumail/
-debian/lumail-debug/
+debian/lumail-dbg/
 debian/*.substvars
 debian/*.log
 tests/history_tests
