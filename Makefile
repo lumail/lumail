@@ -46,6 +46,7 @@ all: $(TARGET)
 # Debug target.
 #
 lumail-debug: CXX += -DLUMAIL_DEBUG=1
+lumail-debug: TARGET=lumail-debug
 lumail-debug: $(TARGET)
 
 
@@ -70,7 +71,7 @@ depend: .depend
 # Cleanup
 #
 clean:
-	$(RM) $(TARGET) $(OBJS) core || true
+	$(RM) $(TARGET) lumail-debug $(OBJS) core || true
 	cd ./tests && make clean || true
 
 dist-clean: clean
