@@ -16,6 +16,11 @@
 #export LDFLAGS=$(shell dpkg-buildflags --get LDFLAGS)
 
 
+
+build-arch: build
+build-indep: build
+
+
 build: build-stamp
 
 build-stamp:
