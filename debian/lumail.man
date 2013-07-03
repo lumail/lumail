@@ -1,0 +1,15 @@
+.TH lumail 1 "January 2009" Unix "User Manuals"
+.SH NAME
+lumail \- console based email client
+.SH SYNOPSIS
+lumail [args].
+.PP
+.SH DESCRIPTION
+.\" Putting a newline after each sentence can generate better output.
+lumail is documented online on the website
+http://lumail.org/
+.SH AUTHOR
+Steve Kemp <steve@steve.org.uk>
+.SH "SEE ALSO"
+.\" Always quote multiple words for .SH
+There are no other references.

@@ -48,7 +48,7 @@ binary-indep: build install
 	dh_testroot
 	dh_installdebconf
 	dh_installdocs
-	dh_installman
+	dh_installman debian/lumail.man
 	dh_installchangelogs
 	dh_installinit
 	dh_compress
