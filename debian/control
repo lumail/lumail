@@ -12,8 +12,9 @@ Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Modal text-based mail client.
  This is the lumail modal-email client for console use.
 
-Package: lumail-debug
+Package: lumail-dbg
 Architecture: any
+Section: debug
 Depends: ${misc:Depends}, ${shlibs:Depends}, lumail (= ${binary:Version})
 Description: Modal text-based mail client.
  This is the lumail modal-email client for console use, compiled
