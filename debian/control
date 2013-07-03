@@ -14,6 +14,7 @@ Description: Modal text-based mail client.
 
 Package: lumail-dbg
 Architecture: any
+Priority: extra
 Section: debug
 Depends: ${misc:Depends}, ${shlibs:Depends}, lumail (= ${binary:Version})
 Description: Modal text-based mail client.
