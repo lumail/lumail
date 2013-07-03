@@ -1,9 +1,12 @@
 *.o
 .depend
 lumail
+lumail-debug
 TODO.local
 core
 debian/files
+debian/lumail/
+debian/lumail-debug/
 debian/*.substvars
 debian/*.log
 tests/history_tests
