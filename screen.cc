@@ -749,114 +749,169 @@ char *CScreen::get_completion( const char *input, size_t size, int position )
  * A terminating '\0' character is added after the input.  */
 void CScreen::readline(char *buffer, int buflen)
 {
-  int old_curs = curs_set(1);
-  int pos = 0;
-  int len = 0;
-  int x, y;
+    /**
+     * Set teh cursor to be visible.
+     */
+    int old_curs = curs_set(1);
+    int pos = 0;
+    int len = 0;
+    int x, y;
 
 
-  /**
-   * Offset into history.
-   */
-  CHistory *hist = CHistory::Instance();
-  int hoff = hist->size();
+    /**
+     * Offset into history.
+     */
+    CHistory *hist = CHistory::Instance();
+    int hoff = hist->size();
 
 
-  getyx(stdscr, y, x);
-  for (;;) {
-    int c;
-
-    buffer[len] = ' ';
-    mvaddnstr(y, x, buffer, len+1);
-    for( int padding = len; padding < CScreen::width(); padding++ )
-      {printw(" ");}
-
-    move(y, x+pos);
-    c = getch();
-
-    if (c == KEY_ENTER || c == '\n' || c == '\r') {
-      break;
-    } else if (isprint(c)) {
-      if (pos < buflen-1) {
-        memmove(buffer+pos+1, buffer+pos, len-pos);
-        buffer[pos++] = c;
-        len += 1;
-      } else {
-        beep();
-      }
-    }
-    else if ( c == '\t' ) /* TAB-completion */
+    getyx(stdscr, y, x);
+    for (;;)
     {
-        if ( ( len > 0 ) && ( pos > 0 ) )
+        int c;
+
+        buffer[len] = ' ';
+        mvaddnstr(y, x, buffer, len+1);
+
+        /**
+         * Clear the line.
+         */
+        for( int padding = len; padding < CScreen::width(); padding++ )
+            printw(" ");
+
+        move(y, x+pos);
+        c = getch();
+
+        if (c == KEY_ENTER || c == '\n' || c == '\r')
         {
-            /**
-             * Handle the expansion..
-             */
-            char *reply = get_completion( buffer, len, pos );
-            if ( reply != NULL )
+            break;
+        }
+        else if (isprint(c))
+        {
+            if (pos < buflen-1)
             {
-                strcpy( buffer, reply );
-                pos = strlen(reply );
-                len = pos;
-                free( reply );
+                memmove(buffer+pos+1, buffer+pos, len-pos);
+                buffer[pos++] = c;
+                len += 1;
+            }
+            else
+            {
+                beep();
             }
         }
-    } else if (c == 1 ) { /* ctrl-a */
-        pos = 0;
-    } else if (c == 5 ) { /* ctrl-e */
-        pos = len;
-    }
-      else if (c == KEY_LEFT) {
-      if (pos > 0) pos -= 1; else beep();
-    } else if ( c == KEY_UP ) {
-        hoff -= 1;
-        if ( hoff >= 0 )
+        else if ( c == '\t' ) /* TAB-completion */
         {
-            std::string ent = hist->at( hoff );
-            strcpy( buffer, ent.c_str() );
-            pos = len = strlen(ent.c_str());
+            if ( ( len > 0 ) && ( pos > 0 ) )
+            {
+                /**
+                 * Handle the expansion..
+                 */
+                char *reply = get_completion( buffer, len, pos );
+                if ( reply != NULL )
+                {
+                    strcpy( buffer, reply );
+                    pos = strlen(reply );
+                    len = pos;
+                    free( reply );
+                }
+            }
         }
-        else {
-            hoff = 0;
+        else if (c == 1 )   /* ctrl-a : beginning of line*/
+        {
+            pos = 0;
+        }
+        else if (c == 5 ) /* ctrl-e: end of line */
+        {
+            pos = len;
+        }
+        else if (c == 11 )  /* ctrl-k: kill to end of line */
+        {
+            len = pos;
+        }
+        else if ( ( c == 2 ) ||    /* ctrl-b : back char */
+                  (c == KEY_LEFT) )
+        {
+            if (pos > 0)
+                pos -= 1;
+            else
+                beep();
+        }
+        else if ( c == KEY_UP )
+        {
+            hoff -= 1;
+            if ( hoff >= 0 )
+            {
+                std::string ent = hist->at( hoff );
+                strcpy( buffer, ent.c_str() );
+                pos = len = strlen(ent.c_str());
+            }
+            else
+            {
+                hoff = 0;
+                beep();
+            }
+        }
+        else if ( c == KEY_DOWN )
+        {
+            hoff += 1;
+            if ( hoff < hist->size() )
+            {
+                std::string ent = hist->at( hoff );
+                strcpy( buffer, ent.c_str() );
+                pos = len = strlen(ent.c_str());
+            }
+            else
+            {
+                hoff = hist->size();
+                beep();
+            }
+        }
+        else if ( ( c == 6 ) || /* ctrl-f: forward char */
+                  (c == KEY_RIGHT) )
+        {
+            if (pos < len)
+                pos += 1;
+            else
+                beep();
+        }
+        else if (c == KEY_BACKSPACE)
+        {
+            if (pos > 0)
+            {
+                memmove(buffer+pos-1, buffer+pos, len-pos);
+                pos -= 1;
+                len -= 1;
+            }
+            else
+            {
+                beep();
+            }
+        }
+        else if (c == KEY_DC)
+        {
+            if (pos < len)
+            {
+                memmove(buffer+pos, buffer+pos+1, len-pos-1);
+                len -= 1;
+            }
+            else
+            {
+                beep();
+            }
+        }
+        else
+        {
             beep();
         }
     }
-    else if ( c == KEY_DOWN ) {
-        hoff += 1;
-        if ( hoff < hist->size() )
-        {
-            std::string ent = hist->at( hoff );
-            strcpy( buffer, ent.c_str() );
-            pos = len = strlen(ent.c_str());
-        }
-        else {
-            hoff = hist->size();
-            beep();
-        }
-    }
-    else if (c == KEY_RIGHT) {
-      if (pos < len) pos += 1; else beep();
-    } else if (c == KEY_BACKSPACE) {
-      if (pos > 0) {
-        memmove(buffer+pos-1, buffer+pos, len-pos);
-        pos -= 1;
-        len -= 1;
-      } else {
-        beep();
-      }
-    } else if (c == KEY_DC) {
-      if (pos < len) {
-        memmove(buffer+pos, buffer+pos+1, len-pos-1);
-        len -= 1;
-      } else {
-        beep();
-      }
-    } else {
-      beep();
-    }
-  }
-  buffer[len] = '\0';
-  if (old_curs != ERR) curs_set(old_curs);
 
-  hist->add( buffer );
+    /**
+     * Ensure the string is terminated.
+     */
+    buffer[len] = '\0';
+
+    if (old_curs != ERR)
+        curs_set(old_curs);
+
+    hist->add( buffer );
 }
