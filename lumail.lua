@@ -727,3 +727,12 @@ keymap['message']['d'] = 'delete()'
 --
 ---
 
+
+--
+-- If ~/.lumail/ exists then load all files from beneath it.
+--
+-- NOTE: We only load *.lua
+--
+if ( is_directory( os.getenv( "HOME" ) .. "/.lumail" ) ) then
+   load_directory( os.getenv( "HOME" ) .. "/.lumail" )
+end

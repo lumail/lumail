@@ -69,6 +69,7 @@ struct CLuaMapping primitive_list[] = {
     {"executable", (lua_CFunction) executable },
     {"file_exists", (lua_CFunction) file_exists },
     {"is_directory", (lua_CFunction) is_directory },
+    {"load_directory", (lua_CFunction) load_directory },
 
 // Folder Selection
     {"add_selected_folder", (lua_CFunction) add_selected_folder},

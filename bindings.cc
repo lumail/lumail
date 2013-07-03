@@ -29,6 +29,7 @@
 #include <pcrecpp.h>
 #include <ncurses.h>
 #include <unistd.h>
+#include <dirent.h>
 
 #include "bindings.h"
 #include "debug.h"
@@ -2739,4 +2740,70 @@ int lua_dump_stack(lua_State *L)
     lua->dump_stack();
 #endif
     return 0;
+}
+
+/**
+ * Load *.lua from the given directory.
+ */
+int load_directory(lua_State *L)
+{
+
+    const char *path = lua_tostring(L, -1);
+    if (path == NULL)
+	return luaL_error(L, "Missing argument to load_directory(..)");
+
+    /**
+     * The lua intepretter.
+     */
+    CLua *lua = CLua::Instance();
+
+    int count = 0;
+    dirent *de;
+    DIR *dp;
+
+    dp = opendir(path);
+    if (dp)
+    {
+        std::string base = path;
+        base += "/";
+
+        while (true)
+        {
+            de = readdir(dp);
+            if (de == NULL)
+                break;
+
+            /**
+             * Build up the complete file.
+             */
+            std::string file = base + de->d_name;
+
+            /**
+             * If the file ends in .lua then load it.
+             */
+            size_t offset = file.rfind('.');
+            if(offset != std::string::npos)
+            {
+                /**
+                 * Get the lower-case version.
+                 */
+                std::string extension = file.substr(offset+1);
+                std::transform(extension.begin(), extension.end(), extension.begin(), tolower );
+
+                if ( strcmp( "lua", extension.c_str() ) == 0 )
+                {
+                    lua->load_file( file );
+                    count += 1;
+                }
+
+            }
+        }
+        closedir(dp);
+    }
+
+    /**
+     * Return the number of files read.
+     */
+    lua_pushinteger(L, count );
+    return 1;
 }
