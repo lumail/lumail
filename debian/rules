@@ -6,6 +6,16 @@
 # export DH_VERBOSE=1
 
 
+
+#
+# Uncomment these lines to enable fortifying source
+#
+# This will result in broken builds.
+#
+#export CPPFLAGS=$(shell dpkg-buildflags --get CPPFLAGS) $(shell dpkg-buildflags --get CFLAGS)
+#export LDFLAGS=$(shell dpkg-buildflags --get LDFLAGS)
+
+
 build: build-stamp
 
 build-stamp:
