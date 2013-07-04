@@ -131,7 +131,7 @@ void CMessage::add_flag( char c )
     /**
      * If the flag is already present, return.
      */
-    if ( flags().find( c ) == std::string::npos)
+    if ( flags().find( c ) != std::string::npos)
         return;
 
     /**
@@ -312,6 +312,7 @@ bool CMessage::mark_read()
         n_path = before + "/cur/" + after;
         if ( rename(  c_path.c_str(), n_path.c_str() )  == 0 ) {
             path(n_path);
+            add_flag( 'S' );
             return true;
         }
         else {
@@ -326,6 +327,7 @@ bool CMessage::mark_read()
          *
          */
         remove_flag( 'N' );
+        add_flag( 'S' );
         return true;
     }
 }
