@@ -204,5 +204,6 @@ int save_attachment(lua_State *L);
  * Debugging code.
  */
 int lua_dump_stack(lua_State *L);
+int log_message(lua_State *L);
 
 #endif				/* _bindings_h */

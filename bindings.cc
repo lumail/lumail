@@ -2764,13 +2764,32 @@ int save_attachment(lua_State *L)
 
 
 /**
- * Dump the Lua stack to our debug file; only present if compiled in debug-mode.
+ * Dump the Lua stack to our debug-log.
+ *
+ * NOTE: Only present if lumail is compiled with debugging.
  */
 int lua_dump_stack(lua_State *L)
 {
 #ifdef LUMAIL_DEBUG
     CLua *lua = CLua::Instance();
     lua->dump_stack();
+#endif
+    return 0;
+}
+
+/**
+ * Log a message to the debug-log.
+ *
+ * NOTE: Only present if lumail is compiled with debugging.
+ */
+int log_message(lua_State *L)
+{
+#ifdef LUMAIL_DEBUG
+    const char *str = lua_tostring(L, -1);
+    if (str == NULL)
+	return luaL_error(L, "Missing argument to log_message(..)");
+
+    DEBUG_LOG( str );
 #endif
     return 0;
 }

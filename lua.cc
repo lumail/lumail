@@ -56,6 +56,7 @@ struct CLuaMapping primitive_list[] = {
     {"abort", (lua_CFunction) abort },
     {"clear", (lua_CFunction) clear },
     {"dump_stack", (lua_CFunction) lua_dump_stack },
+    {"log_message", (lua_CFunction) log_message },
     {"exec", (lua_CFunction) exec },
     {"exit", (lua_CFunction) exit },
     {"mime_type", (lua_CFunction) mime_type },
