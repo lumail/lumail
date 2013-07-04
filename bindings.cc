@@ -756,6 +756,13 @@ int scroll_maildir_to(lua_State * L)
     if (str == NULL)
 	return luaL_error(L, "Missing argument to scroll_maildir_to(..)");
 
+
+    /**
+     * Lower-case version of the string.
+     */
+    std::string find(str);
+    std::transform(find.begin(), find.end(), find.begin(), tolower);
+
     /**
      * get the current folders.
      */
@@ -766,12 +773,23 @@ int scroll_maildir_to(lua_State * L)
 
     int i = selected + 1;
 
-    while (i != selected) {
+    while (i != selected)
+    {
 	if (i >= max)
 	    break;
 
+        /**
+         * Get the display-name of the folder.
+         */
 	CMaildir cur = display[i];
-	if (strstr(cur.path().c_str(), str) != NULL)
+        std::string p = cur.path();
+
+        /**
+         * Lower-case it.
+         */
+        std::transform(p.begin(), p.end(), p.begin(), tolower);
+
+	if (strstr(p.c_str(), find.c_str()) != NULL)
         {
 	    global->set_selected_folder(i);
 	    break;
@@ -1228,6 +1246,12 @@ int scroll_index_to(lua_State * L)
         return luaL_error(L, "Missing argument to scroll_index_to(..)");
 
     /**
+     * Lower-case version of the string.
+     */
+    std::string find(str);
+    std::transform(find.begin(), find.end(), find.begin(), tolower);
+
+    /**
      * get the current messages
      */
     CGlobal *global = CGlobal::Instance();
@@ -1249,9 +1273,18 @@ int scroll_index_to(lua_State * L)
         if (i >= max)
             break;
 
+        /**
+         * Format the message, and lower-case it.
+         */
         CMessage *cur = messages->at(i);
-        std::string format = cur->format();
-        if (strstr(format.c_str(), str) != NULL) {
+        std::string fmt = cur->format();
+        std::transform(fmt.begin(), fmt.end(), fmt.begin(), tolower);
+
+        /**
+         * Now look for it.
+         */
+        if (strstr(fmt.c_str(), find.c_str()) != NULL)
+        {
             global->set_selected_message(i);
             break;
         }
