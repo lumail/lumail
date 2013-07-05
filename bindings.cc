@@ -41,6 +41,8 @@
 #include "screen.h"
 
 
+int unused __attribute__((unused));
+
 
 /**
  * Get/Set the value of a string variable.
@@ -357,7 +359,8 @@ int exec(lua_State * L)
     endwin();
 
     /* Run the command */
-    system(str);
+    unused = system(str);
+
 
     /**
      * Reset + redraw
@@ -1877,28 +1880,28 @@ int compose(lua_State * L)
     /**
      * To
      */
-    write(fd, "To: ", strlen( "To: "));
-    write(fd, recipient, strlen( recipient ));
-    write(fd, "\n", 1 );
+    unused=write(fd, "To: ", strlen( "To: "));
+    unused=write(fd, recipient, strlen( recipient ));
+    unused=write(fd, "\n", 1 );
 
     /**
      * Subject.
      */
-    write(fd, "Subject: ", strlen( "Subject: " ) );
-    write(fd, subject, strlen( subject ) );
-    write(fd, "\n", 1 );
+    unused=write(fd, "Subject: ", strlen( "Subject: " ) );
+    unused=write(fd, subject, strlen( subject ) );
+    unused=write(fd, "\n", 1 );
 
     /**
      * From
      */
-    write(fd, "From: " , strlen( "From: " ) );
-    write(fd, from->c_str(), strlen( from->c_str() ) );
-    write(fd, "\n", 1 );
+    unused=write(fd, "From: " , strlen( "From: " ) );
+    unused=write(fd, from->c_str(), strlen( from->c_str() ) );
+    unused=write(fd, "\n", 1 );
 
     /**
      * Space
      */
-    write(fd, "\n", 1 );
+    unused=write(fd, "\n", 1 );
 
     /**
      * Body:  User will fill out.
@@ -1909,11 +1912,11 @@ int compose(lua_State * L)
      */
     if ( sig.empty() )
     {
-        write(fd, "\n-- \n", strlen("\n-- \n" ) );
+        unused=write(fd, "\n-- \n", strlen("\n-- \n" ) );
     }
     else
     {
-        write(fd, sig.c_str(), sig.size() );
+        unused=write(fd, sig.c_str(), sig.size() );
     }
 
     close(fd);
@@ -1935,7 +1938,7 @@ int compose(lua_State * L)
      */
     cmd += " ";
     cmd += filename;
-    system(cmd.c_str());
+    unused = system(cmd.c_str());
 
 
     /**
@@ -2102,23 +2105,23 @@ int reply(lua_State * L)
     /**
      * To
      */
-    write(fd, "To: ", strlen( "To: "));
-    write(fd, to.c_str(), strlen( to.c_str() ));
-    write(fd, "\n", 1 );
+    unused=write(fd, "To: ", strlen( "To: "));
+    unused=write(fd, to.c_str(), strlen( to.c_str() ));
+    unused=write(fd, "\n", 1 );
 
     /**
      * Subject.
      */
-    write(fd, "Subject: ", strlen( "Subject: " ) );
-    write(fd, subject.c_str(), strlen( subject.c_str() ) );
-    write(fd, "\n", 1 );
+    unused=write(fd, "Subject: ", strlen( "Subject: " ) );
+    unused=write(fd, subject.c_str(), strlen( subject.c_str() ) );
+    unused=write(fd, "\n", 1 );
 
     /**
      * From
      */
-    write(fd, "From: " , strlen( "From: " ) );
-    write(fd, from->c_str(), strlen( from->c_str() ) );
-    write(fd, "\n", 1 );
+    unused=write(fd, "From: " , strlen( "From: " ) );
+    unused=write(fd, from->c_str(), strlen( from->c_str() ) );
+    unused=write(fd, "\n", 1 );
 
     /**
      * If we have a message-id add that to the references.
@@ -2145,16 +2148,16 @@ int reply(lua_State * L)
          */
         if ( !ref.empty() )
         {
-            write(fd, "References: " , strlen( "References: " ) );
-            write(fd, ref.c_str(), strlen( ref.c_str() ) );
-            write(fd, "\n", 1 );
+            unused=write(fd, "References: " , strlen( "References: " ) );
+            unused=write(fd, ref.c_str(), strlen( ref.c_str() ) );
+            unused=write(fd, "\n", 1 );
         }
     }
 
     /**
      * Space
      */
-    write(fd, "\n", 1 );
+    unused=write(fd, "\n", 1 );
 
     /**
      * Body
@@ -2163,12 +2166,12 @@ int reply(lua_State * L)
     int lines =(int)body.size();
     for( int i = 0; i < lines; i++ )
     {
-        write(fd, "> ", 2 );
-        write(fd, body[i].c_str(), strlen(body[i].c_str() ));
-        write(fd, "\n", 1 );
+        unused=write(fd, "> ", 2 );
+        unused=write(fd, body[i].c_str(), strlen(body[i].c_str() ));
+        unused=write(fd, "\n", 1 );
     }
 
-    write(fd, "-- \n", strlen("-- \n" ) );
+    unused=write(fd, "-- \n", strlen("-- \n" ) );
     close(fd);
 
     /**
@@ -2188,7 +2191,7 @@ int reply(lua_State * L)
      */
     cmd += " ";
     cmd += filename;
-    system(cmd.c_str());
+    unused = system(cmd.c_str());
 
 
     /**
@@ -2412,46 +2415,46 @@ int send_email(lua_State *L)
     /**
      * To
      */
-    write(fd, "To: ", strlen( "To: "));
-    write(fd, to, strlen( to ));
-    write(fd, "\n", 1 );
+    unused=write(fd, "To: ", strlen( "To: "));
+    unused=write(fd, to, strlen( to ));
+    unused=write(fd, "\n", 1 );
 
     /**
      * Subject.
      */
-    write(fd, "Subject: ", strlen( "Subject: " ) );
-    write(fd, subject, strlen( subject ) );
-    write(fd, "\n", 1 );
+    unused=write(fd, "Subject: ", strlen( "Subject: " ) );
+    unused=write(fd, subject, strlen( subject ) );
+    unused=write(fd, "\n", 1 );
 
     /**
      * From
      */
-    write(fd, "From: " , strlen( "From: " ) );
-    write(fd, from, strlen( from ) );
-    write(fd, "\n", 1 );
+    unused=write(fd, "From: " , strlen( "From: " ) );
+    unused=write(fd, from, strlen( from ) );
+    unused=write(fd, "\n", 1 );
 
     /**
      * Space
      */
-    write(fd, "\n", 1 );
+    unused=write(fd, "\n", 1 );
 
     /**
      * Body.
      */
-    write(fd, body, strlen( body ) );
+    unused=write(fd, body, strlen( body ) );
 
     /**
      * .sig
      */
     if ( sig.empty() )
     {
-        write(fd, "\n\n-- \n", strlen("\n\n-- \n" ) );
+        unused=write(fd, "\n\n-- \n", strlen("\n\n-- \n" ) );
     }
     else
     {
-        write(fd, "\n", 1 );
-        write(fd, "\n", 1 );
-        write(fd, sig.c_str(), sig.size() );
+        unused=write(fd, "\n", 1 );
+        unused=write(fd, "\n", 1 );
+        unused=write(fd, sig.c_str(), sig.size() );
     }
 
     close(fd);
