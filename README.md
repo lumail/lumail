@@ -74,7 +74,8 @@ At startup the following two Lua files are evaluated, if present:
 If neither of those files are present then the client will abort with an error.
 This is to ensure that the keymap(s) are defined, etc.
 
-Once you have configuration file you cna use any of the [supplied lua primitives](http://lumail.org/lua/) to do interesting things.  The [online lua examples](http://lumail.org/examples/) are a good starting point for reference.
+Once you have configuration file you can use any of the [supplied lua primitives](http://lumail.org/lua/) to do interesting things.  The [online lua examples](http://lumail.org/examples/) are a good starting point for reference.
+
 
 Further Information
 -------------------
