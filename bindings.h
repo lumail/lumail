@@ -85,7 +85,7 @@ int index_limit(lua_State * L);
 /* get/set the global maildir-prefix */
 int maildir_prefix(lua_State * L);
 
-/* get/set teh editor */
+/* get/set the editor */
 int editor(lua_State *L);
 
 /* get/set the message-filter.*/

@@ -750,7 +750,7 @@ char *CScreen::get_completion( const char *input, size_t size, int position )
 void CScreen::readline(char *buffer, int buflen)
 {
     /**
-     * Set teh cursor to be visible.
+     * Set the cursor to be visible.
      */
     int old_curs = curs_set(1);
     int pos = 0;
