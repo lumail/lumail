@@ -12,7 +12,7 @@
 --
 --
 -- NOTE: This fille will also ensure that each file matching *.lua
---       beneath ~/.lumail/ will be loaded.
+--       beneath ~/.lumail.d/ will be loaded.
 --
 -- The configuration file(s) are responsible for determining which keystrokes
 -- are recognized, and what they will do.
@@ -732,12 +732,12 @@ keymap['message']['d'] = 'delete()'
 --
 -- Load any local files.
 --
--- This will load ~/.lumail/*.lua
+-- This will load ~/.lumail.d/*.lua
 --
 ---
 
-if ( is_directory( os.getenv( "HOME" ) .. "/.lumail" ) ) then
-   load_directory( os.getenv( "HOME" ) .. "/.lumail" )
+if ( is_directory( os.getenv( "HOME" ) .. "/.lumail.d" ) ) then
+   load_directory( os.getenv( "HOME" ) .. "/.lumail.d" )
 end
 
 
