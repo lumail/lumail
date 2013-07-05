@@ -1,3 +1,27 @@
+lumail (0.10) stable; urgency=low
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+     - #45 - Attachment handling is missing: Viewing in incoming mail.
+           - New primitive: count_attachments().
+           - New primitive: save_attachment().
+           - New primitive: attachments().
+     - #47 - TAB-completion is present for functions, filenames, etc.
+     - #48 - Lumail now builds with Lua 5.2
+           - Show the version of Lua we were built against.
+     - #49 - Mark messages as read properly.
+     - #50 - Searching should be case-insensitive
+  * Fix segfault when opening messages with empty headers.
+  * New primitive: load_directory().
+  * New callback function: on_complete().
+  * New keybindings for input to the prompt() function.
+  * Updated Debian package to be built with stack-protection.
+  * Updated Debian package to provide lumail-dbg.
+  * Updated Debian package to provide (stub) manpage.
+
+ -- Steve Kemp <steve@steve.org.uk>  Fri, 5 Jul 2013 18:18:18 +0000
+
 lumail (0.09) stable; urgency=low
 
   * References here are to the Github repository issue tracker:
