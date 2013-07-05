@@ -29,13 +29,15 @@ Building/Installation
 
 The application is developed in C++ and has intentionally minimal dependencies:
 
-* lua 5.1 - The scripting language
+* lua 5.1 - The scripting language.
+** lua 5.2 is supported too, but is not the default.
 * ncurses - The console input/graphics library.
 * mimetic - The MIME-library.
+* pcrec++ - The regular-expression library.
 
 Upon a Debian GNU/Linux system you may install all required packages with:
 
-     # apt-get install libncurses-dev liblua5.1-0-dev lua5.1 libmimetic-dev
+     # apt-get install libncurses-dev liblua5.1-0-dev lua5.1 libmimetic-dev libpcre++-dev
 
 > There are [binary packages for Debian GNU/linux](http://packages.steve.org.uk/lumail/), compiled by the author.
 
@@ -55,50 +57,24 @@ For coding-style we use the following [Emacs](http://www.gnu.org/software/emacs/
 Installation should be as simple as copying the supplied configuration file to `/etc/lumail.lua` and copying the binary to `/usr/local/bin`.  If you run `make install` this will be done for you.
 
 
-Current Status
---------------
-
-Because lumail is modal application the coding has been split into sections:
-
-* Code the display/manipulation of the Maildir folders.
-    * This is complete.
-    * You may scroll/search/limit the display of folders.
-* Code the display/manipulation of the message-indexes.
-    * This is functional.
-    * You may scroll/search/limit the display of messages.  (But such searches are slow.)
-* Code the display/manipulation of a single mail message.
-    * This is functional.
-    * You may view the first screen-ful of a message.  If it is text/plain.
-
-Missing functionality largely relates to using this client exclusively:
-
-* There is no threaded-message viewing.
-    * All mails are shown in oldest to newest order.
-* The ability to operate upon more than one message at a time.
-    * i.e. The `tag-*` functions in mutt are not supported.
-* Attachment handling is entirely absent.
-
-You can [view screenshots](http://lumail.org/screenshots/) on the
-[lumail website](http://lumail.org).
-
 
 Configuration & Lua-Primitives
 ------------------------------
 
-If you examine the supplied [lumail.lua](https://raw.github.com/skx/lumail/master/lumail.lua)
-configuration file you'll get a flavour for the configuration.
+If you examine the supplied [lumail.lua](https://raw.github.com/skx/lumail/master/lumail.lua) configuration file you'll get a flavour for the configuration.
 
-The main part of the configuration is to point the mail-client at your local Maildir
-location, from which all sub-folders will be determined at run-time.
+The main part of the configuration is to point the mail-client at your local
+`Maildir` location, from which all sub-folders will be determined at run-time.
 
 At startup the following two Lua files are evaluated, if present:
 
 * `/etc/lumail.lua`
 * `~/.lumail/config.lua`
 
-If none of those files exist then the client will abort with an error.  This is to ensure
-that the keymap(s) are defined, etc.
+If neither of those files are present then the client will abort with an error.
+This is to ensure that the keymap(s) are defined, etc.
 
+Once you have configuration file you cna use any of the [supplied lua primitives](http://lumail.org/lua/) to do interesting things.  The [online lua examples](http://lumail.org/examples/) are a good starting point for reference.
 
 Further Information
 -------------------
