@@ -8,12 +8,11 @@
 
 
 #
-# Uncomment these lines to enable fortifying source
+# Uncomment these lines to enable stack-protection and source
+# fortification.
 #
-# This will result in broken builds.
-#
-#export CPPFLAGS=$(shell dpkg-buildflags --get CPPFLAGS) $(shell dpkg-buildflags --get CFLAGS)
-#export LDFLAGS=$(shell dpkg-buildflags --get LDFLAGS)
+export CPPFLAGS=$(shell dpkg-buildflags --get CPPFLAGS) $(shell dpkg-buildflags --get CFLAGS)
+export LDFLAGS=$(shell dpkg-buildflags --get LDFLAGS)
 
 
 
