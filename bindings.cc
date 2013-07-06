@@ -978,32 +978,29 @@ int current_maildirs(lua_State *L)
 int current_message(lua_State * L)
 {
     /**
-     * Get all messages from the currently selected maildirs.
+     * Get the currently selected message.
      */
-    CGlobal *global = CGlobal::Instance();
-    std::vector<CMessage *> *messages = global->get_messages();
-
-    /**
-     * The number of items we've found, and the currently selected one.
-     */
-    int count    = messages->size();
-    int selected = global->get_selected_message();
-
-    /**
-     * No messages?
-     */
-    if ( ( count < 1 ) || selected > count )
+    CMessage *msg = get_message_for_operation( NULL );
+    if ( msg == NULL )
     {
-        lua_pushstring(L,"" );
-        return 1;
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
     }
 
     /**
-     * Push the path.
+     * If that succeeded store the path.
      */
-    CMessage *cur = messages->at(selected);
-    lua_pushstring(L, cur->path().c_str() );
-    return 1;
+    std::string source = msg->path();
+    if ( !source.empty() )
+    {
+        lua_pushstring(L, source.c_str());
+        return(1);
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 
@@ -1178,38 +1175,6 @@ int delete_message( lua_State *L )
      * We're done.
      */
     return 0;
-}
-
-
-/**
- * Return the path to the currently selected message.
- */
-int message_path( lua_State *L )
-{
-    /**
-     * Get the currently selected message.
-     */
-    CMessage *msg = get_message_for_operation( NULL );
-    if ( msg == NULL )
-    {
-        CLua *lua = CLua::Instance();
-        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
-        return( 0 );
-    }
-
-    /**
-     * If that succeeded store the path.
-     */
-    std::string source = msg->path();
-    if ( !source.empty() )
-    {
-        lua_pushstring(L, source.c_str());
-        return(1);
-    }
-    else
-    {
-        return 0;
-    }
 }
 
 
