@@ -106,6 +106,7 @@ struct CLuaMapping primitive_list[] = {
     { "delete",(lua_CFunction) delete_message },
     { "header",(lua_CFunction) header },
     { "is_new",(lua_CFunction) is_new },
+    { "message", (lua_CFunction) message_path },
     { "mark_new",(lua_CFunction) mark_new },
     { "mark_read",(lua_CFunction) mark_read },
     { "reply",(lua_CFunction) reply  },

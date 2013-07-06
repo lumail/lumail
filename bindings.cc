@@ -1182,6 +1182,38 @@ int delete_message( lua_State *L )
 
 
 /**
+ * Return the path to the currently selected message.
+ */
+int message_path( lua_State *L )
+{
+    /**
+     * Get the currently selected message.
+     */
+    CMessage *msg = get_message_for_operation( NULL );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+    /**
+     * If that succeeded store the path.
+     */
+    std::string source = msg->path();
+    if ( !source.empty() )
+    {
+        lua_pushstring(L, source.c_str());
+        return(1);
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+
+/**
  * Save the current message to a new location.
  */
 int save_message( lua_State *L )

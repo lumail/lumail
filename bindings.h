@@ -136,6 +136,10 @@ int delete_message(lua_State *L);
 /* move a message */
 int save_message( lua_State *L );
 
+/* Get the message path */
+int message_path( lua_State *L );
+
+
 /* draw a string at the foot of the screen. */
 int msg(lua_State * L);
 
