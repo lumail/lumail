@@ -639,26 +639,27 @@ char *CScreen::get_completion( const char *input, size_t size, int position )
      */
     CLua *lua = CLua::Instance();
     std::vector<std::string> f = lua->on_complete();
-    std::vector<std::string>::iterator it;
-
-    for (it = f.begin(); it != f.end(); ++it)
+    if ( f.size() > 0 )
     {
-        if( strncmp( p, (*it).c_str(), span ) == 0 )
-        {
-            /**
-             * Copy the leading section of the input.
-             */
-            strncpy(ret,input, p-input );
+        std::vector<std::string>::iterator it;
 
-            /**
-             * Add the extra section.
-             */
-            strcat(ret, (*it).c_str());
-            strncat(ret, "(", 1 );
-            return( strdup( ret ) );
+        for (it = f.begin(); it != f.end(); ++it)
+        {
+            if( strncmp( p, (*it).c_str(), span ) == 0 )
+            {
+                /**
+                 * Copy the leading section of the input.
+                 */
+                strncpy(ret,input, p-input );
+
+                /**
+                 * Add the extra section.
+                 */
+                strcat(ret, (*it).c_str());
+                return( strdup( ret ) );
+            }
         }
     }
-
 
     /**
      * File/Path expansion.  This is a little hairy.
