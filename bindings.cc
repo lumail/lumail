@@ -2029,9 +2029,9 @@ int compose(lua_State * L)
     CFile::file_to_pipe( filename, *sendmail );
 
     /**
-     * Get a filename in the sentmail path.
+     * Get a filename in the sent-mail path.
      */
-    std::string archive = CMaildir::message_in( *sent_path, true );
+    std::string archive = CMaildir::message_in( *sent_path, false );
     if ( archive.empty() )
     {
         unlink( filename );
@@ -2285,7 +2285,7 @@ int reply(lua_State * L)
     /**
      * Get a filename in the sent-mail path.
      */
-    std::string archive = CMaildir::message_in( *sent_path, true );
+    std::string archive = CMaildir::message_in( *sent_path, false );
     if ( archive.empty() )
     {
         unlink( filename );
