@@ -121,6 +121,9 @@ void CScreen::drawMaildir()
     for (row = 0; row < (height - 1); row++) {
         int unread = 0;
 
+	move(row, 0);
+	printw("  " );
+
         /**
          * The current object.
          */
@@ -266,6 +269,8 @@ void CScreen::drawIndex()
 
     for (row = 0; row < (height - 1); row++)
     {
+	move(row, 0);
+	printw("  " );
 
         /**
          * What we'll output for this row.
