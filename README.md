@@ -31,9 +31,9 @@ The application is developed in C++ and has intentionally minimal dependencies:
 
 * lua 5.1 - The scripting language.
 ** lua 5.2 is supported too, but is not the default.
-* ncurses - The console input/graphics library.
-* mimetic - The MIME-library.
-* pcrec++ - The regular-expression library.
+* libncurses - The console input/graphics library.
+* libmimetic  - The MIME-library.
+* libpcre3 - The regular-expression library.
 
 Upon a Debian GNU/Linux system you may install all required packages with:
 
