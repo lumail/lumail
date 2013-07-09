@@ -555,6 +555,27 @@ void CScreen::clear_status()
 
 
 
+/**
+ * Clear the main display area, leaving the status-area alone.
+ */
+void CScreen::clear_main()
+{
+
+    /**
+     * Clear all the screen - but not the prompt.
+     */
+    int width = CScreen::width();
+    int height = CScreen::height();
+
+    std::string blank = "";
+    while( (int)blank.length() < width )
+        blank += " ";
+
+    for(int i = 0; i < ( height - 1 ); i++ )
+        mvprintw( i, 0, "%s", blank.c_str() );
+
+}
+
 
 /**
  * Given the input text return a single completion.

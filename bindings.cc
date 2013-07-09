@@ -261,20 +261,7 @@ int sent_mail(lua_State * L)
  */
 int clear(lua_State * L)
 {
-    /**
-     * Clear all the screen - but not the prompt.
-     */
-    int width = CScreen::width();
-    int height = CScreen::height();
-
-    std::string blank = "";
-    while( (int)blank.length() < width )
-        blank += " ";
-
-    for(int i = 0; i < ( height - 1 ); i++ )
-        mvprintw( i, 0, "%s", blank.c_str() );
-
-    refresh();
+    CScreen::clear_main();
     return 0;
 }
 

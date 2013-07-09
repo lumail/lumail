@@ -61,6 +61,11 @@ class CScreen
   static int height();
 
   /**
+   * Clear the main display area, leaving the status-area alone.
+   */
+  static void clear_main();
+
+  /**
    * Clear the status-line of the screen.
    */
   static void clear_status();
