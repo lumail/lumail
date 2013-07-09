@@ -1,3 +1,16 @@
+lumail (0.11) stable; urgency=low
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+     - #52 - Don't append "(" to user-defined TAB-completions
+     - #53 - Outgoing messages aren't marked as new in sent-mail folder.
+     - #54 - Build/Link against libpcre3-dev, not libpcre++-dev
+     - #55 - Improved screen updates to avoid redraw artifacts.
+  * Updated build-dependencies to be accurate.
+
+ -- Steve Kemp <steve@steve.org.uk>  Tue, 9 Jul 2013 09:44:09 +0000
+
 lumail (0.10) stable; urgency=low
 
   * New release, fixing several bugs.
