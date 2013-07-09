@@ -271,7 +271,7 @@ int clear(lua_State * L)
  */
 int refresh_display(lua_State * L)
 {
-    clear();
+    CScreen::clear_main();
     refresh();
     return 0;
 }
@@ -528,7 +528,7 @@ int prompt_maildir(lua_State * L)
 
     while (true)
     {
-        clear();
+        CScreen::clear_main();
 
         std::vector<CMaildir> folders = global->get_all_folders();
 

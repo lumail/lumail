@@ -54,6 +54,11 @@ CScreen::~CScreen()
 void CScreen::refresh_display()
 {
     /**
+     * Clear the main-part of the screen.
+     */
+    CScreen::clear_main();
+
+    /**
      * Get the current mode.
      */
     CGlobal *global = CGlobal::Instance();
@@ -66,8 +71,6 @@ void CScreen::refresh_display()
     else if (strcmp(s->c_str(), "message") == 0)
 	drawMessage();
     else {
-        CLua *lua = CLua::Instance();
-        lua->execute( "clear();" );
         move(3, 3);
         printw("UNKNOWN MODE: '%s'", s->c_str());
     }
@@ -210,7 +213,6 @@ void CScreen::drawIndex()
             /**
              * No folders selected, and no messages.
              */
-            clear();
             move(2,2);
             printw( NO_MESSAGES_NO_FOLDERS );
             return;
@@ -219,7 +221,6 @@ void CScreen::drawIndex()
         /**
          * Show the selected folders.
          */
-        clear();
         move(2, 2);
         printw( NO_MESSAGES_IN_FOLDERS );
 
@@ -369,7 +370,6 @@ void CScreen::drawMessage()
         cur = messages->at(selected);
     else
     {
-        clear();
         move(3,3);
         printw(NO_MESSAGES);
         return;
@@ -379,16 +379,10 @@ void CScreen::drawMessage()
      * Now we have a message - display it.
      */
 
-
     /**
-     * Clear the screen.
+     * Find the headers we'll print.
      */
     CLua *lua = CLua::Instance();
-    lua->execute( "clear();" );
-
-    /**
-     * The headers we'll print.
-     */
     std::vector<std::string> headers = lua->table_to_array( "headers" );
 
     /**
