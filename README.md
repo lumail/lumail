@@ -4,12 +4,12 @@ Lumail
 lumail is a modal console-based email client, which has built in support for scripting
 via Lua.
 
-The email client is a modal application, which means that you're *always* in one of three states:
+Because `lumail` is a modal application you're *always* in one of three states:
 
 * Interacting with lists of mailboxes.  Default keybindings include:
+   * This is the mode you'll start in.
    * Press `a` to view all mailboxes.
    * Press `n` to view mailboxes containing new mail only.
-   * This is the mode you'll start in.
    * Move around via `j`/`k`/`/`.
    * You may open the single selected folder by pressing `RETURN`.
    * Or you may toggle the selected state by pressing `SPACE` and jumping into index mode with `I` when you've selected all the folders you care about.
@@ -19,6 +19,8 @@ The email client is a modal application, which means that you're *always* in one
    * Move around via `j`/`k`/`/`.
 * Interacting with a single message.  Default keybindings include:
    * Move around via `j`/`k`.
+   * Delete a message with 'd'.
+   * Reply to a message with 'r'.
 
 You'll find [a quick introduction to using lumail](http://lumail.org/getting-started/) on
 the [lumail website](http://lumail.org).
@@ -37,15 +39,15 @@ The application is developed in C++ and has intentionally minimal dependencies:
 
 Upon a Debian GNU/Linux system you may install all required packages with:
 
-     # apt-get install libncurses-dev liblua5.1-0-dev lua5.1 libmimetic-dev libpcre++-dev
+     # apt-get install libncurses-dev liblua5.1-0-dev lua5.1 libmimetic-dev  libpcre3-dev
 
 > There are [binary packages for Debian GNU/linux](http://packages.steve.org.uk/lumail/), compiled by the author.
 
 Although we might become more complex in the future the code currently builds
 via a simple `Makefile`, and running `make` with no arguments should be sufficient.
 
-Once compiled the client may be executed directly, but you will need to pass the
-path to a configuration file:
+Once compiled the client may be executed directly, but you will need to supply
+a valid (lua) configuration file:
 
      $ ./lumail --rcfile ./lumail.lua
 
@@ -74,7 +76,7 @@ At startup the following two Lua files are evaluated, if present:
 If neither of those files are present then the client will abort with an error.
 This is to ensure that the keymap(s) are defined, etc.
 
-Once you have configuration file you can use any of the [supplied lua primitives](http://lumail.org/lua/) to do interesting things.  The [online lua examples](http://lumail.org/examples/) are a good starting point for reference.
+Once you have configuration file you can use any of the [supplied Lua primitives](http://lumail.org/lua/) to do interesting things.  The [online Lua examples](http://lumail.org/examples/) are a good starting point for reference.
 
 
 Further Information
