@@ -73,7 +73,11 @@ depend: .depend
 clean:
 	$(RM) $(TARGET) lumail-debug $(OBJS) core || true
 	cd ./tests && make clean || true
+	cd ./util  && make clean || true
 
+#
+# Cleanup, even more.
+#
 dist-clean: clean
 	$(RM) *~ .dependtool
 
@@ -101,8 +105,13 @@ release: clean
 	gzip $(DIST_PREFIX)/$(BASE)-$(VERSION).tar
 	mv $(DIST_PREFIX)/$(BASE)-$(VERSION).tar.gz .
 	rm -rf $(DIST_PREFIX)/$(BASE)-$(VERSION)
-#	gpg --armour --detach-sign $(BASE)-$(VERSION).tar.gz
-#	echo $(VERSION) > .version
+
+
+#
+# Build any utilities.
+#
+utilities:
+	cd ./util && make
 
 
 include .depend
