@@ -144,6 +144,11 @@ class CMessage
 
  private:
 
+  /**
+   * Attempt to find a MIME-part inside our message of the given
+   * type.
+   */
+  std::string getMimePart(mimetic::MimeEntity* pMe, std::string mtype );
 
   /**
    * The file we represent.

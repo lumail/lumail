@@ -587,6 +587,39 @@ std::string CMessage::subject()
 
 
 /**
+ * Given a MIME-part retrieve the appropriate part from it.
+ */
+std::string CMessage::getMimePart(mimetic::MimeEntity* pMe, std::string mtype )
+{
+    mimetic::Header& h = pMe->header();
+    if ( h.contentType().str().find( mtype ) != std::string::npos )
+    {
+        return( (pMe)->body() );
+    }
+
+    mimetic::MimeEntityList& parts = pMe->body().parts();
+    mimetic::MimeEntityList::iterator mbit = parts.begin(), meit = parts.end();
+    for(; mbit != meit; ++mbit)
+    {
+        /**
+         * Test each sub part.
+         */
+        mimetic::MimeEntityList& np = (*mbit)->body().parts();
+        mimetic::MimeEntityList::iterator bit = np.begin(), eit = np.end();
+        for(; bit != eit; ++bit)
+        {
+            mimetic::Header& nh = (*bit)->header();
+            if ( nh.contentType().str().find( mtype ) != std::string::npos )
+            {
+                return( (*bit)->body() );
+            }
+        }
+    }
+    return "";
+}
+
+
+/**
  * Get the body of the message, as a vector of lines.
  */
 std::vector<std::string> CMessage::body()
@@ -602,32 +635,12 @@ std::vector<std::string> CMessage::body()
     }
 
     /**
-     * The body.
+     * Attempt to get the body from the message.
+     *
+     * Note: We handle nested MIME-entities here.
+     *
      */
-    std::string body;
-
-    /**
-     * Iterate over every part.
-     */
-    mimetic::MimeEntityList& parts = m_me->body().parts();
-    mimetic::MimeEntityList::iterator mbit = parts.begin(), meit = parts.end();
-    for(; mbit != meit; ++mbit)
-    {
-
-        /**
-         * Get the content-type.
-         */
-        std::string type = (*mbit)->header().contentType().str();
-
-        /**
-         * If we've found text/plain then we're good.
-         */
-        if ( type.find( "text/plain" ) != std::string::npos )
-        {
-            if ( body.empty() )
-                body =  (*mbit)->body();
-        }
-    }
+    std::string body = getMimePart( m_me, "text/plain" );
 
     /**
      * If we failed to find a part of text/plain then just grab the whole damn
