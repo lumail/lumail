@@ -592,26 +592,114 @@ std::string CMessage::subject()
 std::string CMessage::getMimePart(mimetic::MimeEntity* pMe, std::string mtype )
 {
     mimetic::Header& h = pMe->header();
-    if ( h.contentType().str().find( mtype ) != std::string::npos )
+
+    /**
+     * If the header matches then return.
+     */
+    std::string enc = h.contentTransferEncoding().mechanism();
+    std::string type= h.contentType().str();
+
+    if ( type.find( mtype ) != std::string::npos )
     {
-        return( (pMe)->body() );
+        std::string body = (pMe)->body();
+        std::string decoded;
+
+        if (strcasecmp(enc.c_str(), "quoted-printable" ) == 0 )
+        {
+            mimetic::QP::Decoder qp;
+            decode(body.begin(), body.end(), qp, std::back_inserter(decoded));
+            return( decoded );
+        }
+        if (strcasecmp(enc.c_str(), "base64" ) == 0 )
+        {
+            mimetic::Base64::Decoder b64;
+            decode(body.begin(), body.end(), b64, std::back_inserter(decoded));
+            return( decoded );
+        }
+
+        return( body );
     }
 
+    /**
+     * Iterate over any sub-parts.
+     */
     mimetic::MimeEntityList& parts = pMe->body().parts();
     mimetic::MimeEntityList::iterator mbit = parts.begin(), meit = parts.end();
     for(; mbit != meit; ++mbit)
     {
+
         /**
-         * Test each sub part.
+         * get the encoding and content-type.
+         */
+        mimetic::Header& mh = (*mbit)->header();
+        std::string enc = mh.contentTransferEncoding().mechanism();
+        std::string type= mh.contentType().str();
+
+        /**
+         * See if the part matches directly.
+         */
+        if ( type.find( mtype ) != std::string::npos )
+        {
+            std::string body = (*mbit)->body();
+            std::string decoded;
+
+            if (strcasecmp(enc.c_str(), "quoted-printable" ) == 0 )
+            {
+                mimetic::QP::Decoder qp;
+                decode(body.begin(), body.end(), qp, std::back_inserter(decoded));
+                return( decoded );
+            }
+            if (strcasecmp(enc.c_str(), "base64" ) == 0 )
+            {
+                mimetic::Base64::Decoder b64;
+                decode(body.begin(), body.end(), b64, std::back_inserter(decoded));
+                return( decoded );
+            }
+
+            return( body );
+        }
+
+        /**
+         * There are also nested parts because MIME is nasty.
          */
         mimetic::MimeEntityList& np = (*mbit)->body().parts();
         mimetic::MimeEntityList::iterator bit = np.begin(), eit = np.end();
         for(; bit != eit; ++bit)
         {
+            /**
+             * See if a nested entry matches.
+             */
             mimetic::Header& nh = (*bit)->header();
-            if ( nh.contentType().str().find( mtype ) != std::string::npos )
+
+            /**
+             * Get the encoding-type and the content-type.
+             */
+            std::string enc = nh.contentTransferEncoding().mechanism();
+            std::string type= nh.contentType().str();
+
+            /**
+             * If the type matches, then return the (decoded?) body
+             */
+            if ( type.find( mtype ) != std::string::npos )
             {
-                return( (*bit)->body() );
+                std::string body = (*bit)->body();
+                std::string decoded;
+
+                if (strcasecmp(enc.c_str(), "quoted-printable" ) == 0 )
+                {
+                    mimetic::QP::Decoder qp;
+                    decode(body.begin(), body.end(), qp, std::back_inserter(decoded));
+                    return( decoded );
+                }
+                if (strcasecmp(enc.c_str(), "base64" ) == 0 )
+                {
+
+                    mimetic::Base64::Decoder b64;
+                    decode(body.begin(), body.end(), b64, std::back_inserter(decoded));
+                    return( decoded );
+                }
+
+                return( body );
             }
         }
     }
