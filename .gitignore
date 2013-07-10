@@ -11,3 +11,4 @@ debian/*.substvars
 debian/*.log
 tests/history_tests
 tests/file_tests
+util/lumail-dump
