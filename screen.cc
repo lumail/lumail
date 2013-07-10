@@ -464,7 +464,7 @@ void CScreen::drawMessage()
      */
     int max = std::min((int)body.size(), (int)(CScreen::height() - headers.size() - attachments.size() ) );
 
-    for( int i = 0; i < (max-2); i++ )
+    for( int i = 0; i <= max; i++ )
     {
         move( i + ( headers.size() + attachments.size() + 1 ), 0 );
 
