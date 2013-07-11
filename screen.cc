@@ -144,14 +144,18 @@ void CScreen::drawMaildir()
          * The current object.
          */
         CMaildir *cur = NULL;
+        int mailIndex=count;
         if (TopBottomOrMiddle == 0) {
-            cur = &display[row];
+            mailIndex = row;
         } else if (TopBottomOrMiddle == 1) {
-            cur = &display.at(count-height + row +1);
+            mailIndex = count-height+row+1;
         } else {
-            cur = &display[row + selected - middle];
+            mailIndex = row + selected - middle;
         }
-        unread = cur->newMessages();
+        if (mailIndex < count) {
+            cur = &display.at(mailIndex);
+            unread = cur->newMessages();
+        }
 
         /**
          * Is this folder part of our selected set?
