@@ -20,6 +20,7 @@
 #define _screen_h_ 1
 
 #include <vector>
+#include <unordered_map>
 #include "maildir.h"
 
 /**
@@ -82,12 +83,19 @@ class CScreen
   static void readline( char *buffer, int buflen );
 
  private:
+
   /**
    * Per-mode drawing primitives.
    */
   void drawMaildir();
   void drawIndex();
   void drawMessage();
+
+  /**
+   * Colour-maps.
+   */
+  std::unordered_map<std::string, int> m_colours;
+
 
 };
 

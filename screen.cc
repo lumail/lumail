@@ -34,6 +34,12 @@
 #include "message.h"
 #include "screen.h"
 
+
+#ifndef DEFAULT_UNREAD_COLOUR
+ #define DEFAULT_UNREAD_COLOUR "red"
+#endif
+
+
 /**
  * Constructor.  NOP.
  */
@@ -174,13 +180,13 @@ void CScreen::drawMaildir()
         if ( unread )
         {
             if ( row == 0 )
-                attrset( COLOR_PAIR(1) |A_REVERSE );
+                attrset( COLOR_PAIR(m_colours[DEFAULT_UNREAD_COLOUR]) |A_REVERSE );
             else
-                attrset( COLOR_PAIR(1) );
+                attrset( COLOR_PAIR(m_colours[DEFAULT_UNREAD_COLOUR]) );
         }
 	printw("%s", display.c_str());
 
-        attrset( COLOR_PAIR(2) );
+        attrset( COLOR_PAIR(m_colours["white"]));
 
         /**
          * Remove the inverse.
@@ -294,9 +300,9 @@ void CScreen::drawIndex()
 
 	if ( unread ) {
             if (row == 0)
-                attrset(COLOR_PAIR(1)|A_REVERSE);
+                attrset(COLOR_PAIR(m_colours[DEFAULT_UNREAD_COLOUR])|A_REVERSE);
             else
-                attrset(COLOR_PAIR(1));
+                attrset(COLOR_PAIR(m_colours[DEFAULT_UNREAD_COLOUR]));
         }
         else {
             if (row == 0)
@@ -322,7 +328,7 @@ void CScreen::drawIndex()
 	move(row, 2);
 	printw("%s", buf.c_str());
 
-        attrset( COLOR_PAIR(2) );
+        attrset( COLOR_PAIR(m_colours[ "white"]));
 
         /**
          * Remove the inverse.
@@ -511,7 +517,13 @@ void CScreen::setup()
      * We want (red + black) + (white + black)
      */
     init_pair(1, COLOR_RED, COLOR_BLACK);
+    m_colours[ DEFAULT_UNREAD_COLOUR ] = 1;
     init_pair(2, COLOR_WHITE, COLOR_BLACK);
+    m_colours[ "white" ] = 2;
+    init_pair(3, COLOR_BLUE, COLOR_BLACK);
+    m_colours[ "blue" ] = 3;
+    init_pair(4, COLOR_GREEN, COLOR_BLACK);
+    m_colours[ "green" ] = 4;
 
 }
 
