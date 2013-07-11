@@ -425,6 +425,17 @@ void CScreen::drawMessage()
         headers.push_back( "$SUBJECT" );
     }
 
+
+    /**
+     * Get the colour to draw the headers in.
+     */
+    std::string *h_colour = global->get_variable( "header_colour" );
+    std::string header_colour;
+    if ( h_colour != NULL )
+        header_colour = *h_colour;
+    else
+        header_colour = "white";
+
     int row = 0;
 
     /**
@@ -465,7 +476,9 @@ void CScreen::drawMessage()
         /**
          * Show it.
          */
+        attrset( COLOR_PAIR(m_colours[header_colour]) );
         printw( "%s: %s", name.c_str(), value.c_str() );
+        attrset( COLOR_PAIR(m_colours["white"]));
         row += 1;
     }
 
@@ -512,6 +525,19 @@ void CScreen::drawMessage()
      */
     int max = std::min((int)body.size(), (int)(CScreen::height() - headers.size() - attachments.size() ) );
 
+    /**
+     * get the body-colour
+     */
+    std::string *b_colour = global->get_variable( "body_colour" );
+    std::string body_colour;
+    if ( b_colour != NULL )
+        body_colour = *b_colour;
+    else
+        body_colour = "white";
+
+    /**
+     * Draw each line of the body.
+     */
     for( int i = 0; i <= max; i++ )
     {
         move( i + ( headers.size() + attachments.size() + 1 ), 0 );
@@ -520,7 +546,9 @@ void CScreen::drawMessage()
         if ( (i + offset) < (int)body.size() )
             line = body[i+offset];
 
+        attrset( COLOR_PAIR(m_colours[body_colour]) );
         printw( "%s", line.c_str() );
+        attrset( COLOR_PAIR(m_colours["white"]));
     }
 
     /**

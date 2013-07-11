@@ -273,6 +273,14 @@ int attachment_colour(lua_State *L)
 {
     return( get_set_string_variable( L, "attachment_colour" ) );
 }
+int body_colour(lua_State *L)
+{
+    return( get_set_string_variable( L, "body_colour" ) );
+}
+int header_colour(lua_State *L)
+{
+    return( get_set_string_variable( L, "header_colour" ) );
+}
 
 /**
  * Clear the screen; but not the prompt.
