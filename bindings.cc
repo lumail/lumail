@@ -257,6 +257,20 @@ int sent_mail(lua_State * L)
 
 
 /**
+ * Colour support.
+ */
+int unread_message_colour(lua_State *L)
+{
+    return( get_set_string_variable( L, "unread_message_colour" ) );
+}
+
+int unread_maildir_colour(lua_State *L)
+{
+    return( get_set_string_variable( L, "unread_maildir_colour" ) );
+}
+
+
+/**
  * Clear the screen; but not the prompt.
  */
 int clear(lua_State * L)

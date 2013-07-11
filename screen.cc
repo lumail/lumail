@@ -95,6 +95,18 @@ void CScreen::drawMaildir()
     std::string *limit = global->get_variable("maildir_limit");
 
     /**
+     * The colour for unread maildirs.
+     */
+    std::string *unread = global->get_variable( "unread_maildir_colour" );
+    std::string unread_colour;
+    if ( unread != NULL )
+        unread_colour = *unread;
+    else
+        unread_colour = DEFAULT_UNREAD_COLOUR;
+
+
+
+    /**
      * The number of items we've found, vs. the size of the screen.
      */
     int count = display.size();
@@ -180,9 +192,9 @@ void CScreen::drawMaildir()
         if ( unread )
         {
             if ( row == 0 )
-                attrset( COLOR_PAIR(m_colours[DEFAULT_UNREAD_COLOUR]) |A_REVERSE );
+                attrset( COLOR_PAIR(m_colours[unread_colour]) |A_REVERSE );
             else
-                attrset( COLOR_PAIR(m_colours[DEFAULT_UNREAD_COLOUR]) );
+                attrset( COLOR_PAIR(m_colours[unread_colour]) );
         }
 	printw("%s", display.c_str());
 
@@ -254,6 +266,17 @@ void CScreen::drawIndex()
     }
 
 
+
+    /**
+     * The colour for unread maildirs.
+     */
+    std::string *unread = global->get_variable( "unread_message_colour" );
+    std::string unread_colour;
+    if ( unread != NULL )
+        unread_colour = *unread;
+    else
+        unread_colour = DEFAULT_UNREAD_COLOUR;
+
     /**
      * The number of items we've found, vs. the size of the screen.
      */
@@ -300,9 +323,9 @@ void CScreen::drawIndex()
 
 	if ( unread ) {
             if (row == 0)
-                attrset(COLOR_PAIR(m_colours[DEFAULT_UNREAD_COLOUR])|A_REVERSE);
+                attrset(COLOR_PAIR(m_colours[unread_colour])|A_REVERSE);
             else
-                attrset(COLOR_PAIR(m_colours[DEFAULT_UNREAD_COLOUR]));
+                attrset(COLOR_PAIR(m_colours[unread_colour]));
         }
         else {
             if (row == 0)
@@ -518,12 +541,28 @@ void CScreen::setup()
      */
     init_pair(1, COLOR_RED, COLOR_BLACK);
     m_colours[ "red"  ] = 1;
+
     init_pair(2, COLOR_WHITE, COLOR_BLACK);
     m_colours[ "white" ] = 2;
+
     init_pair(3, COLOR_BLUE, COLOR_BLACK);
     m_colours[ "blue" ] = 3;
+
     init_pair(4, COLOR_GREEN, COLOR_BLACK);
     m_colours[ "green" ] = 4;
+
+    init_pair(5, COLOR_CYAN, COLOR_BLACK);
+    m_colours[ "cyan" ] = 5;
+
+    init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
+    m_colours[ "magenta" ] = 6;
+
+    init_pair(7, COLOR_YELLOW, COLOR_BLACK);
+    m_colours[ "yellow" ] = 7;
+
+    init_pair(8, COLOR_BLACK, COLOR_WHITE);
+    m_colours[ "black" ] = 8;
+
 
 }
 

@@ -747,3 +747,14 @@ end
 --
 ---
 
+--
+-- Colour support.  Still in-progress
+--
+-- Valid colours: blue, cyan, green, magenta, red, white, yellow
+--
+unread_maildir_colour( "red" );
+unread_message_colour( "red" );
+
+-- TODO:
+-- header_colour( "white" );
+-- attachment_colour( "green" );

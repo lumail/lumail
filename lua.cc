@@ -93,6 +93,10 @@ struct CLuaMapping primitive_list[] = {
     { "sent_mail",(lua_CFunction) sent_mail},
     { "get_variables", (lua_CFunction) get_variables },
 
+// Colour getters/setters
+    { "unread_maildir_colour", (lua_CFunction) unread_maildir_colour },
+    { "unread_message_colour", (lua_CFunction) unread_message_colour },
+
 // Index functions
     { "jump_index_to", (lua_CFunction) jump_index_to},
     { "scroll_index_down", (lua_CFunction) scroll_index_down},
