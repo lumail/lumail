@@ -1,3 +1,22 @@
+lumail (0.12) stable; urgency=low
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+     - #56 - Correctly handle nested MIME-parts.
+     - #57 - Correctly decode base64-encoded text/plain parts.
+  * Fixed the display of messages that consist of only a single line.
+  * Added new utility "lumail-dump" to debug MIME issues.
+  * Several new primitives allowing you to change the colours that
+    things are drawn in:
+     - attachment_colour() - THe list of attachment names.
+     - body_colour() - The body of individual messages.
+     - header_colour() - The headers of a messages.
+     - unread_maildir_colour() - The colour of maildirs with new mail.
+     - unread_message_colour() - The colour of unread messages.
+
+ -- Steve Kemp <steve@steve.org.uk>  Thu, 11 Jul 2013 18:11:18 +0000
+
 lumail (0.11) stable; urgency=low
 
   * New release, fixing several bugs.
