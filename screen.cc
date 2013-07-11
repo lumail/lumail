@@ -102,7 +102,7 @@ void CScreen::drawMaildir()
     if (selected < middle) {
         highlightRow = selected;
         TopBottomOrMiddle = 0;
-    } else if ( count - selected <= middle) {
+    } else if (  (count - selected <= middle) || (height%2==1 &&count-selected<=middle+1)) {
         highlightRow =  height - count+selected-1 ;
         TopBottomOrMiddle = 1;
     } else {
@@ -188,7 +188,7 @@ void CScreen::drawMaildir()
         move(row, 2);
 
         if ( unread ) {
-            if ( row == 0 )
+            if ( row == highlightRow )
                 attrset( COLOR_PAIR(1) |A_REVERSE );
             else
                 attrset( COLOR_PAIR(1) );
