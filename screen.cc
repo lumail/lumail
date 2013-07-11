@@ -517,7 +517,7 @@ void CScreen::setup()
      * We want (red + black) + (white + black)
      */
     init_pair(1, COLOR_RED, COLOR_BLACK);
-    m_colours[ DEFAULT_UNREAD_COLOUR ] = 1;
+    m_colours[ "red"  ] = 1;
     init_pair(2, COLOR_WHITE, COLOR_BLACK);
     m_colours[ "white" ] = 2;
     init_pair(3, COLOR_BLUE, COLOR_BLACK);
