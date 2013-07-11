@@ -174,6 +174,7 @@ int get_variables(lua_State *L);
  */
 int unread_message_colour(lua_State *L);
 int unread_maildir_colour(lua_State *L);
+int attachment_colour(lua_State *L);
 
 /**
  * folder selection code.

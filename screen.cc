@@ -469,6 +469,16 @@ void CScreen::drawMessage()
         row += 1;
     }
 
+    /**
+     * Get the colour to draw the attachments in.
+     */
+    std::string *a_colour = global->get_variable( "attachment_colour" );
+    std::string attachment_colour;
+    if ( a_colour != NULL )
+        attachment_colour = *a_colour;
+    else
+        attachment_colour = "white";
+
    /**
     * Draw the attachments.
     */
@@ -477,8 +487,17 @@ void CScreen::drawMessage()
     for (it = attachments.begin(); it != attachments.end(); ++it)
     {
         std::string path = (*it);
+
         move( row, 0 );
+
+        /**
+         * Change to the right colour, draw the message,
+         * and revert.
+         */
+        attrset( COLOR_PAIR(m_colours[attachment_colour]) );
         printw( "Attachment %d - %s", acount, path.c_str() );
+        attrset( COLOR_PAIR(m_colours["white"]));
+
         acount += 1;
         row += 1;
     }

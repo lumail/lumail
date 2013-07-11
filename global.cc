@@ -75,6 +75,7 @@ CGlobal::CGlobal()
      */
     set_variable( "unread_message_colour", new std::string( "red" ) );
     set_variable( "unread_maildir_colour", new std::string( "red" ) );
+    set_variable( "attachment_colour",     new std::string( "white" ) );
 
     /**
      * From address is a little fiddly.

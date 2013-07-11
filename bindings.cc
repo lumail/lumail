@@ -269,6 +269,10 @@ int unread_maildir_colour(lua_State *L)
     return( get_set_string_variable( L, "unread_maildir_colour" ) );
 }
 
+int attachment_colour(lua_State *L)
+{
+    return( get_set_string_variable( L, "attachment_colour" ) );
+}
 
 /**
  * Clear the screen; but not the prompt.
