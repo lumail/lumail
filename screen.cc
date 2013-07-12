@@ -166,9 +166,6 @@ void CScreen::drawMaildir()
             selectedSet = true;
         }
 
-        /**
-         * First row is the current one.
-         */
         if (row == highlightRow)
             attron(A_UNDERLINE | A_STANDOUT);
 
@@ -223,12 +220,10 @@ void CScreen::drawIndex()
     /**
      * If we have no messages report that.
      */
-    if (( messages == NULL ) ||  (messages->size() < 1))
-    {
+    if (( messages == NULL ) ||  (messages->size() < 1)) {
         std::vector<std::string> folders = global->get_selected_folders();
 
-        if ( folders.size() < 1 )
-        {
+        if ( folders.size() < 1 ) {
             /**
              * No folders selected, and no messages.
              */
@@ -243,24 +238,20 @@ void CScreen::drawIndex()
         move(2, 2);
         printw( NO_MESSAGES_IN_FOLDERS );
 
-        std::vector<std::string>::iterator it;
         int height = CScreen::height();
         int row = 4;
 
-        for (it = folders.begin(); it != folders.end(); ++it) {
-
+        for (std::string folder: folders) {
             /**
              * Avoid drawing into the status area.
              */
             if ( row >= (height-1) )
                 break;
-
             /**
              * Show the name of the folder.
              */
-            std::string name = (*it);
             move( row, 5 );
-            printw("%s", name.c_str() );
+            printw("%s", folder.c_str() );
             row+=1;
         }
         return;
@@ -273,6 +264,21 @@ void CScreen::drawIndex()
     int count = messages->size();
     int height = CScreen::height();
     int selected = global->get_selected_message();
+
+    int middle = (height-2)/2; //correct for statusbar
+
+    int highlightRow = 0;
+    int TopBottomOrMiddle = -1;
+    if (selected < middle) {
+        highlightRow = selected;
+        TopBottomOrMiddle = 0;
+    } else if (  (count - selected <= middle) || (height%2==1 &&count-selected<=middle+1)) {
+        highlightRow =  height - count+selected-1 ;
+        TopBottomOrMiddle = 1;
+    } else {
+        highlightRow = middle;
+        TopBottomOrMiddle = 2;
+    }
 
     /*
      * Bound the selection.
@@ -287,22 +293,32 @@ void CScreen::drawIndex()
      */
     int row = 0;
 
-    for (row = 0; row < (height - 1); row++)
-    {
-    move(row, 0);
-    printw("  " );
+    for (row = 0; row < (height - 1); row++) {
+        move(row, 0);
+        printw("  " );
 
         /**
          * What we'll output for this row.
          */
-    std::string  buf;
+        std::string  buf;
 
         /**
          * The current object.
          */
-    CMessage *cur = NULL;
-    if ((row + selected) < count)
-            cur = messages->at(row + selected);
+        CMessage *cur = NULL;
+        int mailIndex=count;
+        if (TopBottomOrMiddle == 0) {
+            mailIndex = row;
+        } else if (TopBottomOrMiddle == 1) {
+            mailIndex = count-height+row+1;
+        } else {
+            mailIndex = row + selected - middle;
+        }
+        if (mailIndex < count)
+            cur = messages->at(mailIndex);
+
+        if (row == highlightRow)
+            attron(A_UNDERLINE | A_STANDOUT);
 
         bool unread = false;
         if ( cur != NULL ) {
@@ -311,43 +327,39 @@ void CScreen::drawIndex()
                 unread = true;
         }
 
-    if ( unread ) {
+        if (unread) {
             if (row == 0)
                 attrset(COLOR_PAIR(1)|A_REVERSE);
             else
                 attrset(COLOR_PAIR(1));
-        }
-        else {
-            if (row == 0)
-                attrset(A_REVERSE);
-        }
+        } 
 
-    std::string path = "";
+        std::string path = "";
 
-    if (cur != NULL)
+        if (cur != NULL)
             buf =  cur->format();
 
         /**
          * Pad.
          */
-    while ((int)buf.size() < (CScreen::width() - 3))
+        while ((int)buf.size() < (CScreen::width() - 3))
             buf += std::string(" ");
         /**
          * Truncate.
          */
-    if ((int)buf.size() > (CScreen::width() - 3))
-        buf[(CScreen::width() - 3)] = '\0';
+        if ((int)buf.size() > (CScreen::width() - 3))
+            buf[(CScreen::width() - 3)] = '\0';
 
-    move(row, 2);
-    printw("%s", buf.c_str());
+        move(row, 2);
+        printw("%s", buf.c_str());
 
         attrset( COLOR_PAIR(2) );
 
         /**
          * Remove the inverse.
          */
-    if (row == 0)
-        attroff(A_REVERSE);
+        if (row == 0)
+            attroff(A_REVERSE);
     }
 }
 
