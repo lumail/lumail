@@ -350,10 +350,10 @@ void CScreen::drawIndex()
         }
 
         if (unread) {
-            if (row == 0)
-               attrset(COLOR_PAIR(m_colours[unread_colour])|A_REVERSE);
+            if ( row == rowToHighlight )
+                attrset( COLOR_PAIR(m_colours[unread_colour]) | A_REVERSE );
             else
-                attrset(COLOR_PAIR(1));
+                attrset( COLOR_PAIR(m_colours[unread_colour]) );
         }
 
         std::string path = "";
