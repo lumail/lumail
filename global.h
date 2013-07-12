@@ -84,15 +84,19 @@ class CGlobal
   int get_selected_folder() {
     return m_cur_folder;
   }
+
+  /**
+   * No wrap-around, because it caused artifacts if you jumped
+   * on the last message.
+   */
   void set_selected_folder(int offset) {
-    // wrap around folder vector
-    int count = get_folders().size();
-    if (offset >= count) 
-      offset = offset-count;
-    else if (offset < 0)
-      // this will set offset to count-|offset|
-      offset = count+offset;
-    m_cur_folder = offset;
+      int count = get_folders().size();
+      m_cur_folder = offset;
+
+      if (m_cur_folder >= count)
+          m_cur_folder = count-1;
+      else if (m_cur_folder < 0)
+          m_cur_folder = 0;
   }
 
   /**
@@ -102,14 +106,14 @@ class CGlobal
     return m_cur_message;
   }
   void set_selected_message(int offset) {
-    // wrap around message vector
     int count = get_messages()->size();
-    if (offset>=count)
-      offset -= count;
-    else if (offset<0)
-      // this will set offset to count-|offset|
-      offset = count + offset;
+
     m_cur_message = offset;
+
+    if (m_cur_message>=count)
+        m_cur_message = count-1;
+    if (m_cur_message<0)
+        m_cur_message=0;
   }
 
   /**
