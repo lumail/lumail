@@ -36,134 +36,131 @@
  */
 class CMessage
 {
- public:
+public:
 
-  enum TDate { EYEAR,EDAY,EMONTH, EFULL };
-  /**
-   * Constructor
-   */
-  CMessage(std::string filename);
+    enum TDate { EYEAR,EDAY,EMONTH, EMON, EFULL };
 
+    /**
+     * Constructor
+     */
+    CMessage(std::string filename);
 
-  /**
-   * Destructor.
-   */
-  ~CMessage();
+    /**
+     * Destructor.
+     */
+    ~CMessage();
 
+    /**
+     * Get the path to the message, on-disk.
+     */
+    std::string path();
 
-  /**
-   * Get the path to the message, on-disk.
-   */
-  std::string path();
+    /**
+     * Update the path to the message, on-disk.
+     */
+    void path( std::string new_path );
 
-  /**
-   * Update the path to the message, on-disk.
-   */
-  void path( std::string new_path );
+    /**
+     * Format the message for display in the header - via the lua format string.
+     */
+    std::string format( std::string fmt = "");
 
-  /**
-   * Format the message for display in the header - via the lua format string.
-   */
-  std::string format( std::string fmt = "");
+    /**
+     * Get the flags for this message.
+     */
+    std::string flags();
 
-  /**
-   * Get the flags for this message.
-   */
-  std::string flags();
+    /**
+     * Add a flag to a message.
+     */
+    void add_flag( char c );
 
-  /**
-   * Add a flag to a message.
-   */
-  void add_flag( char c );
+    /**
+     * Remove a flag from a message.
+     */
+    void remove_flag( char c );
 
-  /**
-   * Remove a flag from a message.
-   */
-  void remove_flag( char c );
+    /**
+     * Does this message match the given filter?
+     */
+    bool matches_filter( std::string *filter );
 
-  /**
-   * Does this message match the given filter?
-   */
-  bool matches_filter( std::string *filter );
+    /**
+     * Is this message new?
+     */
+    bool is_new();
 
-  /**
-   * Is this message new?
-   */
-  bool is_new();
+    /**
+     * Mark a message as new.
+     */
+    bool mark_new();
 
-  /**
-   * Mark a message as new.
-   */
-  bool mark_new();
+    /**
+     * Mark a message as read.
+     */
+    bool mark_read();
 
-  /**
-   * Mark a message as read.
-   */
-  bool mark_read();
+    /**
+     * get a header from the message.
+     */
+    std::string header( std::string name);
 
-  /**
-   * get a header from the message.
-   */
-  std::string header( std::string name);
+    /**
+     * Get the sender of the message.
+     */
+    std::string from();
 
-  /**
-   * Get the sender of the message.
-   */
-  std::string from();
+    /**
+     * Get the date of the message.
+     */
+    std::string date(TDate fmt = EFULL);
 
-  /**
-   * Get the date of the message.
-   */
-  std::string date(TDate fmt = EFULL);
+    /**
+     * Get the recipient of the message.
+     */
+    std::string to();
 
-  /**
-   * Get the recipient of the message.
-   */
-  std::string to();
+    /**
+     * Get the subject of the message.
+     */
+    std::string subject();
 
-  /**
-   * Get the subject of the message.
-   */
-  std::string subject();
+    /**
+     * Get the body of the message, as a vector of lines.
+     */
+    std::vector<std::string> body();
 
-  /**
-   * Get the body of the message, as a vector of lines.
-   */
-  std::vector<std::string> body();
+    /**
+     * Get the names of attachments to this message.
+     */
+    std::vector<std::string> attachments();
 
+    /**
+     * Save the given attachment.
+     */
+    bool save_attachment( int offset, std::string output_path );
 
-  /**
-   * Get the names of attachments to this message.
-   */
-  std::vector<std::string> attachments();
+private:
 
-  /**
-   * Save the given attachment.
-   */
-  bool save_attachment( int offset, std::string output_path );
+    /**
+     * Attempt to find a MIME-part inside our message of the given type.
+     */
+    std::string getMimePart(mimetic::MimeEntity* pMe, std::string mtype );
 
- private:
+    /**
+     * The file we represent.
+     */
+    std::string m_path;
 
-  /**
-   * Attempt to find a MIME-part inside our message of the given
-   * type.
-   */
-  std::string getMimePart(mimetic::MimeEntity* pMe, std::string mtype );
+    /**
+     * MIME Entity object for this message.
+     */
+    mimetic::MimeEntity *m_me;
 
-  /**
-   * The file we represent.
-   */
-  std::string m_path;
-
-  /**
-   * MIME Entity object for this message.
-   */
-  mimetic::MimeEntity *m_me;
-
-  /**
-   * Cached time/date object.
-   */
-  time_t m_date;
+    /**
+     * Cached time/date object.
+     */
+    time_t m_date;
 
 };
 

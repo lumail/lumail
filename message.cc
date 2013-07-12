@@ -398,7 +398,7 @@ std::string CMessage::format( std::string fmt )
     /**
      * The variables we know about.
      */
-    const char *fields[9] = { "FLAGS", "FROM", "TO", "SUBJECT",  "DATE", "YEAR", "MONTH", "DAY", 0 };
+    const char *fields[10] = { "FLAGS", "FROM", "TO", "SUBJECT",  "DATE", "YEAR", "MONTH", "MON", "DAY", 0 };
     const char **std_name = fields;
 
 
@@ -441,6 +441,9 @@ std::string CMessage::format( std::string fmt )
             }
             if ( strcmp(std_name[i],  "MONTH" ) == 0 ) {
                 body = date(EMONTH);
+            }
+            if ( strcmp(std_name[i],  "MON" ) == 0 ) {
+                body = date(EMON);
             }
             if ( strcmp(std_name[i],  "DAY" ) == 0 ) {
                 body = date(EDAY);
@@ -617,13 +620,21 @@ std::string CMessage::date(TDate fmt)
         std::string date = header("Date");
     	return( date );
     }
+
+    /**
+     * Convert to a time.
+     */
+    struct tm * ptm;
+    ptm = gmtime ( &m_date );
+
+
+    /**
+     * Year number.
+     */
     if ( fmt == EYEAR )
     {
         if ( ( m_date != 0 ) && ( m_date != -1 ) )
         {
-            struct tm * ptm;
-            ptm = gmtime ( &m_date );
-
             char buff[20] = { '\0' };
             snprintf(buff, sizeof(buff)-1, "%d", ( 1900 + ptm->tm_year ) );
             return( std::string(buff) );
@@ -631,7 +642,11 @@ std::string CMessage::date(TDate fmt)
         else
             return std::string("$YEAR");
     }
-    if ( fmt == EMONTH )
+
+    /**
+     * Month name.
+     */
+    if ( ( fmt == EMONTH ) || ( fmt == EMON ) )
     {
         const char *months[] = { "January",
                                  "February",
@@ -647,22 +662,24 @@ std::string CMessage::date(TDate fmt)
                                  "December" };
         if ( ( m_date != 0 ) && ( m_date != -1 ) )
         {
-            struct tm * ptm;
-            ptm = gmtime ( &m_date );
+            std::string month = months[ptm->tm_mon];
 
-            return( std::string(months[ptm->tm_mon]) );
+            if ( fmt == EMON )
+                month = month.substr(0,3);
+
+            return( month );
         }
         else
             return std::string("$MONTH");
     }
+
+    /**
+     * Day of month.
+     */
     if ( fmt == EDAY )
     {
-
         if ( ( m_date != 0 ) && ( m_date != -1 ) )
         {
-            struct tm * ptm;
-            ptm = gmtime ( &m_date );
-
             char buff[20] = { '\0' };
             snprintf(buff, sizeof(buff)-1, "%d", ( ptm->tm_mday ) );
             return( std::string(buff) );
@@ -671,7 +688,7 @@ std::string CMessage::date(TDate fmt)
             return std::string("$DAY");
     }
 
-    return std::string("");
+    return std::string("$FAIL");
 }
 
 
