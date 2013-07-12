@@ -639,9 +639,6 @@ int scroll_maildir_up(lua_State * L)
     int cur = global->get_selected_folder();
     cur -= step;
 
-    if (cur < 0)
-	cur = 0;
-
     global->set_selected_folder(cur);
 
     return (0);
@@ -694,9 +691,6 @@ int scroll_index_up(lua_State * L)
     CGlobal *global = CGlobal::Instance();
     int cur = global->get_selected_message();
     cur -= step;
-
-    if (cur < 0)
-	cur = 0;
 
     global->set_selected_message(cur);
 

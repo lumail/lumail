@@ -34,12 +34,6 @@
 #include "message.h"
 #include "screen.h"
 
-
-#ifndef DEFAULT_UNREAD_COLOUR
- #define DEFAULT_UNREAD_COLOUR "red"
-#endif
-
-
 /**
  * Constructor.  NOP.
  */
@@ -71,11 +65,11 @@ void CScreen::refresh_display()
     std::string * s = global->get_variable("global_mode");
 
     if (strcmp(s->c_str(), "maildir") == 0)
-	drawMaildir();
+        drawMaildir();
     else if (strcmp(s->c_str(), "index") == 0)
-	drawIndex();
+        drawIndex();
     else if (strcmp(s->c_str(), "message") == 0)
-	drawMessage();
+        drawMessage();
     else {
         move(3, 3);
         printw("UNKNOWN MODE: '%s'", s->c_str());
@@ -95,41 +89,35 @@ void CScreen::drawMaildir()
     std::string *limit = global->get_variable("maildir_limit");
 
     /**
-     * The colour for unread maildirs.
-     */
-    std::string *unread = global->get_variable( "unread_maildir_colour" );
-    std::string unread_colour;
-    if ( unread != NULL )
-        unread_colour = *unread;
-    else
-        unread_colour = DEFAULT_UNREAD_COLOUR;
-
-
-
-    /**
      * The number of items we've found, vs. the size of the screen.
      */
     int count = display.size();
     int height = CScreen::height();
+    // correct for the statusbar and that counting starts at 0
+    int middle = (height-2)/2;
     int selected = global->get_selected_folder();
 
+    int rowToHighlight = 0;
+    vectorPosition topBottomOrMiddle = NONE;
+    // default to TOP if our list is shorter then the screen height
+    if (selected < middle || count<height-2) {
+        rowToHighlight = selected;
+        topBottomOrMiddle = TOP;
+    // if height is uneven we have to switch to the BOTTOM case on row earlier
+    } else if (  (count - selected <= middle) || (height%2==1 &&count-selected<=middle+1)) {
+        rowToHighlight =  height - count+selected-1 ;
+        topBottomOrMiddle = BOTTOM;
+    } else {
+        rowToHighlight = middle;
+        topBottomOrMiddle = MIDDLE;
+    }
     /**
      * If we have no messages report that.
      */
-    if ( count < 1 )
-    {
+    if ( count < 1 ) {
         move(2, 2);
         printw("No maildirs found matching the limit '%s'.", limit->c_str());
         return;
-    }
-
-
-    /**
-     * Bound the selection.
-     */
-    if (selected >= count) {
-	global->set_selected_folder(0);
-	selected = 0;
     }
 
     int row = 0;
@@ -142,33 +130,42 @@ void CScreen::drawMaildir()
     for (row = 0; row < (height - 1); row++) {
         int unread = 0;
 
-	move(row, 0);
-	printw("  " );
+        move(row, 0);
+        printw("  ");
 
         /**
          * The current object.
          */
-	CMaildir *cur = NULL;
-	if ((row + selected) < count) {
-	    cur = &display[row + selected];
+        CMaildir *cur = NULL;
+        int mailIndex=count;
+        if (topBottomOrMiddle == TOP) {
+            // we start at the top of the list so just use row
+            mailIndex = row;
+        } else if (topBottomOrMiddle == BOTTOM) {
+            // when we reached the end of the list mailIndex can maximally be
+            // count-1, that this is given can easily be shown
+            // row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
+            mailIndex = count-height+row+1;
+        } else if (topBottomOrMiddle == MIDDLE) {
+            mailIndex = row + selected - middle;
+        }
+
+        if (mailIndex < count) {
+            cur = &display.at(mailIndex);
             unread = cur->newMessages();
         }
 
         /**
          * Is this folder part of our selected set?
          */
-        bool selected = false;
-	if (cur != NULL) {
-	    if (std::find(sfolders.begin(), sfolders.end(), cur->path()) != sfolders.end())
-		selected = true;
-	}
+        bool selectedSet = false;
+        if (cur != NULL) {
+            if (std::find(sfolders.begin(), sfolders.end(), cur->path()) != sfolders.end())
+            selectedSet = true;
+        }
 
-        /**
-         * First row is the current one.
-         */
-	if (row == 0)
-          attron(A_STANDOUT);
-
+        if (row == rowToHighlight)
+            attron(A_STANDOUT);
 
         /**
          * The item we'll draw for this row.
@@ -179,32 +176,31 @@ void CScreen::drawMaildir()
          * Format.
          */
         if ( cur != NULL )
-            display = cur->format( selected );
+            display = cur->format( selectedSet );
 
         /**
          * Overwrite the full length.
          */
-	while ((int)display.size() < (CScreen::width() - 3))
+        while ((int)display.size() < (CScreen::width() - 3))
             display += std::string(" ");
 
-	move(row, 2);
+        move(row, 2);
 
-        if ( unread )
-        {
-            if ( row == 0 )
-                attrset( COLOR_PAIR(m_colours[unread_colour]) |A_REVERSE );
+        if ( unread ) {
+            if ( row == rowToHighlight )
+                attrset( COLOR_PAIR(1) |A_REVERSE );
             else
-                attrset( COLOR_PAIR(m_colours[unread_colour]) );
+                attrset( COLOR_PAIR(1) );
         }
-	printw("%s", display.c_str());
+        printw("%s", display.c_str());
 
-        attrset( COLOR_PAIR(m_colours["white"]));
+        attrset( COLOR_PAIR(2) );
 
         /**
          * Remove the inverse.
          */
-	if (row == 0)
-	    attroff(A_STANDOUT);
+        if (row == rowToHighlight)
+            attroff(A_STANDOUT);
     }
 }
 
@@ -222,12 +218,10 @@ void CScreen::drawIndex()
     /**
      * If we have no messages report that.
      */
-    if (( messages == NULL ) ||  (messages->size() < 1))
-    {
+    if (( messages == NULL ) ||  (messages->size() < 1)) {
         std::vector<std::string> folders = global->get_selected_folders();
 
-        if ( folders.size() < 1 )
-        {
+        if ( folders.size() < 1 ) {
             /**
              * No folders selected, and no messages.
              */
@@ -242,40 +236,25 @@ void CScreen::drawIndex()
         move(2, 2);
         printw( NO_MESSAGES_IN_FOLDERS );
 
-        std::vector<std::string>::iterator it;
         int height = CScreen::height();
         int row = 4;
 
-        for (it = folders.begin(); it != folders.end(); ++it) {
-
+        for (std::string folder: folders) {
             /**
              * Avoid drawing into the status area.
              */
             if ( row >= (height-1) )
                 break;
-
             /**
              * Show the name of the folder.
              */
-            std::string name = (*it);
             move( row, 5 );
-            printw("%s", name.c_str() );
+            printw("%s", folder.c_str() );
             row+=1;
         }
         return;
     }
 
-
-
-    /**
-     * The colour for unread maildirs.
-     */
-    std::string *unread = global->get_variable( "unread_message_colour" );
-    std::string unread_colour;
-    if ( unread != NULL )
-        unread_colour = *unread;
-    else
-        unread_colour = DEFAULT_UNREAD_COLOUR;
 
     /**
      * The number of items we've found, vs. the size of the screen.
@@ -284,12 +263,21 @@ void CScreen::drawIndex()
     int height = CScreen::height();
     int selected = global->get_selected_message();
 
-    /*
-     * Bound the selection.
-     */
-    if (selected >= count) {
-        selected = count-1;
-        global->set_selected_message(selected);
+    // correct for the statusbar and that counting starts at 1
+    int middle = (height-2)/2;
+    int rowToHighlight = 0;
+    vectorPosition topBottomOrMiddle = NONE;
+    // default to TOP if our list is shorter then the screen height
+    if (selected < middle || count<height-2) {
+        topBottomOrMiddle = TOP;
+        rowToHighlight = selected;
+    // if height is uneven we have to switch to the BOTTOM case on row earlier
+    } else if (  (count - selected <= middle) || (height%2==1 &&count-selected<=middle+1)) {
+        topBottomOrMiddle = BOTTOM;
+        rowToHighlight =  height - count+selected-1 ;
+    } else {
+        topBottomOrMiddle = MIDDLE;
+        rowToHighlight = middle;
     }
 
     /**
@@ -297,22 +285,37 @@ void CScreen::drawIndex()
      */
     int row = 0;
 
-    for (row = 0; row < (height - 1); row++)
-    {
-	move(row, 0);
-	printw("  " );
+    for (row = 0; row < (height - 1); row++) {
+        move(row, 0);
+        printw("  " );
 
         /**
          * What we'll output for this row.
          */
-	std::string  buf;
+        std::string  buf;
 
         /**
          * The current object.
          */
-	CMessage *cur = NULL;
-	if ((row + selected) < count)
-            cur = messages->at(row + selected);
+        CMessage *cur = NULL;
+        int mailIndex=count;
+        if (topBottomOrMiddle == TOP) {
+            // we start at the top of the list so just use row
+            mailIndex = row;
+        } else if (topBottomOrMiddle == BOTTOM) {
+            // when we reached the end of the list mailIndex can maximally be
+            // count-1, that this is given can easily be shown
+            // row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
+            mailIndex = count-height+row+1;
+        } else if (topBottomOrMiddle == MIDDLE) {
+            mailIndex = row + selected - middle;
+        }
+
+        if (mailIndex < count)
+            cur = messages->at(mailIndex);
+
+        if (row == rowToHighlight)
+            attron(A_UNDERLINE | A_STANDOUT);
 
         bool unread = false;
         if ( cur != NULL ) {
@@ -321,43 +324,39 @@ void CScreen::drawIndex()
                 unread = true;
         }
 
-	if ( unread ) {
+        if (unread) {
             if (row == 0)
-                attrset(COLOR_PAIR(m_colours[unread_colour])|A_REVERSE);
+                attrset(COLOR_PAIR(1)|A_REVERSE);
             else
-                attrset(COLOR_PAIR(m_colours[unread_colour]));
-        }
-        else {
-            if (row == 0)
-                attrset(A_REVERSE);
+                attrset(COLOR_PAIR(1));
         }
 
-	std::string path = "";
+        std::string path = "";
 
-	if (cur != NULL)
+        if (cur != NULL)
             buf =  cur->format();
 
         /**
          * Pad.
          */
-	while ((int)buf.size() < (CScreen::width() - 3))
+        while ((int)buf.size() < (CScreen::width() - 3))
             buf += std::string(" ");
         /**
          * Truncate.
          */
-	if ((int)buf.size() > (CScreen::width() - 3))
-	    buf[(CScreen::width() - 3)] = '\0';
+        if ((int)buf.size() > (CScreen::width() - 3))
+            buf[(CScreen::width() - 3)] = '\0';
 
-	move(row, 2);
-	printw("%s", buf.c_str());
+        move(row, 2);
+        printw("%s", buf.c_str());
 
-        attrset( COLOR_PAIR(m_colours[ "white"]));
+        attrset( COLOR_PAIR(2) );
 
         /**
          * Remove the inverse.
          */
-	if (row == 0)
-	    attroff(A_REVERSE);
+        if (row == 0)
+            attroff(A_REVERSE);
     }
 }
 
@@ -425,17 +424,6 @@ void CScreen::drawMessage()
         headers.push_back( "$SUBJECT" );
     }
 
-
-    /**
-     * Get the colour to draw the headers in.
-     */
-    std::string *h_colour = global->get_variable( "header_colour" );
-    std::string header_colour;
-    if ( h_colour != NULL )
-        header_colour = *h_colour;
-    else
-        header_colour = "white";
-
     int row = 0;
 
     /**
@@ -476,21 +464,9 @@ void CScreen::drawMessage()
         /**
          * Show it.
          */
-        attrset( COLOR_PAIR(m_colours[header_colour]) );
         printw( "%s: %s", name.c_str(), value.c_str() );
-        attrset( COLOR_PAIR(m_colours["white"]));
         row += 1;
     }
-
-    /**
-     * Get the colour to draw the attachments in.
-     */
-    std::string *a_colour = global->get_variable( "attachment_colour" );
-    std::string attachment_colour;
-    if ( a_colour != NULL )
-        attachment_colour = *a_colour;
-    else
-        attachment_colour = "white";
 
    /**
     * Draw the attachments.
@@ -500,17 +476,8 @@ void CScreen::drawMessage()
     for (it = attachments.begin(); it != attachments.end(); ++it)
     {
         std::string path = (*it);
-
         move( row, 0 );
-
-        /**
-         * Change to the right colour, draw the message,
-         * and revert.
-         */
-        attrset( COLOR_PAIR(m_colours[attachment_colour]) );
         printw( "Attachment %d - %s", acount, path.c_str() );
-        attrset( COLOR_PAIR(m_colours["white"]));
-
         acount += 1;
         row += 1;
     }
@@ -525,20 +492,7 @@ void CScreen::drawMessage()
      */
     int max = std::min((int)body.size(), (int)(CScreen::height() - headers.size() - attachments.size() ) );
 
-    /**
-     * get the body-colour
-     */
-    std::string *b_colour = global->get_variable( "body_colour" );
-    std::string body_colour;
-    if ( b_colour != NULL )
-        body_colour = *b_colour;
-    else
-        body_colour = "white";
-
-    /**
-     * Draw each line of the body.
-     */
-    for( int i = 0; i <= max; i++ )
+    for( int i = 0; i < (max-2); i++ )
     {
         move( i + ( headers.size() + attachments.size() + 1 ), 0 );
 
@@ -546,9 +500,7 @@ void CScreen::drawMessage()
         if ( (i + offset) < (int)body.size() )
             line = body[i+offset];
 
-        attrset( COLOR_PAIR(m_colours[body_colour]) );
         printw( "%s", line.c_str() );
-        attrset( COLOR_PAIR(m_colours["white"]));
     }
 
     /**
@@ -572,9 +524,9 @@ void CScreen::setup()
      */
     if (!has_colors() || (start_color() != OK))
     {
-	endwin();
-	std::cerr << MISSING_COLOR_SUPPORT << std::endl;
-	exit(1);
+    endwin();
+    std::cerr << MISSING_COLOR_SUPPORT << std::endl;
+    exit(1);
     }
 
     keypad(stdscr, TRUE);
@@ -587,29 +539,7 @@ void CScreen::setup()
      * We want (red + black) + (white + black)
      */
     init_pair(1, COLOR_RED, COLOR_BLACK);
-    m_colours[ "red"  ] = 1;
-
     init_pair(2, COLOR_WHITE, COLOR_BLACK);
-    m_colours[ "white" ] = 2;
-
-    init_pair(3, COLOR_BLUE, COLOR_BLACK);
-    m_colours[ "blue" ] = 3;
-
-    init_pair(4, COLOR_GREEN, COLOR_BLACK);
-    m_colours[ "green" ] = 4;
-
-    init_pair(5, COLOR_CYAN, COLOR_BLACK);
-    m_colours[ "cyan" ] = 5;
-
-    init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
-    m_colours[ "magenta" ] = 6;
-
-    init_pair(7, COLOR_YELLOW, COLOR_BLACK);
-    m_colours[ "yellow" ] = 7;
-
-    init_pair(8, COLOR_BLACK, COLOR_WHITE);
-    m_colours[ "black" ] = 8;
-
 
 }
 
@@ -641,7 +571,7 @@ void CScreen::clear_status()
     move(CScreen::height() - 1, 0);
 
     for (int i = 0; i < CScreen::width(); i++)
-	printw(" ");
+    printw(" ");
 
 }
 
