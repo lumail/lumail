@@ -34,6 +34,12 @@
 #include "message.h"
 #include "screen.h"
 
+
+#ifndef DEFAULT_UNREAD_COLOUR
+# define DEFAULT_UNREAD_COLOUR "red"
+#endif
+
+
 /**
  * Constructor.  NOP.
  */
@@ -87,6 +93,16 @@ void CScreen::drawMaildir()
     CGlobal *global = CGlobal::Instance();
     std::vector < CMaildir > display = global->get_folders();
     std::string *limit = global->get_variable("maildir_limit");
+
+    /**
+     * The colour for unread maildirs.
+     */
+    std::string *unread = global->get_variable( "unread_maildir_colour" );
+    std::string unread_colour;
+    if ( unread != NULL )
+        unread_colour = *unread;
+    else
+        unread_colour = DEFAULT_UNREAD_COLOUR;
 
     /**
      * The number of items we've found, vs. the size of the screen.
@@ -188,13 +204,13 @@ void CScreen::drawMaildir()
 
         if ( unread ) {
             if ( row == rowToHighlight )
-                attrset( COLOR_PAIR(1) |A_REVERSE );
+                attrset( COLOR_PAIR(m_colours[unread_colour]) | A_REVERSE );
             else
-                attrset( COLOR_PAIR(1) );
+                attrset( COLOR_PAIR(m_colours[unread_colour]) );
         }
         printw("%s", display.c_str());
 
-        attrset( COLOR_PAIR(2) );
+        attrset( COLOR_PAIR(m_colours["white"]));
 
         /**
          * Remove the inverse.
@@ -255,6 +271,15 @@ void CScreen::drawIndex()
         return;
     }
 
+    /**
+     * The colour for unread maildirs.
+     */
+    std::string *unread = global->get_variable( "unread_message_colour" );
+    std::string unread_colour;
+    if ( unread != NULL )
+        unread_colour = *unread;
+    else
+        unread_colour = DEFAULT_UNREAD_COLOUR;
 
     /**
      * The number of items we've found, vs. the size of the screen.
@@ -326,7 +351,7 @@ void CScreen::drawIndex()
 
         if (unread) {
             if (row == 0)
-                attrset(COLOR_PAIR(1)|A_REVERSE);
+               attrset(COLOR_PAIR(m_colours[unread_colour])|A_REVERSE);
             else
                 attrset(COLOR_PAIR(1));
         }
@@ -350,7 +375,7 @@ void CScreen::drawIndex()
         move(row, 2);
         printw("%s", buf.c_str());
 
-        attrset( COLOR_PAIR(2) );
+        attrset( COLOR_PAIR(m_colours[ "white"]));
 
         /**
          * Remove the inverse.
@@ -424,6 +449,16 @@ void CScreen::drawMessage()
         headers.push_back( "$SUBJECT" );
     }
 
+    /**
+     * Get the colour to draw the headers in.
+     */
+    std::string *h_colour = global->get_variable( "header_colour" );
+    std::string header_colour;
+    if ( h_colour != NULL )
+        header_colour = *h_colour;
+    else
+        header_colour = "white";
+
     int row = 0;
 
     /**
@@ -464,20 +499,40 @@ void CScreen::drawMessage()
         /**
          * Show it.
          */
+        attrset( COLOR_PAIR(m_colours[header_colour]) );
         printw( "%s: %s", name.c_str(), value.c_str() );
+        attrset( COLOR_PAIR(m_colours["white"]) );
         row += 1;
     }
 
-   /**
-    * Draw the attachments.
-    */
+    /**
+     * Get the colour to draw the attachments in.
+     */
+    std::string *a_colour = global->get_variable( "attachment_colour" );
+    std::string attachment_colour;
+    if ( a_colour != NULL )
+        attachment_colour = *a_colour;
+    else
+        attachment_colour = "white";
+
+    /**
+     * Draw the attachments.
+     */
     std::vector<std::string> attachments = cur->attachments();
     int acount = 1;
     for (it = attachments.begin(); it != attachments.end(); ++it)
     {
         std::string path = (*it);
         move( row, 0 );
+
+        /**
+         * Change to the right colour, draw the message,
+         * and revert.
+         */
+        attrset( COLOR_PAIR(m_colours[attachment_colour]) );
         printw( "Attachment %d - %s", acount, path.c_str() );
+        attrset( COLOR_PAIR(m_colours["white"]));
+
         acount += 1;
         row += 1;
     }
@@ -492,6 +547,20 @@ void CScreen::drawMessage()
      */
     int max = std::min((int)body.size(), (int)(CScreen::height() - headers.size() - attachments.size() ) );
 
+    /**
+     * get the body-colour
+     */
+    std::string *b_colour = global->get_variable( "body_colour" );
+    std::string body_colour;
+    if ( b_colour != NULL )
+        body_colour = *b_colour;
+    else
+        body_colour = "white";
+
+    /**
+     * Draw each line of the body.
+     */
+
     for( int i = 0; i < (max-2); i++ )
     {
         move( i + ( headers.size() + attachments.size() + 1 ), 0 );
@@ -500,7 +569,9 @@ void CScreen::drawMessage()
         if ( (i + offset) < (int)body.size() )
             line = body[i+offset];
 
+        attrset( COLOR_PAIR(m_colours[body_colour]) );
         printw( "%s", line.c_str() );
+        attrset( COLOR_PAIR(m_colours["white"]) );
     }
 
     /**
@@ -538,10 +609,31 @@ void CScreen::setup()
     /**
      * We want (red + black) + (white + black)
      */
-    init_pair(1, COLOR_RED, COLOR_BLACK);
-    init_pair(2, COLOR_WHITE, COLOR_BLACK);
+     init_pair(1, COLOR_RED, COLOR_BLACK);
+     m_colours[ "red"  ] = 1;
 
+    init_pair(2, COLOR_WHITE, COLOR_BLACK);
+    m_colours[ "white" ] = 2;
+
+    init_pair(3, COLOR_BLUE, COLOR_BLACK);
+    m_colours[ "blue" ] = 3;
+
+    init_pair(4, COLOR_GREEN, COLOR_BLACK);
+    m_colours[ "green" ] = 4;
+
+    init_pair(5, COLOR_CYAN, COLOR_BLACK);
+    m_colours[ "cyan" ] = 5;
+
+    init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
+    m_colours[ "magenta" ] = 6;
+
+    init_pair(7, COLOR_YELLOW, COLOR_BLACK);
+    m_colours[ "yellow" ] = 7;
+
+    init_pair(8, COLOR_BLACK, COLOR_WHITE);
+    m_colours[ "black" ] = 8;
 }
+
 
 /**
  * Return the width of the screen.
