@@ -118,15 +118,6 @@ void CScreen::drawMaildir()
         return;
     }
 
-
-    /**
-     * wrap the selection.
-     */
-    if (selected >= count) {
-        global->set_selected_folder(0);
-        selected = 0;
-    }
-
     int row = 0;
 
     /**

@@ -85,6 +85,12 @@ class CGlobal
     return m_cur_folder;
   }
   void set_selected_folder(int offset) {
+    // wrap around folder list
+    int count = get_folders().size();
+    if (offset >= count) 
+        offset = offset-count;
+    else if (offset < 0)
+        offset = count+offset;
     m_cur_folder = offset;
   }
 
