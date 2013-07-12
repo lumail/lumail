@@ -133,7 +133,10 @@ index_limit( "all" );
 --
 -- Valid options are currently limited to:
 --
---   $DAY, $MONTH, $YEAR
+--   $DAY   (day of week)
+--   $MONTH (month name)
+--   $MON   (month abbreviation)
+--   $YEAR  (year)
 --   $DATE
 --   $FLAGS
 --   $FROM
