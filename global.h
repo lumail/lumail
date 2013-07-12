@@ -85,12 +85,13 @@ class CGlobal
     return m_cur_folder;
   }
   void set_selected_folder(int offset) {
-    // wrap around folder list
+    // wrap around folder vector
     int count = get_folders().size();
     if (offset >= count) 
-        offset = offset-count;
+      offset = offset-count;
     else if (offset < 0)
-        offset = count+offset;
+      // this will set offset to count-|offset|
+      offset = count+offset;
     m_cur_folder = offset;
   }
 
@@ -101,12 +102,13 @@ class CGlobal
     return m_cur_message;
   }
   void set_selected_message(int offset) {
-      int count = get_messages()->size();
-      if (offset>=count)
-          offset -= count;
-      else if (offset<0)
-          offset = count + offset;
-          
+    // wrap around message vector
+    int count = get_messages()->size();
+    if (offset>=count)
+      offset -= count;
+    else if (offset<0)
+      // this will set offset to count-|offset|
+      offset = count + offset;
     m_cur_message = offset;
   }
 

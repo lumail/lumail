@@ -65,11 +65,11 @@ void CScreen::refresh_display()
     std::string * s = global->get_variable("global_mode");
 
     if (strcmp(s->c_str(), "maildir") == 0)
-    drawMaildir();
+        drawMaildir();
     else if (strcmp(s->c_str(), "index") == 0)
-    drawIndex();
+        drawIndex();
     else if (strcmp(s->c_str(), "message") == 0)
-    drawMessage();
+        drawMessage();
     else {
         move(3, 3);
         printw("UNKNOWN MODE: '%s'", s->c_str());
@@ -93,21 +93,23 @@ void CScreen::drawMaildir()
      */
     int count = display.size();
     int height = CScreen::height();
-    //TODO make the statusbar a variable
-    int middle = (height-2)/2; //correct for statusbar
+    // correct for the statusbar and that counting starts at 0
+    int middle = (height-2)/2;
     int selected = global->get_selected_folder();
 
-    int highlightRow = 0;
-    int TopBottomOrMiddle = -1;
-    if (selected < middle) {
-        highlightRow = selected;
-        TopBottomOrMiddle = 0;
+    int rowToHighlight = 0;
+    vectorPosition topBottomOrMiddle = NONE;
+    // default to TOP if our list is shorter then the screen height
+    if (selected < middle || count<height-2) {
+        rowToHighlight = selected;
+        topBottomOrMiddle = TOP;
+    // if height is uneven we have to switch to the BOTTOM case on row earlier
     } else if (  (count - selected <= middle) || (height%2==1 &&count-selected<=middle+1)) {
-        highlightRow =  height - count+selected-1 ;
-        TopBottomOrMiddle = 1;
+        rowToHighlight =  height - count+selected-1 ;
+        topBottomOrMiddle = BOTTOM;
     } else {
-        highlightRow = middle;
-        TopBottomOrMiddle = 2;
+        rowToHighlight = middle;
+        topBottomOrMiddle = MIDDLE;
     }
     /**
      * If we have no messages report that.
@@ -136,13 +138,18 @@ void CScreen::drawMaildir()
          */
         CMaildir *cur = NULL;
         int mailIndex=count;
-        if (TopBottomOrMiddle == 0) {
+        if (topBottomOrMiddle == TOP) {
+            // we start at the top of the list so just use row
             mailIndex = row;
-        } else if (TopBottomOrMiddle == 1) {
+        } else if (topBottomOrMiddle == BOTTOM) {
+            // when we reached the end of the list mailIndex can maximally be
+            // count-1, that this is given can easily be shown
+            // row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
             mailIndex = count-height+row+1;
-        } else {
+        } else if (topBottomOrMiddle == MIDDLE) {
             mailIndex = row + selected - middle;
         }
+
         if (mailIndex < count) {
             cur = &display.at(mailIndex);
             unread = cur->newMessages();
@@ -157,8 +164,8 @@ void CScreen::drawMaildir()
             selectedSet = true;
         }
 
-        if (row == highlightRow)
-            attron(A_UNDERLINE | A_STANDOUT);
+        if (row == rowToHighlight)
+            attron(A_STANDOUT);
 
         /**
          * The item we'll draw for this row.
@@ -180,7 +187,7 @@ void CScreen::drawMaildir()
         move(row, 2);
 
         if ( unread ) {
-            if ( row == highlightRow )
+            if ( row == rowToHighlight )
                 attrset( COLOR_PAIR(1) |A_REVERSE );
             else
                 attrset( COLOR_PAIR(1) );
@@ -192,8 +199,8 @@ void CScreen::drawMaildir()
         /**
          * Remove the inverse.
          */
-        // if (row == 0)
-        //     attroff(A_STANDOUT);
+        if (row == rowToHighlight)
+            attroff(A_STANDOUT);
     }
 }
 
@@ -256,19 +263,21 @@ void CScreen::drawIndex()
     int height = CScreen::height();
     int selected = global->get_selected_message();
 
-    int middle = (height-2)/2; //correct for statusbar
-
-    int highlightRow = 0;
-    int TopBottomOrMiddle = -1;
-    if (selected < middle) {
-        highlightRow = selected;
-        TopBottomOrMiddle = 0;
+    // correct for the statusbar and that counting starts at 1
+    int middle = (height-2)/2; 
+    int rowToHighlight = 0;
+    vectorPosition topBottomOrMiddle = NONE;
+    // default to TOP if our list is shorter then the screen height
+    if (selected < middle || count<height-2) {
+        topBottomOrMiddle = TOP;
+        rowToHighlight = selected;
+    // if height is uneven we have to switch to the BOTTOM case on row earlier
     } else if (  (count - selected <= middle) || (height%2==1 &&count-selected<=middle+1)) {
-        highlightRow =  height - count+selected-1 ;
-        TopBottomOrMiddle = 1;
+        topBottomOrMiddle = BOTTOM;
+        rowToHighlight =  height - count+selected-1 ;
     } else {
-        highlightRow = middle;
-        TopBottomOrMiddle = 2;
+        topBottomOrMiddle = MIDDLE;
+        rowToHighlight = middle;
     }
 
     /**
@@ -290,17 +299,22 @@ void CScreen::drawIndex()
          */
         CMessage *cur = NULL;
         int mailIndex=count;
-        if (TopBottomOrMiddle == 0) {
+        if (topBottomOrMiddle == TOP) {
+            // we start at the top of the list so just use row
             mailIndex = row;
-        } else if (TopBottomOrMiddle == 1) {
+        } else if (topBottomOrMiddle == BOTTOM) {
+            // when we reached the end of the list mailIndex can maximally be
+            // count-1, that this is given can easily be shown
+            // row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
             mailIndex = count-height+row+1;
-        } else {
+        } else if (topBottomOrMiddle == MIDDLE) {
             mailIndex = row + selected - middle;
         }
+
         if (mailIndex < count)
             cur = messages->at(mailIndex);
 
-        if (row == highlightRow)
+        if (row == rowToHighlight)
             attron(A_UNDERLINE | A_STANDOUT);
 
         bool unread = false;

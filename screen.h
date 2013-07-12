@@ -91,4 +91,11 @@ class CScreen
 
 };
 
+enum vectorPosition {
+    TOP,
+    MIDDLE,
+    BOTTOM,
+    NONE
+};
+
 #endif				/* _screen_h_ */
