@@ -666,9 +666,6 @@ int scroll_index_up(lua_State * L)
     int cur = global->get_selected_message();
     cur -= step;
 
-    if (cur < 0)
-	cur = 0;
-
     global->set_selected_message(cur);
 
     /**
