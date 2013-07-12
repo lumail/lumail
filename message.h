@@ -159,6 +159,12 @@ class CMessage
    * MIME Entity object for this message.
    */
   mimetic::MimeEntity *m_me;
+
+  /**
+   * Cached time/date object.
+   */
+  time_t m_date;
+
 };
 
 #endif /* _message_h */

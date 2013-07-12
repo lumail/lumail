@@ -46,6 +46,7 @@ CMessage::CMessage(std::string filename)
 {
     m_path = filename;
     m_me   = NULL;
+    m_date = 0;
 }
 
 
@@ -497,29 +498,134 @@ std::string CMessage::from()
  */
 std::string CMessage::date(TDate fmt)
 {
-    std::string date = header("Date");
+    /**
+     * If we have a date setup, then use it.
+     */
+    if ( m_date == 0 )
+    {
+        /**
+         * Get the header.
+         */
+        std::string date = header("Date");
 
-    if (date.empty()) {
-        struct stat st_buf;
-        const char *p = path().c_str();
+        if ( date.empty() )
+        {
+            /**
+             * The date was empty, so use the mtime.
+             */
+            struct stat st_buf;
+            const char *p = path().c_str();
 
-        int err = stat(p,&st_buf);
-        if ( !err ) {
-            time_t modt = st_buf.st_mtime;
-            date = ctime(&modt);
+            int err = stat(p,&st_buf);
+            if ( !err )
+            {
+                m_date = st_buf.st_mtime;
+            }
+        }
+        else
+        {
+#if 0
+            // Parse RFC822 date
+            // Case in point: Mon, 15 Dec 2003 09:46:00 +0000 (GMT)
+            // Would be OK with just +0000 or (GMT) but both together
+            // is not acceptable.  But note that the () are actually a
+            // comment.  So we strip comments.
+            unsigned int start = 0;
+            while(1)
+            {
+                start = date.find('(',start);
+                if (start==std::string::npos)
+                    break;
+
+                unsigned int end = date.find(')',start);
+                if (end==std::string::npos)
+                    break;
+                date.erase(start,end+1-start);
+            }
+#endif
+
+
+            struct tm t;
+
+            const char* const date_formats[] = {
+                " %a, %d %b %y %H:%M:%S",    // RFC822 with 2-digit year
+                " %a, %d %b %Y %H:%M:%S",    // RFC822
+                " %d %b %y %H:%M:%S",        // easyjet.com "31 Jan 01 21:00:00 GMT"
+                " %d %b %Y %H:%M:%S",        // RFC822 without day of week
+                " %a %b %d %H:%M:%S GMT %Y", // Co-op bank "Thu Apr 24 11:10:04 GMT 2003"
+                " %a %b %d %H:%M:%S MSD %Y", // Kirill "Tue Jun 27 21:08:10 MSD 2000"
+                " %a %b %d %H:%M:%S BST %Y", // Bytemark "Tue Apr 20 19:07:44 BST 2004"
+                " %a %b %d %H:%M:%S CEST %Y",// SNCF "Thu Sep 28 14:37:14 CEST 2006"
+                " %a %b %d %H:%M:%S PST %Y", // Shoppingzilla "Thu Nov 30 15:55:52 PST 2006"
+                " %a, %d %b %y %H:%M",       // no secs, 2d year: "Fri, 30 Jan 98 14:06 GMT"
+                " %a, %d %b %Y %H:%M",       // no secs: Oxfam "Wed, 5 Sep 2001 08:03 -0700"
+                " %d-%b-%Y",                 // register.com "18-Jun-2002"
+                " %m/%d/%y",                 // k7.com "11/20/02"
+                " %d %b %Y",                 // Bletchly Park "22 February 2004"
+                " %a %b %d %H:%M:%S %Y",     // Spam "Sat Jan 13 21:56:01 2007"
+                0
+            };
+            char* rc = NULL;
+            int i=0;
+            while(!rc)
+            {
+                const char* const fmt  = date_formats[i++];
+                if(!fmt)
+                    break;
+
+                t.tm_sec=0;
+                t.tm_min=0;
+                t.tm_hour=0;
+                rc = strptime(date.c_str(), fmt, &t);
+            }
+            if (!rc)
+            {
+                /**
+                 * Failed to find a date.
+                 */
+                m_date = -1;
+            }
+            char tzsign[2];
+            unsigned int tzhours;
+            unsigned int tzmins;
+            int tzscan = sscanf(rc," %1[+-]%2u%2u",tzsign,&tzhours,&tzmins);
+            if (tzscan==3) {
+                switch(tzsign[0]) {
+                case '+':
+                    t.tm_hour -= tzhours;
+                    t.tm_min -= tzmins;
+                    break;
+                case '-':
+                    t.tm_hour += tzhours;
+                    t.tm_min += tzmins;
+                    break;
+                }
+            } else
+            {
+                // Warning, couldn't parse timezone.  Probably "BST" or "EST" or
+                // something like that.  Ignore it.
+            }
+            // Note: the following line used to use mktime(), until summer time
+            // started and everything went off by an hour.  This timezone stuff
+            // is unpleasant.
+            m_date = timegm(&t);
         }
     }
+
     if ( fmt == EFULL )
+    {
+        std::string date = header("Date");
     	return( date );
+    }
     if ( fmt == EYEAR )
     {
-        struct tm tm;
-
-        if (strptime(date.c_str(), "%a, %d %b %Y %H:%M:%S", &tm) != NULL)
+        if ( ( m_date != 0 ) && ( m_date != -1 ) )
         {
-            char buff[20] = { '\0' };
-            snprintf(buff, sizeof(buff)-1, "%d", ( 1900 + tm.tm_year ) );
+            struct tm * ptm;
+            ptm = gmtime ( &m_date );
 
+            char buff[20] = { '\0' };
+            snprintf(buff, sizeof(buff)-1, "%d", ( 1900 + ptm->tm_year ) );
             return( std::string(buff) );
         }
         else
@@ -539,24 +645,26 @@ std::string CMessage::date(TDate fmt)
                                  "October",
                                  "November",
                                  "December" };
-        struct tm tm;
-
-        if (strptime(date.c_str(), "%a, %d %b %Y %H:%M:%S", &tm) != NULL)
+        if ( ( m_date != 0 ) && ( m_date != -1 ) )
         {
-            return( std::string(months[tm.tm_mon]) );
+            struct tm * ptm;
+            ptm = gmtime ( &m_date );
+
+            return( std::string(months[ptm->tm_mon]) );
         }
         else
             return std::string("$MONTH");
     }
     if ( fmt == EDAY )
     {
-        struct tm tm;
 
-        if (strptime(date.c_str(), "%a, %d %b %Y %H:%M:%S", &tm) != NULL)
+        if ( ( m_date != 0 ) && ( m_date != -1 ) )
         {
-            char buff[20] = { '\0' };
-            snprintf(buff, sizeof(buff)-1, "%d", ( tm.tm_mday ) );
+            struct tm * ptm;
+            ptm = gmtime ( &m_date );
 
+            char buff[20] = { '\0' };
+            snprintf(buff, sizeof(buff)-1, "%d", ( ptm->tm_mday ) );
             return( std::string(buff) );
         }
         else
