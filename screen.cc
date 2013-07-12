@@ -265,6 +265,13 @@ void CScreen::drawIndex()
     int height = CScreen::height();
     int selected = global->get_selected_message();
 
+    /*
+     * Bound the selection.
+     */
+    if (selected >= count) {
+        selected = count-1;
+        global->set_selected_message(selected);
+    }
     int middle = (height-2)/2; //correct for statusbar
 
     int highlightRow = 0;
@@ -278,14 +285,6 @@ void CScreen::drawIndex()
     } else {
         highlightRow = middle;
         TopBottomOrMiddle = 2;
-    }
-
-    /*
-     * Bound the selection.
-     */
-    if (selected >= count) {
-        selected = count-1;
-        global->set_selected_message(selected);
     }
 
     /**
