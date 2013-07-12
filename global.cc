@@ -39,7 +39,7 @@ CGlobal *CGlobal::pinstance = NULL;
 CGlobal *CGlobal::Instance()
 {
     if (!pinstance)
-	pinstance = new CGlobal;
+        pinstance = new CGlobal;
 
     return pinstance;
 }
@@ -113,10 +113,10 @@ bool sort_messages_by_date(CMessage *a, CMessage *b)
     std::string them_path = b->path();
 
     if (stat(us_path.c_str(), &us) < 0)
-	return 0;
+        return 0;
 
     if (stat(them_path.c_str(), &them) < 0)
-	return 0;
+        return 0;
 
     return (us.st_mtime < them.st_mtime);
 
@@ -159,11 +159,11 @@ std::vector<CMaildir> CGlobal::get_all_folders()
     CGlobal *global     = CGlobal::Instance();
     std::string *prefix = global->get_variable( "maildir_prefix" );
 
-    std::vector<std::string> folders =
-	CMaildir::getFolders(*prefix);
+    std::vector<std::string> folders = CMaildir::getFolders(*prefix);
     std::vector < std::string >::iterator it;
-    for (it = folders.begin(); it != folders.end(); ++it) {
-	maildirs.push_back(CMaildir(*it));
+    for (it = folders.begin(); it != folders.end(); ++it)
+    {
+        maildirs.push_back(CMaildir(*it));
     }
 
     /**
@@ -302,9 +302,10 @@ bool CGlobal::remove_folder(std::string path)
     /**
      * If we found it reemove it.
      */
-    if (it != m_selected_folders.end()) {
-	m_selected_folders.erase(it);
-	return true;
+    if (it != m_selected_folders.end())
+    {
+        m_selected_folders.erase(it);
+        return true;
     }
 
     /**

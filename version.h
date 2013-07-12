@@ -24,4 +24,4 @@
 
 #ifndef    LUMAIL_VERSION
 # define   LUMAIL_VERSION "__UNRELEASED__"
-#endif	/* LUMAIL_VERSION */
+#endif  /* LUMAIL_VERSION */

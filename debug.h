@@ -91,4 +91,4 @@ class CDebug
 
 };
 
-#endif	/* _debug_h_ */
+#endif  /* _debug_h_ */

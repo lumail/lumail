@@ -32,7 +32,7 @@ CDebug *CDebug::pinstance = NULL;
 CDebug *CDebug::Instance()
 {
     if (!pinstance)
-	pinstance = new CDebug;
+        pinstance = new CDebug;
 
     return pinstance;
 }

@@ -106,4 +106,4 @@ enum vectorPosition {
     NONE
 };
 
-#endif				/* _screen_h_ */
+#endif /* _screen_h_ */

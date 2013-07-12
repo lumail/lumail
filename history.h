@@ -81,4 +81,4 @@ class CHistory
 
 };
 
-#endif				/* _history_h_ */
+#endif /* _history_h_ */

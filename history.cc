@@ -32,7 +32,7 @@ CHistory *CHistory::pinstance = NULL;
 CHistory *CHistory::Instance()
 {
     if (!pinstance)
-	pinstance = new CHistory;
+        pinstance = new CHistory;
 
     return pinstance;
 }

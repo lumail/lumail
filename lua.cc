@@ -211,14 +211,13 @@ bool CLua::load_file(std::string filename)
 {
     if (CFile::exists( filename ) )
     {
-	if (luaL_loadfile(m_lua, filename.c_str())
-	    || lua_pcall(m_lua, 0, 0, 0))
+        if (luaL_loadfile(m_lua, filename.c_str())
+            || lua_pcall(m_lua, 0, 0, 0))
         {
-	    fprintf(stderr, "cannot run configuration file: %s",
-		    lua_tostring(m_lua, -1));
-	    exit(1);
-	}
-
+            fprintf(stderr, "cannot run configuration file: %s",
+                    lua_tostring(m_lua, -1));
+            exit(1);
+        }
         return true;
     }
     return false;
@@ -253,11 +252,11 @@ bool CLua::call_function(std::string name)
     lua_getglobal(m_lua, name.c_str());
     if (lua_isfunction(m_lua, -1))
     {
-	lua_pcall(m_lua, 0, 0, 0);
-	return true;
+        lua_pcall(m_lua, 0, 0, 0);
+        return true;
     }
     else
-	return false;
+        return false;
 }
 
 

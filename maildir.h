@@ -111,4 +111,4 @@ class CMaildir
 
 };
 
-#endif				/* _maildir_h_ */
+#endif /* _maildir_h_ */

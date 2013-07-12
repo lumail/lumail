@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-	static struct option long_options[] =
+        static struct option long_options[] =
             {
                 {"debug", required_argument, 0, 'd'},
                 {"eval", required_argument, 0, 'e'},
@@ -85,60 +85,60 @@ int main(int argc, char *argv[])
                 {0, 0, 0, 0}
             };
 
-	/* getopt_long stores the option index here. */
-	int option_index = 0;
+        /* getopt_long stores the option index here. */
+        int option_index = 0;
 
-	c = getopt_long(argc, argv, "vr:f:e:", long_options, &option_index);
+        c = getopt_long(argc, argv, "vr:f:e:", long_options, &option_index);
 
-	/* Detect the end of the options. */
-	if (c == -1)
-	    break;
+        /* Detect the end of the options. */
+        if (c == -1)
+            break;
 
-	switch (c)
+        switch (c)
         {
-	case 'd':
+        case 'd':
 #ifdef LUMAIL_DEBUG
-	    debug = optarg;
+            debug = optarg;
 #else
             std::cout << "Debug support was not compiled in." << std::endl;
             exit(1);
 #endif
-	    break;
-	case 'e':
-	    eval = optarg;
-	    break;
-	case 'f':
-	    folder = optarg;
-	    break;
-	case 'r':
-	    rcfile = optarg;
-	    break;
-	case 'v':
-	    version = true;
-	    break;
-	case 'x':
-	    exit_after_eval = true;
-	    break;
-	case '?':
-	    /* getopt_long already printed an error message. */
-	    exit(1);
+            break;
+        case 'e':
+            eval = optarg;
+            break;
+        case 'f':
+            folder = optarg;
+            break;
+        case 'r':
+            rcfile = optarg;
+            break;
+        case 'v':
+            version = true;
+            break;
+        case 'x':
+            exit_after_eval = true;
+            break;
+        case '?':
+            /* getopt_long already printed an error message. */
+            exit(1);
             break;
 
-	default:
-	    std::cerr << "Unknown argument" << std::endl;
-	    exit (1);
-	}
+        default:
+            std::cerr << "Unknown argument" << std::endl;
+            exit (1);
+        }
     }
 
     if (version)
     {
 #ifdef LUMAIL_DEBUG
-	std::cout << "lumail-debug v" << LUMAIL_VERSION ;
+        std::cout << "lumail-debug v" << LUMAIL_VERSION ;
 #else
-	std::cout << "lumail v" << LUMAIL_VERSION ;
+        std::cout << "lumail v" << LUMAIL_VERSION ;
 #endif
         std::cout << " compiled against " << LUA_VERSION << "." << std::endl;
-	return 0;
+        return 0;
     }
 
     /**
@@ -243,15 +243,14 @@ int main(int argc, char *argv[])
      */
     while (true)
     {
-	char key = getch();
-	if (key == ERR)
+        char key = getch();
+        if (key == ERR)
         {
-	    /*
-	     * Timeout - so we go round the loop again.
-	     */
-	    lua->call_function("on_idle");
-
-	}
+            /*
+             * Timeout - so we go round the loop again.
+             */
+            lua->call_function("on_idle");
+        }
         else
         {
             /**
@@ -266,7 +265,7 @@ int main(int argc, char *argv[])
              * See if we can handle it via our keyboard map, or
              * the lua function "on_key".
              */
-	    if ( (!lua->on_key( name )) && ( !lua->on_keypress(name)) )
+            if ( (!lua->on_key( name )) && ( !lua->on_keypress(name)) )
             {
                 /**
                  * Both calls failed, so show a message.
@@ -274,10 +273,10 @@ int main(int argc, char *argv[])
                 std::string foo = "msg(\"Unbound key: ";
                 foo += std::string(name) + "\");";
                 lua->execute(foo);
-	    }
-	}
+            }
+        }
 
-	screen.refresh_display();
+        screen.refresh_display();
     }
 
     /**

@@ -56,7 +56,7 @@ int get_set_string_variable( lua_State *L, const char * name )
     CGlobal *g = CGlobal::Instance();
 
     if (str != NULL)
-	g->set_variable( name, new std::string(str));
+        g->set_variable( name, new std::string(str));
 
     std::string * s = g->get_variable(name);
     lua_pushstring(L, s->c_str());
@@ -360,7 +360,7 @@ int exec(lua_State * L)
 {
     const char *str = lua_tostring(L, -1);
     if (str == NULL)
-	return luaL_error(L, "Missing argument to exec(..)");
+        return luaL_error(L, "Missing argument to exec(..)");
 
     CScreen::clear_status();
 
@@ -392,7 +392,7 @@ int msg(lua_State * L)
     const char *str = lua_tostring(L, -1);
 
     if (str == NULL)
-	return luaL_error(L, "Missing argument to msg(..)");
+        return luaL_error(L, "Missing argument to msg(..)");
 
     CScreen::clear_status();
     move(CScreen::height() - 1, 0);
@@ -411,7 +411,7 @@ int prompt(lua_State * L)
      */
     const char *str = lua_tostring(L, -1);
     if (str == NULL)
-	return luaL_error(L, "Missing argument to prompt(..)");
+        return luaL_error(L, "Missing argument to prompt(..)");
 
     char input[1024] = { '\0' };
     curs_set(1);
@@ -446,7 +446,7 @@ int prompt_yn(lua_State * L)
      */
     const char *str = lua_tostring(L, -1);
     if (str == NULL)
-	str = def_prompt;
+        str = def_prompt;
 
     /**
      * Push the characters and the prompt.
@@ -495,9 +495,9 @@ int prompt_chars(lua_State *L)
      * Ensure both were set.
      */
     if (str == NULL)
-	return luaL_error(L, "Missing prompt to function prompt_chars(..)");
+        return luaL_error(L, "Missing prompt to function prompt_chars(..)");
     if (chars == NULL)
-	return luaL_error(L, "Missing characters to function prompt_chars(..)");
+        return luaL_error(L, "Missing characters to function prompt_chars(..)");
 
 
     echo();
@@ -516,7 +516,7 @@ int prompt_chars(lua_State *L)
         move(height - 1, 0);
         printw(str);
 
-	char key = getch();
+        char key = getch();
 
         /**
          * See if the character was in the input string.
@@ -591,8 +591,8 @@ int prompt_maildir(lua_State * L)
             }
         }
 
-	char key = getch();
-	if (key == ERR)
+        char key = getch();
+        if (key == ERR)
         {
             // NOP
         }
@@ -764,7 +764,7 @@ int scroll_maildir_to(lua_State * L)
     const char *str = lua_tostring(L, -1);
 
     if (str == NULL)
-	return luaL_error(L, "Missing argument to scroll_maildir_to(..)");
+        return luaL_error(L, "Missing argument to scroll_maildir_to(..)");
 
 
     /**
@@ -785,13 +785,13 @@ int scroll_maildir_to(lua_State * L)
 
     while (i != selected)
     {
-	if (i >= max)
-	    break;
+        if (i >= max)
+            break;
 
         /**
          * Get the display-name of the folder.
          */
-	CMaildir cur = display[i];
+        CMaildir cur = display[i];
         std::string p = cur.path();
 
         /**
@@ -799,15 +799,15 @@ int scroll_maildir_to(lua_State * L)
          */
         std::transform(p.begin(), p.end(), p.begin(), tolower);
 
-	if (strstr(p.c_str(), find.c_str()) != NULL)
+        if (strstr(p.c_str(), find.c_str()) != NULL)
         {
-	    global->set_selected_folder(i);
-	    break;
-	}
-	i += 1;
+            global->set_selected_folder(i);
+            break;
+        }
+        i += 1;
 
-	if (i >= max)
-	    i = 0;
+        if (i >= max)
+            i = 0;
     }
     return 0;
 }
@@ -838,7 +838,7 @@ int select_maildir(lua_State *L)
 {
     const char *path = lua_tostring(L, -1);
     if (path == NULL)
-	return luaL_error(L, "Missing argument to select_maildir(..)");
+        return luaL_error(L, "Missing argument to select_maildir(..)");
 
 
     /**
@@ -890,7 +890,7 @@ int maildirs_matching(lua_State *L)
 {
     const char *pattern = lua_tostring(L, -1);
     if (pattern == NULL)
-	return luaL_error(L, "Missing argument to maildirs_matching(..)");
+        return luaL_error(L, "Missing argument to maildirs_matching(..)");
 
     /**
      * Get all maildirs.
@@ -1193,7 +1193,7 @@ int save_message( lua_State *L )
     const char *str = lua_tostring(L, -1);
 
     if (str == NULL)
-	return luaL_error(L, "Missing argument to save(..)");
+        return luaL_error(L, "Missing argument to save(..)");
 
     if ( !CFile::is_directory( str ) )
         return luaL_error(L, "The specified destination is not a Maildir" );
@@ -1379,20 +1379,20 @@ int add_selected_folder(lua_State * L)
      */
     if (str == NULL)
     {
-	int selected = global->get_selected_folder();
-	std::vector < CMaildir > display = global->get_folders();
+        int selected = global->get_selected_folder();
+        std::vector < CMaildir > display = global->get_folders();
 
         if ( display.size()  == 0 )
             return 0;
 
-	CMaildir x = display[selected];
+        CMaildir x = display[selected];
         path = x.path();
         global->add_folder(path.c_str());
     }
     else
     {
         path = std::string(str);
-	global->add_folder(path);
+        global->add_folder(path);
     }
 
     global->set_selected_message(0);
@@ -1428,17 +1428,17 @@ int set_selected_folder(lua_State * L)
      */
     if (str == NULL)
     {
-	std::vector < CMaildir > display = global->get_folders();
-	int selected = global->get_selected_folder();
+        std::vector < CMaildir > display = global->get_folders();
+        int selected = global->get_selected_folder();
 
-	CMaildir x = display[selected];
+        CMaildir x = display[selected];
         path = x.path();
-	global->add_folder(path.c_str());
+        global->add_folder(path.c_str());
     }
     else
     {
         path = std::string(str);
-	global->add_folder(path.c_str());
+        global->add_folder(path.c_str());
     }
 
     global->update_messages();
@@ -1473,21 +1473,21 @@ int toggle_selected_folder(lua_State * L)
 
     if (str == NULL)
     {
-	std::vector < CMaildir > display = global->get_folders();
+        std::vector < CMaildir > display = global->get_folders();
         if ( display.size()  == 0 )
             return 0;
 
-	int selected = global->get_selected_folder();
-	CMaildir x = display[selected];
-	toggle = x.path();
+        int selected = global->get_selected_folder();
+        CMaildir x = display[selected];
+        toggle = x.path();
     }
     else
     {
-	toggle = std::string(str);
+        toggle = std::string(str);
     }
 
     if (std::find(sfolders.begin(), sfolders.end(), toggle) != sfolders.end())
-	global->remove_folder(toggle);
+        global->remove_folder(toggle);
     else
         global->add_folder(toggle);
 
@@ -1526,7 +1526,7 @@ int mime_type(lua_State *L)
      */
     const char *file = lua_tostring(L, -1);
     if (file == NULL)
-	return luaL_error(L, "Missing argument to mime_type(..)");
+        return luaL_error(L, "Missing argument to mime_type(..)");
 
     /**
      * Attempt to find the extension.
@@ -1875,7 +1875,7 @@ int compose(lua_State * L)
         lua_pushstring(L, from->c_str() );
         lua_pushstring(L, recipient );
         lua_pushstring(L, subject );
-	if (! lua_pcall(L, 3, 1, 0) )
+        if (! lua_pcall(L, 3, 1, 0) )
         {
             sig = lua_tostring(L,-1);
         }
@@ -2341,7 +2341,7 @@ int send_email(lua_State *L)
     const char *to = lua_tostring(L, -1);
     lua_pop(L, 1);
     if (to == NULL) {
-	return luaL_error(L, "Missing recipient.");
+        return luaL_error(L, "Missing recipient.");
     }
 
     lua_pushstring(L, "from" );
@@ -2349,7 +2349,7 @@ int send_email(lua_State *L)
     const char *from = lua_tostring(L, -1);
     lua_pop(L, 1);
     if (from == NULL) {
-	return luaL_error(L, "Missing sender.");
+        return luaL_error(L, "Missing sender.");
     }
 
     lua_pushstring(L, "subject" );
@@ -2357,7 +2357,7 @@ int send_email(lua_State *L)
     const char *subject = lua_tostring(L, -1);
     lua_pop(L, 1);
     if (subject == NULL) {
-	return luaL_error(L, "Missing subject.");
+        return luaL_error(L, "Missing subject.");
     }
 
     lua_pushstring(L, "body" );
@@ -2365,7 +2365,7 @@ int send_email(lua_State *L)
     const char *body = lua_tostring(L, -1);
     lua_pop(L, 1);
     if (body == NULL) {
-	return luaL_error(L, "Missing body.");
+        return luaL_error(L, "Missing body.");
     }
 
     /**
@@ -2410,7 +2410,7 @@ int send_email(lua_State *L)
         lua_pushstring(L, from );
         lua_pushstring(L, to );
         lua_pushstring(L, subject );
-	if (! lua_pcall(L, 3, 1, 0) )
+        if (! lua_pcall(L, 3, 1, 0) )
         {
             sig = lua_tostring(L,-1);
         }
@@ -2572,7 +2572,7 @@ int file_exists(lua_State *L)
 {
     const char *str = lua_tostring(L, -1);
     if (str == NULL)
-	return luaL_error(L, "Missing argument to file_exists(..)");
+        return luaL_error(L, "Missing argument to file_exists(..)");
 
     if ( CFile::exists( str ) )
         lua_pushboolean(L,1);
@@ -2589,7 +2589,7 @@ int is_directory(lua_State *L)
 {
     const char *str = lua_tostring(L, -1);
     if (str == NULL)
-	return luaL_error(L, "Missing argument to is_directory(..)");
+        return luaL_error(L, "Missing argument to is_directory(..)");
 
     if ( CFile::is_directory( str ) )
         lua_pushboolean(L,1);
@@ -2606,7 +2606,7 @@ int executable(lua_State *L)
 {
     const char *str = lua_tostring(L, -1);
     if (str == NULL)
-	return luaL_error(L, "Missing argument to is_directory(..)");
+        return luaL_error(L, "Missing argument to is_directory(..)");
 
     if ( CFile::executable( str ) )
         lua_pushboolean(L,1);
@@ -2794,7 +2794,7 @@ int log_message(lua_State *L)
 #ifdef LUMAIL_DEBUG
     const char *str = lua_tostring(L, -1);
     if (str == NULL)
-	return luaL_error(L, "Missing argument to log_message(..)");
+        return luaL_error(L, "Missing argument to log_message(..)");
 
     DEBUG_LOG( str );
 #endif
@@ -2809,7 +2809,7 @@ int load_directory(lua_State *L)
 
     const char *path = lua_tostring(L, -1);
     if (path == NULL)
-	return luaL_error(L, "Missing argument to load_directory(..)");
+        return luaL_error(L, "Missing argument to load_directory(..)");
 
     /**
      * The lua intepretter.

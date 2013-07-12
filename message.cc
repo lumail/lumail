@@ -618,7 +618,7 @@ std::string CMessage::date(TDate fmt)
     if ( fmt == EFULL )
     {
         std::string date = header("Date");
-    	return( date );
+        return( date );
     }
 
     /**
