@@ -89,6 +89,55 @@ CGlobal::CGlobal()
     set_variable( "from", from );
 }
 
+
+
+/*****
+ *
+ * Static sorting routines.  Not exported or visible outside this unit.
+ *
+ */
+
+
+/**
+ * Sort CMessages by most recent to oldest.
+ */
+bool sort_messages_by_date(CMessage *a, CMessage *b)
+{
+    /**
+     * Stat both files.
+     */
+    struct stat us;
+    struct stat them;
+
+    std::string us_path = a->path();
+    std::string them_path = b->path();
+
+    if (stat(us_path.c_str(), &us) < 0)
+	return 0;
+
+    if (stat(them_path.c_str(), &them) < 0)
+	return 0;
+
+    return (us.st_mtime < them.st_mtime);
+
+}
+
+/**
+ * Sort maildirs by name, case-insensitively.
+ */
+bool sort_maildirs_by_name(CMaildir a, CMaildir b)
+{
+    std::string a_path = a.path();
+    std::string b_path = b.path();
+
+    std::transform(a_path.begin(), a_path.end(), a_path.begin(), tolower);
+    std::transform(b_path.begin(), b_path.end(), b_path.begin(), tolower);
+
+    return( strcmp( a_path.c_str(), b_path.c_str() ) < 0 );
+}
+
+
+
 /**
  * Get all selected folders.
  */
@@ -117,6 +166,11 @@ std::vector<CMaildir> CGlobal::get_all_folders()
 	maildirs.push_back(CMaildir(*it));
     }
 
+    /**
+     * Sort, case-insensitively.
+     */
+    std::sort(maildirs.begin(), maildirs.end(), sort_maildirs_by_name);
+
     return (maildirs);
 }
 
@@ -141,31 +195,12 @@ std::vector < CMaildir > CGlobal::get_folders()
             display.push_back(x);
     }
 
-    return (display);
-}
-
-/**
- * My sort function: sort CMessages by most recent to oldest.
- */
-bool my_sort(CMessage *a, CMessage *b)
-{
     /**
-     * Stat both files.
+     * Sort, case-insensitively.
      */
-    struct stat us;
-    struct stat them;
+    std::sort(display.begin(), display.end(), sort_maildirs_by_name);
 
-    std::string us_path = a->path();
-    std::string them_path = b->path();
-
-    if (stat(us_path.c_str(), &us) < 0)
-	return 0;
-
-    if (stat(them_path.c_str(), &them) < 0)
-	return 0;
-
-    return (us.st_mtime < them.st_mtime);
-
+    return (display);
 }
 
 /**
@@ -232,7 +267,7 @@ void CGlobal::update_messages()
     /*
      * Sort?
      */
-    std::sort(m_messages->begin(), m_messages->end(), my_sort);
+    std::sort(m_messages->begin(), m_messages->end(), sort_messages_by_date);
 
 }
 
