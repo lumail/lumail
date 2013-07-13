@@ -1183,6 +1183,7 @@ int delete_message( lua_State *L )
      */
     CGlobal *global = CGlobal::Instance();
     global->update_messages();
+    global->set_message_offset(0);
 
     /**
      * We're done.
@@ -1240,6 +1241,7 @@ int save_message( lua_State *L )
      */
     CGlobal *global = CGlobal::Instance();
     global->update_messages();
+    global->set_message_offset(0);
 
     /**
      * We're done.
@@ -1351,6 +1353,8 @@ int clear_selected_folders(lua_State * L)
     global->unset_folders();
     global->set_selected_message(0);
     global->update_messages();
+    global->set_message_offset(0);
+
 
     /**
      * Call our update with an empty path.
@@ -1403,6 +1407,7 @@ int add_selected_folder(lua_State * L)
 
     global->set_selected_message(0);
     global->update_messages();
+    global->set_message_offset(0);
 
     if ( ! path.empty() )
         lua->execute("on_folder_selection(\"" + path + "\");");
@@ -1448,6 +1453,7 @@ int set_selected_folder(lua_State * L)
     }
 
     global->update_messages();
+    global->set_message_offset(0);
 
     if ( ! path.empty() )
     {
@@ -1498,6 +1504,7 @@ int toggle_selected_folder(lua_State * L)
         global->add_folder(toggle);
 
     global->update_messages();
+    global->set_message_offset(0);
 
     if ( ! toggle.empty() )
     {
