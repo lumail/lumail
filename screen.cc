@@ -599,9 +599,13 @@ void CScreen::drawMessage()
         body_colour = "white";
 
     /**
+     * The screen width.
+     */
+    size_t width = CScreen::width();
+
+    /**
      * Draw each line of the body.
      */
-
     for( int i = 0; i < (max-2); i++ )
     {
         move( i + ( headers.size() + attachments.size() + 1 ), 0 );
@@ -609,6 +613,11 @@ void CScreen::drawMessage()
         std::string line = "";
         if ( (i + offset) < (int)body.size() )
             line = body[i+offset];
+
+        /**
+         * Truncate.
+         */
+        line = line.substr(0, width);
 
         attrset( COLOR_PAIR(m_colours[body_colour]) );
         printw( "%s", line.c_str() );
