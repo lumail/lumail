@@ -35,7 +35,13 @@
 /**
  * Displayed literally when no folders are selected in index-mode.
  */
-#define NO_MESSAGES_NO_FOLDERS "No messages were found, because no folders are selected"
+#define NO_MESSAGES_NO_FOLDERS "No messages were found, because no folders are selected."
+
+
+/**
+ * When no messages are found matching a limit.
+ */
+#define NO_MESSAGES_MATCHING_FILTER "No messages matching the index-limit '%s'."
 
 /**
  * Displayed literally if we're in message-mode but there is no current

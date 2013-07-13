@@ -246,6 +246,8 @@ void CScreen::drawIndex()
      */
     CGlobal *global = CGlobal::Instance();
     std::vector<CMessage*> *messages = global->get_messages();
+    std::string *filter = global->get_variable("index_limit" );
+
 
     /**
      * If we have no messages report that.
@@ -268,7 +270,12 @@ void CScreen::drawIndex()
          * Show the selected folders.
          */
         move(2, 2);
-        printw( NO_MESSAGES_IN_FOLDERS );
+
+        if ( ( filter != NULL ) &&
+             ( strcmp( filter->c_str(), "all" ) != 0 ) )
+            printw( NO_MESSAGES_MATCHING_FILTER, filter->c_str() );
+        else
+            printw( NO_MESSAGES_IN_FOLDERS );
 
         int height = CScreen::height();
         int row = 4;
