@@ -226,6 +226,12 @@ int index_limit(lua_State * L)
      */
     CGlobal *global = CGlobal::Instance();
     global->update_messages();
+
+    /**
+     * Reset the message offset.
+     */
+    global->set_message_offset(0);
+
     return ret;
 }
 
@@ -476,7 +482,7 @@ int prompt_yn(lua_State * L)
             return 1;
         }
     }
-                 return( 0 );
+    return( 0 );
 }
 
 
