@@ -76,7 +76,8 @@ void CScreen::refresh_display()
         drawIndex();
     else if (strcmp(s->c_str(), "message") == 0)
         drawMessage();
-    else {
+    else
+    {
         move(3, 3);
         printw("UNKNOWN MODE: '%s'", s->c_str());
     }

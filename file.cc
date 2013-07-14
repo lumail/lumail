@@ -171,7 +171,8 @@ bool CFile::file_to_pipe( std::string src, std::string cmd )
         char *out_ptr = buf;
         ssize_t nwritten;
 
-        do {
+        do
+        {
             nwritten = fwrite(out_ptr, sizeof(char), nread, pipe);
 
             if (nwritten >= 0)

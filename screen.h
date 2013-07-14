@@ -99,7 +99,8 @@ class CScreen
 
 };
 
-enum vectorPosition {
+enum vectorPosition
+{
     TOP,
     MIDDLE,
     BOTTOM,

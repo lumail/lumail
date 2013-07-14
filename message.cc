@@ -231,9 +231,8 @@ void CMessage::remove_flag( char c )
      * Remove the flag.
      */
     std::string::size_type k = 0;
-    while((k=flags.find(c,k))!=flags.npos) {
+    while((k=flags.find(c,k))!=flags.npos)
         flags.erase(k, 1);
-    }
 
     /**
      * Move the file.
@@ -255,7 +254,8 @@ bool CMessage::matches_filter( std::string *filter )
     if ( strcmp( filter->c_str(), "all" ) == 0 )
         return true;
 
-    if ( strcmp( filter->c_str(), "new" ) == 0 ) {
+    if ( strcmp( filter->c_str(), "new" ) == 0 )
+    {
         if ( is_new() )
             return true;
         else
@@ -311,16 +311,19 @@ bool CMessage::mark_read()
         std::string after  = c_path.substr(offset+strlen("/new/"));
 
         n_path = before + "/cur/" + after;
-        if ( rename(  c_path.c_str(), n_path.c_str() )  == 0 ) {
+        if ( rename(  c_path.c_str(), n_path.c_str() )  == 0 )
+        {
             path(n_path);
             add_flag( 'S' );
             return true;
         }
-        else {
+        else
+        {
             return false;
         }
     }
-    else {
+    else
+    {
         /**
          * The file is new, but not in the new folder.
          *
@@ -359,15 +362,18 @@ bool CMessage::mark_new()
         std::string after  = c_path.substr(offset+strlen("/cur/"));
 
         n_path = before + "/new/" + after;
-        if ( rename(  c_path.c_str(), n_path.c_str() )  == 0 ) {
+        if ( rename(  c_path.c_str(), n_path.c_str() )  == 0 )
+        {
             path( n_path );
             return true;
         }
-        else {
+        else
+        {
             return false;
         }
     }
-    else {
+    else
+    {
         /**
          * The file is old, but not in the old folder.  That means we need to
          * add "N" to the flag-component of the path.
@@ -389,7 +395,8 @@ std::string CMessage::format( std::string fmt )
      * Get the format-string we'll expand from the global
      * setting, if it wasn't supplied.
      */
-    if ( result.empty() ) {
+    if ( result.empty() )
+    {
         CGlobal *global  = CGlobal::Instance();
         std::string *fmt = global->get_variable("index_format");
         result = std::string(*fmt);
@@ -405,11 +412,13 @@ std::string CMessage::format( std::string fmt )
     /**
      * Iterate over everything we could possibly-expand.
      */
-    for( int i = 0 ; std_name[i] ; ++i) {
+    for( int i = 0 ; std_name[i] ; ++i)
+    {
 
         size_t offset = result.find( std_name[i], 0 );
 
-        if ( ( offset != std::string::npos ) && ( offset < result.size() ) ) {
+        if ( ( offset != std::string::npos ) && ( offset < result.size() ) )
+        {
 
             /**
              * The bit before the variable, the bit after, and the body we'll replace it with.
@@ -421,31 +430,40 @@ std::string CMessage::format( std::string fmt )
             /**
              * Expand the specific variables.
              */
-            if ( strcmp(std_name[i] , "TO" ) == 0 ) {
+            if ( strcmp(std_name[i] , "TO" ) == 0 )
+            {
                 body = to();
             }
-            if ( strcmp(std_name[i] , "DATE" ) == 0 ) {
+            if ( strcmp(std_name[i] , "DATE" ) == 0 )
+            {
                 body = date();
             }
-            if ( strcmp(std_name[i] , "FROM" ) == 0 ) {
+            if ( strcmp(std_name[i] , "FROM" ) == 0 )
+            {
                 body += from();
             }
-            if ( strcmp(std_name[i] , "FLAGS" ) == 0 ) {
+            if ( strcmp(std_name[i] , "FLAGS" ) == 0 )
+            {
                 body = flags();
             }
-            if ( strcmp(std_name[i] , "SUBJECT" ) == 0 ) {
+            if ( strcmp(std_name[i] , "SUBJECT" ) == 0 )
+            {
                 body = subject();
             }
-            if ( strcmp(std_name[i],  "YEAR" ) == 0 ) {
+            if ( strcmp(std_name[i],  "YEAR" ) == 0 )
+            {
                 body = date(EYEAR);
             }
-            if ( strcmp(std_name[i],  "MONTH" ) == 0 ) {
+            if ( strcmp(std_name[i],  "MONTH" ) == 0 )
+            {
                 body = date(EMONTH);
             }
-            if ( strcmp(std_name[i],  "MON" ) == 0 ) {
+            if ( strcmp(std_name[i],  "MON" ) == 0 )
+            {
                 body = date(EMON);
             }
-            if ( strcmp(std_name[i],  "DAY" ) == 0 ) {
+            if ( strcmp(std_name[i],  "DAY" ) == 0 )
+            {
                 body = date(EDAY);
             }
 
@@ -474,7 +492,8 @@ std::string CMessage::format( std::string fmt )
  */
 std::string CMessage::header( std::string name )
 {
-    if ( m_me == NULL ) {
+    if ( m_me == NULL )
+    {
         ifstream file(path().c_str());
         m_me = new MimeEntity(file);
     }
@@ -550,24 +569,25 @@ std::string CMessage::date(TDate fmt)
 
             struct tm t;
 
-            const char* const date_formats[] = {
-                " %a, %d %b %y %H:%M:%S",    // RFC822 with 2-digit year
-                " %a, %d %b %Y %H:%M:%S",    // RFC822
-                " %d %b %y %H:%M:%S",        // easyjet.com "31 Jan 01 21:00:00 GMT"
-                " %d %b %Y %H:%M:%S",        // RFC822 without day of week
-                " %a %b %d %H:%M:%S GMT %Y", // Co-op bank "Thu Apr 24 11:10:04 GMT 2003"
-                " %a %b %d %H:%M:%S MSD %Y", // Kirill "Tue Jun 27 21:08:10 MSD 2000"
-                " %a %b %d %H:%M:%S BST %Y", // Bytemark "Tue Apr 20 19:07:44 BST 2004"
-                " %a %b %d %H:%M:%S CEST %Y",// SNCF "Thu Sep 28 14:37:14 CEST 2006"
-                " %a %b %d %H:%M:%S PST %Y", // Shoppingzilla "Thu Nov 30 15:55:52 PST 2006"
-                " %a, %d %b %y %H:%M",       // no secs, 2d year: "Fri, 30 Jan 98 14:06 GMT"
-                " %a, %d %b %Y %H:%M",       // no secs: Oxfam "Wed, 5 Sep 2001 08:03 -0700"
-                " %d-%b-%Y",                 // register.com "18-Jun-2002"
-                " %m/%d/%y",                 // k7.com "11/20/02"
-                " %d %b %Y",                 // Bletchly Park "22 February 2004"
-                " %a %b %d %H:%M:%S %Y",     // Spam "Sat Jan 13 21:56:01 2007"
-                0
-            };
+            const char* const date_formats[] =
+                {
+                    " %a, %d %b %y %H:%M:%S",    // RFC822 with 2-digit year
+                    " %a, %d %b %Y %H:%M:%S",    // RFC822
+                    " %d %b %y %H:%M:%S",        // easyjet.com "31 Jan 01 21:00:00 GMT"
+                    " %d %b %Y %H:%M:%S",        // RFC822 without day of week
+                    " %a %b %d %H:%M:%S GMT %Y", // Co-op bank "Thu Apr 24 11:10:04 GMT 2003"
+                    " %a %b %d %H:%M:%S MSD %Y", // Kirill "Tue Jun 27 21:08:10 MSD 2000"
+                    " %a %b %d %H:%M:%S BST %Y", // Bytemark "Tue Apr 20 19:07:44 BST 2004"
+                    " %a %b %d %H:%M:%S CEST %Y",// SNCF "Thu Sep 28 14:37:14 CEST 2006"
+                    " %a %b %d %H:%M:%S PST %Y", // Shoppingzilla "Thu Nov 30 15:55:52 PST 2006"
+                    " %a, %d %b %y %H:%M",       // no secs, 2d year: "Fri, 30 Jan 98 14:06 GMT"
+                    " %a, %d %b %Y %H:%M",       // no secs: Oxfam "Wed, 5 Sep 2001 08:03 -0700"
+                    " %d-%b-%Y",                 // register.com "18-Jun-2002"
+                    " %m/%d/%y",                 // k7.com "11/20/02"
+                    " %d %b %Y",                 // Bletchly Park "22 February 2004"
+                    " %a %b %d %H:%M:%S %Y",     // Spam "Sat Jan 13 21:56:01 2007"
+                    0
+                };
             char* rc = NULL;
             int i=0;
             while(!rc)
@@ -592,8 +612,10 @@ std::string CMessage::date(TDate fmt)
             unsigned int tzhours;
             unsigned int tzmins;
             int tzscan = sscanf(rc," %1[+-]%2u%2u",tzsign,&tzhours,&tzmins);
-            if (tzscan==3) {
-                switch(tzsign[0]) {
+            if (tzscan==3)
+            {
+                switch(tzsign[0])
+                {
                 case '+':
                     t.tm_hour -= tzhours;
                     t.tm_min -= tzmins;
@@ -603,7 +625,8 @@ std::string CMessage::date(TDate fmt)
                     t.tm_min += tzmins;
                     break;
                 }
-            } else
+            }
+            else
             {
                 // Warning, couldn't parse timezone.  Probably "BST" or "EST" or
                 // something like that.  Ignore it.
@@ -842,7 +865,8 @@ std::vector<std::string> CMessage::body()
     /**
      * Parse if we've not done so.
      */
-    if ( m_me == NULL ) {
+    if ( m_me == NULL )
+    {
         ifstream file(path().c_str());
         m_me = new MimeEntity(file);
     }
@@ -994,7 +1018,8 @@ bool CMessage::save_attachment( int offset, std::string output_path )
     /**
      * Parse if we've not done so.
      */
-    if ( m_me == NULL ) {
+    if ( m_me == NULL )
+    {
         ifstream file(path().c_str());
         m_me = new MimeEntity(file);
     }

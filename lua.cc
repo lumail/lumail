@@ -50,7 +50,8 @@ CLua *CLua::pinstance = NULL;
  * our TAB-completion code.
  *
  */
-struct CLuaMapping primitive_list[] = {
+struct CLuaMapping primitive_list[] =
+{
 
 // Basic primitives
     {"abort", (lua_CFunction) abort },
@@ -271,9 +272,8 @@ char *CLua::get_nested_table( std::string table, std::string key, std::string su
      * Ensure the table exists.
      */
     lua_getglobal(m_lua, table.c_str() );
-    if (lua_isnil (m_lua, -1 ) ) {
+    if (lua_isnil (m_lua, -1 ) )
         return result;
-    }
 
     /**
      * Get the sub-table.
@@ -396,7 +396,8 @@ std::vector<std::string> CLua::on_complete()
     lua_pcall(m_lua, 0, 1 , 0 ) ;
 
 
-    if (lua_type(m_lua, -1)!=LUA_TTABLE) {
+    if (lua_type(m_lua, -1)!=LUA_TTABLE)
+    {
         lua_pop(m_lua, 1);
         return results;
     }
@@ -431,7 +432,8 @@ std::vector<std::string> CLua::table_to_array( std::string name )
      * Ensure we have a table.
      */
     lua_getglobal(m_lua, name.c_str() );
-    if (lua_type(m_lua, -1)!=LUA_TTABLE) {
+    if (lua_type(m_lua, -1)!=LUA_TTABLE)
+    {
         lua_pop(m_lua, 1);
         return results;
     }

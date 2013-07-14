@@ -236,7 +236,8 @@ std::vector < CMaildir > CGlobal::get_folders()
      * Filter the folders to those we can display
      */
     std::vector<CMaildir>::iterator it;
-    for (it = folders.begin(); it != folders.end(); ++it) {
+    for (it = folders.begin(); it != folders.end(); ++it)
+    {
         CMaildir x = *it;
 
         if ( x.matches_filter( filter ) )
@@ -268,7 +269,8 @@ void CGlobal::update_messages()
     /**
      * If we have items already then free each of them.
      */
-    if ( m_messages != NULL ) {
+    if ( m_messages != NULL )
+    {
         std::vector<CMessage *>::iterator it;
         for (it = m_messages->begin(); it != m_messages->end(); ++it)
         {

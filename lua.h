@@ -21,7 +21,8 @@
 #define _clua_h_ 1
 
 
-extern "C" {
+extern "C"
+{
 # include <lua.h>
 # include <lauxlib.h>
 # include <lualib.h>

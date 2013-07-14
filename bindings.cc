@@ -1284,7 +1284,8 @@ int scroll_index_to(lua_State * L)
 
     int i = selected + 1;
 
-    while (i != selected) {
+    while (i != selected)
+    {
         if (i >= max)
             break;
 
@@ -1677,7 +1678,8 @@ bool mimetic_attach_file(lua_State *L, mimetic::MimeEntity *m, char* filename)
         ifile.close();
         return true;
     }
-    else {
+    else
+    {
         return false;
     }
     return false;
@@ -1741,7 +1743,8 @@ bool handle_attachments( lua_State *L, char *filename, std::vector<std::string> 
     input.close();
 
 
-    try {
+    try
+    {
 
         message = new  mimetic::MimeEntity;
 
@@ -1802,17 +1805,20 @@ bool handle_attachments( lua_State *L, char *filename, std::vector<std::string> 
         return( true );
 
     }
-    catch(std::exception &e) {
+    catch(std::exception &e)
+    {
         if (message)
             delete message;
         return false;
     }
-    catch(std::string &e) {
+    catch(std::string &e)
+    {
         if (message)
             delete message;
         return false;
     }
-    catch (...) {
+    catch (...)
+    {
         if (message)
             delete message;
         return false;
@@ -2353,33 +2359,30 @@ int send_email(lua_State *L)
     lua_gettable(L,-2);
     const char *to = lua_tostring(L, -1);
     lua_pop(L, 1);
-    if (to == NULL) {
+    if (to == NULL)
         return luaL_error(L, "Missing recipient.");
-    }
 
     lua_pushstring(L, "from" );
     lua_gettable(L,-2);
     const char *from = lua_tostring(L, -1);
     lua_pop(L, 1);
-    if (from == NULL) {
+    if (from == NULL)
         return luaL_error(L, "Missing sender.");
-    }
 
     lua_pushstring(L, "subject" );
     lua_gettable(L,-2);
     const char *subject = lua_tostring(L, -1);
     lua_pop(L, 1);
-    if (subject == NULL) {
+    if (subject == NULL)
         return luaL_error(L, "Missing subject.");
-    }
 
     lua_pushstring(L, "body" );
     lua_gettable(L,-2);
     const char *body = lua_tostring(L, -1);
     lua_pop(L, 1);
-    if (body == NULL) {
+    if (body == NULL)
         return luaL_error(L, "Missing body.");
-    }
+
 
     /**
      * Optional attachments.
