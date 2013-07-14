@@ -30,7 +30,7 @@ clean:
 #
 
 file_tests: file_tests.cpp ../file.cc
-	g++ -std=gnu++0x -I.. -o file_tests ../file.cc file_tests.cpp
+	${CXX} -std=gnu++0x -I.. -o file_tests ../file.cc file_tests.cpp
 
 history_tests: history_tests.cpp ../history.cc
-	g++ -std=gnu++0x -I.. -o history_tests ../history.cc history_tests.cpp
+	${CXX} -std=gnu++0x -I.. -o history_tests ../history.cc history_tests.cpp
