@@ -72,13 +72,34 @@ from( default_email );
 
 
 --
+-- Specify the outgoing mail binary.
+--
+-- Prefer /usr/sbin/sendmail, but use /usr/lib/sendmail if that exists
+--
+if ( executable( "/usr/sbin/sendmail" ) ) then
+   sendmail_path( "/usr/sbin/sendmail -t" );
+end
+if ( executable( "/usr/lib/sendmail" ) ) then
+   sendmail_path( "/usr/lib/sendmail -t" );
+end
+
+--
 -- Specify the editor to use for composing/replying to email messages.
 --
 -- If this isn't set lumail will default to using the value of the
 -- environmental variable "EDITOR", and if that is unset it will use
--- "vim".
+-- "vim" with no default PATH specified.
 --
-editor( "/usr/bin/vim" )
+--
+-- Here we try to use "vi", but will use "vim" in preference if both
+-- are present.
+--
+if ( executable( "/usr/bin/vi" ) ) then
+   editor( "/usr/bin/vi" )
+end
+if ( executable( "/usr/bin/vim" ) ) then
+   editor( "/usr/bin/vim" )
+end
 
 
 --
