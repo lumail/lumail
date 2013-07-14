@@ -23,6 +23,7 @@
 #include <iomanip>
 #include <sys/types.h>
 #include <dirent.h>
+#include <pcrecpp.h>
 
 #include "file.h"
 #include "global.h"
@@ -196,7 +197,11 @@ bool CMaildir::matches_filter( std::string *filter )
     }
 
     std::string p = path();
-    if (p.find(*filter, 0) != std::string::npos)
+
+    /**
+     * Regexp Matching.
+     */
+    if (pcrecpp::RE(*filter, pcrecpp::RE_Options().set_caseless(true)).PartialMatch(p) )
         return true;
 
     return false;
