@@ -24,6 +24,7 @@
 #include <fstream>
 #include <string.h>
 #include <stdlib.h>
+#include <pcrecpp.h>
 
 #include "debug.h"
 #include "global.h"
@@ -198,9 +199,9 @@ std::vector<CMaildir> CGlobal::get_all_folders()
                     break ;
 
                 /**
-                 * TODO: RegExp.
+                 * Perform the regex matching, via PCRE.
                  */
-                if ( path.find( reg ) != std::string::npos )
+                if (pcrecpp::RE(reg, pcrecpp::RE_Options().set_caseless(true)).PartialMatch(path) )
                     ignore = true;
             }
 
