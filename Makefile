@@ -8,6 +8,7 @@
 #
 #  Only used to build distribution tarballs.
 #
+TMP?=/tmp
 BASE        = lumail
 DIST_PREFIX = ${TMP}
 VERSION     = $(shell sh -c 'git describe --abbrev=0 --tags | tr -d "release-"')
