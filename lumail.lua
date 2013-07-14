@@ -751,14 +751,28 @@ end
 ---
 
 --
--- Colour support.  Still in-progress
+-- Colour support for the display.
 --
 -- Valid colours: blue, cyan, green, magenta, red, white, yellow
 --
+
+--
+-- The colour of unread mailboxes in maildir-mode
 unread_maildir_colour( "red" );
+
+--
+-- The colour of unread messages in index-mode.
 unread_message_colour( "red" );
+
+--
+-- The colour of the attachment-list in message-mode.
 attachment_colour( "yellow" );
+
+--
+-- The colour of the headers in message-mode.
 header_colour( "cyan" );
+
+--
+-- The colour of the message-bod in message-mode
 body_colour( "green" );
 
--- TODO:
