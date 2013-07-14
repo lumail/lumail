@@ -92,5 +92,14 @@ You may find further information upon the lumail website:
     * This website is built automatically from the [lumail.org website repository](https://github.com/skx/lumail.org/).
 
 
+Contributing
+------------
+
+I welcome bug reports, and pull-requests.
+
+If you submit two or more functional patches I'm happy to give you direct commit
+access to the repository.
+
+
 Steve
 --
