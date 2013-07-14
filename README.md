@@ -5,7 +5,7 @@ lumail is a modal console-based email client, which features extensive scripting
 support, via an embedded Lua intepretter.
 
 You'll find [a quick introduction to using lumail](http://lumail.org/getting-started/) on
-the [lumail website](http://lumail.org).
+the [lumail website](http://lumail.org), along with [screenshots](http://lumail.org/screenshots/).
 
 In brief `lumail` is a modal application, so you're *always* in one of three states:
 
@@ -36,7 +36,7 @@ Building/Installation
 The application is developed in C++ and has intentionally minimal dependencies:
 
 * lua 5.1 - The scripting language.
-** lua 5.2 is supported too, but is not the default.
+    * lua 5.2 is supported too, but is not the default.
 * libncurses - The console input/graphics library.
 * libmimetic  - The MIME-library.
 * libpcre3 - The regular-expression library.
