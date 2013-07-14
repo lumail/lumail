@@ -776,3 +776,9 @@ header_colour( "cyan" );
 -- The colour of the message-bod in message-mode
 body_colour( "green" );
 
+
+
+--
+-- Folders to ignore in maildir mode
+--
+ignored_folders = { "foo.", "bar." };

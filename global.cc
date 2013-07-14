@@ -27,6 +27,7 @@
 
 #include "debug.h"
 #include "global.h"
+#include "lua.h"
 
 /**
  * Instance-handle.
@@ -60,14 +61,14 @@ CGlobal::CGlobal()
     /**
      * Defaults as set in our variable hash-map.
      */
-    set_variable( "editor", new std::string("/usr/bin/vim") );
-    set_variable( "global_mode",   new std::string("maildir"));
-    set_variable( "index_format",  new std::string( "[$FLAGS] $FROM - $SUBJECT" ) );
-    set_variable( "index_limit",   new std::string("all") );
+    set_variable( "editor",         new std::string("/usr/bin/vim") );
+    set_variable( "global_mode",    new std::string("maildir"));
+    set_variable( "index_format",   new std::string( "[$FLAGS] $FROM - $SUBJECT" ) );
+    set_variable( "index_limit",    new std::string("all") );
     set_variable( "maildir_format", new std::string( "$CHECK - $PATH" ) );
     set_variable( "message_filter", new std::string("") );
-    set_variable( "maildir_limit", new std::string("all") );
-    set_variable( "sendmail_path", new std::string( "/usr/lib/sendmail -t" ) );
+    set_variable( "maildir_limit",  new std::string("all") );
+    set_variable( "sendmail_path",  new std::string( "/usr/lib/sendmail -t" ) );
 
 
     /**
@@ -159,11 +160,58 @@ std::vector<CMaildir> CGlobal::get_all_folders()
     CGlobal *global     = CGlobal::Instance();
     std::string *prefix = global->get_variable( "maildir_prefix" );
 
+
     std::vector<std::string> folders = CMaildir::getFolders(*prefix);
+
+    /**
+     * Should we ignore folders?
+     */
+    CLua *lua = CLua::Instance();
+    std::vector<std::string> ignored = lua->table_to_array( "ignored_folders" );
+
     std::vector < std::string >::iterator it;
     for (it = folders.begin(); it != folders.end(); ++it)
     {
-        maildirs.push_back(CMaildir(*it));
+        bool ignore = false;
+
+        /**
+         * Should we ignore this folder?
+         */
+        if ( ignored.size() > 0 )
+        {
+            /**
+             * The path of the maildir we're adding.
+             */
+            std::string path = *it;
+
+            /**
+             *  Iterate over all ignored paths.
+             */
+            std::vector < std::string >::iterator igit;
+            for (igit = ignored.begin(); igit != ignored.end(); ++igit)
+            {
+                /**
+                 * Ignore empty strings.
+                 */
+                std::string reg = *igit;
+                if ( reg.size() < 1 )
+                    break ;
+
+                /**
+                 * TODO: RegExp.
+                 */
+                if ( path.find( reg ) != std::string::npos )
+                    ignore = true;
+            }
+
+        }
+
+        /**
+         * Not ignoring anything.  Add the folder.
+         */
+        if ( ! ignore )
+            maildirs.push_back(CMaildir(*it));
+
     }
 
     /**
@@ -222,7 +270,8 @@ void CGlobal::update_messages()
      */
     if ( m_messages != NULL ) {
         std::vector<CMessage *>::iterator it;
-        for (it = m_messages->begin(); it != m_messages->end(); ++it) {
+        for (it = m_messages->begin(); it != m_messages->end(); ++it)
+        {
             delete( *it );
         }
         delete( m_messages );
@@ -246,7 +295,8 @@ void CGlobal::update_messages()
      * For each selected maildir read the messages.
      */
     std::vector<std::string>::iterator it;
-    for (it = folders.begin(); it != folders.end(); ++it) {
+    for (it = folders.begin(); it != folders.end(); ++it)
+    {
 
         /**
          * get the messages from this folder.
@@ -258,7 +308,8 @@ void CGlobal::update_messages()
          * Append to the list of messages combined.
          */
         std::vector<CMessage *>::iterator mit;
-        for (mit = contents.begin(); mit != contents.end(); ++mit) {
+        for (mit = contents.begin(); mit != contents.end(); ++mit)
+        {
             if ( (*mit)->matches_filter( filter ) )
                 m_messages->push_back(*mit) ;
         }
