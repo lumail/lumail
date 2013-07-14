@@ -1,29 +1,33 @@
 Lumail
 ======
 
-lumail is a modal console-based email client, which has built in support for scripting
-via Lua.
+lumail is a modal console-based email client, which features extensive scripting
+support, via an embedded Lua intepretter.
 
-Because `lumail` is a modal application you're *always* in one of three states:
+You'll find [a quick introduction to using lumail](http://lumail.org/getting-started/) on
+the [lumail website](http://lumail.org).
 
-* Interacting with lists of mailboxes.  Default keybindings include:
-   * This is the mode you'll start in.
+In brief `lumail` is a modal application, so you're *always* in one of three states:
+
+* Interacting with lists of mailboxes.
+* This is the mode you'll start in.
+* Default keybindings include:
    * Press `a` to view all mailboxes.
    * Press `n` to view mailboxes containing new mail only.
    * Move around via `j`/`k`/`/`.
    * You may open the single selected folder by pressing `RETURN`.
    * Or you may toggle the selected state by pressing `SPACE` and jumping into index mode with `I` when you've selected all the folders you care about.
-* Interacting with lists of messages.  Default keybindings include:
+* Interacting with lists of messages.  These messages may come from more than one folder.
+* Default keybindings include:
    * Press `a` to view all messages.
    * Press `n` to view new messages only.
    * Move around via `j`/`k`/`/`.
-* Interacting with a single message.  Default keybindings include:
+* Interacting with a single message.
+* Default keybindings include:
    * Move around via `j`/`k`.
    * Delete a message with 'd'.
    * Reply to a message with 'r'.
 
-You'll find [a quick introduction to using lumail](http://lumail.org/getting-started/) on
-the [lumail website](http://lumail.org).
 
 
 Building/Installation
