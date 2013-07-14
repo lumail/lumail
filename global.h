@@ -133,7 +133,6 @@ public:
     }
 
 
-
     /**
      * Get the value of an arbitrary setting.
      */
