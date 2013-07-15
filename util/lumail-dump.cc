@@ -202,7 +202,8 @@ void dump_message( std::string filename )
      * Now output the message.
      */
     std::vector<std::string>::iterator it;
-    for (it = result.begin(); it != result.end(); ++it) {
+    for (it = result.begin(); it != result.end(); ++it)
+    {
         std::string x = *it;
         std::cout << x << std::endl;
     }
