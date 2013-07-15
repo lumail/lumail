@@ -25,7 +25,7 @@
 #include <sstream>
 #include <string>
 #include <unistd.h>
-
+#include <pcrecpp.h>
 #include <mimetic/mimetic.h>
 
 #include <sys/stat.h>
@@ -266,7 +266,11 @@ bool CMessage::matches_filter( std::string *filter )
      * Matching the formatted version.
      */
     std::string formatted = format();
-    if ( strstr( formatted.c_str(), filter->c_str() ) != NULL )
+
+    /**
+     * Regexp Matching.
+     */
+    if (pcrecpp::RE(*filter, pcrecpp::RE_Options().set_caseless(true)).PartialMatch(formatted) )
         return true;
 
     return false;

@@ -776,8 +776,8 @@ int scroll_maildir_to(lua_State * L)
     /**
      * Lower-case version of the string.
      */
-    std::string find(str);
-    std::transform(find.begin(), find.end(), find.begin(), tolower);
+    std::string *find = new std::string(str);
+    std::transform(find->begin(), find->end(), find->begin(), tolower);
 
     /**
      * get the current folders.
@@ -805,7 +805,7 @@ int scroll_maildir_to(lua_State * L)
          */
         std::transform(p.begin(), p.end(), p.begin(), tolower);
 
-        if (strstr(p.c_str(), find.c_str()) != NULL)
+        if ( cur.matches_filter( find ) )
         {
             global->set_selected_folder(i);
             break;
@@ -815,6 +815,8 @@ int scroll_maildir_to(lua_State * L)
         if (i >= max)
             i = 0;
     }
+
+    free( find );
     return 0;
 }
 
@@ -1263,8 +1265,8 @@ int scroll_index_to(lua_State * L)
     /**
      * Lower-case version of the string.
      */
-    std::string find(str);
-    std::transform(find.begin(), find.end(), find.begin(), tolower);
+    std::string *find = new std::string(str);
+    std::transform(find->begin(), find->end(), find->begin(), tolower);
 
     /**
      * get the current messages
@@ -1276,7 +1278,10 @@ int scroll_index_to(lua_State * L)
      * If we have no messages we're not scrolling anywhere.
      */
     if ( messages == NULL )
+    {
+        free( find );
         return 0;
+    }
 
 
     int max      = messages->size();
@@ -1293,13 +1298,11 @@ int scroll_index_to(lua_State * L)
          * Format the message, and lower-case it.
          */
         CMessage *cur = messages->at(i);
-        std::string fmt = cur->format();
-        std::transform(fmt.begin(), fmt.end(), fmt.begin(), tolower);
 
         /**
          * Now look for it.
          */
-        if (strstr(fmt.c_str(), find.c_str()) != NULL)
+        if (cur->matches_filter( find ) )
         {
             global->set_selected_message(i);
             break;
@@ -1314,6 +1317,7 @@ int scroll_index_to(lua_State * L)
      * We've changed messages, so reset the current position.
      */
     global->set_message_offset(0);
+    free( find );
     return 0;
 }
 
