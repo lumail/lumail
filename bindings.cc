@@ -600,7 +600,9 @@ int prompt_maildir(lua_State * L)
         char key = getch();
         if (key == ERR)
         {
-            // NOP
+            /**
+             * NOP
+             */
         }
         if ( key == 'j' )
             selected += 1;
@@ -2405,7 +2407,7 @@ int send_email(lua_State *L)
             lua_pop( L , 1);
         }
 
-        lua_pop(L , 1); // pop nil
+        lua_pop(L, 1);
     }
     else
         lua_pop(L, 1);

@@ -551,11 +551,14 @@ std::string CMessage::date(TDate fmt)
         else
         {
 #if 0
-            // Parse RFC822 date
-            // Case in point: Mon, 15 Dec 2003 09:46:00 +0000 (GMT)
-            // Would be OK with just +0000 or (GMT) but both together
-            // is not acceptable.  But note that the () are actually a
-            // comment.  So we strip comments.
+            /**
+             *
+             * Parse RFC822 date
+             * Case in point: Mon, 15 Dec 2003 09:46:00 +0000 (GMT)
+             * Would be OK with just +0000 or (GMT) but both together
+             * is not acceptable.  But note that the () are actually a
+             * comment.  So we strip comments.
+             */
             unsigned int start = 0;
             while(1)
             {
@@ -575,21 +578,21 @@ std::string CMessage::date(TDate fmt)
 
             const char* const date_formats[] =
                 {
-                    " %a, %d %b %y %H:%M:%S",    // RFC822 with 2-digit year
-                    " %a, %d %b %Y %H:%M:%S",    // RFC822
-                    " %d %b %y %H:%M:%S",        // easyjet.com "31 Jan 01 21:00:00 GMT"
-                    " %d %b %Y %H:%M:%S",        // RFC822 without day of week
-                    " %a %b %d %H:%M:%S GMT %Y", // Co-op bank "Thu Apr 24 11:10:04 GMT 2003"
-                    " %a %b %d %H:%M:%S MSD %Y", // Kirill "Tue Jun 27 21:08:10 MSD 2000"
-                    " %a %b %d %H:%M:%S BST %Y", // Bytemark "Tue Apr 20 19:07:44 BST 2004"
-                    " %a %b %d %H:%M:%S CEST %Y",// SNCF "Thu Sep 28 14:37:14 CEST 2006"
-                    " %a %b %d %H:%M:%S PST %Y", // Shoppingzilla "Thu Nov 30 15:55:52 PST 2006"
-                    " %a, %d %b %y %H:%M",       // no secs, 2d year: "Fri, 30 Jan 98 14:06 GMT"
-                    " %a, %d %b %Y %H:%M",       // no secs: Oxfam "Wed, 5 Sep 2001 08:03 -0700"
-                    " %d-%b-%Y",                 // register.com "18-Jun-2002"
-                    " %m/%d/%y",                 // k7.com "11/20/02"
-                    " %d %b %Y",                 // Bletchly Park "22 February 2004"
-                    " %a %b %d %H:%M:%S %Y",     // Spam "Sat Jan 13 21:56:01 2007"
+                    " %a, %d %b %y %H:%M:%S",
+                    " %a, %d %b %Y %H:%M:%S",
+                    " %d %b %y %H:%M:%S",
+                    " %d %b %Y %H:%M:%S",
+                    " %a %b %d %H:%M:%S GMT %Y",
+                    " %a %b %d %H:%M:%S MSD %Y",
+                    " %a %b %d %H:%M:%S BST %Y",
+                    " %a %b %d %H:%M:%S CEST %Y"
+                    " %a %b %d %H:%M:%S PST %Y",
+                    " %a, %d %b %y %H:%M",
+                    " %a, %d %b %Y %H:%M",
+                    " %d-%b-%Y",
+                    " %m/%d/%y",
+                    " %d %b %Y",
+                    " %a %b %d %H:%M:%S %Y",
                     0
                 };
             char* rc = NULL;
@@ -632,12 +635,17 @@ std::string CMessage::date(TDate fmt)
             }
             else
             {
-                // Warning, couldn't parse timezone.  Probably "BST" or "EST" or
-                // something like that.  Ignore it.
+                /**
+                 * Warning, couldn't parse timezone.  Probably "BST" or "EST" or
+                 * something like that.  Ignore it.
+                 */
             }
-            // Note: the following line used to use mktime(), until summer time
-            // started and everything went off by an hour.  This timezone stuff
-            // is unpleasant.
+
+            /**
+             *  Note: the following line used to use mktime(), until summer time
+             * started and everything went off by an hour.  This timezone stuff
+             * is unpleasant.
+             */
             m_date = timegm(&t);
         }
     }

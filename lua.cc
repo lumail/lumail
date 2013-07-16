@@ -53,7 +53,9 @@ CLua *CLua::pinstance = NULL;
 struct CLuaMapping primitive_list[] =
 {
 
-// Basic primitives
+/**
+ * Basic primitives
+ */
     {"abort", (lua_CFunction) abort },
     {"clear", (lua_CFunction) clear },
     {"dump_stack", (lua_CFunction) lua_dump_stack },
@@ -67,20 +69,26 @@ struct CLuaMapping primitive_list[] =
     {"screen_width", (lua_CFunction) screen_width },
     {"sleep", (lua_CFunction) sleep },
 
-// File/Path utilities
+/**
+ * File/Path utilities
+ */
     {"executable", (lua_CFunction) executable },
     {"file_exists", (lua_CFunction) file_exists },
     {"is_directory", (lua_CFunction) is_directory },
     {"load_directory", (lua_CFunction) load_directory },
 
-// Folder Selection
+/**
+ * Folder Selection
+ */
     {"add_selected_folder", (lua_CFunction) add_selected_folder},
     {"clear_selected_folders", (lua_CFunction) clear_selected_folders},
     {"selected_folders", (lua_CFunction) selected_folders },
     {"set_selected_folder", (lua_CFunction) set_selected_folder},
     {"toggle_selected_folder", (lua_CFunction) toggle_selected_folder },
 
-// Get/Set variables
+/**
+ * Get/Set variables
+ */
     { "editor", (lua_CFunction) editor },
     { "from", (lua_CFunction) from },
     { "global_mode", (lua_CFunction) global_mode },
@@ -94,20 +102,26 @@ struct CLuaMapping primitive_list[] =
     { "sent_mail",(lua_CFunction) sent_mail},
     { "get_variables", (lua_CFunction) get_variables },
 
-// Colour getters/setters
+/**
+ * Colour getters/setters
+ */
     { "attachment_colour", (lua_CFunction) attachment_colour },
     { "body_colour", (lua_CFunction) body_colour },
     { "header_colour", (lua_CFunction) header_colour },
     { "unread_maildir_colour", (lua_CFunction) unread_maildir_colour },
     { "unread_message_colour", (lua_CFunction) unread_message_colour },
 
-// Index functions
+/**
+ * Index functions
+ */
     { "jump_index_to", (lua_CFunction) jump_index_to},
     { "scroll_index_down", (lua_CFunction) scroll_index_down},
     { "scroll_index_up", (lua_CFunction) scroll_index_up},
     { "scroll_index_to", (lua_CFunction)scroll_index_to },
 
-// Message-Related functions
+/**
+ * Message-Related functions
+ */
     { "compose",(lua_CFunction) compose },
     { "count_messages",(lua_CFunction) count_messages },
     { "current_message",(lua_CFunction) current_message },
@@ -123,7 +137,9 @@ struct CLuaMapping primitive_list[] =
     { "scroll_message_up",(lua_CFunction) scroll_message_up },
     { "send_email",(lua_CFunction) send_email },
 
-// Maildirs
+/**
+ * Maildirs
+ */
     { "count_maildirs",(lua_CFunction) count_maildirs },
     { "current_maildir",(lua_CFunction) current_maildir },
     { "current_maildirs",(lua_CFunction)  current_maildirs},
@@ -135,13 +151,17 @@ struct CLuaMapping primitive_list[] =
     { "select_maildir",(lua_CFunction) select_maildir },
 
 
-// prompts.
+/**
+ * prompts.
+ */
     {"prompt", (lua_CFunction) prompt },
     {"prompt_chars", (lua_CFunction) prompt_chars },
     {"prompt_maildir", (lua_CFunction) prompt_maildir },
     {"prompt_yn", (lua_CFunction) prompt_yn },
 
-// Attachments
+/**
+ * Attachments
+ */
     {"attachments", (lua_CFunction) attachments },
     {"count_attachments", (lua_CFunction) count_attachments },
     {"save_attachment", (lua_CFunction) save_attachment },
@@ -465,7 +485,7 @@ std::vector<std::string> CLua::table_to_array( std::string name )
 #endif
 
 
-    lua_pop( m_lua , 1); // pop nil
+    lua_pop( m_lua , 1);
     return( results );
 }
 

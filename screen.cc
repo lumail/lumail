@@ -110,18 +110,26 @@ void CScreen::drawMaildir()
      */
     int count = display.size();
     int height = CScreen::height();
-    // correct for the statusbar and that counting starts at 0
+
+    /**
+     * Correct for the statusbar and that counting starts at 0
+     */
     int middle = (height-2)/2;
     int selected = global->get_selected_folder();
 
     int rowToHighlight = 0;
     vectorPosition topBottomOrMiddle = NONE;
-    // default to TOP if our list is shorter then the screen height
+
+    /**
+     * default to TOP if our list is shorter then the screen height
+     */
     if (selected < middle || count<height-2)
     {
         rowToHighlight = selected;
         topBottomOrMiddle = TOP;
-        // if height is uneven we have to switch to the BOTTOM case on row earlier
+        /**
+         * if height is uneven we have to switch to the BOTTOM case on row earlier
+         */
     }
     else if (  (count - selected <= middle) || (height%2==1 &&count-selected<=middle+1))
     {
@@ -165,14 +173,18 @@ void CScreen::drawMaildir()
         int mailIndex=count;
         if (topBottomOrMiddle == TOP)
         {
-            // we start at the top of the list so just use row
+            /**
+             * we start at the top of the list so just use row
+             */
             mailIndex = row;
         }
         else if (topBottomOrMiddle == BOTTOM)
         {
-            // when we reached the end of the list mailIndex can maximally be
-            // count-1, that this is given can easily be shown
-            // row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
+            /**
+             * when we reached the end of the list mailIndex can maximally be
+             * count-1, that this is given can easily be shown
+             * row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
+             */
             mailIndex = count-height+row+1;
         }
         else if (topBottomOrMiddle == MIDDLE)
@@ -318,17 +330,23 @@ void CScreen::drawIndex()
     int height = CScreen::height();
     int selected = global->get_selected_message();
 
-    // correct for the statusbar and that counting starts at 1
+    /**
+     *  correct for the statusbar and that counting starts at 1
+     */
     int middle = (height-2)/2;
     int rowToHighlight = 0;
     vectorPosition topBottomOrMiddle = NONE;
 
-    // default to TOP if our list is shorter then the screen height
+    /**
+     * default to TOP if our list is shorter then the screen height
+     */
     if (selected < middle || count<height-2)
     {
         topBottomOrMiddle = TOP;
         rowToHighlight = selected;
-        // if height is uneven we have to switch to the BOTTOM case on row earlier
+        /**
+         * if height is uneven we have to switch to the BOTTOM case on row earlier
+         */
     }
     else if (  (count - selected <= middle) || (height%2==1 &&count-selected<=middle+1))
     {
@@ -363,14 +381,18 @@ void CScreen::drawIndex()
         int mailIndex=count;
         if (topBottomOrMiddle == TOP)
         {
-            // we start at the top of the list so just use row
+            /**
+             * we start at the top of the list so just use row
+             */
             mailIndex = row;
         }
         else if (topBottomOrMiddle == BOTTOM)
         {
-            // when we reached the end of the list mailIndex can maximally be
-            // count-1, that this is given can easily be shown
-            // row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
+            /**
+             * when we reached the end of the list mailIndex can maximally be
+             * count-1, that this is given can easily be shown
+             * row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
+             */
             mailIndex = count-height+row+1;
         }
         else if (topBottomOrMiddle == MIDDLE)
