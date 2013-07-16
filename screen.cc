@@ -281,8 +281,11 @@ void CScreen::drawIndex()
         int height = CScreen::height();
         int row = 4;
 
-        for (std::string folder: folders)
+        std::vector<std::string>::iterator it;
+        for (it = folders.begin(); it != folders.end(); ++it)
         {
+            std::string folder = *it;
+
             /**
              * Avoid drawing into the status area.
              */
