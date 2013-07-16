@@ -55,13 +55,10 @@ a valid (lua) configuration file:
 
      $ ./lumail --rcfile ./lumail.lua
 
-For coding-style we use the following [Emacs](http://www.gnu.org/software/emacs/) settings:
-
-    (setq c-default-style "linux" c-basic-offset 4)
-    (c-set-offset 'substatement-open 0)
 
 Installation should be as simple as copying the supplied configuration file to `/etc/lumail.lua` and copying the binary to `/usr/local/bin`.  If you run `make install` this will be done for you.
 
+**NOTE**: For coding-style please see [CODING-STYLE](CODING-STYLE).
 
 
 Configuration & Lua-Primitives

@@ -1,0 +1,29 @@
+
+To ensure that the code, potentially coming from many developers,
+remains understandable here are some brief notes on coding-style:
+
+* No TABs in source files.
+* No single-line "//" comments.
+* Indentation is four spaces.
+* Braces go on their own lines.
+
+Run "make style" to test the code prior to committing any changes.
+
+Example of good style:
+
+        if ( foo )
+        {
+            ..
+        }
+        else
+        {
+            ...
+        }
+
+Example of bad style:
+
+        if ( foo ) {
+           ...
+        } else {
+           ...
+        }
