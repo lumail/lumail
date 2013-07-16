@@ -21,6 +21,7 @@ SRCS= bindings.cc debug.cc file.cc global.cc history.cc lua.cc maildir.cc messag
 OBJS=$(subst .cc,.o,$(SRCS))
 TARGET=lumail
 
+
 #
 #  The version of Lua we're building against.
 #  Valid options are "lua5.1" & "lua5.2".
@@ -29,12 +30,11 @@ LVER=lua5.1
 
 
 #
-# Flags.
+# NOTE: We use "-std=gnu++0x" so we can use "unordered_map", which is in the STL.
 #
-# NOTE: We use "-std=gnu++0x" so we can use "unordered_map".
 #
 CPPFLAGS+=-std=gnu++0x -g -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags)
-LDLIBS+=$(shell pkg-config --libs ${LVER})  $(shell pcre-config --libs-cpp)  -lcurses -lmimetic
+LDLIBS+=$(shell pkg-config --libs ${LVER}) -lcurses -lmimetic -lpcre -lpcrecpp
 
 
 #
@@ -95,7 +95,7 @@ install: all
 #
 #  Make a release tarball
 #
-release: clean
+release: clean style
 	rm -rf $(DIST_PREFIX)/$(BASE)-$(VERSION)
 	rm -f $(DIST_PREFIX)/$(BASE)-$(VERSION).tar.gz
 	cp -R . $(DIST_PREFIX)/$(BASE)-$(VERSION)
@@ -113,6 +113,22 @@ release: clean
 #
 utilities:
 	cd ./util && make
+
+
+#
+# Style-checks on the source-code.
+#
+.PHONY: style
+style:
+	prove --shuffle ./style/
+
+
+#
+#  Source code tests.
+#
+.PHONY: tests
+tests:
+	cd ./tests && make test
 
 
 include .depend
