@@ -3,6 +3,25 @@ lumail (0.12) stable; urgency=low
   * New release, fixing several bugs.
   * References here are to the Github repository issue tracker:
     https://github.com/skx/lumail/issues
+     - #26 - Updated date-parsing to handle more cases.
+             Added "$MON" to the list of index_format strings.
+     - #58 - Bound message-bodies to the screen width.
+     - #60 - More accurate messages when handling empty folders.
+     - #63 - Maildir folders are sorted case-insensitively.
+  * New "$MON" variable for index_format().
+     http://lumail.org/lua/index_format.html
+  * New primitive/table - "ignored_folders":
+     http://lumail.org/lua/ignored_folders.html
+  * Updated primitive - "maildirs_matching" now uses regexps.
+     http://lumail.org/lua/maildirs_matching.html
+
+ -- Steve Kemp <steve@steve.org.uk>  Tue, 16 Jul 2013 09:22:09 +0000
+
+lumail (0.12) stable; urgency=low
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
      - #56 - Correctly handle nested MIME-parts.
      - #57 - Correctly decode base64-encoded text/plain parts.
   * Fixed the display of messages that consist of only a single line.
