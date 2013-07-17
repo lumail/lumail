@@ -589,6 +589,7 @@ std::string CMessage::date(TDate fmt)
                     " %a %b %d %H:%M:%S PST %Y",
                     " %a, %d %b %y %H:%M",
                     " %a, %d %b %Y %H:%M",
+                    " %a, %d %b %Y %H.%M.%S",
                     " %d-%b-%Y",
                     " %m/%d/%y",
                     " %d %b %Y",
