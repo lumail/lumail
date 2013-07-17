@@ -1,3 +1,12 @@
+lumail (0.14) stable; urgency=high
+
+  * Segfault fix for the scrolling  behaviour.  The previous
+   release added "nicer scrolling".  This contained a bug when
+   index_limit was used, and the current-offset wasn't updated.
+  * Updated the Makefile for better portability.
+
+ -- Steve Kemp <steve@steve.org.uk>  Wed, 17 Jul 2013 20:50:10 +0000
+
 lumail (0.13) stable; urgency=low
 
   * New release, fixing several bugs.
