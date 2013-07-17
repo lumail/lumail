@@ -121,6 +121,16 @@ void CScreen::drawMaildir()
     vectorPosition topBottomOrMiddle = NONE;
 
     /**
+     * BUGFIX: When the maildir_limit changes the previous position
+     * might be invalid.  This fix of resetting things ensures we're OK.
+     */
+    if ( selected > count )
+    {
+        selected = 0;
+        global->set_selected_folder( selected );
+    }
+
+    /**
      * default to TOP if our list is shorter then the screen height
      */
     if (selected < middle || count<height-2)
