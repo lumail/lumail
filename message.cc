@@ -25,6 +25,7 @@
 #include <sstream>
 #include <string>
 #include <unistd.h>
+#include <ncurses.h>
 #include <pcrecpp.h>
 #include <mimetic/mimetic.h>
 
@@ -615,6 +616,18 @@ std::string CMessage::date(TDate fmt)
                  * Failed to find a date.
                  */
                 m_date = -1;
+
+                /**
+                 * Abort with an error.
+                 */
+                endwin();
+                std::cout << "Failed to parse date from the header '"
+                          << date << "'" << std::endl;
+                std::cout << "Please report a bug, including the header value listed above." << std::endl;
+                std::cout << "https://github.com/skx/lumail/issues" << std::endl;
+
+                exit(0);
+
             }
             char tzsign[2];
             unsigned int tzhours;
