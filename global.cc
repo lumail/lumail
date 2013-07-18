@@ -27,6 +27,7 @@
 #include <pcrecpp.h>
 
 #include "debug.h"
+#include "file.h"
 #include "global.h"
 #include "lua.h"
 
@@ -89,6 +90,25 @@ CGlobal::CGlobal()
         user = getenv( "USER" );
     std::string *from = new std::string( user + "@localhost" );
     set_variable( "from", from );
+
+    /**
+     * Set our temporary directory.
+     *
+     * $TMPDIR, $TMP, then /tmp.
+     */
+    char const* tmp = getenv( "TMPDIR" );
+    if ( tmp == NULL )
+        tmp = getenv( "TMP" );
+
+    if ( tmp != NULL )
+        set_variable( "tmp", new std::string( tmp ) );
+    else
+        if ( CFile::is_directory( "/tmp" ) )
+             set_variable( "tmp", new std::string( "/tmp" ) );
+
+
+
+
 }
 
 
