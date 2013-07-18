@@ -520,8 +520,6 @@ std::string CMessage::from()
 
 /**
  * Get the date of the message.
- *
- * TODO: ctime vs localtime
  */
 std::string CMessage::date(TDate fmt)
 {
