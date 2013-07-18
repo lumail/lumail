@@ -32,6 +32,7 @@
 #include <sys/stat.h>
 #include <time.h>
 
+#include "debug.h"
 #include "file.h"
 #include "message.h"
 #include "global.h"
@@ -139,7 +140,8 @@ void CMessage::add_flag( char c )
     /**
      * Get the path and ensure it is present.
      */
-    std::string p = path();
+    std::string orig = path();
+    std::string p( orig );
 
     if (p.empty())
         return;
@@ -147,22 +149,43 @@ void CMessage::add_flag( char c )
     /**
      * Get the current flags.
      */
-    size_t offset     = p.find(":2,");
-    std::string base  = p;
-    std::string flags = "";
+    size_t offset;
+
+    std::string flags;
+
+    if ( ( offset =  p.find(":2,") ) != std::string::npos )
+    {
+        flags = p.substr( offset+3  /* strlen( ":2," ) */ );
+        p     = p.substr(0, offset);
+    }
+
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CMessage::add_flag(\"";
+    dm += "Path:";
+    dm += p;
+    dm += " ->( p:" + p;
+    dm += " f:" + flags;
+    dm += ");";
+    DEBUG_LOG( dm );
+#endif
+
 
     /**
-     * If we found flags then add the new one.
+     * Given an input path like:
+     *
+     * /home/skx/Maildir/.247blinds.co.uk/cur/1239736741.19771_.skx:2,RS
+     *
+     * We now have:
+     *
+     * p     = /home/skx/Maildir/.247blinds.co.uk/cur/1239736741.19771_.skx
+     *
+     * flags = RS
      */
-    if (offset != std::string::npos)
-    {
-        flags = p.substr(offset);
-        base  = p.substr(0,offset);
-    }
-    else
-    {
-        flags = ":2,";
-    }
+
+    /**
+     * Add the flag to the component.
+     */
+    flags += c;
 
     /**
      * Sleazy Hack.
@@ -171,16 +194,24 @@ void CMessage::add_flag( char c )
         flags += "N";
 
     /**
-     * Add the new-flag.
+     * Sort the flags, and remove duplicate entries.
      */
-    flags += c;
+    std::sort( flags.begin(), flags.end());
+    flags.erase(std::unique(flags.begin(), flags.end()), flags.end());
 
-    CFile::move( p, base + flags );
+
+    /**
+     * Now rename to : $path:2,$flags
+     */
+    std::string dst = p + ":2," + flags;
+
+    CFile::move( orig, dst );
+
 
     /**
      * Update the path.
      */
-    path( base + flags );
+    path( dst );
 }
 
 
