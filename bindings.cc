@@ -56,7 +56,23 @@ int get_set_string_variable( lua_State *L, const char * name )
     CGlobal *g = CGlobal::Instance();
 
     if (str != NULL)
+    {
+
+#ifdef LUMAIL_DEBUG
+
+        std::string loggy;
+        loggy = "Setting ";
+        loggy += "'";
+        loggy += name;
+        loggy += "' to value '";
+        loggy += str;
+        loggy +=  "'";
+
+        DEBUG_LOG(loggy);
+#endif
+
         g->set_variable( name, new std::string(str));
+    }
 
     std::string * s = g->get_variable(name);
     lua_pushstring(L, s->c_str());
@@ -219,6 +235,11 @@ int maildir_limit(lua_State * L)
  */
 int index_limit(lua_State * L)
 {
+    /**
+     * This is valid only if we're setting the limit.
+     */
+    const char *str = lua_tostring(L, -1);
+
     int ret =  get_set_string_variable( L, "index_limit" );
 
     /**
@@ -228,9 +249,10 @@ int index_limit(lua_State * L)
     global->update_messages();
 
     /**
-     * Reset the message offset.
+     * Reset the message offset if we're *changing* the index-limit
      */
-    global->set_message_offset(0);
+    if ( str != NULL )
+        global->set_message_offset(0);
 
     return ret;
 }
