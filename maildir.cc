@@ -248,31 +248,6 @@ bool CMaildir::matches_filter( std::string *filter )
     return false;
 }
 
-/**
- * Count files in a directory.
- */
-int CMaildir::countFiles(std::string path)
-{
-    int count = 0;
-    dirent *de;
-    DIR *dp;
-
-    dp = opendir(path.c_str());
-    if (dp)
-    {
-        while (true)
-        {
-            de = readdir(dp);
-            if (de == NULL)
-                break;
-
-            if (!CFile::is_directory(std::string(path + "/" + de->d_name)))
-                count += 1;
-        }
-        closedir(dp);
-    }
-    return count;
-}
 
 
 /**
@@ -296,7 +271,7 @@ std::vector<std::string> CMaildir::getFolders(std::string path)
 
             if ( ( strcmp( de->d_name, "." ) != 0 ) &&
                  ( strcmp( de->d_name, ".." ) != 0 ) &&
-                 ( ( de->d_type == DT_UNKNOWN) || 
+                 ( ( de->d_type == DT_UNKNOWN) ||
                    ( de->d_type == DT_DIR ) ) )
             {
                 std::string subdir_name = std::string(de->d_name);

@@ -97,10 +97,6 @@ class CMaildir
    */
   std::vector <CMessage *> getMessages();
 
-  /**
-   * Count files in a directory.
-   */
-  static int countFiles(std::string path);
 
  private:
 
