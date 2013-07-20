@@ -627,7 +627,7 @@ void CScreen::drawMessage()
 
     int textspace = (int)(CScreen::height() - headers.size() - attachments.size() );
     if (textspace < 2)
-	textspace = 2;
+        textspace = 2;
 
     /**
      * get the body-colour
