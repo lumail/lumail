@@ -294,24 +294,28 @@ std::vector<std::string> CMaildir::getFolders(std::string path)
             if (de == NULL)
                 break;
 
-            std::string subdir_name = std::string(de->d_name);
-            std::string subdir_path = std::string(prefix + "/" + subdir_name);
-            if (CMaildir::is_maildir(subdir_path))
-                result.push_back(subdir_path);
-            else
+            if ( ( strcmp( de->d_name, "." ) != 0 ) &&
+                 ( strcmp( de->d_name, ".." ) != 0 ) )
             {
-                if (subdir_name != "." && subdir_name != "..")
+                std::string subdir_name = std::string(de->d_name);
+                std::string subdir_path = std::string(prefix + "/" + subdir_name);
+                if (CMaildir::is_maildir(subdir_path))
+                    result.push_back(subdir_path);
+                else
                 {
-                    DIR* sdp = opendir(subdir_path.c_str());
-                    if (sdp)
+                    if (subdir_name != "." && subdir_name != "..")
                     {
-                        closedir(sdp);
-                        std::vector<std::string> sub_maildirs;
-                        sub_maildirs = CMaildir::getFolders(subdir_path);
-                        std::vector<std::string>::iterator it;
-                        for (it = sub_maildirs.begin(); it != sub_maildirs.end(); ++it)
+                        DIR* sdp = opendir(subdir_path.c_str());
+                        if (sdp)
                         {
-                            result.push_back(*it);
+                            closedir(sdp);
+                            std::vector<std::string> sub_maildirs;
+                            sub_maildirs = CMaildir::getFolders(subdir_path);
+                            std::vector<std::string>::iterator it;
+                            for (it = sub_maildirs.begin(); it != sub_maildirs.end(); ++it)
+                            {
+                                result.push_back(*it);
+                            }
                         }
                     }
                 }
