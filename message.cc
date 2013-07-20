@@ -135,7 +135,7 @@ void CMessage::add_flag( char c )
     /**
      * If the flag is already present, return.
      */
-    if ( flags().find( c ) != std::string::npos)
+    if ( has_flag( c ) )
         return;
 
     /**
@@ -215,6 +215,22 @@ void CMessage::add_flag( char c )
     path( dst );
 }
 
+
+/**
+ * Does this message possess the given flag?
+ */
+bool CMessage::has_flag( char c )
+{
+    /**
+     * Flags are upper-case.
+     */
+    c = toupper(c);
+
+    if ( flags().find( c ) != std::string::npos)
+        return true;
+    else
+        return false;
+}
 
 /**
  * Remove a flag from a message.

@@ -76,6 +76,11 @@ public:
     void add_flag( char c );
 
     /**
+     * Does this message possess the given flag?
+     */
+    bool has_flag( char c );
+
+    /**
      * Remove a flag from a message.
      */
     void remove_flag( char c );
