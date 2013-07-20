@@ -59,6 +59,7 @@ CGlobal::CGlobal()
     m_cur_message    = 0;
     m_msg_offset     = 0;
     m_messages       = NULL;
+    m_maildirs       = NULL;
 
     /**
      * Defaults as set in our variable hash-map.
