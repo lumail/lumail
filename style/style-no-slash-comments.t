@@ -56,7 +56,7 @@ sub processFile
       die "Cannot open $file - $!";
     foreach my $line (<$handle>)
     {
-        next if  ( $line =~ /lumail\.org/ );
+        next if  ( $line =~ /https?:\/\// );
 
         # We will count multiple tab characters in a single line.
         while ( $line =~ /(.*)\/\/(.*)/ )
