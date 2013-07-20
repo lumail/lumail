@@ -417,13 +417,12 @@ void CScreen::drawIndex()
         if (row == rowToHighlight)
             attron(A_UNDERLINE | A_STANDOUT);
 
+        /**
+         * Is this message new/unread?
+         */
         bool unread = false;
         if ( cur != NULL )
-        {
-            std::string flags = cur->flags();
-            if ( flags.find( "N" ) != std::string::npos )
-                unread = true;
-        }
+            unread = cur->is_new();
 
         if (unread)
         {
@@ -628,7 +627,7 @@ void CScreen::drawMessage()
 
     int textspace = (int)(CScreen::height() - headers.size() - attachments.size() );
     if (textspace < 2)
-	textspace = 2; 
+	textspace = 2;
 
     /**
      * get the body-colour
