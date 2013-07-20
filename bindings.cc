@@ -618,7 +618,7 @@ int prompt_maildir(lua_State * L)
     {
         CScreen::clear_main();
 
-        std::vector<CMaildir> folders = global->get_all_folders();
+        std::vector<CMaildir*> folders = global->get_folders();
 
         int count = folders.size();
         if ( count < 1 )
@@ -636,7 +636,7 @@ int prompt_maildir(lua_State * L)
         /**
          * Current selection
          */
-        CMaildir current = folders.at(selected);
+        CMaildir *current = folders.at(selected);
 
         move(0,0);
         printw("Select a folder:");
@@ -646,7 +646,7 @@ int prompt_maildir(lua_State * L)
             CMaildir *cur = NULL;
             if ((row + selected) < count)
             {
-                cur = &folders[row + selected];
+                cur = folders[row + selected];
 
                 move( row+2, 0 );
                 printw( "%s", cur->path().c_str() );
@@ -666,7 +666,7 @@ int prompt_maildir(lua_State * L)
             selected -= 1;
         if ( key == '\n' )
         {
-            lua_pushstring(L, current.path().c_str() );
+            lua_pushstring(L, current->path().c_str() );
             return 1;
         }
     }
@@ -962,8 +962,8 @@ int maildirs_matching(lua_State *L)
      * Get all maildirs.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir> folders = global->get_all_folders();
-    std::vector<CMaildir>::iterator it;
+    std::vector<CMaildir *> folders = global->get_folders();
+    std::vector<CMaildir *>::iterator it;
 
     /**
      * create a new table.
@@ -986,13 +986,13 @@ int maildirs_matching(lua_State *L)
      */
     for (it = folders.begin(); it != folders.end(); ++it)
     {
-        CMaildir f = (*it);
+        CMaildir *f = (*it);
 
 
-        if ( f.matches_filter( filter ) )
+        if ( f->matches_filter( filter ) )
         {
             lua_pushnumber(L,i);
-            lua_pushstring(L,(*it).path().c_str());
+            lua_pushstring(L,(*it)->path().c_str());
             lua_settable(L,-3);
             i++;
         }
