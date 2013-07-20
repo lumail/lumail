@@ -295,7 +295,9 @@ std::vector<std::string> CMaildir::getFolders(std::string path)
                 break;
 
             if ( ( strcmp( de->d_name, "." ) != 0 ) &&
-                 ( strcmp( de->d_name, ".." ) != 0 ) )
+                 ( strcmp( de->d_name, ".." ) != 0 ) &&
+		 ( ( de->d_type == DT_UNKNOWN) || 
+		   ( de->d_type == DT_DIR ) ) )
             {
                 std::string subdir_name = std::string(de->d_name);
                 std::string subdir_path = std::string(prefix + "/" + subdir_name);
