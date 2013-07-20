@@ -46,9 +46,9 @@ CMaildir::~CMaildir()
 }
 
 /**
- * The number of new messages for this directory.
+ * The number of new messages for this maildir.
  */
-int CMaildir::newMessages()
+int CMaildir::unread_messages()
 {
     /**
      * Get all messages.
@@ -79,9 +79,9 @@ int CMaildir::newMessages()
 }
 
 /**
- * The total number of messages for this directory.
+ * The total number of messages for this maildir.
  */
-int CMaildir::availableMessages()
+int CMaildir::all_messages()
 {
     /**
      * Get all messages.
@@ -189,20 +189,20 @@ std::string CMaildir::format( bool selected, std::string fmt )
             }
             if ( strcmp(std_name[i] , "$TOTAL" ) == 0 )
             {
-                int total = availableMessages() + newMessages();
+                int total = all_messages();
                 convert << std::setfill('0') << std::setw(4) << total;
                 result.insert(offset, convert.str());
             }
             if ( strcmp(std_name[i] , "$READ" ) == 0 )
             {
-                int read = availableMessages() - newMessages();;
+                int read = all_messages() - unread_messages();;
                 convert << std::setfill('0') << std::setw(4) << read;
                 result.insert(offset, convert.str());
             }
             if ( ( strcmp(std_name[i] , "$NEW" ) == 0 ) ||
                  ( strcmp(std_name[i] , "$UNREAD" ) == 0 ) )
             {
-                int unread = newMessages();
+                int unread = unread_messages();
                 convert << std::setfill('0') << std::setw(4) << unread;
                 result.insert(offset, convert.str());
             }
@@ -231,7 +231,7 @@ bool CMaildir::matches_filter( std::string *filter )
 
     if (strcmp(filter->c_str(), "new") == 0)
     {
-        if ( newMessages() > 0)
+        if ( unread_messages() > 0)
             return true;
         else
             return false;

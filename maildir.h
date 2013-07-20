@@ -48,14 +48,14 @@ class CMaildir
   ~CMaildir();
 
   /**
-   * The number of new messages for this directory.
+   * The number of new messages for this maildir.
    */
-  int newMessages();
+  int unread_messages();
 
   /**
-   * The number of read messages for this directory.
+   * The total number of messages for this maildir.
    */
-  int availableMessages();
+  int all_messages();
 
   /**
    * The friendly name of the maildir.
