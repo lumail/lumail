@@ -49,7 +49,8 @@ public:
     std::vector<CMaildir> get_folders();
 
     /**
-     * Get all selected folders.
+     * Get all selected folders:
+     *  TODO: This should be std::vector<CMaildir *>
      */
     std::vector<std::string> get_selected_folders();
 
@@ -62,6 +63,13 @@ public:
      * Update the list of messages.
      */
     void update_messages();
+
+
+    /**
+     * Update the global list of Maildirs.
+     */
+    void update_maildirs();
+
 
     /**
      * Remove all selected folders.
@@ -182,15 +190,24 @@ private:
     int m_msg_offset;
 
 
+
     /**
      * Currently selected folders.
      */
     std::vector < std::string > m_selected_folders;
 
+
     /**
      * The list of currently visible messages.
      */
     std::vector<CMessage*> *m_messages;
+
+
+    /**
+     * The list of all currently visible maildirs.
+     */
+    std::vector<CMaildir *> *m_maildirs;
+
 
     /**
      * The settings we hold.

@@ -242,7 +242,25 @@ int maildir_limit(lua_State * L)
      * c.f. index_limit and the behaviour of the loaded/cached messages.
      *
      */
-    return( get_set_string_variable( L, "maildir_limit" ) );
+
+    /**
+     * This is valid only if we're setting the limit.
+     */
+    const char *str = lua_tostring(L, -1);
+
+    int ret =  get_set_string_variable( L, "maildir_limit" );
+
+
+    /**
+     * Update the maildirs.
+     */
+    if ( str != NULL )
+    {
+        CGlobal *global = CGlobal::Instance();
+        global->update_maildirs();
+    }
+
+    return( ret );
 }
 
 

@@ -283,6 +283,38 @@ std::vector<CMessage *>* CGlobal::get_messages()
 
 
 /**
+ * Update the list of global Maildirs.
+ */
+void CGlobal::update_maildirs()
+{
+    /**
+     * If we have items already then free each of them.
+     */
+    if ( m_maildirs != NULL )
+    {
+        /**
+         * Delete
+         */
+        std::vector<CMaildir *>::iterator it;
+        for (it = m_maildirs->begin(); it != m_maildirs->end(); ++it)
+        {
+            delete( *it );
+        }
+        delete( m_maildirs );
+    }
+
+    /**
+     * Now populate with fresh copies.
+     */
+    m_maildirs = new std::vector<CMaildir *>;
+
+    /**
+     * TODO: Add the maildirs.
+     */
+}
+
+
+/**
  * Update the list of global messages, using the index_limit string set by lua.
  */
 void CGlobal::update_messages()
