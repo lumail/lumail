@@ -626,10 +626,9 @@ void CScreen::drawMessage()
      */
     std::vector<std::string> body = cur->body();
 
-    /**
-     * How many lines to draw?
-     */
-    int max = std::min((int)body.size(), (int)(CScreen::height() - headers.size() - attachments.size() ) );
+    int textspace = (int)(CScreen::height() - headers.size() - attachments.size() );
+    if (textspace < 2)
+	textspace = 2; 
 
     /**
      * get the body-colour
@@ -649,7 +648,7 @@ void CScreen::drawMessage()
     /**
      * Draw each line of the body.
      */
-    for( int i = 0; i < (max-2); i++ )
+    for( int i = 0; i < (textspace-2); i++ )
     {
         move( i + ( headers.size() + attachments.size() + 1 ), 0 );
 
