@@ -50,15 +50,56 @@ CMaildir::~CMaildir()
  */
 int CMaildir::newMessages()
 {
-    return (CMaildir::countFiles(m_path + "/new"));
+    /**
+     * Get all messages.
+     */
+    std::vector<CMessage *> all = getMessages();
+
+    /**
+     * If unread .. add to the total.
+     */
+    int unread = 0;
+
+    std::vector<CMessage *>::iterator it;
+    for (it = all.begin(); it != all.end(); ++it)
+    {
+        if ( (*it)->is_new() )
+            unread += 1;
+    }
+
+    /**
+     * Now cleanup.
+     */
+    for (it = all.begin(); it != all.end(); ++it)
+    {
+        delete( *it );
+    }
+
+    return( unread );
 }
 
 /**
- * The number of read messages for this directory.
+ * The total number of messages for this directory.
  */
 int CMaildir::availableMessages()
 {
-    return (CMaildir::countFiles(m_path + "/cur"));
+    /**
+     * Get all messages.
+     */
+    std::vector<CMessage *> all = getMessages();
+
+    int total = all.size();
+
+    /**
+     * Now cleanup.
+     */
+    std::vector<CMessage *>::iterator it;
+    for (it = all.begin(); it != all.end(); ++it)
+    {
+        delete( *it );
+    }
+
+    return( total );
 }
 
 /**
@@ -206,7 +247,6 @@ bool CMaildir::matches_filter( std::string *filter )
 
     return false;
 }
-
 
 /**
  * Count files in a directory.
