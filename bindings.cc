@@ -226,23 +226,6 @@ int maildir_format(lua_State *L )
  */
 int maildir_limit(lua_State * L)
 {
-    /** TODO */
-    /**
-     * Here we update the maildir limit - but we don't
-     * do anything else.
-     *
-     * Each time round the screen.cc drawing loop we refetch
-     * the maildirs.
-     *
-     * Instead we need to update the selected maildirs, which
-     * will persist.
-     *
-     * This will give us a speedup.
-     *
-     * c.f. index_limit and the behaviour of the loaded/cached messages.
-     *
-     */
-
     /**
      * This is valid only if we're setting the limit.
      */

@@ -35,7 +35,10 @@
  */
 CMaildir::CMaildir(std::string path)
 {
-    m_path = path;
+    m_path     = path;
+    m_modified = 0;   /* mtime of the maildir */
+    m_unread   = -1;  /* unread messages in maildir */
+    m_total    = -1;  /* total messages in maildir */
 }
 
 /**
@@ -45,26 +48,73 @@ CMaildir::~CMaildir()
 {
 }
 
+
 /**
- * The number of new messages for this maildir.
+ * Return the last modified time for this Maildir.
  */
-int CMaildir::unread_messages()
+time_t CMaildir::last_modified()
 {
+    time_t last = 0;
+    struct stat st_buf;
+
+    std::string p = path();
+
+    /**
+     * The directory, and the new/ + cur/ subdirectories.
+     */
+    std::vector<std::string> dirs;
+    dirs.push_back(p + "/cur");
+    dirs.push_back(p + "/new");
+
+    /**
+     * See which was the most recently modified.
+     */
+    std::vector<std::string>::iterator it;
+    for( it = dirs.begin(); it != dirs.end(); it ++ )
+    {
+        int err = stat((*it).c_str(),&st_buf);
+        if ( !err )
+        {
+            if ( st_buf.st_mtime > last )
+                last = st_buf.st_mtime;
+        }
+    }
+
+    return( last );
+}
+
+
+
+/**
+ * Update new/total counts.
+ */
+void CMaildir::update_stats()
+{
+    /**
+     * If the cached date isn't different then we need do nothing.
+     */
+    time_t last_mod = last_modified();
+
+    if ( ( last_mod <= m_modified ) &&
+         ( m_unread != -1 ) &&
+         ( m_total != -1 ) )
+        return;
+
+    m_modified = last_mod;
+
     /**
      * Get all messages.
      */
     std::vector<CMessage *> all = getMessages();
+    m_total = all.size();
 
-    /**
-     * If unread .. add to the total.
-     */
-    int unread = 0;
 
     std::vector<CMessage *>::iterator it;
+    m_unread = 0;
     for (it = all.begin(); it != all.end(); ++it)
     {
         if ( (*it)->is_new() )
-            unread += 1;
+            m_unread += 1;
     }
 
     /**
@@ -74,32 +124,27 @@ int CMaildir::unread_messages()
     {
         delete( *it );
     }
-
-    return( unread );
 }
+
+
+/**
+ * The number of new messages for this maildir.
+ */
+int CMaildir::unread_messages()
+{
+    update_stats();
+    return( m_unread );
+}
+
+
 
 /**
  * The total number of messages for this maildir.
  */
 int CMaildir::all_messages()
 {
-    /**
-     * Get all messages.
-     */
-    std::vector<CMessage *> all = getMessages();
-
-    int total = all.size();
-
-    /**
-     * Now cleanup.
-     */
-    std::vector<CMessage *>::iterator it;
-    for (it = all.begin(); it != all.end(); ++it)
-    {
-        delete( *it );
-    }
-
-    return( total );
+    update_stats();
+    return( m_total );
 }
 
 /**
@@ -427,3 +472,5 @@ bool CMaildir::is_maildir(std::string path)
     }
     return true;
 }
+
+

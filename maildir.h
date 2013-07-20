@@ -98,6 +98,15 @@ class CMaildir
   std::vector <CMessage *> getMessages();
 
 
+private:
+
+  /**
+   * Return the last modified time for this Maildir.
+   */
+  time_t last_modified();
+
+  void update_stats();
+
  private:
 
   /**
@@ -105,6 +114,16 @@ class CMaildir
    */
   std::string m_path;
 
+  /**
+   * Cached time/date object.
+   */
+  time_t m_modified;
+
+  /**
+   * Cached unread-count + cached total count.
+   */
+  int m_unread;
+  int m_total;
 };
 
 #endif /* _maildir_h_ */
