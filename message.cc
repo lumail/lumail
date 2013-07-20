@@ -965,12 +965,19 @@ std::vector<std::string> CMessage::body()
      */
     CGlobal     *global = CGlobal::Instance();
     std::string *filter = global->get_variable("message_filter");
+    std::string *tmp    = global->get_variable("tmp");
+
     if ( ( filter != NULL ) && ( ! ( filter->empty() ) ) )
     {
         /**
-         * Write out the body to a temporary file.
+         * Generate a temporary file for the filter output.
          */
-        char filename[] = "/tmp/msg.filter.XXXXXX";
+        char filename[256] = { '\0' };
+        snprintf( filename, sizeof(filename)-1, "%s/msg.filter.XXXXXX", tmp->c_str() );
+
+        /**
+         * Open the file.
+         */
         int fd  = mkstemp(filename);
 
         /**
