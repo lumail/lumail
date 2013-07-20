@@ -767,49 +767,17 @@ end
 
 ---
 --
---   Further examples are available online:  http://lumail.org/examples/
+--   Further primitives which are not included here are documented
+--  online:
+--
+--       http://lumail.org/lua/
+--
+--
+--   Larger examples are also available online:
+--
+--       http://lumail.org/examples/
+--
+--
 --
 ---
 
---
--- Colour support for the display.
---
--- Valid colours: blue, cyan, green, magenta, red, white, yellow
---
-
---
--- The colour of unread mailboxes in maildir-mode
-unread_maildir_colour( "red" );
-
---
--- The colour of unread messages in index-mode.
-unread_message_colour( "red" );
-
---
--- The colour of the attachment-list in message-mode.
-attachment_colour( "yellow" );
-
---
--- The colour of the headers in message-mode.
-header_colour( "cyan" );
-
---
--- The colour of the message-bod in message-mode
-body_colour( "green" );
-
-
-
---
--- Folders to ignore in maildir mode
---
-ignored_folders = { "foo.", "bar." };
-
-
-date_formats = {
-
-             "%a, %d %b %y %H:%M:%S" ,
-             "%a, %d %b %Y %H:%M:%S" ,
-             "%d %b %y %H:%M:%S" ,
-             "%a, %d %b %y %H:%M" ,
-             "%a, %d %b %Y %H:%M" ,
-             "%a, %d %b %Y %H.%M.%S" };
