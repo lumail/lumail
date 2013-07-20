@@ -331,11 +331,16 @@ bool CMessage::matches_filter( std::string *filter )
  */
 bool CMessage::is_new()
 {
-    std::string f = flags();
-    if ( f.find( 'N' ) != std::string::npos )
+    /**
+     * A message is new if:
+     *
+     * It has the flag "N".
+     * It does not have the flag "S".
+     */
+    if ( ( has_flag( 'N' ) ) || ( ! has_flag( 'S' ) ) )
         return true;
-    else
-        return false;
+
+    return false;
 }
 
 
