@@ -407,7 +407,7 @@ end
 -- When in maildir-mode show all folders which have a path matching the given pattern.
 --
 function livejournal_folders()
-   maildir_limit( "livejournal.2" );
+   maildir_limit( "livejournal.[0-9]" );
    clear();
 end
 
