@@ -96,8 +96,6 @@ std::string CMessage::flags()
     if (offset != std::string::npos)
         flags = pth.substr(offset + 3);
 
-    if ( flags.size() > 3)
-        flags = "";
 
     /**
      * Sleazy Hack.
