@@ -39,14 +39,14 @@ public:
     static CGlobal *Instance();
 
     /**
-     * Get all folders.
+     * Get all folders: TODO remove.
      */
     std::vector<CMaildir> get_all_folders();
 
     /**
      * Get all folders which match the current mode: new/all/pattern
      */
-    std::vector<CMaildir> get_folders();
+    std::vector<CMaildir*> get_folders();
 
     /**
      * Get all selected folders:

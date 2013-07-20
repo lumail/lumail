@@ -158,6 +158,20 @@ bool sort_maildirs_by_name(CMaildir a, CMaildir b)
     return( strcmp( a_path.c_str(), b_path.c_str() ) < 0 );
 }
 
+/**
+ * Sort maildirs by name, case-insensitively.
+ */
+bool sort_maildir_ptr_by_name(CMaildir *a, CMaildir *b)
+{
+    std::string a_path = a->path();
+    std::string b_path = b->path();
+
+    std::transform(a_path.begin(), a_path.end(), a_path.begin(), tolower);
+    std::transform(b_path.begin(), b_path.end(), b_path.begin(), tolower);
+
+    return( strcmp( a_path.c_str(), b_path.c_str() ) < 0 );
+}
+
 
 
 /**
@@ -246,29 +260,28 @@ std::vector<CMaildir> CGlobal::get_all_folders()
 /**
  * Get folders matching the current mode.
  */
-std::vector < CMaildir > CGlobal::get_folders()
+std::vector<CMaildir *> CGlobal::get_folders()
 {
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir> folders = global->get_all_folders();
-    std::vector<CMaildir> display;
+    std::vector<CMaildir*> display;
     std::string * filter = global->get_variable("maildir_limit");
 
     /**
      * Filter the folders to those we can display
      */
-    std::vector<CMaildir>::iterator it;
-    for (it = folders.begin(); it != folders.end(); ++it)
+    std::vector<CMaildir *>::iterator it;
+    for (it = m_maildirs->begin(); it != m_maildirs->end(); ++it)
     {
-        CMaildir x = *it;
+        CMaildir *x = (*it);
 
-        if ( x.matches_filter( filter ) )
+        if ( x->matches_filter( filter ) )
             display.push_back(x);
     }
 
     /**
      * Sort, case-insensitively.
      */
-    std::sort(display.begin(), display.end(), sort_maildirs_by_name);
+    std::sort(display.begin(), display.end(), sort_maildir_ptr_by_name);
 
     return (display);
 }
@@ -309,8 +322,71 @@ void CGlobal::update_maildirs()
     m_maildirs = new std::vector<CMaildir *>;
 
     /**
-     * TODO: Add the maildirs.
+     * Maildir prefix.
      */
+    CGlobal *global     = CGlobal::Instance();
+    std::string *prefix = global->get_variable( "maildir_prefix" );
+
+    /**
+     * Get each maildir
+     */
+    std::vector<std::string> folders = CMaildir::getFolders(*prefix);
+
+    /**
+     * Should we ignore folders?
+     */
+    CLua *lua = CLua::Instance();
+    std::vector<std::string> ignored = lua->table_to_array( "ignored_folders" );
+
+    std::vector < std::string >::iterator it;
+    for (it = folders.begin(); it != folders.end(); ++it)
+    {
+        bool ignore = false;
+
+        /**
+         * Should we ignore this folder?
+         */
+        if ( ignored.size() > 0 )
+        {
+            /**
+             * The path of the maildir we're adding.
+             */
+            std::string path = *it;
+
+            /**
+             *  Iterate over all ignored paths.
+             */
+            std::vector < std::string >::iterator igit;
+            for (igit = ignored.begin(); igit != ignored.end(); ++igit)
+            {
+                /**
+                 * Ignore empty strings.
+                 */
+                std::string reg = *igit;
+                if ( reg.size() < 1 )
+                    break ;
+
+                /**
+                 * Perform the regex matching, via PCRE.
+                 */
+                if (pcrecpp::RE(reg, pcrecpp::RE_Options().set_caseless(true)).PartialMatch(path) )
+                    ignore = true;
+            }
+
+        }
+
+        /**
+         * Not ignoring anything.  Add the folder.
+         */
+        if ( ! ignore )
+            m_maildirs->push_back(new CMaildir((*it)));
+    }
+
+    /**
+     * Sort, case-insensitively.
+     */
+    std::sort(m_maildirs->begin(), m_maildirs->end(), sort_maildir_ptr_by_name);
+
 }
 
 

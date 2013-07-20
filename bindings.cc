@@ -841,7 +841,7 @@ int scroll_maildir_to(lua_State * L)
      * get the current folders.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector < CMaildir > display = global->get_folders();
+    std::vector <CMaildir* > display = global->get_folders();
     int max = display.size();
     int selected = global->get_selected_folder();
 
@@ -855,15 +855,15 @@ int scroll_maildir_to(lua_State * L)
         /**
          * Get the display-name of the folder.
          */
-        CMaildir cur = display[i];
-        std::string p = cur.path();
+        CMaildir *cur = display[i];
+        std::string p = cur->path();
 
         /**
          * Lower-case it.
          */
         std::transform(p.begin(), p.end(), p.begin(), tolower);
 
-        if ( cur.matches_filter( find ) )
+        if ( cur->matches_filter( find ) )
         {
             global->set_selected_folder(i);
             break;
@@ -888,11 +888,11 @@ int current_maildir(lua_State * L)
      * get the current folders.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector < CMaildir > display = global->get_folders();
+    std::vector<CMaildir *> display = global->get_folders();
     int selected = global->get_selected_folder();
 
-    CMaildir x = display[selected];
-    lua_pushstring(L, x.path().c_str());
+    CMaildir *x = display[selected];
+    lua_pushstring(L, x->path().c_str());
     return 1;
 }
 
@@ -911,7 +911,7 @@ int select_maildir(lua_State *L)
      * get the current folders.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector < CMaildir > display = global->get_folders();
+    std::vector<CMaildir *> display = global->get_folders();
     int count = display.size();
 
     /**
@@ -922,9 +922,9 @@ int select_maildir(lua_State *L)
 
     for( i = 0; i < count; i++ )
     {
-        CMaildir cur = display[i];
+        CMaildir *cur = display[i];
 
-        if ( strcmp( cur.path().c_str(), path ) == 0 )
+        if ( strcmp( cur->path().c_str(), path ) == 0 )
         {
             /**
              * The current folder has the correct
@@ -1014,7 +1014,7 @@ int count_maildirs(lua_State *L)
 {
     CGlobal *global = CGlobal::Instance();
 
-    std::vector<CMaildir> folders = global->get_folders();
+    std::vector<CMaildir *> folders = global->get_folders();
     lua_pushinteger(L, folders.size() );
     return 1;
 }
@@ -1025,8 +1025,8 @@ int count_maildirs(lua_State *L)
 int current_maildirs(lua_State *L)
 {
     CGlobal *global = CGlobal::Instance();
-    std::vector < CMaildir > display = global->get_folders();
-    std::vector<CMaildir>::iterator it;
+    std::vector<CMaildir *> display = global->get_folders();
+    std::vector<CMaildir *>::iterator it;
 
     /**
      * Create the table.
@@ -1037,7 +1037,7 @@ int current_maildirs(lua_State *L)
     for (it = display.begin(); it != display.end(); ++it)
     {
         lua_pushnumber(L,i);
-        lua_pushstring(L,(*it).path().c_str());
+        lua_pushstring(L,(*it)->path().c_str());
         lua_settable(L,-3);
         i++;
     }
@@ -1453,13 +1453,13 @@ int add_selected_folder(lua_State * L)
     if (str == NULL)
     {
         int selected = global->get_selected_folder();
-        std::vector < CMaildir > display = global->get_folders();
+        std::vector<CMaildir *> display = global->get_folders();
 
         if ( display.size()  == 0 )
             return 0;
 
-        CMaildir x = display[selected];
-        path = x.path();
+        CMaildir *x = display[selected];
+        path = x->path();
         global->add_folder(path.c_str());
     }
     else
@@ -1502,11 +1502,11 @@ int set_selected_folder(lua_State * L)
      */
     if (str == NULL)
     {
-        std::vector < CMaildir > display = global->get_folders();
+        std::vector<CMaildir *> display = global->get_folders();
         int selected = global->get_selected_folder();
 
-        CMaildir x = display[selected];
-        path = x.path();
+        CMaildir *x = display[selected];
+        path = x->path();
         global->add_folder(path.c_str());
     }
     else
@@ -1548,13 +1548,13 @@ int toggle_selected_folder(lua_State * L)
 
     if (str == NULL)
     {
-        std::vector < CMaildir > display = global->get_folders();
+        std::vector<CMaildir *> display = global->get_folders();
         if ( display.size()  == 0 )
             return 0;
 
         int selected = global->get_selected_folder();
-        CMaildir x = display[selected];
-        toggle = x.path();
+        CMaildir *x = display[selected];
+        toggle = x->path();
     }
     else
     {

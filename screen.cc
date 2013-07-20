@@ -93,7 +93,7 @@ void CScreen::drawMaildir()
      * Get all known folders + the current display mode
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector < CMaildir > display = global->get_folders();
+    std::vector<CMaildir *> display = global->get_folders();
     std::string *limit = global->get_variable("maildir_limit");
 
     /**
@@ -205,7 +205,7 @@ void CScreen::drawMaildir()
 
         if (mailIndex < count)
         {
-            cur = &display.at(mailIndex);
+            cur = display.at(mailIndex);
             unread = cur->unread_messages();
         }
 
