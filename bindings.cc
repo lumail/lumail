@@ -1877,13 +1877,20 @@ int compose(lua_State * L)
 
     const char *subject = lua_tostring(L,-1);
 
-    CGlobal *global = CGlobal::Instance();
-    std::string *from   = global->get_variable( "from" );
+    CGlobal *global   = CGlobal::Instance();
+    std::string *from = global->get_variable( "from" );
+    std::string *tmp  = global->get_variable( "tmp" );
+
 
     /**
      * Generate a temporary file for the message body.
      */
-    char filename[] = "/tmp/mytemp.XXXXXX";
+    char filename[256] = { '\0' };
+    snprintf( filename, sizeof(filename)-1, "%s/mytemp.XXXXXX", tmp->c_str() );
+
+    /**
+     * Open the temporary file.
+     */
     int fd = mkstemp(filename);
 
     if (fd == -1)
@@ -2117,13 +2124,17 @@ int reply(lua_State * L)
     std::string ref     = mssg->header( "Message-ID" );
 
 
-    CGlobal *global     = CGlobal::Instance();
-    std::string *from   = global->get_variable( "from" );
+    CGlobal *global   = CGlobal::Instance();
+    std::string *from = global->get_variable( "from" );
+    std::string *tmp  = global->get_variable( "tmp" );
+
+
+    char filename[256] = { '\0' };
+    snprintf( filename, sizeof(filename)-1, "%s/lumail.reply.XXXXXX", tmp->c_str() );
 
     /**
-     * Generate a temporary file for the message body.
+     * Open the temporary file.
      */
-    char filename[] = "/tmp/lumail.reply.XXXXXX";
     int fd = mkstemp(filename);
 
     if (fd == -1)
@@ -2359,6 +2370,12 @@ int reply(lua_State * L)
 int send_email(lua_State *L)
 {
     /**
+     * Get our temporary directory.
+     */
+    CGlobal *global  = CGlobal::Instance();
+    std::string *tmp = global->get_variable( "tmp" );
+
+    /**
      * Get the values.
      */
     lua_pushstring(L, "to" );
@@ -2414,10 +2431,16 @@ int send_email(lua_State *L)
 
 
     /**
-     * Now send the mail.
+     * Generate a temporary filename.
      */
-    char filename[] = "/tmp/mytemp.XXXXXX";
+    char filename[256] = { '\0' };
+    snprintf( filename, sizeof(filename)-1, "%s/send.mail.XXXXXX", tmp->c_str() );
+
+    /**
+     * Open the temporary file.
+     */
     int fd = mkstemp(filename);
+
     if (fd == -1)
         return luaL_error(L, "Failed to create a temporary file.");
 
@@ -2489,7 +2512,6 @@ int send_email(lua_State *L)
     /**
      * OK now we're going to send the mail.  Get some settings.
      */
-    CGlobal *global        = CGlobal::Instance();
     std::string *sendmail  = global->get_variable("sendmail_path");
     std::string *sent_path = global->get_variable("sent_mail");
 
