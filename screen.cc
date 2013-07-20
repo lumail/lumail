@@ -70,6 +70,7 @@ void CScreen::refresh_display()
     CGlobal *global = CGlobal::Instance();
     std::string * s = global->get_variable("global_mode");
 
+
     if (strcmp(s->c_str(), "maildir") == 0)
         drawMaildir();
     else if (strcmp(s->c_str(), "index") == 0)
@@ -124,7 +125,7 @@ void CScreen::drawMaildir()
      * BUGFIX: When the maildir_limit changes the previous position
      * might be invalid.  This fix of resetting things ensures we're OK.
      */
-    if ( selected > count )
+    if ( ( selected > count ) || ( selected < 0 ) )
     {
         selected = 0;
         global->set_selected_folder( selected );
@@ -494,6 +495,12 @@ void CScreen::drawMessage()
         selected = count-1;
         global->set_selected_message(selected);
     }
+    if ( selected < 0 )
+    {
+        selected = 0;
+        global->set_selected_message( selected );
+    }
+
 
     CMessage *cur = NULL;
     if (((selected) < count) && count > 0 )
