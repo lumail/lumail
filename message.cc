@@ -34,6 +34,7 @@
 
 #include "debug.h"
 #include "file.h"
+#include "lua.h"
 #include "message.h"
 #include "global.h"
 
@@ -606,33 +607,46 @@ std::string CMessage::date(TDate fmt)
 
             struct tm t;
 
-            const char* const date_formats[] =
-                {
-                    " %a, %d %b %y %H:%M:%S",
-                    " %a, %d %b %Y %H:%M:%S",
-                    " %d %b %y %H:%M:%S",
-                    " %d %b %Y %H:%M:%S",
-                    " %a %b %d %H:%M:%S GMT %Y",
-                    " %a %b %d %H:%M:%S MSD %Y",
-                    " %a %b %d %H:%M:%S BST %Y",
-                    " %a %b %d %H:%M:%S CEST %Y"
-                    " %a %b %d %H:%M:%S PST %Y",
-                    " %a, %d %b %y %H:%M",
-                    " %a, %d %b %Y %H:%M",
-                    " %a, %d %b %Y %H.%M.%S",
-                    " %d-%b-%Y",
-                    " %m/%d/%y",
-                    " %d %b %Y",
-                    " %a %b %d %H:%M:%S %Y",
-                    0
-                };
+            /**
+             * Find the date-formats we accept.
+             *
+             * Any from lua.
+             */
+            CLua *lua = CLua::Instance();
+            std::vector<std::string> fmts = lua->table_to_array( "date_formats" );
+
+            /**
+             * Add in the ones we know about too.
+             */
+            fmts.push_back( "%a, %d %b %y %H:%M:%S" );
+            fmts.push_back( "%a, %d %b %Y %H:%M:%S" );
+            fmts.push_back( "%d %b %y %H:%M:%S" );
+            fmts.push_back( "%d %b %Y %H:%M:%S" );
+            fmts.push_back( "%a %b %d %H:%M:%S GMT %Y" );
+            fmts.push_back( "%a %b %d %H:%M:%S MSD %Y" );
+            fmts.push_back( "%a %b %d %H:%M:%S BST %Y" );
+            fmts.push_back( "%a %b %d %H:%M:%S CEST %Y" );
+            fmts.push_back( "%a %b %d %H:%M:%S PST %Y" );
+            fmts.push_back( "%a, %d %b %y %H:%M" );
+            fmts.push_back( "%a, %d %b %Y %H:%M" );
+            fmts.push_back( "%a, %d %b %Y %H.%M.%S" );
+            fmts.push_back( "%d-%b-%Y" );
+            fmts.push_back( "%m/%d/%y" );
+            fmts.push_back( "%d %b %Y" );
+            fmts.push_back( "%a %b %d %H:%M:%S %Y" );
+
             char* rc = NULL;
-            int i=0;
-            while(!rc)
+
+            /**
+             * For each format.
+             */
+            std::vector<std::string>::iterator it;
+            for (it = fmts.begin(); it != fmts.end(); ++it)
             {
-                const char* const fmt  = date_formats[i++];
-                if(!fmt)
+                if ( rc )
                     break;
+
+                const char* fmt = (*it).c_str();
 
                 t.tm_sec=0;
                 t.tm_min=0;

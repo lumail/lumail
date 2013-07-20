@@ -803,3 +803,13 @@ body_colour( "green" );
 -- Folders to ignore in maildir mode
 --
 ignored_folders = { "foo.", "bar." };
+
+
+date_formats = {
+
+             "%a, %d %b %y %H:%M:%S" ,
+             "%a, %d %b %Y %H:%M:%S" ,
+             "%d %b %y %H:%M:%S" ,
+             "%a, %d %b %y %H:%M" ,
+             "%a, %d %b %Y %H:%M" ,
+             "%a, %d %b %Y %H.%M.%S" };
