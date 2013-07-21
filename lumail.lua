@@ -455,11 +455,11 @@ end
 --
 function toggle_wrap_lines ()
     if wrap_lines == nil then
-   wrap_lines = true
+	wrap_lines = true
     elseif wrap_lines == true then
-   wrap_lines = false
+	wrap_lines = false
     elseif wrap_lines == false then
-   wrap_lines = true
+	wrap_lines = true
     end
 end
 
