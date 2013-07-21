@@ -306,7 +306,28 @@ int sent_mail(lua_State * L)
  */
 int sort(lua_State * L)
 {
-    return( get_set_string_variable( L, "sort" ) );
+    /**
+     * If updating then we refresh the messages.
+     */
+    const char *str = lua_tostring(L, -1);
+
+    int ret = get_set_string_variable( L, "sort" );
+
+    /**
+     * Update the selected mesages.
+     */
+    if ( str != NULL )
+    {
+        CGlobal *global = CGlobal::Instance();
+        global->update_messages();
+
+        /**
+         * Reset the message offset if we're *changing* the index-limit
+         */
+        global->set_message_offset(0);
+    }
+    return ret;
+
 }
 
 
