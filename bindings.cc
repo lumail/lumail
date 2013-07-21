@@ -302,6 +302,15 @@ int sent_mail(lua_State * L)
 
 
 /**
+ * Get, or set, the message sort-order
+ */
+int sort(lua_State * L)
+{
+    return( get_set_string_variable( L, "sort" ) );
+}
+
+
+/**
  * Colour support.
  */
 int unread_message_colour(lua_State *L)

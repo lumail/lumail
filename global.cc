@@ -127,22 +127,53 @@ CGlobal::CGlobal()
 bool sort_messages_by_date(CMessage *a, CMessage *b)
 {
     /**
-     * Stat both files.
+     * Get the type of sort.
      */
-    struct stat us;
-    struct stat them;
+    CGlobal   *global = CGlobal::Instance();
+    std::string *sort = global->get_variable("sort");
 
-    std::string us_path = a->path();
-    std::string them_path = b->path();
+    /**
+     * If we have no sort, or it is 'asc' then show
+     * old -> new.  If it is 'desc' then show new -> old.
+     */
+    if ( ( sort == NULL ) ||
+         ( strcmp( sort->c_str(), "asc" ) == 0 ) ||
+         ( strcmp( sort->c_str(), "desc" ) == 0 ) )
+    {
+        bool asc = true;
 
-    if (stat(us_path.c_str(), &us) < 0)
-        return 0;
+        /**
+         * Are we descending?
+         */
+        if  ( ( sort != NULL ) && ( strcmp( sort->c_str(), "desc" ) == 0 ) )
+            asc = false;
 
-    if (stat(them_path.c_str(), &them) < 0)
-        return 0;
 
-    return (us.st_mtime < them.st_mtime);
+        /**
+         * Stat both files.
+         */
+        struct stat us;
+        struct stat them;
 
+        std::string us_path   = a->path();
+        std::string them_path = b->path();
+
+        if (stat(us_path.c_str(), &us) < 0)
+            return 0;
+
+        if (stat(them_path.c_str(), &them) < 0)
+            return 0;
+
+        if ( asc )
+            return (us.st_mtime < them.st_mtime);
+        else
+            return (them.st_mtime < us.st_mtime);
+
+    }
+    /**
+     * TODO: other sorting
+     */
+    return false;
 }
 
 /**

@@ -100,6 +100,7 @@ struct CLuaMapping primitive_list[] =
     { "message_filter",(lua_CFunction) message_filter},
     { "sendmail_path",(lua_CFunction) sendmail_path},
     { "sent_mail",(lua_CFunction) sent_mail},
+    { "sort",(lua_CFunction) sort},
     { "get_variables", (lua_CFunction) get_variables },
 
 /**
