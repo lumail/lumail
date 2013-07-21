@@ -208,6 +208,9 @@ std::vector<std::string> CFile::get_all_maildirs(std::string path)
     dp = opendir(prefix.c_str());
     if (dp)
     {
+        if (CMaildir::is_maildir(prefix))
+            result.push_back(prefix);
+
         while (true)
         {
             de = readdir(dp);
