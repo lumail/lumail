@@ -38,7 +38,7 @@ class CMaildir
  public:
 
   /**
-   * Constructor.  NOP.
+   * Constructor.
    */
   CMaildir(std::string path);
 
@@ -89,13 +89,15 @@ class CMaildir
 
   /**
    * Return a sorted list of maildirs beneath the given path.
+   *
+   * TODO: This shouldn't be here.
    */
   static std::vector < std::string > getFolders(std::string path);
 
   /**
    * Get each message in the folder.
    */
-  std::vector <CMessage *> getMessages();
+  std::vector<CMessage *> getMessages();
 
 
 private:
@@ -105,7 +107,10 @@ private:
    */
   time_t last_modified();
 
-  void update_stats();
+  /**
+   * Update the cached total/unread message counts.
+   */
+  void update_cache();
 
  private:
 

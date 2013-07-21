@@ -31,7 +31,7 @@
 #include "message.h"
 
 /**
- * Constructor.  NOP
+ * Constructor.
  */
 CMaildir::CMaildir(std::string path)
 {
@@ -60,7 +60,7 @@ time_t CMaildir::last_modified()
     std::string p = path();
 
     /**
-     * The directory, and the new/ + cur/ subdirectories.
+     * The two directories we care about: new/ + cur/
      */
     std::vector<std::string> dirs;
     dirs.push_back(p + "/cur");
@@ -72,12 +72,13 @@ time_t CMaildir::last_modified()
     std::vector<std::string>::iterator it;
     for( it = dirs.begin(); it != dirs.end(); it ++ )
     {
-        int err = stat((*it).c_str(),&st_buf);
-        if ( !err )
-        {
+        /**
+         * If we can stat() the dir and it is more recent
+         * than the current value - update it.
+         */
+        if ( ! stat((*it).c_str(),&st_buf) )
             if ( st_buf.st_mtime > last )
                 last = st_buf.st_mtime;
-        }
     }
 
     return( last );
@@ -86,15 +87,20 @@ time_t CMaildir::last_modified()
 
 
 /**
- * Update new/total counts.
+ * Update the cached total/unread message counts.
  */
-void CMaildir::update_stats()
+void CMaildir::update_cache()
 {
     /**
      * If the cached date isn't different then we need do nothing.
      */
     time_t last_mod = last_modified();
 
+    /**
+     * If we've got -1 for the count/unread then we've
+     * just been created.
+     *
+     */
     if ( ( last_mod <= m_modified ) &&
          ( m_unread != -1 ) &&
          ( m_total != -1 ) )
@@ -102,14 +108,18 @@ void CMaildir::update_stats()
 
     m_modified = last_mod;
 
+
     /**
-     * Get all messages.
+     * Get all messages, and update the total
      */
     std::vector<CMessage *> all = getMessages();
+    std::vector<CMessage *>::iterator it;
     m_total = all.size();
 
 
-    std::vector<CMessage *>::iterator it;
+    /**
+     * Now update the unread count.
+     */
     m_unread = 0;
     for (it = all.begin(); it != all.end(); ++it)
     {
@@ -132,10 +142,9 @@ void CMaildir::update_stats()
  */
 int CMaildir::unread_messages()
 {
-    update_stats();
+    update_cache();
     return( m_unread );
 }
-
 
 
 /**
@@ -143,9 +152,10 @@ int CMaildir::unread_messages()
  */
 int CMaildir::all_messages()
 {
-    update_stats();
+    update_cache();
     return( m_total );
 }
+
 
 /**
  * The friendly name of the maildir.
@@ -155,6 +165,7 @@ std::string CMaildir::name()
     unsigned found = m_path.find_last_of("/");
     return (m_path.substr(found + 1));
 }
+
 
 /**
  * The full path to the folder.
@@ -297,6 +308,8 @@ bool CMaildir::matches_filter( std::string *filter )
 
 /**
  * Return a sorted list of maildirs beneath the given path.
+ *
+ * TODO: This shouldn't be here.
  */
 std::vector<std::string> CMaildir::getFolders(std::string path)
 {
