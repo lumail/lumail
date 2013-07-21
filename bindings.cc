@@ -260,16 +260,15 @@ int index_limit(lua_State * L)
     int ret =  get_set_string_variable( L, "index_limit" );
 
     /**
-     * Update the selected mesages.
-     */
-    CGlobal *global = CGlobal::Instance();
-    global->update_messages();
-
-    /**
-     * Reset the message offset if we're *changing* the index-limit
+     * Update the messages and reset the current message offset
+     * if we're *changing* the index-limit
      */
     if ( str != NULL )
+    {
+        CGlobal *global = CGlobal::Instance();
+        global->update_messages();
         global->set_message_offset(0);
+    }
 
     return ret;
 }
@@ -322,7 +321,8 @@ int sort(lua_State * L)
         global->update_messages();
 
         /**
-         * Reset the message offset if we're *changing* the index-limit
+         * Reset the message offset because the current message
+         * has probably changed.
          */
         global->set_message_offset(0);
     }
