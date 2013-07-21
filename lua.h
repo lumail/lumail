@@ -120,6 +120,11 @@ public:
      */
     std::vector<std::string> table_to_array( std::string name );
 
+   /**
+    * Get global boolean vars
+    */
+    bool get_bool( std::string  name );
+
     /**
      * Dump the stack contents - only in debug-builds.
      */

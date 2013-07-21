@@ -450,6 +450,20 @@ function message_page_up()
    scroll_index_up( screen_height() - 2 );
 end
 
+--
+-- Wrap lines
+--
+function toggle_wrap_lines ()
+    if wrap_lines == nil then
+   wrap_lines = true
+    elseif wrap_lines == true then
+   wrap_lines = false
+    elseif wrap_lines == false then
+   wrap_lines = true
+    end
+end
+
+
 
 --
 -- Search for the next folder/message which matches the entered pattern.
@@ -466,6 +480,7 @@ function search_next()
       msg( "search_next() not implemented for mode:" .. m );
    end
 end
+
 
 
 --
@@ -745,6 +760,9 @@ keymap['message']['Space'] = 'scroll_message_down(10)'
 --
 keymap['message']['J'] = 'message_down()'
 keymap['message']['K'] = 'message_up()'
+
+-- wrap linese
+keymap['message']['w'] = 'toggle_wrap_lines()'
 
 -- Actions
 keymap['message']['r'] = 'reply()'

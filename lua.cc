@@ -491,6 +491,22 @@ std::vector<std::string> CLua::table_to_array( std::string name )
 }
 
 
+bool CLua::get_bool( std::string  name )
+{
+    bool ret = false;
+    lua_getglobal(m_lua, name.c_str() );
+    if (lua_type(m_lua, -1)!=LUA_TBOOLEAN)
+    {
+        lua_pop(m_lua, 1);
+        return ret;
+    }
+    ret = lua_toboolean(m_lua,-1);
+    lua_pop(m_lua,1);
+    return ret;
+
+}
+
+
 /**
  * Dump the stack contents - only in debug-builds.
  */

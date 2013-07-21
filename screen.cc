@@ -658,7 +658,11 @@ void CScreen::drawMessage()
         /**
          * Truncate.
          */
-        line = line.substr(0, width);
+   CLua *lua = CLua::Instance();
+   bool wrap = lua->get_bool("wrap_lines");
+
+   if (!wrap)
+       line = line.substr(0, width);
 
         attrset( COLOR_PAIR(m_colours[body_colour]) );
         printw( "%s", line.c_str() );
