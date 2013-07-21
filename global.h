@@ -26,7 +26,19 @@
 #include "message.h"
 
 /**
- * A singleton class to store global data.
+ * A singleton class to store global data:
+ *
+ * 1.  The list of currently visible messages.
+ *
+ * 2.  The list of currently selected folder-names.
+ *
+ * 3.  The list of currently visible maildirs
+ *
+ * NOTE:
+ *
+ *  The alternative to storing the list of selected folder names
+ *  is to keep CMaildirs around with "is_selected" attributes, and
+ *  I couldn't convince myself that made sense.
  *
  */
 class CGlobal
@@ -54,8 +66,9 @@ public:
      */
     std::vector<CMessage *> * get_messages();
 
+
     /**
-     * Update the list of messages.
+     * Update the global list of messages.
      */
     void update_messages();
 
@@ -71,15 +84,18 @@ public:
      */
     void unset_folders();
 
+
     /**
      * Add a folder to the selected set.
      */
     void add_folder(std::string path);
 
+
     /**
      * Remove a folder from the selected set.
      */
     bool remove_folder(std::string path);
+
 
     /**
      * Get/set the selected folder, i.e. the one with the highlight.
@@ -104,6 +120,7 @@ public:
             m_cur_folder = 0;
     }
 
+
     /**
      * Get/Set the selected message.
      */
@@ -122,6 +139,7 @@ public:
         if (m_cur_message<0)
             m_cur_message=0;
     }
+
 
     /**
      * Get/set the message offset.
@@ -178,12 +196,10 @@ private:
      */
     int m_cur_message;
 
-
     /**
      * The line-number of the message to start drawing at.
      */
     int m_msg_offset;
-
 
 
     /**
@@ -191,18 +207,15 @@ private:
      */
     std::vector < std::string > m_selected_folders;
 
-
     /**
      * The list of currently visible messages.
      */
     std::vector<CMessage*> *m_messages;
 
-
     /**
      * The list of all currently visible maildirs.
      */
     std::vector<CMaildir *> *m_maildirs;
-
 
     /**
      * The settings we hold.
