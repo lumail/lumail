@@ -137,15 +137,15 @@ bool sort_messages_by_date(CMessage *a, CMessage *b)
      * old -> new.  If it is 'desc' then show new -> old.
      */
     if ( ( sort == NULL ) ||
-         ( strcmp( sort->c_str(), "asc" ) == 0 ) ||
-         ( strcmp( sort->c_str(), "desc" ) == 0 ) )
+         ( strcmp( sort->c_str(), "date-asc" ) == 0 ) ||
+         ( strcmp( sort->c_str(), "date-desc" ) == 0 ) )
     {
         bool asc = true;
 
         /**
          * Are we descending?
          */
-        if  ( ( sort != NULL ) && ( strcmp( sort->c_str(), "desc" ) == 0 ) )
+        if  ( ( sort != NULL ) && ( strcmp( sort->c_str(), "date-desc" ) == 0 ) )
             asc = false;
 
 
@@ -170,6 +170,69 @@ bool sort_messages_by_date(CMessage *a, CMessage *b)
             return (them.st_mtime < us.st_mtime);
 
     }
+
+    if (  ( sort != NULL ) &&
+          ( ( strcmp(sort->c_str(), "subject" ) == 0 )  ||
+            ( strcmp(sort->c_str(), "subject-asc" ) == 0 )  ||
+            ( strcmp(sort->c_str(), "subject-desc" ) == 0 )  ) )
+    {
+
+        bool asc = true;
+
+        /**
+         * Are we descending?
+         */
+        if  ( ( sort != NULL ) && ( strcmp( sort->c_str(), "subject-desc" ) == 0 ) )
+            asc = false;
+
+        std::string as = a->subject();
+        std::string bs = b->subject();
+
+        if ( ! asc )
+        {
+            std::string tmp = as;
+            as = bs;
+            bs = tmp;
+        }
+
+        std::transform(as.begin(), as.end(), as.begin(), tolower);
+        std::transform(bs.begin(), bs.end(), bs.begin(), tolower);
+
+        return( strcmp( as.c_str(), bs.c_str() ) < 0 );
+    }
+
+
+
+    if (  ( sort != NULL ) &&
+          ( ( strcmp(sort->c_str(), "from" ) == 0 )  ||
+            ( strcmp(sort->c_str(), "from-asc" ) == 0 )  ||
+            ( strcmp(sort->c_str(), "from-desc" ) == 0 )  ) )
+    {
+
+        bool asc = true;
+
+        /**
+         * Are we descending?
+         */
+        if  ( ( sort != NULL ) && ( strcmp( sort->c_str(), "from-desc" ) == 0 ) )
+            asc = false;
+
+        std::string as = a->from();
+        std::string bs = b->from();
+
+        if ( ! asc )
+        {
+            std::string tmp = as;
+            as = bs;
+            bs = tmp;
+        }
+
+        std::transform(as.begin(), as.end(), as.begin(), tolower);
+        std::transform(bs.begin(), bs.end(), bs.begin(), tolower);
+
+        return( strcmp( as.c_str(), bs.c_str() ) < 0 );
+    }
+
     /**
      * TODO: other sorting
      */
