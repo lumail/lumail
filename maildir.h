@@ -88,13 +88,6 @@ class CMaildir
   static bool is_maildir(std::string path);
 
   /**
-   * Return a sorted list of maildirs beneath the given path.
-   *
-   * TODO: This shouldn't be here.
-   */
-  static std::vector < std::string > getFolders(std::string path);
-
-  /**
    * Get each message in the folder.
    */
   std::vector<CMessage *> getMessages();
