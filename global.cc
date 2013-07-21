@@ -122,9 +122,9 @@ CGlobal::CGlobal()
 
 
 /**
- * Sort CMessages by most recent to oldest.
+ * Sort CMessages, by the user-selected criterion.
  */
-bool sort_messages_by_date(CMessage *a, CMessage *b)
+bool sort_messages(CMessage *a, CMessage *b)
 {
     /**
      * Get the type of sort.
@@ -133,8 +133,7 @@ bool sort_messages_by_date(CMessage *a, CMessage *b)
     std::string *sort = global->get_variable("sort");
 
     /**
-     * If we have no sort, or it is 'asc' then show
-     * old -> new.  If it is 'desc' then show new -> old.
+     * Sort by date.  Default if nothing is explicitly set.
      */
     if ( ( sort == NULL ) ||
          ( strcmp( sort->c_str(), "date-asc" ) == 0 ) ||
@@ -171,6 +170,9 @@ bool sort_messages_by_date(CMessage *a, CMessage *b)
 
     }
 
+    /**
+     * Sort by subject, asc/desc.
+     */
     if (  ( sort != NULL ) &&
           ( ( strcmp(sort->c_str(), "subject" ) == 0 )  ||
             ( strcmp(sort->c_str(), "subject-asc" ) == 0 )  ||
@@ -201,8 +203,9 @@ bool sort_messages_by_date(CMessage *a, CMessage *b)
         return( strcmp( as.c_str(), bs.c_str() ) < 0 );
     }
 
-
-
+    /**
+     * Sort by sender, asc/desc.
+     */
     if (  ( sort != NULL ) &&
           ( ( strcmp(sort->c_str(), "from" ) == 0 )  ||
             ( strcmp(sort->c_str(), "from-asc" ) == 0 )  ||
@@ -239,9 +242,6 @@ bool sort_messages_by_date(CMessage *a, CMessage *b)
     return false;
 }
 
-/**
- * Sort maildirs by name, case-insensitively.
- */
 
 /**
  * Sort maildirs by name, case-insensitively.
@@ -256,7 +256,6 @@ bool sort_maildir_ptr_by_name(CMaildir *a, CMaildir *b)
 
     return( strcmp( a_path.c_str(), b_path.c_str() ) < 0 );
 }
-
 
 
 /**
@@ -460,7 +459,7 @@ void CGlobal::update_messages()
     /*
      * Sort?
      */
-    std::sort(m_messages->begin(), m_messages->end(), sort_messages_by_date);
+    std::sort(m_messages->begin(), m_messages->end(), sort_messages);
 
 }
 
