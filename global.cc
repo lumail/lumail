@@ -148,16 +148,6 @@ bool sort_messages_by_date(CMessage *a, CMessage *b)
 /**
  * Sort maildirs by name, case-insensitively.
  */
-bool sort_maildirs_by_name(CMaildir a, CMaildir b)
-{
-    std::string a_path = a.path();
-    std::string b_path = b.path();
-
-    std::transform(a_path.begin(), a_path.end(), a_path.begin(), tolower);
-    std::transform(b_path.begin(), b_path.end(), b_path.begin(), tolower);
-
-    return( strcmp( a_path.c_str(), b_path.c_str() ) < 0 );
-}
 
 /**
  * Sort maildirs by name, case-insensitively.
