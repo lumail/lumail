@@ -591,7 +591,7 @@ int prompt_chars(lua_State *L)
         move(height - 1, 0);
         printw(str);
 
-        char key = getch();
+        int key = getch();
 
         /**
          * See if the character was in the input string.
@@ -666,7 +666,7 @@ int prompt_maildir(lua_State * L)
             }
         }
 
-        char key = getch();
+        int key = getch();
         if (key == ERR)
         {
             /**

@@ -34,7 +34,7 @@
 /**
  * Some simple remapping of keyboard input.
  */
-const char *get_key_name( char c )
+const char *get_key_name( int c )
 {
     if ( c == '\n' )
         return( "Enter" );
@@ -243,7 +243,7 @@ int main(int argc, char *argv[])
      */
     while (true)
     {
-        char key = getch();
+        int key = getch();
         if (key == ERR)
         {
             /*
