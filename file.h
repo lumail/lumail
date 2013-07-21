@@ -68,6 +68,11 @@ public:
      */
     static bool file_to_pipe( std::string src, std::string cmd );
 
+    /**
+     * Return a sorted list of maildirs beneath the given path.
+     */
+    static std::vector<std::string> get_all_maildirs(std::string path);
+
 };
 
 #endif /* _file_h_ */

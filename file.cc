@@ -25,10 +25,12 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <dirent.h>
 
 
 #include "debug.h"
 #include "file.h"
+#include "maildir.h"
 
 #ifndef FILE_READ_BUFFER
 # define FILE_READ_BUFFER 16384
@@ -189,4 +191,60 @@ bool CFile::file_to_pipe( std::string src, std::string cmd )
     fclose( file );
 
     return true;
+}
+
+
+
+/**
+ * Return a sorted list of maildirs beneath the given path.
+ */
+std::vector<std::string> CFile::get_all_maildirs(std::string path)
+{
+    std::vector<std::string> result;
+    dirent *de;
+    DIR *dp;
+
+    std::string prefix = path.empty()? "." : path.c_str();
+    dp = opendir(prefix.c_str());
+    if (dp)
+    {
+        while (true)
+        {
+            de = readdir(dp);
+            if (de == NULL)
+                break;
+
+            if ( ( strcmp( de->d_name, "." ) != 0 ) &&
+                 ( strcmp( de->d_name, ".." ) != 0 ) &&
+                 ( ( de->d_type == DT_UNKNOWN) ||
+                   ( de->d_type == DT_DIR ) ) )
+            {
+                std::string subdir_name = std::string(de->d_name);
+                std::string subdir_path = std::string(prefix + "/" + subdir_name);
+                if (CMaildir::is_maildir(subdir_path))
+                    result.push_back(subdir_path);
+                else
+                {
+                    if (subdir_name != "." && subdir_name != "..")
+                    {
+                        DIR* sdp = opendir(subdir_path.c_str());
+                        if (sdp)
+                        {
+                            closedir(sdp);
+                            std::vector<std::string> sub_maildirs;
+                            sub_maildirs = CFile::get_all_maildirs(subdir_path);
+                            std::vector<std::string>::iterator it;
+                            for (it = sub_maildirs.begin(); it != sub_maildirs.end(); ++it)
+                            {
+                                result.push_back(*it);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        closedir(dp);
+        std::sort(result.begin(), result.end());
+    }
+    return result;
 }

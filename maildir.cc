@@ -307,62 +307,6 @@ bool CMaildir::matches_filter( std::string *filter )
 
 
 /**
- * Return a sorted list of maildirs beneath the given path.
- *
- * TODO: This shouldn't be here.
- */
-std::vector<std::string> CMaildir::getFolders(std::string path)
-{
-    std::vector<std::string> result;
-    dirent *de;
-    DIR *dp;
-
-    std::string prefix = path.empty()? "." : path.c_str();
-    dp = opendir(prefix.c_str());
-    if (dp)
-    {
-        while (true)
-        {
-            de = readdir(dp);
-            if (de == NULL)
-                break;
-
-            if ( ( strcmp( de->d_name, "." ) != 0 ) &&
-                 ( strcmp( de->d_name, ".." ) != 0 ) &&
-                 ( ( de->d_type == DT_UNKNOWN) ||
-                   ( de->d_type == DT_DIR ) ) )
-            {
-                std::string subdir_name = std::string(de->d_name);
-                std::string subdir_path = std::string(prefix + "/" + subdir_name);
-                if (CMaildir::is_maildir(subdir_path))
-                    result.push_back(subdir_path);
-                else
-                {
-                    if (subdir_name != "." && subdir_name != "..")
-                    {
-                        DIR* sdp = opendir(subdir_path.c_str());
-                        if (sdp)
-                        {
-                            closedir(sdp);
-                            std::vector<std::string> sub_maildirs;
-                            sub_maildirs = CMaildir::getFolders(subdir_path);
-                            std::vector<std::string>::iterator it;
-                            for (it = sub_maildirs.begin(); it != sub_maildirs.end(); ++it)
-                            {
-                                result.push_back(*it);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        closedir(dp);
-        std::sort(result.begin(), result.end());
-    }
-    return result;
-}
-
-/**
  * Get each messages in the folder.
  *
  * These are heap-allocated and will be persistent until the folder

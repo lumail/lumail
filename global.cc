@@ -340,7 +340,7 @@ void CGlobal::update_maildirs()
     /**
      * Get each maildir
      */
-    std::vector<std::string> folders = CMaildir::getFolders(*prefix);
+    std::vector<std::string> folders = CFile::get_all_maildirs(*prefix);
 
     /**
      * Should we ignore folders?
