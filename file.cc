@@ -19,10 +19,12 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <algorithm>
 #include <iterator>
 #include <cstdlib>
 #include <string.h>
+#include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -246,5 +248,20 @@ std::vector<std::string> CFile::get_all_maildirs(std::string path)
         closedir(dp);
         std::sort(result.begin(), result.end());
     }
+
+#ifdef LUMAIL_DEBUG
+    std::string log = "CFile::get_all_maildirs(";
+    log += path;
+    log += ") - found " ;
+
+    std::stringstream ss;
+    ss << result.size();
+
+    log += ss.str();
+    log += " entries.";
+
+    DEBUG_LOG( log );
+#endif
+
     return result;
 }
