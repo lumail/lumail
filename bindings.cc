@@ -477,6 +477,49 @@ int msg(lua_State * L)
 
 
 /**
+ * Alert ..
+ */
+int alert(lua_State * L)
+{
+    const char *str = lua_tostring(L, -1);
+
+    if (str == NULL)
+        return luaL_error(L, "Missing argument to alert(..)");
+    echo();
+    timeout(-1000);
+
+    bool done = false;
+    while( ! done )
+    {
+        CScreen::clear_main();
+
+        /**
+         * Middle of screen.
+         */
+        move( (int)(CScreen::height() / 2 ) , 0);
+        printw("%s", str);
+
+        /**
+         * Two lines down.
+         */
+        move( (int)(CScreen::height() / 2 ) + 2, 0);
+        printw("Press [ret] to continue" );
+
+        int key = getch();
+        if ( key == '\n' )
+            done = true;
+    }
+    noecho();
+    curs_set(0);
+    timeout(1000);
+
+    CScreen::clear_status();
+
+
+    return 0;
+}
+
+/**
  * Prompt for input.
  */
 int prompt(lua_State * L)

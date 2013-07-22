@@ -23,7 +23,7 @@
 --
 --   http://lumail.org/examples/
 --
--- The lumail primitives are documented here:
+-- The lumail primitives themselves are documented here:
 --
 --   http://lumail.org/lua/
 --

@@ -58,6 +58,9 @@ int exit(lua_State * L);
 /* exit abnormally */
 int abort(lua_State * L);
 
+/* raise an alert message */
+int alert(lua_State * L);
+
 /* compose a new mail. */
 int compose(lua_State *i);
 
