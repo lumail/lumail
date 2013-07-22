@@ -681,6 +681,7 @@ keymap['global']['I'] = 'index()';
 keymap['global']['v'] = 'show_version()'
 -- Jump to end
 keymap['global']['*'] = 'jump_to_end()'
+keymap['global']['KEY_END'] = 'jump_to_end()'
 -- Refresh display
 keymap['global']['^R'] = 'refresh_display()'
 keymap['global']['^L'] = 'refresh_display()'
@@ -708,9 +709,13 @@ keymap['maildir']['l'] = 'livejournal_folders()'
 -- Scroll up/down & find folders
 --
 keymap['maildir']['j'] = 'maildir_down()'
+keymap['maildir']['KEY_DOWN'] = 'maildir_down()'
 keymap['maildir']['J'] = 'maildir_page_down()'
+keymap['maildir']['KEY_NPAGE'] = 'maildir_page_down()'
 keymap['maildir']['k'] = 'maildir_up()'
+keymap['maildir']['KEY_UP'] = 'maildir_up()'
 keymap['maildir']['K'] = 'maildir_page_up()'
+keymap['maildir']['KEY_PPAGE'] = 'maildir_page_up()'
 keymap['maildir']['/'] = 'search_next()'
 keymap['maildir']['f'] = 'faves()'
 
@@ -719,9 +724,13 @@ keymap['maildir']['f'] = 'faves()'
 -- Scroll up/down the message index
 --
 keymap['index']['j'] = 'message_down()'
+keymap['index']['KEY_DOWN'] = 'message_down()'
 keymap['index']['J'] = 'message_page_down()'
+keymap['index']['KEY_NPAGE'] = 'message_page_down()'
 keymap['index']['k'] = 'message_up()'
+keymap['index']['KEY_UP'] = 'message_up()'
 keymap['index']['K'] = 'message_page_up()'
+keymap['index']['KEY_PPAGE'] = 'message_page_up()'
 keymap['index']['/'] = 'search_next()'
 
 keymap['index']['Space'] = 'view_message()'
@@ -752,7 +761,9 @@ keymap['maildir']['Enter'] = 'open_folder()'
 --
 -- Scroll up/down in the current message.
 keymap['message']['j'] = 'scroll_message_down(1)'
+keymap['message']['KEY_DOWN'] = 'scroll_message_down(1)'
 keymap['message']['k'] = 'scroll_message_up(1)'
+keymap['message']['KEY_UP'] = 'scroll_message_up(1)'
 keymap['message']['Space'] = 'scroll_message_down(10)'
 
 --
