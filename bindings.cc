@@ -477,16 +477,57 @@ int msg(lua_State * L)
 
 
 /**
- * Alert ..
+ * Alert: Draw a message and await explicit confirmation.
+ *
+ * TODO "box" the display?
  */
 int alert(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
+    /**
+     * Here we're trying to get the alert-text and the timeout
+     * but if we only have a single argument then we'll default
+     * to a period of 60 seconds.
+     */
+    const char *str    = lua_tostring(L, -2);
+    const char *period = lua_tostring(L, -1);
 
-    if (str == NULL)
+    int timeout;
+
+    /**
+     * If the string is null and the period isn't that means
+     * we only got a single argument - so that should be the
+     * string.
+     *
+     * Optional arguments are weird in Lua, unless you pass
+     * tables around...
+     */
+    if ( ( str == NULL ) && ( period != NULL ) )
+    {
+        str = period;
+        timeout = 30;
+    }
+    else
+    {
+        timeout = atoi( period );
+    }
+
+    /**
+     * Ensure the timeout is a positive integer.
+     */
+    if ( timeout < 0 )
+        timeout = 60;
+
+    if ( str == NULL )
         return luaL_error(L, "Missing argument to alert(..)");
+
+
     echo();
-    timeout(-1000);
+    timeout(0);
+
+    /**
+     * Starting time.
+     */
+    time_t now = time( NULL);
 
     bool done = false;
     while( ! done )
@@ -508,16 +549,21 @@ int alert(lua_State * L)
         int key = getch();
         if ( key == '\n' )
             done = true;
+
+        /**
+         * Timeout.
+         */
+        if ( ( time(NULL) - now ) > timeout )
+            done = true;
     }
     noecho();
     curs_set(0);
     timeout(1000);
 
     CScreen::clear_status();
-
-
     return 0;
 }
+
 
 /**
  * Prompt for input.
