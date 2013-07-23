@@ -39,7 +39,19 @@ extern "C"
  */
 struct CLuaMapping
 {
+    /**
+     * The name of the primitive, as used by Lua.
+     */
     const char *name;
+
+    /**
+     * A one-line description of the function.
+     */
+    const char *help;
+
+    /**
+     * The implementation of the primitive, in C.
+     */
     lua_CFunction func;
 };
 

@@ -56,117 +56,117 @@ struct CLuaMapping primitive_list[] =
 /**
  * Basic primitives
  */
-    {"abort", (lua_CFunction) abort },
-    {"clear", (lua_CFunction) clear },
-    {"alert", (lua_CFunction) alert },
-    {"dump_stack", (lua_CFunction) lua_dump_stack },
-    {"log_message", (lua_CFunction) log_message },
-    {"exec", (lua_CFunction) exec },
-    {"exit", (lua_CFunction) exit },
-    {"mime_type", (lua_CFunction) mime_type },
-    {"msg", (lua_CFunction) msg },
-    {"refresh_display", (lua_CFunction) refresh_display },
-    {"screen_height", (lua_CFunction) screen_height },
-    {"screen_width", (lua_CFunction) screen_width },
-    {"sleep", (lua_CFunction) sleep },
+    {"abort", "Exit lumail with an error message.", (lua_CFunction) abort },
+    {"clear", "Clear the screen.", (lua_CFunction) clear },
+    {"alert", "SHow an alert which requires confirmation.", (lua_CFunction) alert },
+    {"dump_stack", "Dump the Lua-stack for debugging purposes", (lua_CFunction) lua_dump_stack },
+    {"log_message", "Add a message to the debug-log.", (lua_CFunction) log_message },
+    {"exec", "Execute an external command.", (lua_CFunction) exec },
+    {"exit", "Exit lumail.", (lua_CFunction) exit },
+    {"mime_type", "Get the MIME-type for a file.", (lua_CFunction) mime_type },
+    {"msg", "Write a message to the status-area.", (lua_CFunction) msg },
+    {"refresh_display", "Refresh the display.", (lua_CFunction) refresh_display },
+    {"screen_height", "Return the height of the screen in rows.", (lua_CFunction) screen_height },
+    {"screen_width", "Return the width of the screen in columns.", (lua_CFunction) screen_width },
+    {"sleep", "Pause execution for the given number of seconds.", (lua_CFunction) sleep },
 
 /**
  * File/Path utilities
  */
-    {"executable", (lua_CFunction) executable },
-    {"file_exists", (lua_CFunction) file_exists },
-    {"is_directory", (lua_CFunction) is_directory },
-    {"load_directory", (lua_CFunction) load_directory },
+    {"executable", "help", (lua_CFunction) executable },
+    {"file_exists", "help", (lua_CFunction) file_exists },
+    {"is_directory", "help", (lua_CFunction) is_directory },
+    {"load_directory", "help", (lua_CFunction) load_directory },
 
 /**
  * Folder Selection
  */
-    {"add_selected_folder", (lua_CFunction) add_selected_folder},
-    {"clear_selected_folders", (lua_CFunction) clear_selected_folders},
-    {"selected_folders", (lua_CFunction) selected_folders },
-    {"set_selected_folder", (lua_CFunction) set_selected_folder},
-    {"toggle_selected_folder", (lua_CFunction) toggle_selected_folder },
+    {"add_selected_folder", "help", (lua_CFunction) add_selected_folder },
+    {"clear_selected_folders", "help", (lua_CFunction) clear_selected_folders },
+    {"selected_folders", "help", (lua_CFunction) selected_folders },
+    {"set_selected_folder", "help", (lua_CFunction) set_selected_folder },
+    {"toggle_selected_folder", "help", (lua_CFunction) toggle_selected_folder },
 
 /**
  * Get/Set variables
  */
-    { "editor", (lua_CFunction) editor },
-    { "from", (lua_CFunction) from },
-    { "global_mode", (lua_CFunction) global_mode },
-    { "index_format", (lua_CFunction) index_format },
-    { "index_limit", (lua_CFunction) index_limit },
-    { "maildir_format", (lua_CFunction) maildir_format },
-    { "maildir_limit", (lua_CFunction) maildir_limit},
-    { "maildir_prefix",(lua_CFunction) maildir_prefix},
-    { "message_filter",(lua_CFunction) message_filter},
-    { "sendmail_path",(lua_CFunction) sendmail_path},
-    { "sent_mail",(lua_CFunction) sent_mail},
-    { "sort",(lua_CFunction) sort},
-    { "get_variables", (lua_CFunction) get_variables },
+    {"editor", "help", (lua_CFunction) editor },
+    {"from", "help", (lua_CFunction) from },
+    {"global_mode", "help", (lua_CFunction) global_mode },
+    {"index_format", "help", (lua_CFunction) index_format },
+    {"index_limit", "help", (lua_CFunction) index_limit },
+    {"maildir_format", "help", (lua_CFunction) maildir_format },
+    {"maildir_limit", "help", (lua_CFunction) maildir_limit },
+    {"maildir_prefix", "help", (lua_CFunction) maildir_prefix },
+    {"message_filter", "help", (lua_CFunction) message_filter },
+    {"sendmail_path", "help", (lua_CFunction) sendmail_path },
+    {"sent_mail", "help", (lua_CFunction) sent_mail },
+    {"sort", "help", (lua_CFunction) sort },
+    {"get_variables", "help", (lua_CFunction) get_variables },
 
 /**
  * Colour getters/setters
  */
-    { "attachment_colour", (lua_CFunction) attachment_colour },
-    { "body_colour", (lua_CFunction) body_colour },
-    { "header_colour", (lua_CFunction) header_colour },
-    { "unread_maildir_colour", (lua_CFunction) unread_maildir_colour },
-    { "unread_message_colour", (lua_CFunction) unread_message_colour },
+    {"attachment_colour", "help", (lua_CFunction) attachment_colour },
+    {"body_colour", "help", (lua_CFunction) body_colour },
+    {"header_colour", "help", (lua_CFunction) header_colour },
+    {"unread_maildir_colour", "help", (lua_CFunction) unread_maildir_colour },
+    {"unread_message_colour", "help", (lua_CFunction) unread_message_colour },
 
 /**
  * Index functions
  */
-    { "jump_index_to", (lua_CFunction) jump_index_to},
-    { "scroll_index_down", (lua_CFunction) scroll_index_down},
-    { "scroll_index_up", (lua_CFunction) scroll_index_up},
-    { "scroll_index_to", (lua_CFunction)scroll_index_to },
+    {"jump_index_to", "help", (lua_CFunction) jump_index_to },
+    {"scroll_index_down", "help", (lua_CFunction) scroll_index_down },
+    {"scroll_index_up", "help", (lua_CFunction) scroll_index_up },
+    {"scroll_index_to", "help", (lua_CFunction) scroll_index_to },
 
 /**
  * Message-Related functions
  */
-    { "compose",(lua_CFunction) compose },
-    { "count_messages",(lua_CFunction) count_messages },
-    { "current_message",(lua_CFunction) current_message },
-    { "delete",(lua_CFunction) delete_message },
-    { "header",(lua_CFunction) header },
-    { "is_new",(lua_CFunction) is_new },
-    { "mark_new",(lua_CFunction) mark_new },
-    { "mark_read",(lua_CFunction) mark_read },
-    { "reply",(lua_CFunction) reply  },
-    { "save",(lua_CFunction) save_message },
-    { "save_message",(lua_CFunction) save_message },
-    { "scroll_message_down",(lua_CFunction) scroll_message_down },
-    { "scroll_message_up",(lua_CFunction) scroll_message_up },
-    { "send_email",(lua_CFunction) send_email },
+    {"compose", "help", (lua_CFunction) compose },
+    {"count_messages", "help", (lua_CFunction) count_messages },
+    {"current_message", "help", (lua_CFunction) current_message },
+    {"delete", "help", (lua_CFunction) delete_message },
+    {"header", "help", (lua_CFunction) header },
+    {"is_new", "help", (lua_CFunction) is_new },
+    {"mark_new", "help", (lua_CFunction) mark_new },
+    {"mark_read", "help", (lua_CFunction) mark_read },
+    {"reply", "help", (lua_CFunction) reply },
+    {"save", "help", (lua_CFunction) save_message },
+    {"save_message", "help", (lua_CFunction) save_message },
+    {"scroll_message_down", "help", (lua_CFunction) scroll_message_down },
+    {"scroll_message_up", "help", (lua_CFunction) scroll_message_up },
+    {"send_email", "help", (lua_CFunction) send_email },
 
 /**
  * Maildirs
  */
-    { "count_maildirs",(lua_CFunction) count_maildirs },
-    { "current_maildir",(lua_CFunction) current_maildir },
-    { "current_maildirs",(lua_CFunction)  current_maildirs},
-    { "jump_maildir_to",(lua_CFunction) jump_maildir_to },
-    { "maildirs_matching",(lua_CFunction) maildirs_matching },
-    { "scroll_maildir_down",(lua_CFunction) scroll_maildir_down },
-    { "scroll_maildir_to",(lua_CFunction) scroll_maildir_to },
-    { "scroll_maildir_up",(lua_CFunction) scroll_maildir_up },
-    { "select_maildir",(lua_CFunction) select_maildir },
+    {"count_maildirs", "help", (lua_CFunction) count_maildirs },
+    {"current_maildir", "help", (lua_CFunction) current_maildir },
+    {"current_maildirs", "help", (lua_CFunction) current_maildirs },
+    {"jump_maildir_to", "help", (lua_CFunction) jump_maildir_to },
+    {"maildirs_matching", "help", (lua_CFunction) maildirs_matching },
+    {"scroll_maildir_down", "help", (lua_CFunction) scroll_maildir_down },
+    {"scroll_maildir_to", "help", (lua_CFunction) scroll_maildir_to },
+    {"scroll_maildir_up", "help", (lua_CFunction) scroll_maildir_up },
+    {"select_maildir", "help", (lua_CFunction) select_maildir },
 
 
 /**
  * prompts.
  */
-    {"prompt", (lua_CFunction) prompt },
-    {"prompt_chars", (lua_CFunction) prompt_chars },
-    {"prompt_maildir", (lua_CFunction) prompt_maildir },
-    {"prompt_yn", (lua_CFunction) prompt_yn },
+    {"prompt", "help", (lua_CFunction) prompt },
+    {"prompt_chars", "help", (lua_CFunction) prompt_chars },
+    {"prompt_maildir", "help", (lua_CFunction) prompt_maildir },
+    {"prompt_yn", "help", (lua_CFunction) prompt_yn },
 
 /**
  * Attachments
  */
-    {"attachments", (lua_CFunction) attachments },
-    {"count_attachments", (lua_CFunction) count_attachments },
-    {"save_attachment", (lua_CFunction) save_attachment },
+    {"attachments", "help", (lua_CFunction) attachments },
+    {"count_attachments", "help", (lua_CFunction) count_attachments },
+    {"save_attachment", "help", (lua_CFunction) save_attachment },
 
 
 };
