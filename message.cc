@@ -25,7 +25,6 @@
 #include <sstream>
 #include <string>
 #include <unistd.h>
-#include <ncurses.h>
 #include <pcrecpp.h>
 #include <mimetic/mimetic.h>
 
@@ -771,16 +770,16 @@ std::string CMessage::date(TDate fmt)
                 m_date = -1;
 
                 /**
-                 * Abort with an error.
+                 * Prepare an error message.
                  */
-                endwin();
-                std::cout << "Failed to parse date from the header '"
-                          << date << "'" << std::endl;
-                std::cout << "Please report a bug, including the header value listed above." << std::endl;
-                std::cout << "https://github.com/skx/lumail/issues" << std::endl;
+                std::string error = "alert(\"Failed to parse date: " + date + "\", 30 );" ;
+                CLua *lua = CLua::Instance();
+                lua->execute( error );
 
-                exit(0);
-
+                /**
+                 * Return the unmodified string which is the best we can hope for.
+                 */
+                return( date );
             }
             char tzsign[2];
             unsigned int tzhours;
