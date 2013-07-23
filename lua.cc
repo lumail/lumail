@@ -73,10 +73,10 @@ struct CLuaMapping primitive_list[] =
 /**
  * File/Path utilities
  */
-    {"executable", "help", (lua_CFunction) executable },
-    {"file_exists", "help", (lua_CFunction) file_exists },
-    {"is_directory", "help", (lua_CFunction) is_directory },
-    {"load_directory", "help", (lua_CFunction) load_directory },
+    {"executable", "Is the given file executable?", (lua_CFunction) executable },
+    {"file_exists", "Does the given file exist?", (lua_CFunction) file_exists },
+    {"is_directory", "Is the given path a directory?", (lua_CFunction) is_directory },
+    {"load_directory", "Load *.lua from beneath the given directory.  (Not recursively.)", (lua_CFunction) load_directory },
 
 /**
  * Folder Selection
@@ -90,28 +90,28 @@ struct CLuaMapping primitive_list[] =
 /**
  * Get/Set variables
  */
-    {"editor", "help", (lua_CFunction) editor },
-    {"from", "help", (lua_CFunction) from },
-    {"global_mode", "help", (lua_CFunction) global_mode },
-    {"index_format", "help", (lua_CFunction) index_format },
-    {"index_limit", "help", (lua_CFunction) index_limit },
-    {"maildir_format", "help", (lua_CFunction) maildir_format },
-    {"maildir_limit", "help", (lua_CFunction) maildir_limit },
-    {"maildir_prefix", "help", (lua_CFunction) maildir_prefix },
-    {"message_filter", "help", (lua_CFunction) message_filter },
-    {"sendmail_path", "help", (lua_CFunction) sendmail_path },
-    {"sent_mail", "help", (lua_CFunction) sent_mail },
-    {"sort", "help", (lua_CFunction) sort },
-    {"get_variables", "help", (lua_CFunction) get_variables },
+    {"editor", "Query or update the editor to use.", (lua_CFunction) editor },
+    {"from", "Query or update the from-address for outgoing mails.", (lua_CFunction) from },
+    {"global_mode", "Query or update the global-mode.", (lua_CFunction) global_mode },
+    {"index_format", "Query or update the index-format string.", (lua_CFunction) index_format },
+    {"index_limit", "Query or update the index-limit string.", (lua_CFunction) index_limit },
+    {"maildir_format", "Query or update the maildir-format string.", (lua_CFunction) maildir_format },
+    {"maildir_limit", "Query or update the maildir-limit string.", (lua_CFunction) maildir_limit },
+    {"maildir_prefix", "Query or update the root of the Maildir hierarchy.", (lua_CFunction) maildir_prefix },
+    {"message_filter", "Query or update the filter to apply to messages being viewed.", (lua_CFunction) message_filter },
+    {"sendmail_path", "Query or update the sendmail-path, used for sending mails.", (lua_CFunction) sendmail_path },
+    {"sent_mail", "Query or update the Maildir location to send outgoing mails to.", (lua_CFunction) sent_mail },
+    {"sort", "Query or update the sorting string for index-mode.", (lua_CFunction) sort },
+    {"get_variables", "Retrieve all known-variables and their values.", (lua_CFunction) get_variables },
 
 /**
  * Colour getters/setters
  */
-    {"attachment_colour", "help", (lua_CFunction) attachment_colour },
-    {"body_colour", "help", (lua_CFunction) body_colour },
-    {"header_colour", "help", (lua_CFunction) header_colour },
-    {"unread_maildir_colour", "help", (lua_CFunction) unread_maildir_colour },
-    {"unread_message_colour", "help", (lua_CFunction) unread_message_colour },
+    {"attachment_colour", "Get/Set the colour to use for drawing attachments.", (lua_CFunction) attachment_colour },
+    {"body_colour", "Get/Set the colour to use for drawing message-bodies.", (lua_CFunction) body_colour },
+    {"header_colour", "Get/Set the colour to use for drawing message-headers.", (lua_CFunction) header_colour },
+    {"unread_maildir_colour", "Get/Set the colour to use for drawing Maildirs which contain unread messages.", (lua_CFunction) unread_maildir_colour },
+    {"unread_message_colour", "Get/Set the colour to use for drawing unread messages.", (lua_CFunction) unread_message_colour },
 
 /**
  * Index functions
@@ -124,20 +124,20 @@ struct CLuaMapping primitive_list[] =
 /**
  * Message-Related functions
  */
-    {"compose", "help", (lua_CFunction) compose },
-    {"count_messages", "help", (lua_CFunction) count_messages },
-    {"current_message", "help", (lua_CFunction) current_message },
-    {"delete", "help", (lua_CFunction) delete_message },
-    {"header", "help", (lua_CFunction) header },
-    {"is_new", "help", (lua_CFunction) is_new },
-    {"mark_new", "help", (lua_CFunction) mark_new },
-    {"mark_read", "help", (lua_CFunction) mark_read },
-    {"reply", "help", (lua_CFunction) reply },
-    {"save", "help", (lua_CFunction) save_message },
-    {"save_message", "help", (lua_CFunction) save_message },
-    {"scroll_message_down", "help", (lua_CFunction) scroll_message_down },
-    {"scroll_message_up", "help", (lua_CFunction) scroll_message_up },
-    {"send_email", "help", (lua_CFunction) send_email },
+    {"compose", "Compose a new outgoing email.", (lua_CFunction) compose },
+    {"count_messages", "Count the messages in the currently selected Maildir(s).", (lua_CFunction) count_messages },
+    {"current_message", "Retrieve the path to the current message.", (lua_CFunction) current_message },
+    {"delete", "Delete the current message.", (lua_CFunction) delete_message },
+    {"header", "Retrieve the value of the given header from the current message.", (lua_CFunction) header },
+    {"is_new", "Is the current message new/unread?", (lua_CFunction) is_new },
+    {"mark_new", "Mark the current message as new/unread.", (lua_CFunction) mark_new },
+    {"mark_read", "Mark the current message as old/read.", (lua_CFunction) mark_read },
+    {"reply", "Reply to the current message.", (lua_CFunction) reply },
+    {"save", "Save the current message in a new location, and delete it.", (lua_CFunction) save_message },
+    {"save_message", "Save the current message in a new location, and delete it.", (lua_CFunction) save_message },
+    {"scroll_message_down", "Scroll the current message down.", (lua_CFunction) scroll_message_down },
+    {"scroll_message_up", "Scroll the current message up.", (lua_CFunction) scroll_message_up },
+    {"send_email", "Send an email, via Lua.", (lua_CFunction) send_email },
 
 /**
  * Maildirs
@@ -156,17 +156,17 @@ struct CLuaMapping primitive_list[] =
 /**
  * prompts.
  */
-    {"prompt", "help", (lua_CFunction) prompt },
-    {"prompt_chars", "help", (lua_CFunction) prompt_chars },
-    {"prompt_maildir", "help", (lua_CFunction) prompt_maildir },
-    {"prompt_yn", "help", (lua_CFunction) prompt_yn },
+    {"prompt", "Prompt for input.", (lua_CFunction) prompt },
+    {"prompt_chars", "Prompt for input, until one of a given number of characters is entered.", (lua_CFunction) prompt_chars },
+    {"prompt_maildir", "Prompt for an (existing) Maildir.", (lua_CFunction) prompt_maildir },
+    {"prompt_yn", "Prompt for a yes/no answer.", (lua_CFunction) prompt_yn },
 
 /**
  * Attachments
  */
-    {"attachments", "help", (lua_CFunction) attachments },
-    {"count_attachments", "help", (lua_CFunction) count_attachments },
-    {"save_attachment", "help", (lua_CFunction) save_attachment },
+    {"attachments", "Retrieve the list of attachments in the current message.", (lua_CFunction) attachments },
+    {"count_attachments", "Count the number of attachments the current message contains.", (lua_CFunction) count_attachments },
+    {"save_attachment", "Save the given attachment to disk, from the current message.", (lua_CFunction) save_attachment },
 
 
 };
