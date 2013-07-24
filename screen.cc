@@ -204,7 +204,7 @@ void CScreen::drawMaildir()
         }
 
         if ( (mailIndex < count) &&
-             (mailIndex < display.size() ) )
+             (mailIndex < (int)display.size() ) )
         {
             cur = display.at(mailIndex);
             unread = cur->unread_messages();
