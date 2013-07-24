@@ -196,6 +196,23 @@ headers = { "$TO", "$FROM", "$DATE", "$SUBJECT" }
 
 
 --
+-- This function will invoke offlineimap, if it is installed
+-- and configured for the current user.
+--
+function offlineimap()
+   if ( not file_exists( os.getenv( "HOME" ) .. "/.offlineimaprc" ) ) then
+      return false
+   end
+   if ( not executable( "/usr/bin/offlineimap" ) ) then
+      return false
+   end
+
+   exec( "/usr/bin/offlineimap" )
+   clear()
+   return true;
+end
+
+--
 -- This function is called when the client is launched.
 --
 -- You might consider something useful like this:
@@ -344,10 +361,10 @@ do
       ct = os.time()
       if ( ( ct - ls ) >=  ( 60 * 5 ) ) then
          ls = ct
-         if ( executable( "/usr/bin/imapsync" ) ) then
-            os.execute( "/usr/bin/imapsync" );
+         if ( offlineimap() ) then
+            msg( "offlineimap has synced your mail" );
          else
-            msg("/usr/bin/imapsync not installed" )
+            msg("offlineimap not available." )
          end
       end
    end
@@ -704,6 +721,7 @@ keymap['maildir']['q'] = "exit();"
 keymap['maildir']['a'] = 'all_folders()'
 keymap['maildir']['n'] = 'new_folders()'
 keymap['maildir']['l'] = 'livejournal_folders()'
+
 
 --
 -- Scroll up/down & find folders
