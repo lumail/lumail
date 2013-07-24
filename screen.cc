@@ -645,30 +645,46 @@ void CScreen::drawMessage()
      */
     size_t width = CScreen::width();
 
+    bool wrap = lua->get_bool("wrap_lines");
+
     /**
      * Draw each line of the body.
      */
-    for( int i = 0; i < (textspace-2); i++ )
+    for( int row_idx = 0, line_idx = 0;;)
     {
-        move( i + ( headers.size() + attachments.size() + 1 ), 0 );
 
         std::string line = "";
-        if ( (i + offset) < (int)body.size() )
-            line = body[i+offset];
+        if ( (line_idx + offset) < (int)body.size() )
+        {
+            line = body[line_idx+offset];
+            line_idx++;
+        }
+        else
+            break;
 
-        /**
-         * Truncate.
-         */
-        CLua *lua = CLua::Instance();
-        bool wrap = lua->get_bool("wrap_lines");
+        int len = line.length();
+        int slen = 0;
+        std::string subline = line.substr(0, width);
+        for(;;)
+        {
+            move( row_idx + ( headers.size() + attachments.size() + 1 ), 0 );
 
-        if (!wrap)
-            line = line.substr(0, width);
+            printw( "%s", subline.c_str() );
+            row_idx++;
 
-        attrset( COLOR_PAIR(m_colours[body_colour]) );
-        printw( "%s", line.c_str() );
-        attrset( COLOR_PAIR(m_colours["white"]) );
+            if (row_idx > (textspace-2))
+                goto exit;
+
+            slen += subline.length();
+            if (!wrap || len == slen)
+                break;
+
+            subline = line.substr(slen, width);
+        }
     }
+    exit:
+        attrset( COLOR_PAIR(m_colours[body_colour]) );
+        attrset( COLOR_PAIR(m_colours["white"]) );
 
     /**
      * We're reading a message so call our hook.

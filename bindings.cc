@@ -120,7 +120,7 @@ CMessage *get_message_for_operation( const char *path )
     /**
      * No messages?
      */
-    if ( ( count < 1 ) || selected > count )
+    if ( ( count < 1 ) || selected > ( count - 1 ) )
         return NULL;
     else
         return(  messages->at(selected) );
