@@ -479,7 +479,10 @@ int msg(lua_State * L)
 /**
  * Alert: Draw a message and await explicit confirmation.
  *
- * TODO "box" the display?
+ * TODO: "box" the display + add a count-down timer.
+ *
+ * TODO: Simplify the argument parsing by remembering the stack can
+ *       be accessed in ascending order too.
  */
 int alert(lua_State * L)
 {
