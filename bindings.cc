@@ -2290,6 +2290,25 @@ int reply(lua_State * L)
     char filename[256] = { '\0' };
     snprintf( filename, sizeof(filename)-1, "%s/lumail.reply.XXXXXX", tmp->c_str() );
 
+
+    /**
+     * .signature handling.
+     */
+    std::string sig = "";
+
+    lua_getglobal(L, "get_signature" );
+    if (lua_isfunction(L, -1))
+    {
+        lua_pushstring(L, from->c_str() );
+        lua_pushstring(L, to.c_str() );
+        lua_pushstring(L, subject.c_str() );
+        if (! lua_pcall(L, 3, 1, 0) )
+        {
+            sig = lua_tostring(L,-1);
+        }
+    }
+
+
     /**
      * Open the temporary file.
      */
@@ -2369,7 +2388,17 @@ int reply(lua_State * L)
         unused=write(fd, "\n", 1 );
     }
 
-    unused=write(fd, "-- \n", strlen("-- \n" ) );
+    /**
+     * Write the signature.
+     */
+    if ( sig.empty() )
+    {
+        unused=write(fd, "\n-- \n", strlen("\n-- \n" ) );
+    }
+    else
+    {
+        unused=write(fd, sig.c_str(), sig.size() );
+    }
     close(fd);
 
     /**
