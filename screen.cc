@@ -676,7 +676,7 @@ void CScreen::drawMessage()
             row_idx++;
 
             if (row_idx > (textspace-2))
-                goto exit;
+                break;
 
             slen += subline.length();
             if (!wrap || len == slen)
@@ -685,7 +685,6 @@ void CScreen::drawMessage()
             subline = line.substr(slen, width);
         }
     }
-    exit:
 
 
     /**
