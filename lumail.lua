@@ -574,7 +574,7 @@ end
 --
 -- Return contents of the given file.
 --
--- Note: Called by on_signature
+-- Note: Called by get_signature()
 --
 function file_contents(file)
     local f = io.open(file, "rb")
