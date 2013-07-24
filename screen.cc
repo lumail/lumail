@@ -669,7 +669,10 @@ void CScreen::drawMessage()
         {
             move( row_idx + ( headers.size() + attachments.size() + 1 ), 0 );
 
+            attrset( COLOR_PAIR(m_colours[body_colour]) );
             printw( "%s", subline.c_str() );
+            attrset( COLOR_PAIR(m_colours["white"]) );
+
             row_idx++;
 
             if (row_idx > (textspace-2))
@@ -683,8 +686,7 @@ void CScreen::drawMessage()
         }
     }
     exit:
-        attrset( COLOR_PAIR(m_colours[body_colour]) );
-        attrset( COLOR_PAIR(m_colours["white"]) );
+
 
     /**
      * We're reading a message so call our hook.
