@@ -721,7 +721,7 @@ keymap['maildir']['q'] = "exit();"
 keymap['maildir']['a'] = 'all_folders()'
 keymap['maildir']['n'] = 'new_folders()'
 keymap['maildir']['l'] = 'livejournal_folders()'
-keymap['maildir']['g'] = 'maildir_limit( "google" );'
+keymap['maildir']['g'] = 'maildir_limit( "Google.*INBOX" );'
 
 
 --
