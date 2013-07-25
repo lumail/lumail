@@ -241,6 +241,12 @@ int maildir_limit(lua_State * L)
     {
         CGlobal *global = CGlobal::Instance();
         global->update_maildirs();
+
+        /**
+         * Set the first maildir to be selected to avoid us highlighting
+         * a maildir-entry which no longer exists under the cursor.
+         */
+        global->set_selected_folder(0);
     }
 
     return( ret );
