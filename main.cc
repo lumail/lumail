@@ -151,6 +151,12 @@ int main(int argc, char *argv[])
     }
 
     /**
+     * Setup our locale.
+     */
+    setlocale (LC_ALL, "");
+    setlocale (LC_CTYPE, "");
+
+    /**
      * Initialize the screen.
      */
     CScreen screen = CScreen();
