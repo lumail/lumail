@@ -137,6 +137,7 @@ struct CLuaMapping primitive_list[] =
     {"save_message", "Save the current message in a new location, and delete it.", (lua_CFunction) save_message },
     {"scroll_message_down", "Scroll the current message down.", (lua_CFunction) scroll_message_down },
     {"scroll_message_up", "Scroll the current message up.", (lua_CFunction) scroll_message_up },
+    {"scroll_message_to", "Scroll the current message to the given offset.", (lua_CFunction) scroll_message_to },
     {"send_email", "Send an email, via Lua.", (lua_CFunction) send_email },
 
 /**

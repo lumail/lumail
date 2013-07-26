@@ -893,6 +893,19 @@ int scroll_message_down(lua_State *L)
     return (0);
 }
 
+
+/**
+ * Scroll the message to the given offset.
+ */
+int scroll_message_to(lua_State *L)
+{
+    int offset = lua_tonumber(L, -1);
+
+    CGlobal *global = CGlobal::Instance();
+    global->set_message_offset(offset);
+    return (0);
+}
+
 /**
  * Scroll the message up.
  */

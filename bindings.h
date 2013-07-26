@@ -110,6 +110,7 @@ int jump_index_to(lua_State * L);
 /* scroll up/down the message */
 int scroll_message_down(lua_State * L);
 int scroll_message_up(lua_State * L);
+int scroll_message_to(lua_State * L);
 
 /* scroll to the folder matching the pattern. */
 int scroll_maildir_to(lua_State * L);
