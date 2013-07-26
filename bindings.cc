@@ -120,8 +120,10 @@ CMessage *get_message_for_operation( const char *path )
 
     /**
      * No messages?
+     *
+     * NOTE: "selected" starts from zero, hence the ">=".
      */
-    if ( ( count < 1 ) || selected > ( count - 1 ) )
+    if ( ( count < 1 ) || ( selected >=  count ) )
         return NULL;
     else
         return(  messages->at(selected) );
@@ -754,7 +756,10 @@ int prompt_maildir(lua_State * L)
             return 1;
         }
 
-        if ( selected > count )
+        /**
+         * NOTE: Selected starts at zero, hence the >=.
+         */
+        if ( selected >= count )
             selected = count;
         if ( selected < 0 )
             selected = 0;

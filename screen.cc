@@ -125,8 +125,10 @@ void CScreen::drawMaildir()
     /**
      * BUGFIX: When the maildir_limit changes the previous position
      * might be invalid.  This fix of resetting things ensures we're OK.
+     *
+     * NOTE: We use ">=" because the Maildir offset starts at zero.
      */
-    if ( ( selected > count ) || ( selected < 0 ) )
+    if ( ( selected >= count ) || ( selected < 0 ) )
     {
         selected = 0;
         global->set_selected_folder( selected );
