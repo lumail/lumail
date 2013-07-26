@@ -261,7 +261,7 @@ function jump_to_end()
    elseif (string.find(mode, "index" ) ) then
       jump_index_to( count_messages() - 1 );
    else
-      msg( "jump_to_end not implemented for mode:" .. mode );
+      scroll_message_to( count_lines() - 2 );
    end
 end
 
