@@ -34,6 +34,7 @@
 #include "bindings.h"
 #include "debug.h"
 #include "file.h"
+#include "input.h"
 #include "maildir.h"
 #include "lang.h"
 #include "lua.h"
@@ -483,6 +484,21 @@ int msg(lua_State * L)
 
 
 /**
+ * Stuff input into the input-buffer.
+ */
+int stuff(lua_State * L)
+{
+    const char *str = lua_tostring(L, -1);
+
+    if (str == NULL)
+        return luaL_error(L, "Missing argument to stuff(..)");
+
+    CInput::Instance()->add( std::string( str ) );
+
+    return 0;
+}
+
+/**
  * Alert: Draw a message and await explicit confirmation.
  *
  * TODO: "box" the display + add a count-down timer.
@@ -555,7 +571,7 @@ int alert(lua_State * L)
         move( (int)(CScreen::height() / 2 ) + 2, 0);
         printw("Press [ret] to continue" );
 
-        int key = getch();
+        int key = CInput::Instance()->get_char();
         if ( key == '\n' )
             done = true;
 
@@ -689,7 +705,7 @@ int prompt_chars(lua_State *L)
         move(height - 1, 0);
         printw(str);
 
-        int key = getch();
+        int key = CInput::Instance()->get_char();
 
         /**
          * See if the character was in the input string.
@@ -764,7 +780,7 @@ int prompt_maildir(lua_State * L)
             }
         }
 
-        int key = getch();
+        int key = CInput::Instance()->get_char();
         if (key == ERR)
         {
             /**

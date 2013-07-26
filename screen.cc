@@ -27,6 +27,7 @@
 #include <dirent.h>
 #include <ncurses.h>
 
+#include "input.h"
 #include "lang.h"
 #include "lua.h"
 #include "global.h"
@@ -1034,7 +1035,7 @@ void CScreen::readline(char *buffer, int buflen)
             printw(" ");
 
         move(y, x+pos);
-        c = getch();
+        c = CInput::Instance()->get_char();
 
         if (c == KEY_ENTER || c == '\n' || c == '\r')
         {

@@ -25,6 +25,7 @@
 
 #include "debug.h"
 #include "file.h"
+#include "input.h"
 #include "lua.h"
 #include "message.h"
 #include "maildir.h"
@@ -243,7 +244,8 @@ int main(int argc, char *argv[])
      */
     while (true)
     {
-        int key = getch();
+        int key = CInput::Instance()->get_char();
+
         if (key == ERR)
         {
             /*
