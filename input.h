@@ -1,5 +1,5 @@
 /**
- * input.h - Input buffer
+ * input.h - A faux input-buffer.
  *
  * This file is part of lumail: http://lumail.org/
  *
@@ -36,14 +36,14 @@ class CInput
   static CInput *Instance();
 
   /**
-   * Get a character.
+   * Get a character from either our faux buffer, or via curses.
    */
   int get_char();
 
   /**
-   * Add input.
+   * Enqueue some input to the input buffer.
    */
-  void add( std::string entry);
+  void add( std::string input );
 
 
  protected:
@@ -62,11 +62,14 @@ class CInput
    */
   static CInput *pinstance;
 
-
   /**
    * Our pending input.
    */
   std::string m_pending;
+
+  /**
+   * The current position within our pending-input string.
+   */
   size_t m_offset;
 
 };

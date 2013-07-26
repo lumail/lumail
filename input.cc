@@ -1,5 +1,5 @@
 /**
- * input.cc - Input-buffer
+ * input.cc - A faux input-buffer.
  *
  * This file is part of lumail: http://lumail.org/
  *
@@ -44,32 +44,50 @@ CInput *CInput::Instance()
  */
 CInput::CInput()
 {
+    /**
+     * Our faux input buffer is empty.
+     */
     m_pending = "";
     m_offset = 0;
 }
 
-void CInput::add( std::string entry )
-{
-    m_pending = entry;
-    m_offset = 0;
-}
 
 /**
- * Get a character.
+ * Enqueue some input to the input buffer.
+ */
+void CInput::add( std::string input )
+{
+    m_pending = input;
+    m_offset  = 0;
+}
+
+
+/**
+ * Get a character from either our faux buffer, or via curses.
  */
 int CInput::get_char()
 {
     /**
-     * If we have pending history - return that.
+     * If we have pending history - return the next character from it.
      */
     if ( !m_pending.empty() )
     {
+        /**
+         * If we've not walked off the end.
+         */
         if ( m_offset < m_pending.size() )
         {
+            /**
+             * Get the character and return it,
+             * updating our current-offset.
+             */
+            int c = m_pending.at( m_offset );
             m_offset += 1;
-            return( m_pending.at( m_offset -1 ) );
+
+            return( c );
         }
     }
+
     /**
      * Otherwise defer to ncurses.
      */
