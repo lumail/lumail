@@ -1,3 +1,35 @@
+lumail (0.15) stable; urgency=high
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+     - #64 - Toggle wrapping for long lines:
+             http://lumail.org/lua/wrap_lines.html
+     - #65 - Update flag-handling for mutt compatibility.
+     - #66 - Move towards correctly decoding mail-headers.
+             This is still in-progress.
+     - #67 - Allow date-parsing templates to come from lua.
+             http://lumail.org/lua/date_formats.html
+     - #68 - More segfault fixups for the new scrolling code.
+     - #70 - Display as much of the message as we can.
+     - #71 - Correct handling of (N)ew vs. (S)een flags.
+     - #72 - Make message-sorting configurable:
+             http://lumail.org/lua/sort.html
+     - #73 - Don't show "." and ".." maildirs.
+     - #75 - Cache Maildir contents for a speedup.
+     - #77 - Use the new alert() primitive if date-parsing fails.
+             http://lumail.org/lua/alert.html
+     - #78 - Arrow keys are bound by default.
+  * Honour $TMPDIR, and $TMP, before defaulting to /tmp.
+    The get_variables() function has a 'tmp' member now:
+    http://lumail.org/lua/get_variables.html
+  * Invoke offlineimap every five minutes if configured.
+  * Signatures are inserted for replies to existing mails not
+    just new ones.
+  * Demonstrate the use of regexps in the sample lumail.lua file.
+
+ -- Steve Kemp <steve@steve.org.uk>  Fri, 26 Jul 2013 09:11:09 +0000
+
 lumail (0.14) stable; urgency=high
 
   * Segfault fix for the scrolling  behaviour.  The previous
