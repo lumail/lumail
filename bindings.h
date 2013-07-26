@@ -128,6 +128,9 @@ int maildirs_matching(lua_State *L);
 /* get the current message path. */
 int current_message(lua_State * L);
 
+/* count lines in message. */
+int count_lines(lua_State *L);
+
 /* message helpers */
 int is_new(lua_State *L);
 int mark_new(lua_State *L);

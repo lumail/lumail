@@ -1202,6 +1202,31 @@ int current_message(lua_State * L)
 
 
 
+/**
+ * Count the lines in the current message.
+ */
+int count_lines(lua_State * L)
+{
+    /**
+     * Get the currently selected message.
+     */
+    CMessage *msg = get_message_for_operation( NULL );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+    /**
+     * If that succeeded get the body.
+     */
+    std::vector<std::string> body = msg->body();
+    lua_pushinteger(L, body.size() );
+    return 1;
+}
+
+
 
 
 /**

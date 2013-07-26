@@ -126,6 +126,7 @@ struct CLuaMapping primitive_list[] =
  */
     {"compose", "Compose a new outgoing email.", (lua_CFunction) compose },
     {"count_messages", "Count the messages in the currently selected Maildir(s).", (lua_CFunction) count_messages },
+    {"count_lines", "Count the number of lines in the message body", (lua_CFunction) count_lines},
     {"current_message", "Retrieve the path to the current message.", (lua_CFunction) current_message },
     {"delete", "Delete the current message.", (lua_CFunction) delete_message },
     {"header", "Retrieve the value of the given header from the current message.", (lua_CFunction) header },
