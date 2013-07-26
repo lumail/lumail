@@ -267,6 +267,24 @@ end
 
 
 --
+-- Jump to the end of the list of messages/maildirs.
+--
+function jump_to_start()
+
+   mode = global_mode()
+   mode = string.lower( mode );
+
+   if ( string.find( mode, "maildir" ) ) then
+      jump_maildir_to( 0 );
+   elseif (string.find(mode, "index" ) ) then
+      jump_index_to( 0 );
+   else
+      scroll_message_to( 0 );
+   end
+end
+
+
+--
 -- This function is called when a message is displayed.
 --
 -- The argument is the path to the message on-disk.
@@ -697,11 +715,13 @@ keymap['global']['I'] = 'index()';
 -- Show the client version
 keymap['global']['v'] = 'show_version()'
 -- Jump to end
-keymap['global']['*'] = 'jump_to_end()'
-keymap['global']['KEY_END'] = 'jump_to_end()'
+keymap['global']['*']        = 'jump_to_end()'
+keymap['global']['KEY_END']  = 'jump_to_end()'
+keymap['global']['KEY_HOME'] = 'jump_to_start()'
 -- Refresh display
 keymap['global']['^R'] = 'refresh_display()'
 keymap['global']['^L'] = 'refresh_display()'
+keymap['global']['KEY_RESIZE'] = 'refresh_display()'
 
 
 --
