@@ -73,7 +73,6 @@ depend: .depend
 #
 clean:
 	$(RM) $(TARGET) lumail-debug $(OBJS) core || true
-	cd ./tests && make clean || true
 	cd ./util  && make clean || true
 
 #
@@ -122,14 +121,6 @@ utilities:
 .PHONY: style
 style:
 	prove --shuffle ./style/
-
-
-#
-#  Source code tests.
-#
-.PHONY: tests
-tests:
-	cd ./tests && make test
 
 
 include .depend
