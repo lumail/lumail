@@ -239,7 +239,8 @@ bool CLua::load_file(std::string filename)
         if (luaL_loadfile(m_lua, filename.c_str())
             || lua_pcall(m_lua, 0, 0, 0))
         {
-            fprintf(stderr, "cannot run configuration file: %s",
+            fprintf(stderr, "Failed to load/parse/execute %s: %s",
+                    filename.c_str(),
                     lua_tostring(m_lua, -1));
             exit(1);
         }
@@ -402,13 +403,15 @@ bool CLua::on_key(const char *key )
 }
 
 
+/**
+ * Invoke the "on_complete" callback, which is defined by the user, if it exists.
+ */
 std::vector<std::string> CLua::on_complete()
 {
     std::vector<std::string> results;
 
     /**
-     * If the global isn't defined then we return
-     * an empty set.
+     * If the global isn't defined then we return an empty set.
      */
     lua_getglobal( m_lua, "on_complete" );
     if(!lua_isfunction(m_lua,-1))
@@ -494,11 +497,14 @@ std::vector<std::string> CLua::table_to_array( std::string name )
 }
 
 
+/**
+ * Return the value of the lua-defined variable.
+ */
 bool CLua::get_bool( std::string  name )
 {
     bool ret = false;
     lua_getglobal(m_lua, name.c_str() );
-    if (lua_type(m_lua, -1)!=LUA_TBOOLEAN)
+    if (lua_type(m_lua, -1) != LUA_TBOOLEAN )
     {
         lua_pop(m_lua, 1);
         return ret;
