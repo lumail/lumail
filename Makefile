@@ -101,6 +101,7 @@ release: clean style
 	cp -R . $(DIST_PREFIX)/$(BASE)-$(VERSION)
 	rm -rf $(DIST_PREFIX)/$(BASE)-$(VERSION)/debian
 	rm -rf $(DIST_PREFIX)/$(BASE)-$(VERSION)/.git*
+	rm -rf $(DIST_PREFIX)/$(BASE)-$(VERSION)/.depend || true
 	perl -pi -e "s/__UNRELEASED__/$(VERSION)/g" $(DIST_PREFIX)/$(BASE)-$(VERSION)/version.h
 	cd $(DIST_PREFIX) && tar -cvf $(DIST_PREFIX)/$(BASE)-$(VERSION).tar $(BASE)-$(VERSION)/
 	gzip $(DIST_PREFIX)/$(BASE)-$(VERSION).tar
