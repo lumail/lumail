@@ -126,6 +126,9 @@ CGlobal::CGlobal()
  */
 bool sort_messages(CMessage *a, CMessage *b)
 {
+    assert( NULL != a );
+    assert( NULL != b );
+
     /**
      * Get the type of sort.
      */
@@ -248,6 +251,9 @@ bool sort_messages(CMessage *a, CMessage *b)
  */
 bool sort_maildir_ptr_by_name(CMaildir *a, CMaildir *b)
 {
+    assert( NULL != a );
+    assert( NULL != b );
+
     std::string a_path = a->path();
     std::string b_path = b->path();
 
@@ -324,6 +330,7 @@ void CGlobal::update_maildirs()
             delete( *it );
         }
         delete( m_maildirs );
+        m_maildirs = NULL;
     }
 
     /**
@@ -416,6 +423,7 @@ void CGlobal::update_messages()
             delete( *it );
         }
         delete( m_messages );
+        m_messages = NULL;
     }
 
     /**
@@ -469,6 +477,7 @@ void CGlobal::update_messages()
 void CGlobal::unset_folders()
 {
     m_selected_folders.clear();
+    assert( m_selected_folders.size() == 0 );
 }
 
 /**
@@ -477,6 +486,7 @@ void CGlobal::unset_folders()
 void CGlobal::add_folder(std::string path)
 {
     m_selected_folders.push_back(path);
+    assert( m_selected_folders.size() > 0 );
 }
 
 /**
@@ -513,6 +523,7 @@ bool CGlobal::remove_folder(std::string path)
  */
 std::string * CGlobal::get_variable( std::string name )
 {
+    assert( ! name.empty() );
 
     std::string *value = m_variables[name];
 
@@ -543,6 +554,8 @@ std::string * CGlobal::get_variable( std::string name )
  */
 void CGlobal::set_variable( std::string name, std::string *value )
 {
+    assert( ! name.empty() );
+
     /**
      * Free the current value, if one is set.
      */
