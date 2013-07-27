@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
      * Load the init-file from the users home-directory, if we can.
      */
     std::string home = getenv( "HOME" );
-    if ( CFile::is_directory( home + "/.lumail" ) )
+    if ( CFile::exists( home + "/.lumail/config.lua" ) )
         if ( lua->load_file( home + "/.lumail/config.lua") )
             init += 1;
 
