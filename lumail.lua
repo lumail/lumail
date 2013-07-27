@@ -249,7 +249,7 @@ end
 
 
 --
--- Jump to the end of the list of messages/maildirs.
+-- Jump to the end of the screen, regardless of mode.
 --
 function jump_to_end()
 
@@ -257,17 +257,25 @@ function jump_to_end()
    mode = string.lower( mode );
 
    if ( string.find( mode, "maildir" ) ) then
+
+      -- Jump to last Maildir in the list.
       jump_maildir_to( count_maildirs() - 1 );
+
    elseif (string.find(mode, "index" ) ) then
+
+      -- Jump to the last message in the list.
       jump_index_to( count_messages() - 1 );
+
    else
+
+      -- Jump to the end of the message.
       scroll_message_to( count_lines() - 2 );
    end
 end
 
 
 --
--- Jump to the end of the list of messages/maildirs.
+-- Jump to the start of the screen, regardless of mode.
 --
 function jump_to_start()
 
@@ -275,10 +283,18 @@ function jump_to_start()
    mode = string.lower( mode );
 
    if ( string.find( mode, "maildir" ) ) then
+
+      -- Jump to the first Maildir
       jump_maildir_to( 0 );
+
    elseif (string.find(mode, "index" ) ) then
+
+      -- Jump to the first message.
       jump_index_to( 0 );
+
    else
+
+      -- Jump to the start of the message.
       scroll_message_to( 0 );
    end
 end
