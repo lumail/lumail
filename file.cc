@@ -90,7 +90,7 @@ bool CFile::is_directory(std::string path)
     struct stat sb;
 
     if (stat(path.c_str(), &sb) < 0)
-      return 0;
+      return false;
 
     return (S_ISDIR(sb.st_mode));
 }
@@ -253,14 +253,11 @@ std::vector<std::string> CFile::get_all_maildirs(std::string path)
     }
 
 #ifdef LUMAIL_DEBUG
+
     std::string log = "CFile::get_all_maildirs(";
     log += path;
     log += ") - found " ;
-
-    std::stringstream ss;
-    ss << result.size();
-
-    log += ss.str();
+    log += std::to_string( result.size() );
     log += " entries.";
 
     DEBUG_LOG( log );
