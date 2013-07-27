@@ -234,6 +234,13 @@ CLua::CLua()
  */
 bool CLua::load_file(std::string filename)
 {
+#ifdef LUMAIL_DEBUG
+        std::string dm = "CLua::load_file(\"";
+        dm += filename;
+        dm += "\");";
+        DEBUG_LOG( dm );
+#endif
+
     if (CFile::exists( filename ) )
     {
         if (luaL_loadfile(m_lua, filename.c_str())
