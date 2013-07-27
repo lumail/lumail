@@ -19,12 +19,21 @@
 #ifndef _debug_h_
 #define _debug_h_ 1
 
+#include <cassert>
 #include <string>
 
 
+/**
+ * If we're not compiling with LUMAIL_DEBUG enabled then
+ * we'll disable the C++ assert function.
+ */
+#ifndef LUMAIL_DEBUG
+# define NDEBUG 1
+#endif
+
 
 /**
- * Simple macro to make logging as simple as:
+ * A macro to make logging as simple as:
  *
  *      DEBUG_LOG( "Some string" );
  *
