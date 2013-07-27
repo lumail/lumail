@@ -44,7 +44,7 @@ class CHistory
   /**
    * Get the Nth piece of history.
    */
-  std::string at( int offset );
+  std::string at( size_t offset );
 
   /**
    * Add a new string to the history.

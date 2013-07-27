@@ -17,6 +17,7 @@
  */
 
 
+#include "debug.h"
 #include "history.h"
 
 
@@ -58,8 +59,13 @@ int CHistory::size()
 /**
  * Get the Nth piece of history.
  */
-std::string CHistory::at( int offset )
+std::string CHistory::at( size_t offset )
 {
+    /**
+     * Ensure the history offset is between 0-size.
+     */
+    assert( ( offset >= 0 ) && ( offset < m_history.size() ) );
+
     return( m_history.at( offset ) );
 }
 
@@ -70,6 +76,7 @@ std::string CHistory::at( int offset )
 void CHistory::add( std::string entry)
 {
     m_history.push_back(entry);
+    assert( m_history.size() > 0 );
 }
 
 
@@ -79,4 +86,5 @@ void CHistory::add( std::string entry)
 void CHistory::clear()
 {
     m_history.clear();
+    assert( m_history.size() == 0 );
 }
