@@ -729,6 +729,8 @@ std::string CMessage::date(TDate fmt)
              */
             fmts.push_back( "%a, %d %b %y %H:%M:%S" );
             fmts.push_back( "%a, %d %b %Y %H:%M:%S" );
+            fmts.push_back( "%a, %d %b %y %H:%M:%S %z" );
+            fmts.push_back( "%a, %d %b %Y %H:%M:%S %z" );
             fmts.push_back( "%d %b %y %H:%M:%S" );
             fmts.push_back( "%d %b %Y %H:%M:%S" );
             fmts.push_back( "%a %b %d %H:%M:%S GMT %Y" );
