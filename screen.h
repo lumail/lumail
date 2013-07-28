@@ -29,82 +29,85 @@
 class CScreen
 {
 
- public:
+public:
 
-  /**
-   * Constructor.  NOP.
-   */
-  CScreen();
+    /**
+     * The segment of the screen the highlighted row is within.
+     */
+    enum vectorPosition
+    {
+        TOP,
+        MIDDLE,
+        BOTTOM,
+        NONE
+    };
 
-  /**
-   * Destructor.  NOP.
-   */
-  ~CScreen();
+    /**
+     * Constructor.  NOP.
+     */
+    CScreen();
 
-  /**
-   * Draw/Refresh the display.
-   */
-  void refresh_display();
+    /**
+     * Destructor.  NOP.
+     */
+    ~CScreen();
 
-  /**
-   * Setup the screen.
-   */
-  void setup();
+    /**
+     * Draw/Refresh the display.
+     */
+    void refresh_display();
 
-  /**
-   * Return the width of the screen.
-   */
-  static int width();
+    /**
+     * Setup the screen.
+     */
+    void setup();
 
-  /**
-   * Return the height of the screen.
-   */
-  static int height();
+    /**
+     * Return the width of the screen.
+     */
+    static int width();
 
-  /**
-   * Clear the main display area, leaving the status-area alone.
-   */
-  static void clear_main();
+    /**
+     * Return the height of the screen.
+     */
+    static int height();
 
-  /**
-   * Clear the status-line of the screen.
-   */
-  static void clear_status();
+    /**
+     * Clear the main display area, leaving the status-area alone.
+     */
+    static void clear_main();
 
-  /**
-   * Handle TAB-expansion of an input string.
-   * Return memory the caller must free.
-   */
-  static char *get_completion( const char *input, size_t size, int position );
+    /**
+     * Clear the status-line of the screen.
+     */
+    static void clear_status();
 
-  /**
-   * Read a line of input.
-   */
-  static void readline( char *buffer, int buflen );
+    /**
+     * Handle TAB-expansion of an input string.
+     * Return memory the caller must free.
+     */
+    static char *get_completion( const char *input, size_t size, int position );
 
- private:
+    /**
+     * Read a line of input.
+     */
+    static void readline( char *buffer, int buflen );
 
-  /**
-   * Per-mode drawing primitives.
-   */
-  void drawMaildir();
-  void drawIndex();
-  void drawMessage();
+private:
 
-  /**
-   * Colour-maps.
-   */
-  std::unordered_map<std::string, int> m_colours;
+    /**
+     * Per-mode drawing primitives.
+     */
+    void drawMaildir();
+    void drawIndex();
+    void drawMessage();
 
+    /**
+     * Colour-maps.
+     */
+    std::unordered_map<std::string, int> m_colours;
 
 };
 
-enum vectorPosition
-{
-    TOP,
-    MIDDLE,
-    BOTTOM,
-    NONE
-};
 
 #endif /* _screen_h_ */

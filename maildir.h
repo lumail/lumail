@@ -35,93 +35,95 @@ class CMessage;
  */
 class CMaildir
 {
- public:
+public:
 
-  /**
-   * Constructor.
-   */
-  CMaildir(std::string path);
+    /**
+     * Constructor.
+     */
+    CMaildir(std::string path);
 
-  /**
-   * Destructor.  NOP.
-   */
-  ~CMaildir();
+    /**
+     * Destructor.  NOP.
+     */
+    ~CMaildir();
 
-  /**
-   * The number of new messages for this maildir.
-   */
-  int unread_messages();
+    /**
+     * The number of new messages for this maildir.
+     */
+    int unread_messages();
 
-  /**
-   * The total number of messages for this maildir.
-   */
-  int all_messages();
+    /**
+     * The total number of messages for this maildir.
+     */
+    int all_messages();
 
-  /**
-   * The friendly name of the maildir.
-   */
-  std::string name();
+    /**
+     * The friendly name of the maildir.
+     */
+    std::string name();
 
-  /**
-   * The full path to the folder.
-   */
-  std::string path();
+    /**
+     * The full path to the folder.
+     */
+    std::string path();
 
-  /**
-   * Format this maildir for display in maildir-mode.
-   */
-  std::string format( bool selected, std::string fmt = "" );
+    /**
+     * Format this maildir for display in maildir-mode.
+     */
+    std::string format( bool selected, std::string fmt = "" );
 
-  /**
-   * Does this maildir match the given filter?
-   */
-  bool matches_filter( std::string *filter );
+    /**
+     * Does this maildir match the given filter?
+     */
+    bool matches_filter( std::string *filter );
 
-  /**
-   * Generate a new filename in the given folder.
-   */
-  static std::string message_in(std::string path, bool is_new);
+    /**
+     * Generate a new filename in the given folder.
+     */
+    static std::string message_in(std::string path, bool is_new);
 
-  /**
-   * Is the given path a Maildir?
-   */
-  static bool is_maildir(std::string path);
+    /**
+     * Is the given path a Maildir?
+     */
+    static bool is_maildir(std::string path);
 
-  /**
-   * Get each message in the folder.
-   */
-  std::vector<CMessage *> getMessages();
+    /**
+     * Get all messages in the folder.
+     */
+    std::vector<CMessage *> getMessages();
 
 
 private:
 
-  /**
-   * Return the last modified time for this Maildir.
-   */
-  time_t last_modified();
+    /**
+     * Return the last modified time for this Maildir.
+     * Used to determine if we need to update our cache.
+     */
+    time_t last_modified();
 
-  /**
-   * Update the cached total/unread message counts.
-   */
-  void update_cache();
+    /**
+     * Update the cached total/unread message counts.
+     */
+    void update_cache();
 
- private:
+private:
 
-  /**
-   * The path to the directory we represent.
-   */
-  std::string m_path;
+    /**
+     * The path to the directory we represent.
+     */
+    std::string m_path;
 
-  /**
-   * Cached time/date object.
-   */
-  time_t m_modified;
+    /**
+     * Cached time/date object.
+     */
+    time_t m_modified;
 
-  /**
-   * Cached unread-count + cached total count.
-   */
-  int m_unread;
-  int m_total;
+    /**
+     * Cached unread-count + cached total count.
+     */
+    int m_unread;
+    int m_total;
+
 };
 
 #endif /* _maildir_h_ */

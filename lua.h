@@ -83,6 +83,7 @@ extern int primitive_count;
  */
 class CLua
 {
+
 public:
 
     /**
@@ -132,9 +133,9 @@ public:
      */
     std::vector<std::string> table_to_array( std::string name );
 
-   /**
-    * Get global boolean vars
-    */
+    /**
+     * Get global boolean vars
+     */
     bool get_bool( std::string  name );
 
     /**
@@ -142,7 +143,7 @@ public:
      */
     void dump_stack();
 
- protected:
+protected:
 
     /**
      * Protected functions to allow our singleton implementation.
@@ -151,7 +152,7 @@ public:
     CLua(const CLua &);
     CLua & operator=(const CLua &);
 
- private:
+private:
 
     /**
      * The single instance of this class.

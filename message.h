@@ -38,7 +38,12 @@ class CMessage
 {
 public:
 
-    enum TDate { EYEAR,EDAY,EMONTH, EMON, EFULL };
+    /**
+     * Used for formatting dates.
+     */
+    enum TDate { EYEAR, EDAY, EMONTH, EMON, EFULL };
+
+
 
     /**
      * Constructor

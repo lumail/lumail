@@ -28,49 +28,49 @@
 class CInput
 {
 
- public:
+public:
 
-  /**
-   * Get access to the singleton instance.
-   */
-  static CInput *Instance();
+    /**
+     * Get access to the singleton instance.
+     */
+    static CInput *Instance();
 
-  /**
-   * Get a character from either our faux buffer, or via curses.
-   */
-  int get_char();
+    /**
+     * Get a character from either our faux buffer, or via curses.
+     */
+    int get_char();
 
-  /**
-   * Enqueue some input to the input buffer.
-   */
-  void add( std::string input );
+    /**
+     * Enqueue some input to the input buffer.
+     */
+    void add( std::string input );
 
 
- protected:
+protected:
 
-  /**
-   * Protected functions to allow our singleton implementation.
-   */
-  CInput();
-  CInput(const CInput &);
-  CInput & operator=(const CInput &);
+    /**
+     * Protected functions to allow our singleton implementation.
+     */
+    CInput();
+    CInput(const CInput &);
+    CInput & operator=(const CInput &);
 
- private:
+private:
 
-  /**
-   * The single instance of this class.
-   */
-  static CInput *pinstance;
+    /**
+     * The single instance of this class.
+     */
+    static CInput *pinstance;
 
-  /**
-   * Our pending input.
-   */
-  std::string m_pending;
+    /**
+     * Our pending input.
+     */
+    std::string m_pending;
 
-  /**
-   * The current position within our pending-input string.
-   */
-  size_t m_offset;
+    /**
+     * The current position within our pending-input string.
+     */
+    size_t m_offset;
 
 };
 

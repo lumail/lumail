@@ -43,6 +43,7 @@
  */
 class CGlobal
 {
+
 public:
 
     /**

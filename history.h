@@ -29,55 +29,54 @@
 class CHistory
 {
 
- public:
+public:
 
-  /**
-   * Get access to the singleton instance.
-   */
-  static CHistory *Instance();
+    /**
+     * Get access to the singleton instance.
+     */
+    static CHistory *Instance();
 
-  /**
-   * Return the size of the history.
-   */
-  int size();
+    /**
+     * Return the size of the history.
+     */
+    int size();
 
-  /**
-   * Get the Nth piece of history.
-   */
-  std::string at( size_t offset );
+    /**
+     * Get the Nth piece of history.
+     */
+    std::string at( size_t offset );
 
-  /**
-   * Add a new string to the history.
-   */
-  void add( std::string entry);
+    /**
+     * Add a new string to the history.
+     */
+    void add( std::string entry);
+
+    /**
+     * Clear the history.
+     */
+    void clear();
+
+protected:
+
+    /**
+     * Protected functions to allow our singleton implementation.
+     */
+    CHistory();
+    CHistory(const CHistory &);
+    CHistory & operator=(const CHistory &);
+
+private:
+
+    /**
+     * The single instance of this class.
+     */
+    static CHistory *pinstance;
 
 
-  /**
-   * Clear the history.
-   */
-  void clear();
-
- protected:
-
-  /**
-   * Protected functions to allow our singleton implementation.
-   */
-  CHistory();
-  CHistory(const CHistory &);
-  CHistory & operator=(const CHistory &);
-
- private:
-
-  /**
-   * The single instance of this class.
-   */
-  static CHistory *pinstance;
-
-
-  /**
-   * List of history items.
-   */
-  std::vector<std::string> m_history;
+    /**
+     * List of history items.
+     */
+    std::vector<std::string> m_history;
 
 };
 
