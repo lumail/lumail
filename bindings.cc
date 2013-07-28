@@ -503,8 +503,6 @@ int stuff(lua_State * L)
 /**
  * Alert: Draw a message and await explicit confirmation.
  *
- * TODO: "box" the display + add a count-down timer.
- *
  * TODO: Simplify the argument parsing by remembering the stack can
  *       be accessed in ascending order too.
  */
@@ -556,22 +554,27 @@ int alert(lua_State * L)
      */
     time_t now = time( NULL);
 
+
+    int height = CScreen::height() - 4;
+    int width = CScreen::width() - 4;
+    WINDOW *childwin = newwin(height, width, 2, 2);
+    box(childwin, 0, 0);
+    mvwaddstr(childwin, 2, 4, str);
+
     bool done = false;
+
     while( ! done )
     {
-        CScreen::clear_main();
+        refresh();
+        char progress[100] = {'\0'};
 
-        /**
-         * Middle of screen.
-         */
-        move( (int)(CScreen::height() / 2 ) , 0);
-        printw("%s", str);
+        int elapsed = time(NULL) - now;
 
-        /**
-         * Two lines down.
-         */
-        move( (int)(CScreen::height() / 2 ) + 2, 0);
-        printw("Press [ret] to continue" );
+        memset(progress, '\0', sizeof(progress));
+        snprintf( progress, sizeof(progress-1), "%d/%d", elapsed, time_out );
+        mvwaddstr(childwin, height-4, 10, "Press RET to continue, timeout in " );
+        waddstr(childwin,progress);
+        wrefresh(childwin);
 
         int key = CInput::Instance()->get_char();
         if ( key == '\n' )
@@ -580,9 +583,10 @@ int alert(lua_State * L)
         /**
          * Timeout.
          */
-        if ( ( time(NULL) - now ) > time_out )
+        if ( elapsed > time_out )
             done = true;
     }
+    delwin(childwin);
     noecho();
     curs_set(0);
     timeout(1000);
