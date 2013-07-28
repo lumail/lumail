@@ -629,7 +629,7 @@ void CScreen::drawMessage()
      */
     std::vector<std::string> body = cur->body();
 
-    int textspace = (int)(CScreen::height() - headers.size() - attachments.size() );
+    int textspace = (int)(CScreen::height() - headers.size() - attachments.size() - 1 );
     if (textspace < 2)
         textspace = 2;
 
@@ -657,6 +657,8 @@ void CScreen::drawMessage()
     {
 
         std::string line = "";
+
+	/** Get current line */
         if ( (line_idx + offset) < (int)body.size() )
         {
             line = body[line_idx+offset];
@@ -678,15 +680,18 @@ void CScreen::drawMessage()
 
             row_idx++;
 
-            if (row_idx > (textspace-2))
-                break;
-
             slen += subline.length();
-            if (!wrap || len == slen)
+
+	    /** Should we stop displaying this line ? */
+            if (raw_idx > (textspace-2) || !wrap || len == slen)
                 break;
 
             subline = line.substr(slen, width);
         }
+
+	/** No screen space left */
+        if (row_idx > (textspace-2))
+             break;
     }
 
 
