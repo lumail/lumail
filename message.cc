@@ -748,6 +748,13 @@ std::string CMessage::date(TDate fmt)
 
             char* rc = NULL;
 
+            const char *current_loc = NULL;
+
+            current_loc = setlocale(LC_TIME, NULL);
+
+            if (current_loc != NULL)
+                setlocale(LC_TIME, "C");
+
             /**
              * For each format.
              */
@@ -764,6 +771,10 @@ std::string CMessage::date(TDate fmt)
                 t.tm_hour=0;
                 rc = strptime(date.c_str(), fmt, &t);
             }
+
+            if ( current_loc != NULL ) 
+                setlocale(LC_TIME, current_loc);
+
             if (!rc)
             {
                 /**
