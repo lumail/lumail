@@ -683,7 +683,7 @@ void CScreen::drawMessage()
             slen += subline.length();
 
 	    /** Should we stop displaying this line ? */
-            if (raw_idx > (textspace-2) || !wrap || len == slen)
+            if (row_idx > (textspace-2) || !wrap || len == slen)
                 break;
 
             subline = line.substr(slen, width);
