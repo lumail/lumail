@@ -81,11 +81,11 @@ struct CLuaMapping primitive_list[] =
 /**
  * Folder Selection
  */
-    {"add_selected_folder", "help", (lua_CFunction) add_selected_folder },
-    {"clear_selected_folders", "help", (lua_CFunction) clear_selected_folders },
-    {"selected_folders", "help", (lua_CFunction) selected_folders },
-    {"set_selected_folder", "help", (lua_CFunction) set_selected_folder },
-    {"toggle_selected_folder", "help", (lua_CFunction) toggle_selected_folder },
+    {"add_selected_folder", "Add the current folder to the list of selected folders", (lua_CFunction) add_selected_folder },
+    {"clear_selected_folders", "Clear the list of selected-folders.", (lua_CFunction) clear_selected_folders },
+    {"selected_folders", "Return the currently selected folders.", (lua_CFunction) selected_folders },
+    {"set_selected_folder", "Remove all currently selected folders and add the single named one to the set.", (lua_CFunction) set_selected_folder },
+    {"toggle_selected_folder", "Toggle the folder into/out-of the selected set.", (lua_CFunction) toggle_selected_folder },
 
 /**
  * Get/Set variables
@@ -116,10 +116,10 @@ struct CLuaMapping primitive_list[] =
 /**
  * Index functions
  */
-    {"jump_index_to", "help", (lua_CFunction) jump_index_to },
-    {"scroll_index_down", "help", (lua_CFunction) scroll_index_down },
-    {"scroll_index_up", "help", (lua_CFunction) scroll_index_up },
-    {"scroll_index_to", "help", (lua_CFunction) scroll_index_to },
+    {"jump_index_to", "Jump to the named offset in the message list.", (lua_CFunction) jump_index_to },
+    {"scroll_index_down", "Scroll the message list down.", (lua_CFunction) scroll_index_down },
+    {"scroll_index_up", "Scroll the message list up.", (lua_CFunction) scroll_index_up },
+    {"scroll_index_to", "Scroll the message list to the given offset.", (lua_CFunction) scroll_index_to },
 
 /**
  * Message-Related functions
@@ -144,15 +144,15 @@ struct CLuaMapping primitive_list[] =
 /**
  * Maildirs
  */
-    {"count_maildirs", "help", (lua_CFunction) count_maildirs },
-    {"current_maildir", "help", (lua_CFunction) current_maildir },
-    {"current_maildirs", "help", (lua_CFunction) current_maildirs },
-    {"jump_maildir_to", "help", (lua_CFunction) jump_maildir_to },
-    {"maildirs_matching", "help", (lua_CFunction) maildirs_matching },
-    {"scroll_maildir_down", "help", (lua_CFunction) scroll_maildir_down },
-    {"scroll_maildir_to", "help", (lua_CFunction) scroll_maildir_to },
-    {"scroll_maildir_up", "help", (lua_CFunction) scroll_maildir_up },
-    {"select_maildir", "help", (lua_CFunction) select_maildir },
+    {"count_maildirs", "Count the visible Maildirs.", (lua_CFunction) count_maildirs },
+    {"current_maildir", "Return the path to the current Maildir.", (lua_CFunction) current_maildir },
+    {"current_maildirs", "Get the names of all currently visible Maildirs.", (lua_CFunction) current_maildirs },
+    {"jump_maildir_to", "Jump the Maildir list to the given offset.", (lua_CFunction) jump_maildir_to },
+    {"maildirs_matching", "Return the maildirs matching the given regexp.", (lua_CFunction) maildirs_matching },
+    {"scroll_maildir_down", "Scroll the maildir list down.", (lua_CFunction) scroll_maildir_down },
+    {"scroll_maildir_to", "Scroll the maildir to the next entry matchign the given regexp.", (lua_CFunction) scroll_maildir_to },
+    {"scroll_maildir_up", "Scroll the maildir list up.", (lua_CFunction) scroll_maildir_up },
+    {"select_maildir", "Select a Maildir by path.", (lua_CFunction) select_maildir },
 
 
 /**
