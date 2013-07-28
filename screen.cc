@@ -658,7 +658,7 @@ void CScreen::drawMessage()
 
         std::string line = "";
 
-	/** Get current line */
+        /** Get current line */
         if ( (line_idx + offset) < (int)body.size() )
         {
             line = body[line_idx+offset];
@@ -682,14 +682,14 @@ void CScreen::drawMessage()
 
             slen += subline.length();
 
-	    /** Should we stop displaying this line ? */
+            /** Should we stop displaying this line ? */
             if (row_idx > (textspace-2) || !wrap || len == slen)
                 break;
 
             subline = line.substr(slen, width);
         }
 
-	/** No screen space left */
+        /** No screen space left */
         if (row_idx > (textspace-2))
              break;
     }
