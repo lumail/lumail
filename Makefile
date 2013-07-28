@@ -33,7 +33,7 @@ LVER=lua5.1
 # NOTE: We use "-std=gnu++0x" so we can use "unordered_map", which is in the STL.
 #
 #
-CPPFLAGS+=-std=gnu++0x -g -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) -O2 # -ggdb -pg
+CPPFLAGS+=-std=gnu++0x -g -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) -O2
 LDLIBS+=$(shell pkg-config --libs ${LVER}) -lncursesw  -lmimetic -lpcre -lpcrecpp
 
 
@@ -47,6 +47,7 @@ all: $(TARGET)
 # Debug target.
 #
 lumail-debug: CXX += -DLUMAIL_DEBUG=1
+lumail-debug: CPPFLAGS += -DLUMAIL_DEBUG=1 -ggdb
 lumail-debug: TARGET=lumail-debug
 lumail-debug: $(TARGET)
 
