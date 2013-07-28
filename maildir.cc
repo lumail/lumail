@@ -347,7 +347,9 @@ std::vector<CMessage *> CMaildir::getMessages()
                 if (de == NULL)
                     break;
 
-                if ( (de->d_type != DT_DIR) || ( de->d_type == DT_UNKNOWN && !CFile::is_directory (std::string(path + de->d_name))))
+                /** Maybe we should check for DT_REG || DT_LNK ? */
+                if ( (de->d_type != DT_DIR)
+                   || ( de->d_type == DT_UNKNOWN && !CFile::is_directory (std::string(path + de->d_name))))
                 {
                     CMessage *t = new CMessage(std::string(path + de->d_name));
                     result.push_back(t);
