@@ -27,7 +27,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <pcrecpp.h>
-#include <ncurses.h>
+#include <cursesw.h>
 #include <unistd.h>
 #include <dirent.h>
 
@@ -518,7 +518,7 @@ int alert(lua_State * L)
     const char *str    = lua_tostring(L, -2);
     const char *period = lua_tostring(L, -1);
 
-    int timeout;
+    int time_out;
 
     /**
      * If the string is null and the period isn't that means
@@ -530,19 +530,19 @@ int alert(lua_State * L)
      */
     if ( ( str == NULL ) && ( period != NULL ) )
     {
-        str = period;
-        timeout = 30;
+        str      = period;
+        time_out = 30;
     }
     else
     {
-        timeout = atoi( period );
+        time_out = atoi( period );
     }
 
     /**
      * Ensure the timeout is a positive integer.
      */
-    if ( timeout < 0 )
-        timeout = 60;
+    if ( time_out < 0 )
+        time_out = 60;
 
     if ( str == NULL )
         return luaL_error(L, "Missing argument to alert(..)");
@@ -580,7 +580,7 @@ int alert(lua_State * L)
         /**
          * Timeout.
          */
-        if ( ( time(NULL) - now ) > timeout )
+        if ( ( time(NULL) - now ) > time_out )
             done = true;
     }
     noecho();

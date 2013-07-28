@@ -25,7 +25,7 @@
 #include <cctype>
 #include <sys/ioctl.h>
 #include <dirent.h>
-#include <ncurses.h>
+#include <cursesw.h>
 
 #include "input.h"
 #include "lang.h"
@@ -701,6 +701,13 @@ void CScreen::drawMessage()
  */
 void CScreen::setup()
 {
+    /**
+     * Setup locale.
+     */
+    setlocale(LC_CTYPE, "" );
+    setlocale(LC_ALL, "" );
+
+
     /**
      * Setup ncurses.
      */

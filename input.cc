@@ -17,7 +17,8 @@
  */
 
 
-#include <ncurses.h>
+#include <cstdlib>
+#include <cursesw.h>
 #include "input.h"
 
 

@@ -34,7 +34,7 @@ LVER=lua5.1
 #
 #
 CPPFLAGS+=-std=gnu++0x -g -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags)
-LDLIBS+=$(shell pkg-config --libs ${LVER}) -lcurses -lmimetic -lpcre -lpcrecpp
+LDLIBS+=$(shell pkg-config --libs ${LVER}) -lncursesw  -lmimetic -lpcre -lpcrecpp
 
 
 #
