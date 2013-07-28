@@ -33,7 +33,7 @@ LVER=lua5.1
 # NOTE: We use "-std=gnu++0x" so we can use "unordered_map", which is in the STL.
 #
 #
-CPPFLAGS+=-std=gnu++0x -g -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags)
+CPPFLAGS+=-std=gnu++0x -g -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) # -ggdb -pg
 LDLIBS+=$(shell pkg-config --libs ${LVER}) -lncursesw  -lmimetic -lpcre -lpcrecpp
 
 
