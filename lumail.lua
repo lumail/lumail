@@ -334,17 +334,26 @@ end
 -- The function is expected to return a Lua table, the values of which
 -- will be used for completion.  (The keys being ignored.)
 --
--- Here we add any user-defined function the to the completion set.
--- This works because Lua uses the global "_G" table to store functions, etc.
+-- Here we add the known colours for the various colour-related primitives,
+-- as well as any user-defined function.
+--
+-- NOTE: User-functions come from the global Lua "_G" table.
 --
 --
 function on_complete()
-   ret = {}
 
+   --
+   -- Default to the colours.
+   --
+   ret = { "blue", "cyan", "green", "magenta", "red", "white", "yellow" }
+
+   --
+   -- Add in all user-defined functions.
+   --
    for k,v in pairs(_G) do
       ret[k] = k
    end
-   return(ret)
+  return(ret)
 end
 
 --
