@@ -150,26 +150,10 @@ bool sort_messages(CMessage *a, CMessage *b)
         if  ( ( sort != NULL ) && ( strcmp( sort->c_str(), "date-desc" ) == 0 ) )
             asc = false;
 
-
-        /**
-         * Stat both files.
-         */
-        struct stat us;
-        struct stat them;
-
-        std::string us_path   = a->path();
-        std::string them_path = b->path();
-
-        if (stat(us_path.c_str(), &us) < 0)
-            return 0;
-
-        if (stat(them_path.c_str(), &them) < 0)
-            return 0;
-
         if ( asc )
-            return (us.st_mtime < them.st_mtime);
+            return (a->mtime() < b->mtime());
         else
-            return (them.st_mtime < us.st_mtime);
+            return (b->mtime() <= a->mtime());
 
     }
 

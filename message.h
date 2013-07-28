@@ -36,6 +36,9 @@
  */
 class CMessage
 {
+private:
+    time_t m_time_cache;
+
 public:
 
     /**
@@ -109,6 +112,11 @@ public:
      * Mark a message as read.
      */
     bool mark_read();
+
+    /**
+     * Get the message last modified time (cached).
+     */
+    const time_t mtime();
 
     /**
      * get a header from the message.

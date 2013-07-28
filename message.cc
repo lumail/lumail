@@ -49,6 +49,7 @@ CMessage::CMessage(std::string filename)
     m_path = filename;
     m_me   = NULL;
     m_date = 0;
+    m_time_cache = 0;
 }
 
 
@@ -341,6 +342,24 @@ bool CMessage::is_new()
 }
 
 
+/**
+ * Get the message last modified time (cached).
+ */
+const time_t CMessage::mtime()
+{
+    struct stat s;
+
+    if (m_time_cache != 0)
+    {
+        return m_time_cache;
+    }
+
+    if (stat(path().c_str(), &s) < 0)
+        return m_time_cache;
+
+    memcpy(&m_time_cache, &s.st_mtime, sizeof(time_t));
+    return m_time_cache;
+}
 /**
  * Mark the message as read.
  */
