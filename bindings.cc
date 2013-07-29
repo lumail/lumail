@@ -583,7 +583,7 @@ int alert(lua_State * L)
         int elapsed = time(NULL) - now;
 
         memset(progress, '\0', sizeof(progress));
-        snprintf( progress, sizeof(progress-1), "%d/%d", elapsed, time_out );
+        snprintf( progress, sizeof(progress)-1, "%d/%d", elapsed, time_out );
         mvwaddstr(childwin, height-4, 10, "Press RET to continue, timeout in " );
         waddstr(childwin,progress);
         wrefresh(childwin);
@@ -2454,7 +2454,7 @@ int reply(lua_State * L)
         unsigned int start = 0;
         if ( ( ref.find('(') ) != std::string::npos )
         {
-            unsigned int end = ref.find(')',start);
+            size_t end = ref.find(')',start);
             if ( end != std::string::npos )
                 ref.erase(start,end-start+1);
         }
