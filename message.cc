@@ -46,9 +46,9 @@ using namespace mimetic;
  */
 CMessage::CMessage(std::string filename)
 {
-    m_path = filename;
-    m_me   = NULL;
-    m_date = 0;
+    m_path       = filename;
+    m_me         = NULL;
+    m_date       = 0;
     m_time_cache = 0;
 }
 
@@ -78,6 +78,11 @@ std::string CMessage::path()
 void CMessage::path( std::string new_path )
 {
     m_path = new_path;
+
+    /**
+     * Reset the cached stat() data.
+     */
+    m_time_cache = 0;
 }
 
 
@@ -360,6 +365,8 @@ const time_t CMessage::mtime()
     memcpy(&m_time_cache, &s.st_mtime, sizeof(time_t));
     return m_time_cache;
 }
+
+
 /**
  * Mark the message as read.
  */
@@ -698,41 +705,10 @@ std::string CMessage::date(TDate fmt)
             /**
              * The date was empty, so use the mtime.
              */
-            struct stat st_buf;
-            const char *p = path().c_str();
-
-            int err = stat(p,&st_buf);
-            if ( !err )
-            {
-                m_date = st_buf.st_mtime;
-            }
+            m_date = mtime();
         }
         else
         {
-#if 0
-            /**
-             *
-             * Parse RFC822 date
-             * Case in point: Mon, 15 Dec 2003 09:46:00 +0000 (GMT)
-             * Would be OK with just +0000 or (GMT) but both together
-             * is not acceptable.  But note that the () are actually a
-             * comment.  So we strip comments.
-             */
-            unsigned int start = 0;
-            while(1)
-            {
-                start = date.find('(',start);
-                if (start==std::string::npos)
-                    break;
-
-                unsigned int end = date.find(')',start);
-                if (end==std::string::npos)
-                    break;
-                date.erase(start,end+1-start);
-            }
-#endif
-
-
             struct tm t;
 
             /**
@@ -791,7 +767,7 @@ std::string CMessage::date(TDate fmt)
                 rc = strptime(date.c_str(), fmt, &t);
             }
 
-            if ( current_loc != NULL ) 
+            if ( current_loc != NULL )
                 setlocale(LC_TIME, current_loc);
 
             if (!rc)
