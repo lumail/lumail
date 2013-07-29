@@ -315,7 +315,33 @@ bool CMessage::matches_filter( std::string *filter )
     }
 
     /**
-     * Matching the formatted version.
+     * Is this a header-limit?
+     */
+    if ( filter->length() > 8 && strncasecmp( filter->c_str(), "HEADER:", 7 ) == 0 )
+    {
+        /**
+         * Find the ":" to split the value.
+         */
+        size_t offset = filter->find( ":", 8 );
+        if ( offset != std::string::npos )
+        {
+            /**
+             * The header we're matching and the pattern against which to limit.
+             */
+            std::string head    = filter->substr(7,offset-7);
+            std::string pattern = filter->substr(offset+1);
+
+            std::string value = header( head );
+
+            if (pcrecpp::RE(pattern, pcrecpp::RE_Options().set_caseless(true)).PartialMatch(value) )
+                return true;
+
+        }
+    }
+
+    /**
+     * OK now we're falling back to matching against the formatted version
+     * of the message - as set by `index_format`.
      */
     std::string formatted = format();
 
