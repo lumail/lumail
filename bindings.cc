@@ -2812,6 +2812,12 @@ int send_email(lua_State *L)
 
 
     /**
+     * Call the on_send_message hook, with the path to the message.
+     */
+    call_message_hook( "on_send_message", filename );
+
+
+    /**
      * OK now we're going to send the mail.  Get some settings.
      */
     std::string *sendmail  = global->get_variable("sendmail_path");
