@@ -133,6 +133,18 @@ CMessage *get_message_for_operation( const char *path )
 
 
 /**
+ * Call the on_message_aborted hook, with the path to the
+ * message.
+ */
+void on_message_aborted( const char *filename )
+{
+    CLua *lua = CLua::Instance();
+    lua->execute( "on_message_aborted(\"" + std::string(filename) + "\");" );
+
+}
+
+
+/**
  * Get the user's selected editor.
  */
 std::string get_editor()
@@ -2244,6 +2256,12 @@ int compose(lua_State * L)
         if ( ( response[0] == 'n' ) ||
              ( response[0] == 'N' ) )
         {
+            /**
+             * Call the on_message_aborted hook, with the path to the
+             * message.
+             */
+            on_message_aborted( filename );
+
             cont = false;
             unlink( filename );
             reset_prog_mode();
@@ -2532,6 +2550,12 @@ int reply(lua_State * L)
         if ( ( response[0] == 'n' ) ||
              ( response[0] == 'N' ) )
         {
+            /**
+             * Call the on_message_aborted hook, with the path to the
+             * message.
+             */
+            on_message_aborted( filename );
+
             cont = false;
             unlink( filename );
             reset_prog_mode();

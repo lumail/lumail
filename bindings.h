@@ -44,6 +44,12 @@ int get_set_string_variable( lua_State *L, const char * name );
 CMessage *get_message_for_operation( const char *path );
 
 
+/**
+ * Call the aborted hook, if present.
+ */
+void on_message_aborted(const char *filename );
+
+
 
 /**
  **
