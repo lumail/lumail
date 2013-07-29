@@ -1035,7 +1035,7 @@ int scroll_maildir_to(lua_State * L)
             i = 0;
     }
 
-    free( find );
+    delete ( find );
     return 0;
 }
 
