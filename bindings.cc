@@ -136,11 +136,10 @@ CMessage *get_message_for_operation( const char *path )
  * Call the on_message_aborted hook, with the path to the
  * message.
  */
-void on_message_aborted( const char *filename )
+void call_message_hook( const char *hook, const char *filename )
 {
     CLua *lua = CLua::Instance();
-    lua->execute( "on_message_aborted(\"" + std::string(filename) + "\");" );
-
+    lua->execute( std::string( hook ) + "(\"" + std::string(filename) + "\");" );
 }
 
 
@@ -2260,7 +2259,7 @@ int compose(lua_State * L)
              * Call the on_message_aborted hook, with the path to the
              * message.
              */
-            on_message_aborted( filename );
+            call_message_hook( "on_message_aborted", filename );
 
             cont = false;
             unlink( filename );
@@ -2294,6 +2293,10 @@ int compose(lua_State * L)
         }
     }
 
+    /**
+     * Call the on_send_message hook, with the path to the message.
+     */
+    call_message_hook( "on_send_message", filename );
 
     /**
      * If attachments are non-empty we need to hadnle them.
@@ -2554,7 +2557,7 @@ int reply(lua_State * L)
              * Call the on_message_aborted hook, with the path to the
              * message.
              */
-            on_message_aborted( filename );
+            call_message_hook( "on_message_aborted", filename );
 
             cont = false;
             unlink( filename );
@@ -2587,6 +2590,12 @@ int reply(lua_State * L)
             }
         }
     }
+
+
+    /**
+     * Call the on_send_message hook, with the path to the message.
+     */
+    call_message_hook( "on_send_message", filename );
 
     /**
      * If attachments are non-empty we need to hadnle them.

@@ -45,9 +45,9 @@ CMessage *get_message_for_operation( const char *path );
 
 
 /**
- * Call the aborted hook, if present.
+ * Call a hook, passing a filename as an argument.
  */
-void on_message_aborted(const char *filename );
+void call_message_hook(const char *hook, const char *filename );
 
 
 
