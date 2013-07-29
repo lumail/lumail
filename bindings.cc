@@ -2217,6 +2217,11 @@ int compose(lua_State * L)
     cmd += filename;
     unused = system(cmd.c_str());
 
+    /**
+     * Call the on_edit_message hook, with the path to the message.
+     */
+    call_message_hook( "on_edit_message", filename );
+
 
     /**
      * Attachments associated with this mail.
@@ -2513,6 +2518,11 @@ int reply(lua_State * L)
     cmd += filename;
     unused = system(cmd.c_str());
 
+
+    /**
+     * Call the on_edit_message hook, with the path to the message.
+     */
+    call_message_hook( "on_edit_message", filename );
 
     /**
      * Attachments associated with this mail.
