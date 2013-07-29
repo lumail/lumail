@@ -133,8 +133,9 @@ CMessage *get_message_for_operation( const char *path )
 
 
 /**
- * Call the on_message_aborted hook, with the path to the
- * message.
+ * Call a hook, with the given path.
+ *
+ * For example "on_edit_message", "on_send_message", or "on_message_aborted".
  */
 void call_message_hook( const char *hook, const char *filename )
 {
@@ -2809,6 +2810,12 @@ int send_email(lua_State *L)
     }
 
     close(fd);
+
+
+    /**
+     * Call the on_send_message hook, with the path to the message.
+     */
+    call_message_hook( "on_send_message", filename );
 
 
     /**
