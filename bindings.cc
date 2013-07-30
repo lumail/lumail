@@ -334,7 +334,7 @@ int sort(lua_State * L)
     int ret = get_set_string_variable( L, "sort" );
 
     /**
-     * Update the selected mesages.
+     * Update the selected massages.
      */
     if ( str != NULL )
     {
@@ -1872,7 +1872,7 @@ int mime_type(lua_State *L)
         }
 
         /**
-         * Lookup the value, and use the default if we can't find a match.
+         * Look up the value, and use the default if we can't find a match.
          */
         std::string value = table[ extension ];
 
@@ -2100,7 +2100,7 @@ int compose(lua_State * L)
     int ret = prompt( L);
     if ( ret != 1 )
     {
-        lua_pushstring(L, "Error recieving recipient" );
+        lua_pushstring(L, "Error receiving recipient" );
         return( msg(L ) );
 
     }
@@ -2113,7 +2113,7 @@ int compose(lua_State * L)
     ret = prompt( L);
     if ( ret != 1 )
     {
-        lua_pushstring(L, "Error recieving subject" );
+        lua_pushstring(L, "Error receiving subject" );
         return( msg(L ) );
     }
 
@@ -2247,7 +2247,7 @@ int compose(lua_State * L)
         ret = prompt_chars(L);
         if ( ret != 1 )
         {
-            lua_pushstring(L, "Error recieving confiramtion." );
+            lua_pushstring(L, "Error receiving confirmation." );
             return( msg(L ) );
         }
         const char * response = lua_tostring(L, -1);
@@ -2305,7 +2305,7 @@ int compose(lua_State * L)
     call_message_hook( "on_send_message", filename );
 
     /**
-     * If attachments are non-empty we need to hadnle them.
+     * If attachments are non-empty we need to handle them.
      */
     if ( attachments.size() > 0 )
     {
@@ -2549,7 +2549,7 @@ int reply(lua_State * L)
         ret = prompt_chars(L);
         if ( ret != 1 )
         {
-            lua_pushstring(L, "Error recieving confiramtion." );
+            lua_pushstring(L, "Error receiving confirmation." );
             return( msg(L ) );
         }
 
@@ -2609,7 +2609,7 @@ int reply(lua_State * L)
     call_message_hook( "on_send_message", filename );
 
     /**
-     * If attachments are non-empty we need to hadnle them.
+     * If attachments are non-empty we need to handle them.
      */
     if ( attachments.size() > 0 )
     {
@@ -2651,7 +2651,7 @@ int reply(lua_State * L)
     unlink( filename );
 
     /**
-     * Now we're all cleaned up mark the orignal message
+     * Now we're all cleaned up mark the original message
      * as being replied to.
      */
     mssg->add_flag( 'R' );
@@ -3165,7 +3165,7 @@ int load_directory(lua_State *L)
         return luaL_error(L, "Missing argument to load_directory(..)");
 
     /**
-     * The lua intepretter.
+     * The lua interpreter.
      */
     CLua *lua = CLua::Instance();
 

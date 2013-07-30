@@ -23,7 +23,7 @@
 #include <string>
 
 /**
- * Forward decleration of class.
+ * Forward declaration of class.
  */
 class CMessage;
 

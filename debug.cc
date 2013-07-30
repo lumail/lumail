@@ -86,7 +86,7 @@ void CDebug::debug( std::string line)
 #ifdef LUMAIL_DEBUG
 
     /**
-     * If we don't have a filename retrun.
+     * If we don't have a filename return.
      */
     if ( m_logfile.empty() )
         return;
@@ -98,7 +98,7 @@ void CDebug::debug( std::string line)
     fs.open ( m_logfile,  std::fstream::out | std::fstream::app);
 
     /**
-     * Log the timestamp + mesage.
+     * Log the timestamp + message.
      */
     fs << timestamp() << " " << line << "\n";
 

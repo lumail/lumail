@@ -35,7 +35,7 @@ extern "C"
 
 /**
  * A structure for storing the mapping between Lua-function names,
- * and their C-implemenations.
+ * and their C-implementations.
  */
 struct CLuaMapping
 {
@@ -75,7 +75,7 @@ extern int primitive_count;
 
 
 /**
- * A singleton class holding a Lua intepreter.
+ * A singleton class holding a Lua interpreter.
  *
  * This is used to invoke Lua functions/methods from the rest of the code,
  * and to lookup keybindings, etc.
@@ -160,7 +160,7 @@ private:
     static CLua *pinstance;
 
     /**
-     * The handle to the lua intepreter.
+     * The handle to the Lua interpreter.
      */
     lua_State *m_lua;
 

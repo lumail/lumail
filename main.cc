@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
     }
 
     /**
-     * Initialize the screen.
+     * Initialise the screen.
      */
     CScreen screen = CScreen();
     screen.setup();
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
     int init = 0;
 
     /**
-     * Create the lua intepreter.
+     * Create the Lua intepreter.
      */
     CLua *lua = CLua::Instance();
     if ( lua->load_file("/etc/lumail.lua") )
@@ -213,7 +213,7 @@ int main(int argc, char *argv[])
         if ( CFile::is_directory( folder ) )
         {
             /**
-             * This should be simplifiable.
+             * This should be simplified.
              */
             lua->execute( "global_mode( \"index\" );" );
             lua->execute( "maildir_limit( \"all\" );" );
@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
 
             /**
              * See if we can handle it via our keyboard map, or
-             * the lua function "on_key".
+             * the luau function "on_key".
              */
             if ( (!lua->on_key( name )) && ( !lua->on_keypress(name)) )
             {

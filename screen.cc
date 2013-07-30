@@ -114,7 +114,7 @@ void CScreen::drawMaildir()
     int height = CScreen::height();
 
     /**
-     * Correct for the statusbar and that counting starts at 0
+     * Correct for the status bar and that counting starts at 0
      */
     int middle = (height-2)/2;
     int selected = global->get_selected_folder();
@@ -346,7 +346,7 @@ void CScreen::drawIndex()
     int selected = global->get_selected_message();
 
     /**
-     *  correct for the statusbar and that counting starts at 1
+     *  correct for the status bar and that counting starts at 1
      */
     int middle = (height-2)/2;
     int rowToHighlight = 0;
@@ -831,7 +831,7 @@ char *CScreen::get_completion( const char *input, size_t size, int position )
     /**
      * So we have a string and we know the cursor is at position "position".
      *
-     * We want to walk backwards until we find the preceeding space/tab/( to
+     * We want to walk backwards until we find the preceding space/tab/( to
      * know where to expand from.
      */
     const char *p = input + position - 1;
@@ -958,7 +958,7 @@ char *CScreen::get_completion( const char *input, size_t size, int position )
         strncpy(fil, slash+1 , strlen(slash)-2);
 
         /**
-         * Fixup the broken-trailing whitespace.
+         * Fix-up the broken-trailing white-space.
          */
         for( int i = 0; i < (int)strlen(fil); i ++ )
         {

@@ -41,7 +41,7 @@ CLua *CLua::pinstance = NULL;
 
 /**
  * This is a list of all the functions that we export to our
- * embedded lua-intepreter.
+ * embedded lua-interpreter.
  *
  * The function is externally declared in our header so that we
  * can access it from elsewhere.
@@ -58,7 +58,7 @@ struct CLuaMapping primitive_list[] =
  */
     {"abort", "Exit lumail with an error message.", (lua_CFunction) abort },
     {"clear", "Clear the screen.", (lua_CFunction) clear },
-    {"alert", "SHow an alert which requires confirmation.", (lua_CFunction) alert },
+    {"alert", "Show an alert which requires confirmation.", (lua_CFunction) alert },
     {"dump_stack", "Dump the Lua-stack for debugging purposes", (lua_CFunction) lua_dump_stack },
     {"log_message", "Add a message to the debug-log.", (lua_CFunction) log_message },
     {"exec", "Execute an external command.", (lua_CFunction) exec },
@@ -150,7 +150,7 @@ struct CLuaMapping primitive_list[] =
     {"jump_maildir_to", "Jump the Maildir list to the given offset.", (lua_CFunction) jump_maildir_to },
     {"maildirs_matching", "Return the maildirs matching the given regexp.", (lua_CFunction) maildirs_matching },
     {"scroll_maildir_down", "Scroll the maildir list down.", (lua_CFunction) scroll_maildir_down },
-    {"scroll_maildir_to", "Scroll the maildir to the next entry matchign the given regexp.", (lua_CFunction) scroll_maildir_to },
+    {"scroll_maildir_to", "Scroll the maildir to the next entry matching the given regexp.", (lua_CFunction) scroll_maildir_to },
     {"scroll_maildir_up", "Scroll the maildir list up.", (lua_CFunction) scroll_maildir_up },
     {"select_maildir", "Select a Maildir by path.", (lua_CFunction) select_maildir },
 
@@ -182,7 +182,7 @@ int primitive_count = (sizeof(primitive_list)/sizeof(struct CLuaMapping));
 
 
 /**
- * Get access to our LUA intepreter.
+ * Get access to our LUA interpreter.
  */
 CLua *CLua::Instance()
 {
@@ -333,7 +333,7 @@ char *CLua::get_nested_table( std::string table, std::string key, std::string su
 
 
 /**
- * Lookup the binding for the named keystroke in our keymap(s).
+ * Look up the binding for the named keystroke in our keymap(s).
  *
  * If the result is a string then execute it as a function.
  */

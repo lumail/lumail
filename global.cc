@@ -486,7 +486,7 @@ bool CGlobal::remove_folder(std::string path)
     it = std::find(m_selected_folders.begin(), m_selected_folders.end(), path);
 
     /**
-     * If we found it reemove it.
+     * If we found it remove it.
      */
     if (it != m_selected_folders.end())
     {
