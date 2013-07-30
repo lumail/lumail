@@ -1561,7 +1561,7 @@ int scroll_index_to(lua_State * L)
      * We've changed messages, so reset the current position.
      */
     global->set_message_offset(0);
-    free( find );
+    delete( find );
     return 0;
 }
 
