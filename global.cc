@@ -223,6 +223,34 @@ bool sort_messages(CMessage *a, CMessage *b)
         return( strcmp( as.c_str(), bs.c_str() ) < 0 );
     }
 
+
+    /**
+     * Sort by the date-header
+     */
+    if (  ( sort != NULL ) &&
+          ( ( strcmp(sort->c_str(), "header" ) == 0 )  ||
+            ( strcmp(sort->c_str(), "header-asc" ) == 0 )  ||
+            ( strcmp(sort->c_str(), "header-desc" ) == 0 )  ) )
+    {
+
+        bool asc = true;
+
+        /**
+         * Are we descending?
+         */
+        if  ( ( sort != NULL ) && ( strcmp( sort->c_str(), "header-desc" ) == 0 ) )
+            asc = false;
+
+        time_t at = a->get_date_field();
+        time_t bt = b->get_date_field();
+
+        if ( asc )
+            return ( at < bt );
+        else
+            return ( bt <= at );
+
+    }
+
     /**
      * TODO: other sorting
      */

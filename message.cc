@@ -943,6 +943,30 @@ std::string CMessage::date(TDate fmt)
 }
 
 
+
+/**
+ * This is solely used for sorting by message-headers
+ */
+time_t CMessage::get_date_field()
+{
+    if ( m_date != 0 )
+        return m_date;
+
+    /**
+     * Date wasn't cached.  Make it so.
+     */
+    std::string tmp = date();
+
+    /**
+     * Avoid "unused variable" warning.
+     */
+    (void)(tmp);
+
+    return( m_date );
+}
+
+
+
 /**
  * Get the recipient of the message.
  */

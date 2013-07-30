@@ -158,6 +158,11 @@ public:
      */
     bool save_attachment( int offset, std::string output_path );
 
+    /**
+     * This is solely used for sorting by message-headers
+     */
+    time_t get_date_field();
+
 private:
 
     /**
