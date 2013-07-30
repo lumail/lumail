@@ -167,6 +167,9 @@ int prompt_maildir(lua_State *L);
 /* clear the screen */
 int clear(lua_State * L);
 
+/* show brief help. */
+int show_help(lua_State *L);
+
 /* refresh the display */
 int refresh_display(lua_State * L);
 

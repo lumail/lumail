@@ -62,6 +62,7 @@ struct CLuaMapping primitive_list[] =
     {"dump_stack", "Dump the Lua-stack for debugging purposes", (lua_CFunction) lua_dump_stack },
     {"exec", "Execute an external command.", (lua_CFunction) exec },
     {"exit", "Exit lumail.", (lua_CFunction) exit },
+    {"help", "Show brief help for primitives.", (lua_CFunction) show_help },
     {"log_message", "Add a message to the debug-log.", (lua_CFunction) log_message },
     {"mime_type", "Get the MIME-type for a file.", (lua_CFunction) mime_type },
     {"msg", "Write a message to the status-area.", (lua_CFunction) msg },

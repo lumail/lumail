@@ -389,6 +389,31 @@ int clear(lua_State * L)
 
 
 /**
+ * Show brief help
+ */
+int show_help(lua_State * L)
+{
+    const char *str = lua_tostring(L, -1);
+
+    if (str == NULL)
+        return luaL_error(L, "Missing argument to help(..)");
+
+    for(int i = 0; i < primitive_count; i++ )
+    {
+        const char *name = primitive_list[i].name;
+        const char *help = primitive_list[i].help;
+
+        if ( strcasecmp( name, str ) == 0 )
+        {
+            lua_pushstring(L, help );
+            return( msg(L) );
+        }
+    }
+
+    return 0;
+}
+
+/**
  * Redraw the display.
  */
 int refresh_display(lua_State * L)
