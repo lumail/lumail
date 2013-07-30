@@ -37,13 +37,13 @@ The application is developed in C++ and has intentionally minimal dependencies:
 
 * lua 5.1 - The scripting language.
     * lua 5.2 is supported too, but is not the default.
-* libncurses - The console input/graphics library.
+* libncursesw - The console input/graphics library.
 * libmimetic  - The MIME-library.
 * libpcre3 - The regular-expression library.
 
 Upon a Debian GNU/Linux system you may install all required packages with:
 
-     # apt-get install libncurses-dev liblua5.1-0-dev lua5.1 libmimetic-dev  libpcre3-dev
+     # apt-get install libncursesw5-dev liblua5.1-0-dev lua5.1 libmimetic-dev  libpcre3-dev
 
 > There are [binary packages for Debian GNU/linux](http://packages.steve.org.uk/lumail/), compiled by the author.
 
