@@ -331,10 +331,20 @@ bool CMessage::matches_filter( std::string *filter )
             std::string head    = filter->substr(7,offset-7);
             std::string pattern = filter->substr(offset+1);
 
-            std::string value = header( head );
+            /**
+             * Split the header list by "|" and return true if any of
+             * them match.
+             */
+            std::istringstream helper(head);
+            std::string tmp;
+            while (std::getline(helper, tmp, '|'))
+            {
+                std::string value = header( tmp );
 
-            if (pcrecpp::RE(pattern, pcrecpp::RE_Options().set_caseless(true)).PartialMatch(value) )
-                return true;
+                if (pcrecpp::RE(pattern, pcrecpp::RE_Options().set_caseless(true)).PartialMatch(value) )
+                    return true;
+            }
+            return false;
 
         }
     }
