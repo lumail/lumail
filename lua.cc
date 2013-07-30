@@ -57,12 +57,12 @@ struct CLuaMapping primitive_list[] =
  * Basic primitives
  */
     {"abort", "Exit lumail with an error message.", (lua_CFunction) abort },
-    {"clear", "Clear the screen.", (lua_CFunction) clear },
     {"alert", "Show an alert which requires confirmation.", (lua_CFunction) alert },
+    {"clear", "Clear the screen.", (lua_CFunction) clear },
     {"dump_stack", "Dump the Lua-stack for debugging purposes", (lua_CFunction) lua_dump_stack },
-    {"log_message", "Add a message to the debug-log.", (lua_CFunction) log_message },
     {"exec", "Execute an external command.", (lua_CFunction) exec },
     {"exit", "Exit lumail.", (lua_CFunction) exit },
+    {"log_message", "Add a message to the debug-log.", (lua_CFunction) log_message },
     {"mime_type", "Get the MIME-type for a file.", (lua_CFunction) mime_type },
     {"msg", "Write a message to the status-area.", (lua_CFunction) msg },
     {"refresh_display", "Refresh the display.", (lua_CFunction) refresh_display },
@@ -70,6 +70,7 @@ struct CLuaMapping primitive_list[] =
     {"screen_width", "Return the width of the screen in columns.", (lua_CFunction) screen_width },
     {"sleep", "Pause execution for the given number of seconds.", (lua_CFunction) sleep },
     {"stuff", "Stuff keys into the input-buffer", (lua_CFunction) stuff },
+
 /**
  * File/Path utilities
  */
