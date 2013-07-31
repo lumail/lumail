@@ -207,7 +207,7 @@ std::vector<std::string> CFile::get_all_maildirs(std::string prefix)
     dirent *de;
     DIR *dp;
 
-    std::string prefix = path.empty()? "." : path.c_str();
+    prefix = prefix.empty()? "." : prefix.c_str();
     dp = opendir(prefix.c_str());
     if (dp)
     {
