@@ -27,6 +27,7 @@
 #include <dirent.h>
 #include <cursesw.h>
 
+#include "file.h"
 #include "input.h"
 #include "lang.h"
 #include "lua.h"
@@ -999,6 +1000,21 @@ char *CScreen::get_completion( const char *input, size_t size, int position )
                  * And the path we've found via readdir.
                  */
                 strcat(ret, de->d_name );
+
+                /**
+                 * Is this a directory?
+                 */
+                {
+                    std::string tmp( dir );
+                    tmp += "/";
+                    tmp += de->d_name ;
+
+                    if ( CFile::is_directory( tmp ) )
+                    {
+                        strcat(ret, "/" );
+                    }
+                }
+
                 return( strdup( ret ) );
             }
         }
