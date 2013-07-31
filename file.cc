@@ -124,6 +124,7 @@ void CFile::copy( std::string src, std::string dst )
     odst.close();
 }
 
+
 /**
  * Move a file.
  */
@@ -140,6 +141,7 @@ bool CFile::move( std::string src, std::string dst )
 
     return( rename( src.c_str(), dst.c_str() ) == 0 );
 }
+
 
 /**
  * Send the contents of a file to the given command, via popen.
@@ -196,11 +198,10 @@ bool CFile::file_to_pipe( std::string src, std::string cmd )
 }
 
 
-
 /**
- * Return a sorted list of maildirs beneath the given path.
+ * Return a sorted list of maildirs beneath the given prefix.
  */
-std::vector<std::string> CFile::get_all_maildirs(std::string path)
+std::vector<std::string> CFile::get_all_maildirs(std::string prefix)
 {
     std::vector<std::string> result;
     dirent *de;
