@@ -914,7 +914,7 @@ char *CScreen::get_completion( const char *input, size_t size, int position )
 
         for (it = f.begin(); it != f.end(); ++it)
         {
-            if( strncmp( p, (*it).c_str(), span ) == 0 )
+            if( strncasecmp( p, (*it).c_str(), span ) == 0 )
             {
                 /**
                  * Copy the leading section of the input.
