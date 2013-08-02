@@ -909,6 +909,13 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
         int key = CInput::Instance()->get_char();
         if ( key == '\n' )
             done = true;
+        if ( key == 27 )
+        {
+            delwin(childwin);
+            clear_main();
+            timeout(1000);
+            return "";
+        }
         if ( key == '\t' )
         {
             selected += 1;
@@ -924,8 +931,10 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
     return( choices.at( selected ) );
 }
 
+
+
 /**
- * Get the possible completions for the current input line.
+ * Get all possible completions for the current input line.
  */
 std::vector<std::string> CScreen::get_completions( const char *input, size_t size, int position )
 {
@@ -941,9 +950,7 @@ std::vector<std::string> CScreen::get_completions( const char *input, size_t siz
 /**
  * Handle TAB-expansion of an input string.
  *
- * NOTE: The caller must free the returned string.
- *
- * TODO: Return a std::vector when ambiguity is involved.
+ * TODO: Remove.
  */
 char *CScreen::get_completion( const char *input, size_t size, int position )
 {
