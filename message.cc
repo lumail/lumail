@@ -109,7 +109,7 @@ void CMessage::message_parse()
     if ( strcmp( message_path.c_str(),
                  orig_path.c_str() ) != 0 )
     {
-        unlink( message_path.c_str() );
+        CFile::delete_file( message_path.c_str() );
     }
 }
 
@@ -1257,7 +1257,7 @@ std::vector<std::string> CMessage::body()
         /**
          * Don't leak the temporary file.
          */
-        unlink( filename );
+        CFile::delete_file( filename );
     }
 
     /**

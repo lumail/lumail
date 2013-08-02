@@ -1437,7 +1437,7 @@ int delete_message( lua_State *L )
     }
     else
     {
-        unlink( msg->path().c_str() );
+        CFile::delete_file( msg->path().c_str() );
 
         CLua *lua = CLua::Instance();
         lua->execute( "msg(\"Deleted: " + msg->path() + "\");" );
@@ -1505,7 +1505,7 @@ int save_message( lua_State *L )
     /**
      * Remove source.
      */
-    unlink( source.c_str() );
+    CFile::delete_file( source.c_str() );
 
     /**
      * Update messages
@@ -2293,7 +2293,7 @@ int compose(lua_State * L)
             call_message_hook( "on_message_aborted", filename );
 
             cont = false;
-            unlink( filename );
+            CFile::delete_file( filename );
             reset_prog_mode();
             refresh();
 
@@ -2310,7 +2310,7 @@ int compose(lua_State * L)
             ret = prompt( L);
             if ( ret != 1 )
             {
-                unlink( filename );
+                CFile::delete_file( filename );
                 reset_prog_mode();
                 refresh();
                 lua_pushstring(L, "Error receiving attachment." );
@@ -2355,7 +2355,7 @@ int compose(lua_State * L)
     std::string archive = CMaildir::message_in( *sent_path, false );
     if ( archive.empty() )
     {
-        unlink( filename );
+        CFile::delete_file( filename );
         reset_prog_mode();
         refresh();
 
@@ -2369,7 +2369,7 @@ int compose(lua_State * L)
      */
     CFile::copy( filename, archive );
 
-    unlink( filename );
+    CFile::delete_file( filename );
 
     /**
      * Reset + redraw
@@ -2596,7 +2596,7 @@ int reply(lua_State * L)
             call_message_hook( "on_message_aborted", filename );
 
             cont = false;
-            unlink( filename );
+            CFile::delete_file( filename );
             reset_prog_mode();
             refresh();
 
@@ -2613,7 +2613,7 @@ int reply(lua_State * L)
             ret = prompt( L);
             if ( ret != 1 )
             {
-                unlink( filename );
+                CFile::delete_file( filename );
                 reset_prog_mode();
                 refresh();
                 lua_pushstring(L, "Error receiving attachment." );
@@ -2659,7 +2659,7 @@ int reply(lua_State * L)
     std::string archive = CMaildir::message_in( *sent_path, false );
     if ( archive.empty() )
     {
-        unlink( filename );
+        CFile::delete_file( filename );
         reset_prog_mode();
         refresh();
 
@@ -2673,7 +2673,7 @@ int reply(lua_State * L)
      */
     CFile::copy( filename, archive );
 
-    unlink( filename );
+    CFile::delete_file( filename );
 
     /**
      * Now we're all cleaned up mark the original message
@@ -2866,7 +2866,7 @@ int send_email(lua_State *L)
     std::string archive = CMaildir::message_in( *sent_path, true );
     if ( archive.empty() )
     {
-        unlink( filename );
+        CFile::delete_file( filename );
         reset_prog_mode();
         refresh();
 
@@ -2880,7 +2880,7 @@ int send_email(lua_State *L)
      */
     CFile::copy( filename, archive );
 
-    unlink( filename );
+    CFile::delete_file( filename );
 
 
     return 0;
