@@ -83,6 +83,7 @@ void CMessage::message_parse()
      * The path of the message on-disk.
      */
     std::string message_path = path();
+    std::string orig_path    = message_path;
 
     /**
      * Is "on_message_parse" a defined function?
@@ -101,6 +102,15 @@ void CMessage::message_parse()
     ifstream file( message_path.c_str());
     m_me = new MimeEntity(file);
 
+    /**
+     * If the file has changed then we need to remove it
+     * to avoid leaking copies of files.
+     */
+    if ( strcmp( message_path.c_str(),
+                 orig_path.c_str() ) != 0 )
+    {
+        unlink( message_path.c_str() );
+    }
 }
 
 
