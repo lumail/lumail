@@ -819,11 +819,24 @@ void CScreen::clear_main()
 
 }
 
+/**
+ * Choose a single item from a small selection.
+ *
+ * This will be used to resolve ambiguity in TAB-completion.
+ */
+std::string CScreen::choose_string( std::vector<std::string> choices )
+{
+    return( std::string( "TODO" ) );
+}
+
+
 
 /**
- * Given the input text return a single completion.
+ * Handle TAB-expansion of an input string.
  *
  * NOTE: The caller must free the returned string.
+ *
+ * TODO: Return a std::vector when ambiguity is involved.
  */
 char *CScreen::get_completion( const char *input, size_t size, int position )
 {

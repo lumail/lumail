@@ -83,8 +83,18 @@ public:
     static void clear_status();
 
     /**
+     * Choose a single item from a small selection.
+     *
+     * This will be used to resolve ambiguity in TAB-completion.
+     */
+    std::string choose_string( std::vector<std::string> choices );
+
+    /**
      * Handle TAB-expansion of an input string.
-     * Return memory the caller must free.
+     *
+     * NOTE: The caller must free the returned string.
+     *
+     * TODO: Return a std::vector when ambiguity is involved.
      */
     static char *get_completion( const char *input, size_t size, int position );
 
