@@ -87,7 +87,7 @@ public:
      *
      * This will be used to resolve ambiguity in TAB-completion.
      */
-    std::string choose_string( std::vector<std::string> choices );
+    static std::string choose_string( std::vector<std::string> choices );
 
     /**
      * Handle TAB-expansion of an input string.
@@ -97,6 +97,11 @@ public:
      * TODO: Return a std::vector when ambiguity is involved.
      */
     static char *get_completion( const char *input, size_t size, int position );
+
+    /**
+     * Get the possible completions for the current input line.
+     */
+    static std::vector<std::string> get_completions( const char *input, size_t size, int position );
 
     /**
      * Read a line of input.

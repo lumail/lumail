@@ -474,20 +474,6 @@ void CScreen::drawIndex()
 void CScreen::drawMessage()
 {
 
-#ifdef SKX
-    std::vector< std::string> tmp;
-    tmp.push_back( "Steve");
-    tmp.push_back( "Kemp");
-    tmp.push_back( "Is testing");
-    tmp.push_back( "[Did I mention this is a wide string?]");
-    tmp.push_back( "The menu");
-    tmp.push_back( "display code");
-    tmp.push_back( "which");
-    tmp.push_back( "is");
-    tmp.push_back( "awesome!");
-    std::string f = choose_string( tmp );
-#endif
-
     /**
      * Get all messages from the currently selected maildirs.
      */
@@ -938,6 +924,18 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
     return( choices.at( selected ) );
 }
 
+/**
+ * Get the possible completions for the current input line.
+ */
+std::vector<std::string> CScreen::get_completions( const char *input, size_t size, int position )
+{
+    std::vector<std::string> results;
+    results.push_back( "Completion");
+    results.push_back( "is temporarily" );
+    results.push_back( "broken");
+    return( results );
+}
+
 
 
 /**
@@ -954,7 +952,7 @@ char *CScreen::get_completion( const char *input, size_t size, int position )
     /**
      * So we have a string and we know the cursor is at position "position".
      *
-     * We want to walk backwards until we find the preceding space/tab/( to
+     * We want to walk backwards until we find the preceding space/tab/whatever to
      * know where to expand from.
      */
     const char *p = input + position - 1;
@@ -1211,16 +1209,33 @@ void CScreen::readline(char *buffer, int buflen)
             if ( ( len > 0 ) && ( pos > 0 ) )
             {
                 /**
-                 * Handle the expansion..
+                 * Receive the possible completions.
                  */
-                char *reply = get_completion( buffer, len, pos );
-                if ( reply != NULL )
+                std::vector<std::string> matches = get_completions( buffer, len, pos );
+                if ( matches.size() == 0 )
                 {
-                    strcpy( buffer, reply );
-                    pos = strlen(reply );
-                    len = pos;
-                    free( reply );
+                    beep();
                 }
+                else
+                {
+                    if ( matches.size() == 1 )
+                    {
+                        strcpy( buffer, matches.at(0).c_str() );
+                        pos = strlen(matches.at(0).c_str() );
+                        len = pos;
+                    }
+                    else
+                    {
+                        /**
+                         * Prompt for the correct result, via the menu.
+                         */
+                        std::string choice = choose_string( matches );
+                        strcpy( buffer, choice.c_str() );
+                        pos = strlen(choice.c_str() );
+                        len = pos;
+                    }
+                }
+
             }
         }
         else if (c == 1 )   /* ctrl-a : beginning of line*/
