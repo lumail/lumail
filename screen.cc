@@ -473,6 +473,21 @@ void CScreen::drawIndex()
  */
 void CScreen::drawMessage()
 {
+
+#ifdef SKX
+    std::vector< std::string> tmp;
+    tmp.push_back( "Steve");
+    tmp.push_back( "Kemp");
+    tmp.push_back( "Is testing");
+    tmp.push_back( "[Did I mention this is a wide string?]");
+    tmp.push_back( "The menu");
+    tmp.push_back( "display code");
+    tmp.push_back( "which");
+    tmp.push_back( "is");
+    tmp.push_back( "awesome!");
+    std::string f = choose_string( tmp );
+#endif
+
     /**
      * Get all messages from the currently selected maildirs.
      */
@@ -835,7 +850,7 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
     /**
      * Find longest/widest entry.
      */
-    size_t max;
+    size_t max = 0;
 
     std::vector<std::string>::iterator it;
     for (it = choices.begin(); it != choices.end(); ++it)
@@ -845,11 +860,20 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
     }
 
     /**
-     * Screen width can be used to bound the box.
+     * Get the dimensions.
      */
-    int width = CScreen::width();
-    int cols = 1;
+    int height = CScreen::height() - 4;
+    int width = CScreen::width() - 4;
+    size_t cols = 1;
 
+    WINDOW *childwin = newwin(height, width, 2, 2);
+    box(childwin, 0, 0);
+
+    /**
+     * How many colums to draw?
+     */
+    if ( max < size_t( width ) )
+        cols = 1;
     if ( max < size_t( width / 2 ) )
         cols = 2;
     if ( max < size_t( width / 3 ) )
@@ -857,12 +881,61 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
     if ( max < size_t( width / 4 ) )
         cols = 4;
 
-    /**
-     * Draw columns ..
-     */
-    cols += 0;
+    int selected  = 0;
+    bool done     = false;
+    int col_width = width / cols;
 
-    return( std::string( "TODO" ) );
+    timeout(0);
+
+    while( !done )
+    {
+        refresh();
+
+        int count = 0;
+
+        /**
+         * Drawing of each item.
+         */
+        int x = 0;
+        int y = 2;
+
+        std::vector<std::string>::iterator it;
+        for (it = choices.begin(); it != choices.end(); ++it)
+        {
+
+            /**
+             * Calculate the column.
+             */
+            x = 2 + ( ( count % cols) * col_width );
+            y = 1 + ( count / cols  );
+
+
+            if ( count == selected )
+                wattron(childwin,A_UNDERLINE | A_STANDOUT);
+            else
+                wattroff(childwin,A_UNDERLINE | A_STANDOUT);
+
+            mvwaddstr(childwin, y, x,  (*it).c_str() );
+            count += 1;
+        }
+        wrefresh(childwin);
+
+        int key = CInput::Instance()->get_char();
+        if ( key == '\n' )
+            done = true;
+        if ( key == '\t' )
+        {
+            selected += 1;
+            if ( selected >= (int)choices.size() )
+                selected = 0;
+        }
+
+    }
+
+    delwin(childwin);
+    clear_main();
+    timeout(1000);
+    return( choices.at( selected ) );
 }
 
 
