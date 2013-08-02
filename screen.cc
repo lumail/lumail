@@ -826,6 +826,42 @@ void CScreen::clear_main()
  */
 std::string CScreen::choose_string( std::vector<std::string> choices )
 {
+    /**
+     * We don't need to resolve ambiguity unless there is more than
+     * one choice to choose from.
+     */
+    assert( choices.size() > 0 );
+
+    /**
+     * Find longest/widest entry.
+     */
+    size_t max;
+
+    std::vector<std::string>::iterator it;
+    for (it = choices.begin(); it != choices.end(); ++it)
+    {
+        if ( (*it).size() > max )
+            max = (*it).size();
+    }
+
+    /**
+     * Screen width can be used to bound the box.
+     */
+    int width = CScreen::width();
+    int cols = 1;
+
+    if ( max < size_t( width / 2 ) )
+        cols = 2;
+    if ( max < size_t( width / 3 ) )
+        cols = 3;
+    if ( max < size_t( width / 4 ) )
+        cols = 4;
+
+    /**
+     * Draw columns ..
+     */
+    cols += 0;
+
     return( std::string( "TODO" ) );
 }
 
