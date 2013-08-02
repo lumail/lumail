@@ -1218,6 +1218,7 @@ void CScreen::readline(char *buffer, int buflen)
                 /**
                  * Receive the possible completions.
                  */
+
                 std::vector<std::string> matches = get_completions( buffer, len, pos );
                 if ( matches.size() == 0 )
                 {
@@ -1236,7 +1237,14 @@ void CScreen::readline(char *buffer, int buflen)
                         /**
                          * Prompt for the correct result, via the menu.
                          */
+                        noecho();
+                        curs_set(0);
+
                         std::string choice = choose_string( matches );
+
+                        curs_set(1);
+                        echo();
+
                         strcpy( buffer, choice.c_str() );
                         pos = strlen(choice.c_str() );
                         len = pos;
