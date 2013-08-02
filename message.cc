@@ -64,6 +64,48 @@ CMessage::~CMessage()
 
 
 /**
+ * Parse the message, through the filter if present.
+ *
+ * This uses on_message_parse, if present.
+ */
+void CMessage::message_parse()
+{
+    if ( m_me != NULL )
+        return;
+
+    /**
+     * Lua handle.
+     */
+    CLua        *lua = CLua::Instance();
+    lua_State *m_lua = lua->get_lua();
+
+    /**
+     * The path of the message on-disk.
+     */
+    std::string message_path = path();
+
+    /**
+     * Is "on_message_parse" a defined function?
+     */
+    lua_getglobal(m_lua, "on_message_parse");
+    if (lua_isfunction(m_lua, -1))
+    {
+        lua_pushstring(m_lua, message_path.c_str() );
+        lua_pcall(m_lua, 1, 1, 0);
+
+        const char *str = lua_tostring(m_lua,-1);
+        message_path = str;
+
+    }
+
+    ifstream file( message_path.c_str());
+    m_me = new MimeEntity(file);
+
+}
+
+
+
+/**
  * Get the path to the message on-disk.
  */
 std::string CMessage::path()
@@ -700,11 +742,11 @@ std::string CMessage::decode_field( std::string str )
  */
 std::string CMessage::header( std::string name )
 {
-    if ( m_me == NULL )
-    {
-        ifstream file(path().c_str());
-        m_me = new MimeEntity(file);
-    }
+    /**
+     * Ensure the message has been read.
+     */
+    message_parse();
+
     Header & h = m_me->header();
     if (h.hasField(name ) )
         return( decode_field( h.field(name).value() ) );
@@ -1114,13 +1156,10 @@ std::vector<std::string> CMessage::body()
     std::vector<std::string> result;
 
     /**
-     * Parse if we've not done so.
+     * Ensure the message has been read.
      */
-    if ( m_me == NULL )
-    {
-        ifstream file(path().c_str());
-        m_me = new MimeEntity(file);
-    }
+    message_parse();
+
 
     /**
      * Attempt to get the body from the message.
@@ -1232,15 +1271,11 @@ std::vector<std::string> CMessage::attachments()
 {
     std::vector<std::string> paths;
 
-
     /**
-     * Parse if we've not done so.
+     * Ensure the message has been read.
      */
-    if ( m_me == NULL )
-    {
-        ifstream file(path().c_str());
-        m_me = new MimeEntity(file);
-    }
+    message_parse();
+
 
     /**
      * Iterate over every part.
@@ -1274,13 +1309,9 @@ bool CMessage::save_attachment( int offset, std::string output_path )
     bool ret = false;
 
     /**
-     * Parse if we've not done so.
+     * Ensure the message has been read.
      */
-    if ( m_me == NULL )
-    {
-        ifstream file(path().c_str());
-        m_me = new MimeEntity(file);
-    }
+    message_parse();
 
     /**
      * Iterate over every part.

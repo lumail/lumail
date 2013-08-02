@@ -47,7 +47,6 @@ public:
     enum TDate { EYEAR, EDAY, EMONTH, EMON, EFULL };
 
 
-
     /**
      * Constructor
      */
@@ -164,6 +163,12 @@ public:
     time_t get_date_field();
 
 private:
+
+    /**
+     * Parse the message, if that hasn't been done.
+     * Uses "on_message_parse" if that is defined.
+     */
+    void message_parse();
 
     /**
      * Attempt to find a MIME-part inside our message of the given type.
