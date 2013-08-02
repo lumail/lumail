@@ -52,6 +52,12 @@ public:
 
 
     /**
+     * Delete a file.
+     */
+    static bool delete_file(std::string path);
+
+
+    /**
      * Copy a file.
      */
     static void copy( std::string src, std::string dest );

@@ -28,6 +28,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <unistd.h>
 
 
 #include "debug.h"
@@ -93,6 +94,37 @@ bool CFile::is_directory(std::string path)
       return false;
 
     return (S_ISDIR(sb.st_mode));
+}
+
+
+/**
+ * Remove a file.
+ */
+bool CFile::delete_file(std::string path)
+{
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CFile::delete_file(\"";
+    dm += path;
+    dm += "\");";
+    DEBUG_LOG( dm );
+#endif
+
+    /**
+     * Ensure we're not removing a directory.
+     */
+    assert( ! CFile::is_directory( path ) );
+
+    /**
+     * Unlink.
+     */
+    bool result = unlink( path.c_str() );
+
+    /**
+     * Test that the file was removed.
+     */
+    assert( ! CFile::exists( path ) );
+
+    return( result );
 }
 
 
