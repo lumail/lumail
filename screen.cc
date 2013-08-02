@@ -938,10 +938,63 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
  */
 std::vector<std::string> CScreen::get_completions( const char *input, size_t size, int position )
 {
+    /**
+     * OK this function is/will-be hairy.  The input parameters are:
+     *
+     * input    - The input string the user has typed thus far.
+     * size     - The size of that input-string.
+     * position - The point the cursor is at when they pressed TAB
+     *
+     * Because we want to be natural we wish to consider these strings
+     * as valid completions:
+     *
+     *   foo( "/etc/pass[TAB]
+     *
+     *   foo( ma[TAB]
+     *
+     *   ab[TAB]
+     *
+     * This means we start completion from the previous space, the previous opening-bracket,
+     * the start of the line, or the previous quote.
+     *
+     * We should also allow completions to occur in the *middle* of the string, so
+     * if the cursor is at 'x' this will expand to 'xxx', or whatever:
+     *
+     *   foo x[TAB] bar
+     *
+     * Steve
+     * --
+     */
+
+    /**
+     * Break the input string into:
+     *
+     * Prefix - The part before the expansion token.
+     *
+     * Suffix - Any token(s) after the current possition.
+     *
+     * Token - The token we're expanding.
+     *
+     * This is done, as mentioned above, using the set: [bol " ( ] (bol == beginning of line).
+     *
+     */
+
+    std::string suffix(input);
+    suffix = suffix.substr(position+1);
+
+
+    /**
+     * Stub code.
+     */
     std::vector<std::string> results;
     results.push_back( "Completion");
     results.push_back( "is temporarily" );
-    results.push_back( "broken");
+    results.push_back( "broken.");
+    results.push_back( "TAB to the selection");
+    results.push_back( "Then RET" );
+    results.push_back( "to select" );
+    results.push_back( "or ESC to cancel" );
+
     return( results );
 }
 
