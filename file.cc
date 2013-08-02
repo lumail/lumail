@@ -288,7 +288,7 @@ std::vector<std::string> CFile::get_all_maildirs(std::string prefix)
 #ifdef LUMAIL_DEBUG
 
     std::string log = "CFile::get_all_maildirs(";
-    log += path;
+    log += prefix;
     log += ") - found " ;
     log += std::to_string( result.size() );
     log += " entries.";
