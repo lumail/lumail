@@ -979,9 +979,47 @@ std::vector<std::string> CScreen::get_completions( std::string token )
      */
 
     /**
-     * TODO: Environmental variable expansion.
+     * Complete on the names of environmental variables.
      */
+    if ( token.at(0) == '$' )
+    {
+        /**
+         * Skip the leading "$".
+         */
+        token = token.substr(1);
 
+        /**
+         * Iterate over environmental variables.
+         */
+        extern char **environ;
+        for (char **env = environ; *env; ++env)
+        {
+            /**
+             * Split by the "=" and complete the name.
+             */
+            std::string e(*env);
+            size_t off = e.find( "=" );
+
+            if ( off !=std::string::npos )
+            {
+                e = e.substr(0,off);
+
+                if( strncmp( e.c_str(), token.c_str(), token.size() ) == 0 )
+                {
+                    /**
+                     * Ensure we reinstate the leading "$".
+                     */
+                    results.push_back( "$" + e );
+                }
+            }
+        }
+
+        /**
+         * Reset the token, in case there are later completions
+         * beneath this code.
+         */
+        token = "$" + token;
+    }
 
     /**
      * Remove any duplicates.
