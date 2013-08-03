@@ -252,9 +252,6 @@ bool sort_messages(CMessage *a, CMessage *b)
 
     }
 
-    /**
-     * TODO: other sorting
-     */
     return false;
 }
 
