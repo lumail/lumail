@@ -984,9 +984,42 @@ std::vector<std::string> CScreen::get_completions( const char *input, size_t siz
 
 
     /**
+     * So we have a string and we know the cursor is at position "position".
+     *
+     * We want to walk backwards until we find the preceding space/tab/whatever to
+     * know where to expand from.
+     */
+    const char *p = input + position - 1;
+
+    while ( ( p[0] != ' ' ) &&
+            ( p[0] != '\\' ) &&
+            ( p[0] != '(' ) &&
+            ( p[0] != '"' ) &&
+            ( p[0] != '\'' ) &&
+            ( p >= input ) )
+        p -=1;
+
+
+    /**
+     * Ensure we didn't go too far.
+     */
+    if ( p < input )
+        p = input;
+    else
+        p += 1;
+
+
+    std::string prefix(input);
+    prefix=prefix.substr(0, (p-input));
+
+    std::string token(input);
+    token=token.substr(p-input, (position+1)-(p-input)-1);
+
+    /**
      * Stub code.
      */
     std::vector<std::string> results;
+    results.push_back( prefix + token + suffix );
     results.push_back( "Completion");
     results.push_back( "is temporarily" );
     results.push_back( "broken.");
@@ -995,6 +1028,9 @@ std::vector<std::string> CScreen::get_completions( const char *input, size_t siz
     results.push_back( "to select" );
     results.push_back( "or ESC to cancel" );
 
+    results.push_back( "prefix:'" + prefix + "'");
+    results.push_back( "suffix:'" + suffix + "'");
+    results.push_back( "token:'" + token + "'");
     return( results );
 }
 
@@ -1233,6 +1269,7 @@ void CScreen::readline(char *buffer, int buflen)
     getyx(stdscr, y, x);
     for (;;)
     {
+
         int c;
 
         buffer[len] = ' ';
@@ -1258,6 +1295,12 @@ void CScreen::readline(char *buffer, int buflen)
                 memmove(buffer+pos+1, buffer+pos, len-pos);
                 buffer[pos++] = c;
                 len += 1;
+
+                /**
+                 * Ensure the tail-half of the buffer is empty.
+                 */
+                for (int x = len; x < buflen-1; x++ )
+                    buffer[x]='\0';
             }
             else
             {
