@@ -85,12 +85,12 @@ public:
     /**
      * Choose a single item from a small selection, graphically.
      *
-     * This is used to resolve ambiguity in TAB-completion.
+     * (This is used to resolve ambiguity in TAB-completion.)
      */
     static std::string choose_string( std::vector<std::string> choices );
 
     /**
-     * Get all possible completions for the current token.
+     * Get all possible completions for the given token.
      */
     static std::vector<std::string> get_completions( std::string token );
 

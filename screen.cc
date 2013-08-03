@@ -714,6 +714,8 @@ void CScreen::setup()
     setlocale(LC_CTYPE, "" );
     setlocale(LC_ALL, "" );
 
+    char e[] = "ESCDELAY=0";
+    putenv( e );
 
     /**
      * Setup ncurses.
@@ -823,7 +825,7 @@ void CScreen::clear_main()
 /**
  * Choose a single item from a small selection.
  *
- * This will be used to resolve ambiguity in TAB-completion.
+ * (This is used to resolve ambiguity in TAB-completion.)
  */
 std::string CScreen::choose_string( std::vector<std::string> choices )
 {
@@ -856,7 +858,7 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
     box(childwin, 0, 0);
 
     /**
-     * How many colums to draw?
+     * How many columns to draw?
      */
     if ( max < size_t( width ) )
         cols = 1;
@@ -913,6 +915,7 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
         {
             delwin(childwin);
             clear_main();
+
             timeout(1000);
             return "";
         }
