@@ -36,6 +36,10 @@
 #include "file.h"
 
 
+/**
+ **  Helper functions.
+ **/
+
 
 
 /**
@@ -74,62 +78,69 @@ int get_set_string_variable( lua_State *L, const char * name )
 }
 
 
+
 /**
- * Get the user's selected editor.
- */
-std::string get_editor()
-{
-    /**
-     * If this has been set use the editor
-     */
-    CGlobal *global = CGlobal::Instance();
-    std::string *cmd  = global->get_variable("editor");
-    if ( ( cmd != NULL ) && ( ! cmd->empty() ) )
-        return( *cmd );
-
-    /**
-     * If there is an $EDITOR variable defined, use that.
-     */
-    std::string env = getenv( "EDITOR" );
-    if ( !env.empty() )
-        return( env );
-
-    /**
-     * Fall back to vim.
-     */
-    return( "vim" );
-
-}
+ ** Colour getters/setters.
+ **/
 
 
 
 /**
- * Get, or set, the maildir-prefix
+ * Colour of attachments in message header.
  */
-int maildir_prefix(lua_State * L)
+int attachment_colour(lua_State *L)
 {
-    /**
-     * If we're setting it, make sure the value is sane.
-     */
-    const char *str = lua_tostring(L, -1);
-    if (str != NULL)
-    {
-        if ( !CFile::is_directory( str ) )
-            return luaL_error(L, "The specified prefix is not a Maildir" );
-    }
-
-    return( get_set_string_variable(L, "maildir_prefix" ) );
+    return( get_set_string_variable( L, "attachment_colour" ) );
 }
+
+/**
+ * Colour of the message-body.
+ */
+int body_colour(lua_State *L)
+{
+    return( get_set_string_variable( L, "body_colour" ) );
+}
+
+/**
+ * Colour of the message headers.
+ */
+int header_colour(lua_State *L)
+{
+    return( get_set_string_variable( L, "header_colour" ) );
+}
+
+/**
+ * Colour of unread messages.
+ */
+int unread_message_colour(lua_State *L)
+{
+    return( get_set_string_variable( L, "unread_message_colour" ) );
+}
+
+/**
+ * Colour of maildirs containing unread messages.
+ */
+int unread_maildir_colour(lua_State *L)
+{
+    return( get_set_string_variable( L, "unread_maildir_colour" ) );
+}
+
+
 
 
 /**
- * Get, or set, the index-format
- */
-int index_format(lua_State * L)
-{
-    return( get_set_string_variable(L, "index_format" ) );
-}
+ ** General getters/setters.
+ **/
 
+
+
+/**
+ * Get/set the completion characters we tokenize on.
+ */
+int completion_chars(lua_State *L)
+{
+    return( get_set_string_variable( L, "completion_chars" ) );
+}
 
 /**
  * Get, or set, the editor
@@ -139,15 +150,13 @@ int editor(lua_State * L)
     return( get_set_string_variable(L, "editor" ) );
 }
 
-
 /**
- * Get, or set, the message-filter.
+ * Get, or set, the default from address.
  */
-int message_filter(lua_State * L)
+int from(lua_State * L)
 {
-    return( get_set_string_variable(L, "message_filter" ) );
+    return( get_set_string_variable(L, "from" ) );
 }
-
 
 /**
  * Get, or set, the global lumail mode.
@@ -157,6 +166,39 @@ int global_mode(lua_State * L)
     return( get_set_string_variable(L, "global_mode" ) );
 }
 
+/**
+ * Get, or set, the index-format
+ */
+int index_format(lua_State * L)
+{
+    return( get_set_string_variable(L, "index_format" ) );
+}
+
+/**
+ * Get, or set, the index limit.
+ */
+int index_limit(lua_State * L)
+{
+    /**
+     * This is valid only if we're setting the limit.
+     */
+    const char *str = lua_tostring(L, -1);
+
+    int ret =  get_set_string_variable( L, "index_limit" );
+
+    /**
+     * Update the messages and reset the current message offset
+     * if we're *changing* the index-limit
+     */
+    if ( str != NULL )
+    {
+        CGlobal *global = CGlobal::Instance();
+        global->update_messages();
+        global->set_message_offset(0);
+    }
+
+    return ret;
+}
 
 /**
  * The format-string for maildir-display.
@@ -197,40 +239,30 @@ int maildir_limit(lua_State * L)
     return( ret );
 }
 
-
 /**
- * Get, or set, the index limit.
+ * Get, or set, the maildir-prefix
  */
-int index_limit(lua_State * L)
+int maildir_prefix(lua_State * L)
 {
     /**
-     * This is valid only if we're setting the limit.
+     * If we're setting it, make sure the value is sane.
      */
     const char *str = lua_tostring(L, -1);
-
-    int ret =  get_set_string_variable( L, "index_limit" );
-
-    /**
-     * Update the messages and reset the current message offset
-     * if we're *changing* the index-limit
-     */
-    if ( str != NULL )
+    if (str != NULL)
     {
-        CGlobal *global = CGlobal::Instance();
-        global->update_messages();
-        global->set_message_offset(0);
+        if ( !CFile::is_directory( str ) )
+            return luaL_error(L, "The specified prefix is not a Maildir" );
     }
 
-    return ret;
+    return( get_set_string_variable(L, "maildir_prefix" ) );
 }
 
-
 /**
- * Get, or set, the default from address.
+ * Get, or set, the message-filter.
  */
-int from(lua_State * L)
+int message_filter(lua_State * L)
 {
-    return( get_set_string_variable(L, "from" ) );
+    return( get_set_string_variable(L, "message_filter" ) );
 }
 
 /**
@@ -239,14 +271,6 @@ int from(lua_State * L)
 int sendmail_path(lua_State * L)
 {
     return( get_set_string_variable( L, "sendmail_path" ) );
-}
-
-/**
- * Get/set the completion characters we tokenize on.
- */
-int completion_chars(lua_State *L)
-{
-    return( get_set_string_variable( L, "completion_chars" ) );
 }
 
 /**
@@ -259,36 +283,7 @@ int sent_mail(lua_State * L)
 
 
 /**
- * Colour support.
- */
-int unread_message_colour(lua_State *L)
-{
-    return( get_set_string_variable( L, "unread_message_colour" ) );
-}
-
-int unread_maildir_colour(lua_State *L)
-{
-    return( get_set_string_variable( L, "unread_maildir_colour" ) );
-}
-
-int attachment_colour(lua_State *L)
-{
-    return( get_set_string_variable( L, "attachment_colour" ) );
-}
-
-int body_colour(lua_State *L)
-{
-    return( get_set_string_variable( L, "body_colour" ) );
-}
-
-int header_colour(lua_State *L)
-{
-    return( get_set_string_variable( L, "header_colour" ) );
-}
-
-
-/**
- * Get, or set, the message sort-order
+ * Sorting choices.
  */
 int sort(lua_State * L)
 {
@@ -316,4 +311,50 @@ int sort(lua_State * L)
     return ret;
 
 }
+
+
+/**
+ * Get the user's selected editor.
+ */
+std::string get_editor()
+{
+    /**
+     * If this has been set use the editor
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::string *cmd  = global->get_variable("editor");
+    if ( ( cmd != NULL ) && ( ! cmd->empty() ) )
+        return( *cmd );
+
+    /**
+     * If there is an $EDITOR variable defined, use that.
+     */
+    std::string env = getenv( "EDITOR" );
+    if ( !env.empty() )
+        return( env );
+
+    /**
+     * Fall back to vim.
+     */
+    return( "vim" );
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -23,22 +23,22 @@
 
 
 /**
- **
  **  Helper functions.
- **
  **/
-
 
 /**
  * Get or set the value of the given string variable.
  */
 int get_set_string_variable( lua_State *L, const char * name );
 
+
+
 /**
  * Colour getters/setters.
  */
 int attachment_colour(lua_State *L);
 int body_colour(lua_State *L);
+int header_colour(lua_State *L);
 int unread_maildir_colour(lua_State *L);
 int unread_message_colour(lua_State *L);
 
@@ -49,7 +49,6 @@ int completion_chars(lua_State *L);
 int editor(lua_State * L);
 int from(lua_State * L);
 int global_mode(lua_State * L);
-int header_colour(lua_State *L);
 int index_format(lua_State * L);
 int index_limit(lua_State * L);
 int maildir_format(lua_State *L );
@@ -58,11 +57,8 @@ int maildir_prefix(lua_State * L);
 int message_filter(lua_State * L);
 int sendmail_path(lua_State * L);
 int sent_mail(lua_State * L);
-
-/**
- * Sorting choices
- */
 int sort(lua_State * L);
+
 
 /**
  * Get the users's editor, for compose() + reply() primitives.
