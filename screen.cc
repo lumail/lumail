@@ -971,8 +971,65 @@ std::vector<std::string> CScreen::get_completions( std::string token )
     }
 
     /**
-     * TODO: file/directory completion.
+     * File/directory completion.
      */
+    if ( ( token.size() > 0 ) && ( token.at(0) == '/' ) )
+    {
+        /**
+         * Get the directory-name.
+         */
+        size_t offset = token.find_last_of( "/" );
+        if ( offset != std::string::npos )
+        {
+            std::string dir = token.substr(0,offset);
+
+            /**
+             * Ensure we have a trailing "/".
+             */
+            if ( ( dir.empty() ) ||
+                 ( !dir.empty() && ( dir.rbegin()[0] != '/' ) ) )
+                dir += "/";
+
+
+            std::string file = token.substr(offset+1);
+
+            /**
+             * Open the directory.
+             */
+            DIR *dp = opendir(dir.c_str());
+            if ( dp != NULL )
+            {
+                while (true)
+                {
+                    dirent *de = readdir(dp);
+                    if (de == NULL)
+                        break;
+
+                    /**
+                     * Skip dots..
+                     */
+                    if ( ( strcmp( de->d_name, "." ) != 0 ) &&
+                         ( strcmp( de->d_name, ".." ) != 0 ) &&
+                         ( strncasecmp( file.c_str(), de->d_name, file.size() ) == 0 ) )
+                    {
+
+                        /**
+                         * If completing a directory add the trailing "/"
+                         * automatically.
+                         */
+                        std::string option = dir + de->d_name ;
+                        if ( CFile::is_directory( option ) )
+                            option += "/";
+
+                        results.push_back( option );
+                    }
+                }
+                closedir(dp);
+            }
+
+        }
+    }
+
 
     /**
      * Tilde expansion.
