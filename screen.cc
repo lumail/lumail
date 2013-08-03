@@ -975,8 +975,17 @@ std::vector<std::string> CScreen::get_completions( std::string token )
      */
 
     /**
-     * TODO: ~ expansion.
+     * Tilde expansion.
      */
+    if ( token == "~" )
+    {
+        std::string home = getenv( "HOME" );
+        if ( !home.empty() )
+        {
+            results.push_back( home + "/" );
+        }
+    }
+
 
     /**
      * Complete on the names of environmental variables.
