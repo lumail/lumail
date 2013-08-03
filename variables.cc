@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <dirent.h>
 
+#include "debug.h"
 #include "variables.h"
 #include "global.h"
 #include "file.h"
