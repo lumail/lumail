@@ -92,6 +92,7 @@ struct CLuaMapping primitive_list[] =
 /**
  * Get/Set variables
  */
+    {"completion_chars", "Get/set the characters to tokenize on for completion.", (lua_CFunction) completion_chars },
     {"editor", "Query or update the editor to use.", (lua_CFunction) editor },
     {"from", "Query or update the from-address for outgoing mails.", (lua_CFunction) from },
     {"global_mode", "Query or update the global-mode.", (lua_CFunction) global_mode },

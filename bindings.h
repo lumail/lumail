@@ -100,6 +100,9 @@ int maildir_prefix(lua_State * L);
 /* get/set the editor */
 int editor(lua_State *L);
 
+/* get/set completion characters */
+int completion_chars(lua_State *L);
+
 /* get/set the message-filter.*/
 int message_filter(lua_State *L);
 

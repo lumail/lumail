@@ -311,6 +311,13 @@ int sendmail_path(lua_State * L)
     return( get_set_string_variable( L, "sendmail_path" ) );
 }
 
+/**
+ * Get/set the completion characters we tokenize on.
+ */
+int completion_chars(lua_State *L)
+{
+    return( get_set_string_variable( L, "completion_chars" ) );
+}
 
 /**
  * Get, or set, the sent-folder path.

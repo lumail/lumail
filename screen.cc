@@ -1119,6 +1119,13 @@ std::string CScreen::get_line()
 
 
     /**
+     * Get completion characters to split input on.
+     */
+    CGlobal *global    = CGlobal::Instance();
+    std::string *split = global->get_variable( "completion_chars" );
+
+
+    /**
      * Get the cursor position
      */
     getyx(stdscr, y, x);
@@ -1239,12 +1246,10 @@ std::string CScreen::get_line()
              * We're going to find the token to complete against
              * by searching backwards for a position to start from.
              *
-             * This includes things like: ( " ' space
-             *
-             * TODO: Lua-variable variable "completion_chars"
+             * This string comes from lua, and includes things like: ( " ' space
              *
              */
-            size_t toke = buffer.find_last_of( "'\"( ", pos );
+            size_t toke = buffer.find_last_of( *split, pos );
 
             std::string prefix = "";
             std::string token  = buffer;
