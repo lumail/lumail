@@ -645,7 +645,7 @@ int prompt(lua_State * L)
     if (str == NULL)
         return luaL_error(L, "Missing argument to prompt(..)");
 
-    char input[1024] = { '\0' };
+
     curs_set(1);
     echo();
 
@@ -654,14 +654,15 @@ int prompt(lua_State * L)
     printw(str);
 
     timeout(-1000);
-    CScreen::readline( input, sizeof(input));
+
+    std::string input = CScreen::get_line();
     noecho();
     timeout(1000);
 
     curs_set(0);
 
     CScreen::clear_status();
-    lua_pushstring(L, strdup(input));
+    lua_pushstring(L, input.c_str() );
     return 1;
 }
 
