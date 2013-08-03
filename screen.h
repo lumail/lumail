@@ -89,22 +89,25 @@ public:
      */
     static std::string choose_string( std::vector<std::string> choices );
 
+#if 0
     /**
      * Handle TAB-expansion of an input string.
      *
      * NOTE: The caller must free the returned string.
      */
     static char *get_completion( const char *input, size_t size, int position );
+#endif
 
     /**
      * Get all possible completions for the current input line.
      */
-    static std::vector<std::string> get_completions( const char *input, size_t size, int position );
+    static std::vector<std::string> get_completions( std::string token );
 
     /**
      * Read a line of input.
      */
     static void readline( char *buffer, int buflen );
+    static std::string get_line();
 
 private:
 

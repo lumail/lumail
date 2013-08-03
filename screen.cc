@@ -934,92 +934,14 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
 
 
 /**
- * Get all possible completions for the current input line.
+ * Get all possible completions for the current token.
  */
-std::vector<std::string> CScreen::get_completions( const char *input, size_t size, int position )
+std::vector<std::string> CScreen::get_completions( std::string token )
 {
-    /**
-     * OK this function is/will-be hairy.  The input parameters are:
-     *
-     * input    - The input string the user has typed thus far.
-     * size     - The size of that input-string.
-     * position - The point the cursor is at when they pressed TAB
-     *
-     * Because we want to be natural we wish to consider these strings
-     * as valid completions:
-     *
-     *   foo( "/etc/pass[TAB]
-     *
-     *   foo( ma[TAB]
-     *
-     *   ab[TAB]
-     *
-     * This means we start completion from the previous space, the previous opening-bracket,
-     * the start of the line, or the previous quote.
-     *
-     * We should also allow completions to occur in the *middle* of the string, so
-     * if the cursor is at 'x' this will expand to 'xxx', or whatever:
-     *
-     *   foo x[TAB] bar
-     *
-     * Steve
-     * --
-     */
-
-    /**
-     * Break the input string into:
-     *
-     * Prefix - The part before the expansion token.
-     *
-     * Suffix - Any token(s) after the current possition.
-     *
-     * Token - The token we're expanding.
-     *
-     * This is done, as mentioned above, using the set: [bol " ( ] (bol == beginning of line).
-     *
-     */
-
-    std::string suffix(input);
-    suffix = suffix.substr(position+1);
-
-
-    /**
-     * So we have a string and we know the cursor is at position "position".
-     *
-     * We want to walk backwards until we find the preceding space/tab/whatever to
-     * know where to expand from.
-     */
-    const char *p = input + position - 1;
-
-    while ( ( p[0] != ' ' ) &&
-            ( p[0] != '\\' ) &&
-            ( p[0] != '(' ) &&
-            ( p[0] != '"' ) &&
-            ( p[0] != '\'' ) &&
-            ( p >= input ) )
-        p -=1;
-
-
-    /**
-     * Ensure we didn't go too far.
-     */
-    if ( p < input )
-        p = input;
-    else
-        p += 1;
-
-
-    std::string prefix(input);
-    prefix=prefix.substr(0, (p-input));
-
-    std::string token(input);
-    token=token.substr(p-input, (position+1)-(p-input)-1);
-
     /**
      * Stub code.
      */
     std::vector<std::string> results;
-    results.push_back( prefix + token + suffix );
     results.push_back( "Completion");
     results.push_back( "is temporarily" );
     results.push_back( "broken.");
@@ -1028,14 +950,11 @@ std::vector<std::string> CScreen::get_completions( const char *input, size_t siz
     results.push_back( "to select" );
     results.push_back( "or ESC to cancel" );
 
-    results.push_back( "prefix:'" + prefix + "'");
-    results.push_back( "suffix:'" + suffix + "'");
-    results.push_back( "token:'" + token + "'");
     return( results );
 }
 
 
-
+#if 0
 /**
  * Handle TAB-expansion of an input string.
  *
@@ -1243,11 +1162,146 @@ char *CScreen::get_completion( const char *input, size_t size, int position )
      */
     return NULL;
 }
+#endif
 
 
+/**
+ * Read a line of input from the user.
+ */
+std::string CScreen::get_line()
+{
+    std::string buffer;
 
-/* Read up to buflen-1 characters into `buffer`.
- * A terminating '\0' character is added after the input.  */
+    int old_curs = curs_set(1);
+    int pos = 0;
+    int len = 0;
+    int x, y;
+
+
+    /**
+     * Offset into history.
+     */
+    CHistory *history = CHistory::Instance();
+    int hoff          = history->size();
+
+
+    /**
+     * Get the cursor position
+     */
+    getyx(stdscr, y, x);
+
+    while( true )
+    {
+        int c;
+
+        buffer[len] = ' ';
+        mvaddnstr(y, x, buffer.c_str(), buffer.size());
+
+        /**
+         * Clear the line.
+         */
+        for( int padding = len; padding < CScreen::width(); padding++ )
+            printw(" ");
+
+        /**
+         * Move the cursor
+         */
+        move(y, x+pos);
+
+        /**
+         * Get input - paying attention to the buffer set by 'stuff()'.
+         */
+        c = CInput::Instance()->get_char();
+
+        /**
+         * Ropy input-handler.
+         */
+        if (c == KEY_ENTER || c == '\n' || c == '\r')
+        {
+            break;
+        }
+        else if (isprint(c))
+        {
+            buffer += c;
+        }
+        else if (c == 1 )   /* ctrl-a : beginning of line*/
+        {
+            pos = 0;
+        }
+        else if (c == 5 ) /* ctrl-e: end of line */
+        {
+            pos = buffer.size();
+        }
+        else if (c == 11 )  /* ctrl-k: kill to end of line */
+        {
+            /**
+             * Kill the buffer from the current position onwards.
+             */
+            buffer = buffer.substr(0,pos);
+            len = buffer.size();
+        }
+        else if ( ( c == 2 ) ||    /* ctrl-b : back char */
+                  (c == KEY_LEFT) )
+        {
+            if (pos > 0)
+                pos -= 1;
+            else
+                beep();
+        }
+        else if ( c == KEY_UP )
+        {
+            hoff -= 1;
+            if ( hoff >= 0 )
+            {
+                buffer = history->at( hoff );
+                pos = len = buffer.size();
+            }
+            else
+            {
+                hoff = 0;
+                beep();
+            }
+        }
+        else if ( c == KEY_DOWN )
+        {
+            hoff += 1;
+            if ( hoff < history->size() )
+            {
+                buffer = history->at( hoff );
+                pos = len = buffer.size();
+            }
+            else
+            {
+                hoff = history->size();
+                beep();
+            }
+        }
+
+    }
+
+    if (old_curs != ERR)
+        curs_set(old_curs);
+
+    /**
+     * Add the input to the history.
+     */
+    history->add( buffer );
+
+    return( buffer );
+}
+
+
+/**
+ *
+ * Read up to buflen-1 characters into `buffer`.
+ *
+ * This function needs overhauling to work with a std::string, because the
+ * way it currently operates with memmove + a static buffer is causing me
+  * to need to duplicate functionality.
+ *
+ * Specifically we need to split the input line into "prefix", "token", and "suffix"
+ * for the tab-expansion handler - both for the replacemen
+ */
 void CScreen::readline(char *buffer, int buflen)
 {
     /**
@@ -1315,7 +1369,7 @@ void CScreen::readline(char *buffer, int buflen)
                  * Receive the possible completions.
                  */
 
-                std::vector<std::string> matches = get_completions( buffer, len, pos );
+                std::vector<std::string> matches = get_completions( std::string(buffer));
                 if ( matches.size() == 0 )
                 {
                     beep();
@@ -1446,5 +1500,8 @@ void CScreen::readline(char *buffer, int buflen)
     if (old_curs != ERR)
         curs_set(old_curs);
 
+    /**
+     * Add the input to the history.
+     */
     hist->add( buffer );
 }
