@@ -938,108 +938,22 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
  */
 std::vector<std::string> CScreen::get_completions( std::string token )
 {
-    /**
-     * Stub code.
-     */
     std::vector<std::string> results;
-    results.push_back( "Completion");
-    results.push_back( "is temporarily" );
-    results.push_back( "broken.");
-    results.push_back( "TAB to the selection");
-    results.push_back( "Then RET" );
-    results.push_back( "to select" );
-    results.push_back( "or ESC to cancel" );
-
-    return( results );
-}
-
-
-#if 0
-/**
- * Handle TAB-expansion of an input string.
- *
- * TODO: Remove.
- */
-char *CScreen::get_completion( const char *input, size_t size, int position )
-{
-    char ret[1024] = { '\0' };
 
     /**
-     * So we have a string and we know the cursor is at position "position".
-     *
-     * We want to walk backwards until we find the preceding space/tab/whatever to
-     * know where to expand from.
-     */
-    const char *p = input + position - 1;
-
-    while ( ( p[0] != ' ' ) &&
-            ( p[0] != '\\' ) &&
-            ( p[0] != '(' ) &&
-            ( p[0] != '"' ) &&
-            ( p[0] != '\'' ) &&
-            ( p >= input ) )
-        p -=1;
-
-
-    /**
-     * Ensure we didn't go too far.
-     */
-    if ( p < input )
-        p = input;
-    else
-        p += 1;
-
-    /**
-     * Now we have the input buffer and a sized string to remove.
-     *
-     * We want to replace whatever is between "p" and "start+size".
-     *
-     */
-    size_t span = size - ( p - input );
-
-
-    /**
-     * tilde expansion.
-     */
-    if (  ( strncmp( p, "~", 1 ) == 0 ) &&
-          ( getenv( "HOME") != NULL ) )
-    {
-        /**
-         * Copy the leading section of the input.
-         */
-        strncpy(ret,input, p-input );
-
-        /**
-         * Add the extra section.
-         */
-        strcat(ret, getenv( "HOME" ) );
-        return( strdup( ret ) );
-    }
-
-
-    /**
-     * Primitive expansion.
+     * Attempt to match against built-in functions.
      */
     for( int i = 0; i < primitive_count ; i ++ )
     {
-        if( strncmp( p, primitive_list[i].name, span ) == 0 )
+        if( strstr( primitive_list[i].name, token.c_str() ) != 0 )
         {
-            /**
-             * Copy the leading section of the input.
-             */
-            strncpy(ret,input, p-input );
-
-            /**
-             * Add the extra section.
-             */
-            strcat(ret, primitive_list[i].name );
-            strncat(ret, "(", 1 );
-            return( strdup( ret ) );
+            results.push_back( primitive_list[i].name );
         }
     }
 
+
     /**
-     * See if we can complete on a user-called function.
+     * Attempt to match against user-defined functions.
      */
     CLua *lua = CLua::Instance();
     std::vector<std::string> f = lua->on_complete();
@@ -1049,120 +963,36 @@ char *CScreen::get_completion( const char *input, size_t size, int position )
 
         for (it = f.begin(); it != f.end(); ++it)
         {
-            if( strncasecmp( p, (*it).c_str(), span ) == 0 )
+            if( strstr( (*it).c_str(), token.c_str() ) != 0 )
             {
-                /**
-                 * Copy the leading section of the input.
-                 */
-                strncpy(ret,input, p-input );
-
-                /**
-                 * Add the extra section.
-                 */
-                strcat(ret, (*it).c_str());
-                return( strdup( ret ) );
+                results.push_back( (*it) );
             }
         }
     }
 
     /**
-     * File/Path expansion.  This is a little hairy.
+     * TODO: file/directory completion.
      */
-    if ( strncmp( p, "/", 1 ) == 0 )
-    {
-        /**
-         * Split the string into "dir/file"
-         */
-        char dir[1024] = { '\0' };
-        char fil[1024] = { '\0' };
 
-        /**
-         * The right-most "/" will be used to split the path.
-         */
-        const char *slash = strrchr( p, '/' );
-        if ( slash == NULL )
-            return NULL;
+    /**
+     * TODO: ~ expansion.
+     */
 
-        /**
-         * Copy the directory part.
-         */
-        strncpy(dir,p, slash-p+1);
-
-        /**
-         * Copy the file part - this is broken for reasons I don't understand.
-         */
-        strncpy(fil, slash+1 , strlen(slash)-2);
-
-        /**
-         * Fix-up the broken-trailing white-space.
-         */
-        for( int i = 0; i < (int)strlen(fil); i ++ )
-        {
-            if ( ( fil[i] == ' ' ) || ( fil[i] == '\t' ) )
-                fil[i] = '\0';
-        }
-
-
-        /**
-         * Open the directory.
-         */
-        DIR *dp = opendir(dir);
-        if ( dp == NULL )
-            return NULL;
-
-
-        while (true)
-        {
-            dirent *de = readdir(dp);
-            if (de == NULL)
-                break;
-
-            if( strncmp( fil, de->d_name, strlen(fil) ) == 0 )
-            {
-                closedir(dp);
-
-                /**
-                 * Copy the leading section of the input.
-                 */
-                strncpy(ret,input, p-input );
-
-                /**
-                 * Add the extra section, the dir-name which is fixed.
-                 */
-                strcat(ret, dir);
-
-                /**
-                 * And the path we've found via readdir.
-                 */
-                strcat(ret, de->d_name );
-
-                /**
-                 * Is this a directory?
-                 */
-                {
-                    std::string tmp( dir );
-                    tmp += "/";
-                    tmp += de->d_name ;
-
-                    if ( CFile::is_directory( tmp ) )
-                    {
-                        strcat(ret, "/" );
-                    }
-                }
-
-                return( strdup( ret ) );
-            }
-        }
-        closedir(dp);
-    }
+    /**
+     * TODO: Environmental variable expansion.
+     */
 
 
     /**
-     * No match.
+     * Remove any duplicates.
      */
-    return NULL;
+    sort( results.begin(), results.end() );
+    results.erase( unique( results.begin(), results.end() ), results.end() );
+
+
+    return( results );
 }
-#endif
+
 
 
 /**
@@ -1174,7 +1004,6 @@ std::string CScreen::get_line()
 
     int old_curs = curs_set(1);
     int pos = 0;
-    int len = 0;
     int x, y;
 
 
@@ -1194,13 +1023,12 @@ std::string CScreen::get_line()
     {
         int c;
 
-        buffer[len] = ' ';
         mvaddnstr(y, x, buffer.c_str(), buffer.size());
 
         /**
          * Clear the line.
          */
-        for( int padding = len; padding < CScreen::width(); padding++ )
+        for( int padding = buffer.size(); padding < CScreen::width(); padding++ )
             printw(" ");
 
         /**
@@ -1222,7 +1050,13 @@ std::string CScreen::get_line()
         }
         else if (isprint(c))
         {
-            buffer += c;
+            /**
+             * Insert the character into the buffer-string.
+             */
+            char tmp[2] = { '\0', '\0'};
+            tmp[0]= c;
+            buffer.insert(pos, tmp);
+            pos +=1;
         }
         else if (c == 1 )   /* ctrl-a : beginning of line*/
         {
@@ -1238,15 +1072,18 @@ std::string CScreen::get_line()
              * Kill the buffer from the current position onwards.
              */
             buffer = buffer.substr(0,pos);
-            len = buffer.size();
         }
         else if ( ( c == 2 ) ||    /* ctrl-b : back char */
                   (c == KEY_LEFT) )
         {
             if (pos > 0)
                 pos -= 1;
-            else
-                beep();
+        }
+        else if ( ( c == 6 ) || /* ctrl-f: forward char */
+                  (c == KEY_RIGHT) )
+        {
+            if (pos < (int)buffer.size())
+                pos += 1;
         }
         else if ( c == KEY_UP )
         {
@@ -1254,12 +1091,11 @@ std::string CScreen::get_line()
             if ( hoff >= 0 )
             {
                 buffer = history->at( hoff );
-                pos = len = buffer.size();
+                pos    = buffer.size();
             }
             else
             {
                 hoff = 0;
-                beep();
             }
         }
         else if ( c == KEY_DOWN )
@@ -1268,12 +1104,116 @@ std::string CScreen::get_line()
             if ( hoff < history->size() )
             {
                 buffer = history->at( hoff );
-                pos = len = buffer.size();
+                pos    = buffer.size();
             }
             else
             {
                 hoff = history->size();
+            }
+        }
+        else if (c == KEY_BACKSPACE)
+        {
+            if (pos > 0)
+            {
+                buffer.erase(pos-1,1);
+                pos -= 1;
+            }
+        }
+        else if (c == 4)  /* ctrl+d */
+        {
+            /**
+             * Remove the character after the point.
+             */
+            if ( pos < (int)buffer.size() )
+            {
+                buffer.erase(pos,1);
+            }
+        }
+        else if (c == '\t' )  /* TAB-completion */
+        {
+            /**
+             * We're going to find the token to complete against
+             * by searching backwards for a position to start from.
+             *
+             * This includes things like: ( " ' space
+             *
+             * TODO: Lua-variable variable "completion_chars"
+             *
+             */
+            size_t toke = buffer.find_last_of( "'\"( ", pos );
+
+            std::string prefix = "";
+            std::string token  = buffer;
+
+            /**
+             * If we found one of the split-characters then we have
+             * a token to complete, and the prefix to ignore.
+             *
+             * If we didn't then the prefix is empty, and the buffer is
+             * the token; i.e. we're completing the sole token on the line.
+             */
+            if ( toke != std::string::npos )
+            {
+                prefix = buffer.substr(0,toke+1);
+                token = token.substr(toke+1);
+            }
+
+
+            /**
+             * The token length - because we want to update the cursor
+             * position, post-completion.
+             */
+            int toke_len = token.size();
+
+            /**
+             * Get the completions.
+             */
+            std::vector<std::string> matches = get_completions( token );
+            if ( matches.size() == 0 )
+            {
+                /**
+                 * No completion possible.
+                 */
                 beep();
+            }
+            else
+            {
+                /**
+                 * Single completion == match.
+                 */
+                if ( matches.size() == 1 )
+                {
+                    buffer = prefix + matches.at(0).c_str();
+                    pos += ( matches.at(0).size() - toke_len );
+                }
+                else
+                {
+                    /**
+                     * Disable echoing before showing the menu.
+                     */
+                    noecho();
+                    curs_set(0);
+
+                    /**
+                     * Prompt for clarification in the multiple-matches.
+                     */
+                    std::string choice = choose_string( matches );
+
+                    /**
+                     * Reset the cursor.
+                     */
+                    curs_set(1);
+                    echo();
+
+                    /**
+                     * If the user did make a specific choice, then use it.
+                     */
+                    if ( ! choice.empty() )
+                    {
+                        buffer = prefix + choice.c_str();
+                        pos += ( choice.size() - toke_len );
+                    }
+                }
             }
         }
 
@@ -1288,220 +1228,4 @@ std::string CScreen::get_line()
     history->add( buffer );
 
     return( buffer );
-}
-
-
-/**
- *
- * Read up to buflen-1 characters into `buffer`.
- *
- * This function needs overhauling to work with a std::string, because the
- * way it currently operates with memmove + a static buffer is causing me
-  * to need to duplicate functionality.
- *
- * Specifically we need to split the input line into "prefix", "token", and "suffix"
- * for the tab-expansion handler - both for the replacemen
- */
-void CScreen::readline(char *buffer, int buflen)
-{
-    /**
-     * Set the cursor to be visible.
-     */
-    int old_curs = curs_set(1);
-    int pos = 0;
-    int len = 0;
-    int x, y;
-
-
-    /**
-     * Offset into history.
-     */
-    CHistory *hist = CHistory::Instance();
-    int hoff = hist->size();
-
-
-    getyx(stdscr, y, x);
-    for (;;)
-    {
-
-        int c;
-
-        buffer[len] = ' ';
-        mvaddnstr(y, x, buffer, len+1);
-
-        /**
-         * Clear the line.
-         */
-        for( int padding = len; padding < CScreen::width(); padding++ )
-            printw(" ");
-
-        move(y, x+pos);
-        c = CInput::Instance()->get_char();
-
-        if (c == KEY_ENTER || c == '\n' || c == '\r')
-        {
-            break;
-        }
-        else if (isprint(c))
-        {
-            if (pos < buflen-1)
-            {
-                memmove(buffer+pos+1, buffer+pos, len-pos);
-                buffer[pos++] = c;
-                len += 1;
-
-                /**
-                 * Ensure the tail-half of the buffer is empty.
-                 */
-                for (int x = len; x < buflen-1; x++ )
-                    buffer[x]='\0';
-            }
-            else
-            {
-                beep();
-            }
-        }
-        else if ( c == '\t' ) /* TAB-completion */
-        {
-            if ( ( len > 0 ) && ( pos > 0 ) )
-            {
-                /**
-                 * Receive the possible completions.
-                 */
-
-                std::vector<std::string> matches = get_completions( std::string(buffer));
-                if ( matches.size() == 0 )
-                {
-                    beep();
-                }
-                else
-                {
-                    if ( matches.size() == 1 )
-                    {
-                        strcpy( buffer, matches.at(0).c_str() );
-                        pos = strlen(matches.at(0).c_str() );
-                        len = pos;
-                    }
-                    else
-                    {
-                        /**
-                         * Prompt for the correct result, via the menu.
-                         */
-                        noecho();
-                        curs_set(0);
-
-                        std::string choice = choose_string( matches );
-
-                        curs_set(1);
-                        echo();
-
-                        strcpy( buffer, choice.c_str() );
-                        pos = strlen(choice.c_str() );
-                        len = pos;
-                    }
-                }
-
-            }
-        }
-        else if (c == 1 )   /* ctrl-a : beginning of line*/
-        {
-            pos = 0;
-        }
-        else if (c == 5 ) /* ctrl-e: end of line */
-        {
-            pos = len;
-        }
-        else if (c == 11 )  /* ctrl-k: kill to end of line */
-        {
-            len = pos;
-        }
-        else if ( ( c == 2 ) ||    /* ctrl-b : back char */
-                  (c == KEY_LEFT) )
-        {
-            if (pos > 0)
-                pos -= 1;
-            else
-                beep();
-        }
-        else if ( c == KEY_UP )
-        {
-            hoff -= 1;
-            if ( hoff >= 0 )
-            {
-                std::string ent = hist->at( hoff );
-                strcpy( buffer, ent.c_str() );
-                pos = len = strlen(ent.c_str());
-            }
-            else
-            {
-                hoff = 0;
-                beep();
-            }
-        }
-        else if ( c == KEY_DOWN )
-        {
-            hoff += 1;
-            if ( hoff < hist->size() )
-            {
-                std::string ent = hist->at( hoff );
-                strcpy( buffer, ent.c_str() );
-                pos = len = strlen(ent.c_str());
-            }
-            else
-            {
-                hoff = hist->size();
-                beep();
-            }
-        }
-        else if ( ( c == 6 ) || /* ctrl-f: forward char */
-                  (c == KEY_RIGHT) )
-        {
-            if (pos < len)
-                pos += 1;
-            else
-                beep();
-        }
-        else if (c == KEY_BACKSPACE)
-        {
-            if (pos > 0)
-            {
-                memmove(buffer+pos-1, buffer+pos, len-pos);
-                pos -= 1;
-                len -= 1;
-            }
-            else
-            {
-                beep();
-            }
-        }
-        else if (c == KEY_DC)
-        {
-            if (pos < len)
-            {
-                memmove(buffer+pos, buffer+pos+1, len-pos-1);
-                len -= 1;
-            }
-            else
-            {
-                beep();
-            }
-        }
-        else
-        {
-            beep();
-        }
-    }
-
-    /**
-     * Ensure the string is terminated.
-     */
-    buffer[len] = '\0';
-
-    if (old_curs != ERR)
-        curs_set(old_curs);
-
-    /**
-     * Add the input to the history.
-     */
-    hist->add( buffer );
 }
