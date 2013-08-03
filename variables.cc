@@ -252,7 +252,7 @@ int maildir_prefix(lua_State * L)
     if (str != NULL)
     {
         if ( !CFile::is_directory( str ) )
-            return luaL_error(L, "The specified prefix is not a Maildir" );
+            return luaL_error(L, "The specified prefix is not a directory" );
     }
 
     return( get_set_string_variable(L, "maildir_prefix" ) );
@@ -279,6 +279,12 @@ int sendmail_path(lua_State * L)
  */
 int sent_mail(lua_State * L)
 {
+    const char *str = lua_tostring(L, -1);
+    if (str != NULL)
+    {
+        if ( !CMaildir::is_maildir( str ) )
+            return luaL_error(L, "The specified sent_mail folder is not a Maildir" );
+    }
     return( get_set_string_variable( L, "sent_mail" ) );
 }
 
