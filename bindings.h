@@ -31,11 +31,6 @@ class CMessage;
 
 
 /**
- * Get or set the value of the given string variable.
- */
-int get_set_string_variable( lua_State *L, const char * name );
-
-/**
  * Get a message object for the given path.
  *
  * If the path is NULL then find and return the currently selected
