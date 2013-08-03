@@ -64,7 +64,7 @@ CGlobal::CGlobal()
     /**
      * Defaults as set in our variable hash-map.
      */
-    set_variable( "completion_chars",new std::string("'\"( ") );
+    set_variable( "completion_chars",new std::string("'\"( ,") );
     set_variable( "editor",          new std::string("/usr/bin/vim") );
     set_variable( "global_mode",     new std::string("maildir"));
     set_variable( "index_format",    new std::string( "[$FLAGS] $FROM - $SUBJECT" ) );
