@@ -945,7 +945,7 @@ std::vector<std::string> CScreen::get_completions( std::string token )
      */
     for( int i = 0; i < primitive_count ; i ++ )
     {
-        if( strstr( primitive_list[i].name, token.c_str() ) != 0 )
+        if( strcasestr( primitive_list[i].name, token.c_str() ) != 0 )
         {
             results.push_back( primitive_list[i].name );
         }
@@ -963,7 +963,7 @@ std::vector<std::string> CScreen::get_completions( std::string token )
 
         for (it = f.begin(); it != f.end(); ++it)
         {
-            if( strstr( (*it).c_str(), token.c_str() ) != 0 )
+            if( strcasestr( (*it).c_str(), token.c_str() ) != 0 )
             {
                 results.push_back( (*it) );
             }
@@ -1013,7 +1013,7 @@ std::vector<std::string> CScreen::get_completions( std::string token )
             {
                 e = e.substr(0,off);
 
-                if( strncmp( e.c_str(), token.c_str(), token.size() ) == 0 )
+                if( strncasecmp( e.c_str(), token.c_str(), token.size() ) == 0 )
                 {
                     /**
                      * Ensure we reinstate the leading "$".
@@ -1198,6 +1198,10 @@ std::string CScreen::get_line()
              *
              * If we didn't then the prefix is empty, and the buffer is
              * the token; i.e. we're completing the sole token on the line.
+             *
+             * NOTE:  This implies you cannot complete in the middle of a line.
+             * Just at the end.  Or start.
+             *
              */
             if ( toke != std::string::npos )
             {
@@ -1207,8 +1211,7 @@ std::string CScreen::get_line()
 
 
             /**
-             * The token length - because we want to update the cursor
-             * position, post-completion.
+             * The token length - because we want to update the cursor position, post-completion.
              */
             int toke_len = token.size();
 
@@ -1263,7 +1266,6 @@ std::string CScreen::get_line()
                 }
             }
         }
-
     }
 
     if (old_curs != ERR)
