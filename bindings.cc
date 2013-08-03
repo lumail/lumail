@@ -570,7 +570,10 @@ int alert(lua_State * L)
     }
     else
     {
-        time_out = atoi( period );
+        if ( period == NULL  )
+            time_out = 30;
+        else
+            time_out = atoi( period );
     }
 
     /**
