@@ -88,6 +88,13 @@ public:
     static bool is_maildir(std::string path);
 
     /**
+     * Create a new Maildir.
+     *
+     * NOTE: Parent directory/directories must exist.
+     */
+    static bool create(std::string path);
+
+    /**
      * Get all messages in the folder.
      */
     std::vector<CMessage *> getMessages();

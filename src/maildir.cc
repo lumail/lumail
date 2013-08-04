@@ -433,3 +433,46 @@ bool CMaildir::is_maildir(std::string path)
 }
 
 
+/**
+ * Create a new Maildir.
+ *
+ * NOTE: Parent directory/directories must exist.
+ */
+bool CMaildir::create(std::string path)
+{
+    /**
+     * Get the parent.
+     */
+    size_t offset = path.find_last_of( "/" );
+    if ( offset != std::string::npos )
+    {
+        std::string parent = path.substr(0,offset);
+
+        /**
+         * Does the parent exist as a directory?
+         */
+        if ( ! CFile::is_directory( parent ) )
+            return false;
+
+        /**
+         * OK we're probably alright.  Create the directories.
+         */
+        std::vector<std::string> dirs;
+        dirs.push_back(path);
+        dirs.push_back(path + "/cur");
+        dirs.push_back(path + "/new");
+        dirs.push_back(path + "/tmp");
+
+        std::vector<std::string>::iterator it;
+        for( it = dirs.begin(); it != dirs.end(); it ++ )
+        {
+            if (mkdir( (*it).c_str(), 0775) != 0 )
+                return false;
+        }
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
