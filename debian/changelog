@@ -1,3 +1,31 @@
+lumail (0.16) stable; urgency=low
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+     - #79 - Console is now setup for UTF
+     - #84 - Build lumail & lumail-debug by default.
+     - #85 - New sort method "header", uses the Date: header in messages.
+     - #86 - New hook "on_message_aborted()" if a mail isn't sent.
+             http://lumail.org/lua/on_message_aborted.html
+     - #87 - New hooks "on_edit_message()", and "on_send_message()".
+             http://lumail.org/lua/on_edit_message.html
+             http://lumail.org/lua/on_send_message.html
+     - #89 - Allow index_limit to use (multiple) header values.
+             http://lumail.org/lua/index_limit.html
+     - #90 - Significant overhaul of the TAB-completion code.
+             New primitive: completion_chars to alter behaviour.
+     - #91 - Document updated build-dependency on the wide version of ncurses
+     - #92 - Prevent segfault when alert() is called with no arguments.
+  * New primitive "stuff", to insert characters into the input queue, documented at:
+      http://lumail.org/lua/stuff.html
+  * New primitive "help", to give minimal help on primitives, documented at:
+      http://lumail.org/lua/help.html
+  * New filter for message manipulation
+      http://lumail.org/lua/on_message_parse.html
+
+ -- Steve Kemp <steve@steve.org.uk>  Sun, 4 Aug 2013 09:09:09 +0000
+
 lumail (0.15) stable; urgency=high
 
   * New release, fixing several bugs.
