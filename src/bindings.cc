@@ -2731,6 +2731,25 @@ int is_maildir(lua_State *L)
     return 1;
 }
 
+
+/**
+ * Create a new maildir.
+ */
+int create_maildir(lua_State *L)
+{
+    const char *path = lua_tostring(L, -1);
+    if (path == NULL)
+        return luaL_error(L, "Missing argument to create_maildir(..)");
+
+    if ( CMaildir::create( path ) )
+        lua_pushboolean(L,1);
+    else
+        lua_pushboolean(L,0);
+
+    return 1;
+}
+
+
 /**
  * Is the given path an executable?
  */

@@ -75,6 +75,7 @@ struct CLuaMapping primitive_list[] =
 /**
  * File/Path utilities
  */
+    {"create_maildir", "Create a new maildir.", (lua_CFunction) create_maildir },
     {"executable", "Is the given file executable?", (lua_CFunction) executable },
     {"file_exists", "Does the given file exist?", (lua_CFunction) file_exists },
     {"is_directory", "Is the given path a directory?", (lua_CFunction) is_directory },

@@ -217,6 +217,7 @@ int screen_height(lua_State * L);
 /**
  * File/Utility handlers. Useful for writing portable configuration files.
  */
+int create_maildir(lua_State *L);
 int executable(lua_State *L);
 int file_exists(lua_State *L);
 int is_directory(lua_State *L);
