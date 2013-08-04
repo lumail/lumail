@@ -2715,6 +2715,23 @@ int is_directory(lua_State *L)
 }
 
 /**
+ * Is the given path a maildir?
+ */
+int is_maildir(lua_State *L)
+{
+    const char *str = lua_tostring(L, -1);
+    if (str == NULL)
+        return luaL_error(L, "Missing argument to is_maildir(..)");
+
+    if ( CMaildir::is_maildir( str ) )
+        lua_pushboolean(L,1);
+    else
+        lua_pushboolean(L,0);
+
+    return 1;
+}
+
+/**
  * Is the given path an executable?
  */
 int executable(lua_State *L)

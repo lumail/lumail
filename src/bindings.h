@@ -220,6 +220,7 @@ int screen_height(lua_State * L);
 int executable(lua_State *L);
 int file_exists(lua_State *L);
 int is_directory(lua_State *L);
+int is_maildir(lua_State *L);
 int load_directory(lua_State *L);
 
 /**

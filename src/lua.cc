@@ -78,6 +78,7 @@ struct CLuaMapping primitive_list[] =
     {"executable", "Is the given file executable?", (lua_CFunction) executable },
     {"file_exists", "Does the given file exist?", (lua_CFunction) file_exists },
     {"is_directory", "Is the given path a directory?", (lua_CFunction) is_directory },
+    {"is_maildir", "Is the given path a maildir?", (lua_CFunction) is_maildir },
     {"load_directory", "Load *.lua from beneath the given directory.  (Not recursively.)", (lua_CFunction) load_directory },
 
 /**
