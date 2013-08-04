@@ -40,10 +40,7 @@ install: build
 	dh_testroot
 	dh_prep
 	dh_installdirs
-	make lumail-debug
-	rm *.o
-	make lumail
-	rm *.o
+	make
 	dh_install
 
 # Build architecture-independent files here.

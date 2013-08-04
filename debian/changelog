@@ -17,7 +17,7 @@ lumail (0.16) stable; urgency=low
              New primitive: completion_chars to alter behaviour.
      - #91 - Document updated build-dependency on the wide version of ncurses
      - #92 - Prevent segfault when alert() is called with no arguments.
-  * New primitive "stuff", to insert characters into the input queue, documented at:
+  * New primitive "stuff", to add characters into the input queue, documented at:
       http://lumail.org/lua/stuff.html
   * New primitive "help", to give minimal help on primitives, documented at:
       http://lumail.org/lua/help.html
