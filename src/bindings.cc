@@ -1981,6 +1981,13 @@ int compose(lua_State * L)
     unused = system(cmd.c_str());
 
     /**
+     * Reset + redraw
+     */
+    reset_prog_mode();
+    refresh();
+
+
+    /**
      * Call the on_edit_message hook, with the path to the message.
      */
     call_message_hook( "on_edit_message", filename );
@@ -2031,9 +2038,6 @@ int compose(lua_State * L)
 
             cont = false;
             CFile::delete_file( filename );
-            reset_prog_mode();
-            refresh();
-
             lua_pushstring(L, SENDING_ABORTED);
             return( msg(L ) );
         }
@@ -2048,8 +2052,6 @@ int compose(lua_State * L)
             if ( ret != 1 )
             {
                 CFile::delete_file( filename );
-                reset_prog_mode();
-                refresh();
                 lua_pushstring(L, "Error receiving attachment." );
                 return( msg(L ) );
             }
@@ -2076,44 +2078,34 @@ int compose(lua_State * L)
 
 
     /**
-     * OK now we're going to send the mail.  Get some settings.
-     */
-    std::string *sendmail  = global->get_variable("sendmail_path");
-    std::string *sent_path = global->get_variable("sent_mail");
-
-    /**
      * Send the mail.
      */
+    std::string *sendmail  = global->get_variable("sendmail_path");
     CFile::file_to_pipe( filename, *sendmail );
 
     /**
      * Get a filename in the sent-mail path.
      */
-    std::string archive = CMaildir::message_in( *sent_path, false );
-    if ( archive.empty() )
+    std::string *sent_path = global->get_variable("sent_mail");
+    if ( sent_path != NULL )
     {
-        CFile::delete_file( filename );
-        reset_prog_mode();
-        refresh();
+        std::string archive = CMaildir::message_in( *sent_path, false );
+        if ( archive.empty() )
+        {
+            CFile::delete_file( filename );
 
-        lua_pushstring(L, "error finding save path");
-        return( msg(L ) );
+            lua_pushstring(L, "error finding save path");
+            return( msg(L ) );
+        }
+
+
+        /**
+         * If we got a filename then copy the mail there.
+         */
+        CFile::copy( filename, archive );
     }
 
-
-    /**
-     * If we got a filename then copy the mail there.
-     */
-    CFile::copy( filename, archive );
-
     CFile::delete_file( filename );
-
-    /**
-     * Reset + redraw
-     */
-    reset_prog_mode();
-    refresh();
-
     return 0;
 }
 
@@ -2281,6 +2273,12 @@ int reply(lua_State * L)
     cmd += filename;
     unused = system(cmd.c_str());
 
+    /**
+     * Reset the screen.
+     */
+    reset_prog_mode();
+    refresh();
+
 
     /**
      * Call the on_edit_message hook, with the path to the message.
@@ -2334,8 +2332,6 @@ int reply(lua_State * L)
 
             cont = false;
             CFile::delete_file( filename );
-            reset_prog_mode();
-            refresh();
 
             lua_pushstring(L, SENDING_ABORTED);
             return( msg(L ) );
@@ -2351,8 +2347,6 @@ int reply(lua_State * L)
             if ( ret != 1 )
             {
                 CFile::delete_file( filename );
-                reset_prog_mode();
-                refresh();
                 lua_pushstring(L, "Error receiving attachment." );
                 return( msg(L ) );
             }
@@ -2378,37 +2372,35 @@ int reply(lua_State * L)
         handle_attachments( L, filename, attachments );
     }
 
-    /**
-     * OK now we're going to send the mail.  Get some settings.
-     */
-    std::string *sent_path = global->get_variable("sent_mail");
-    std::string *sendmail  = global->get_variable("sendmail_path");
-
 
     /**
      * Send the mail.
      */
+    std::string *sendmail  = global->get_variable("sendmail_path");
     CFile::file_to_pipe( filename, *sendmail );
 
     /**
      * Get a filename in the sent-mail path.
      */
-    std::string archive = CMaildir::message_in( *sent_path, false );
-    if ( archive.empty() )
+    std::string *sent_path = global->get_variable("sent_mail");
+    if ( sent_path != NULL )
     {
-        CFile::delete_file( filename );
-        reset_prog_mode();
-        refresh();
+        std::string archive = CMaildir::message_in( *sent_path, false );
+        if ( archive.empty() )
+        {
+            CFile::delete_file( filename );
 
-        lua_pushstring(L, "error finding save path");
-        return( msg(L ) );
+            lua_pushstring(L, "error finding save path");
+            return( msg(L ) );
+        }
+
+
+        /**
+         * If we got a filename then copy the mail there.
+         */
+        CFile::copy( filename, archive );
     }
 
-
-    /**
-     * If we got a filename then copy the mail there.
-     */
-    CFile::copy( filename, archive );
 
     CFile::delete_file( filename );
 
@@ -2422,9 +2414,6 @@ int reply(lua_State * L)
     /**
      * Reset + redraw
      */
-    reset_prog_mode();
-    refresh();
-
     return( 0 );
 }
 
@@ -2584,7 +2573,6 @@ int send_email(lua_State *L)
      * OK now we're going to send the mail.  Get some settings.
      */
     std::string *sendmail  = global->get_variable("sendmail_path");
-    std::string *sent_path = global->get_variable("sent_mail");
 
     if ( filenames.size() > 0 )
     {
@@ -2600,25 +2588,25 @@ int send_email(lua_State *L)
     /**
      * Get a filename in the sentmail path.
      */
-    std::string archive = CMaildir::message_in( *sent_path, true );
-    if ( archive.empty() )
+    std::string *sent_path = global->get_variable("sent_mail");
+    if ( sent_path != NULL )
     {
-        CFile::delete_file( filename );
-        reset_prog_mode();
-        refresh();
+        /**
+         * If we got a filename then copy the mail there.
+         */
+        std::string archive = CMaildir::message_in( *sent_path, true );
+        if ( archive.empty() )
+        {
+            CFile::delete_file( filename );
+            lua_pushstring(L, "error finding save path");
+            return( msg(L ) );
+        }
 
-        lua_pushstring(L, "error finding save path");
-        return( msg(L ) );
+        CFile::copy( filename, archive );
     }
 
 
-    /**
-     * If we got a filename then copy the mail there.
-     */
-    CFile::copy( filename, archive );
-
     CFile::delete_file( filename );
-
 
     return 0;
 }
