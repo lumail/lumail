@@ -41,7 +41,7 @@ VERSION=$(shell sh -c 'git describe --abbrev=0 --tags | tr -d "release-"')
 CC=g++
 LINKER=$(CC) -o
 LVER=lua5.1
-CPPFLAGS+=-std=gnu++0x -Wall -Werror $(shell pkg-config --cflags lua5.1) $(shell pcre-config --cflags) -I/usr/include/ncursesw/
+CPPFLAGS+=-std=gnu++0x -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) -I/usr/include/ncursesw/
 LDLIBS+=$(shell pkg-config --libs ${LVER}) -lncursesw  -lmimetic -lpcre -lpcrecpp
 
 
