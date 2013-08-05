@@ -578,7 +578,7 @@ void CGlobal::set_variable( std::string name, std::string *value )
      */
     m_variables[ name ] = value;
 
-
+#ifdef LUMAIL_DEBUG
     std::string dm = "Set variable named '" ;
     dm += name ;
     dm += "' to value '";
@@ -586,7 +586,7 @@ void CGlobal::set_variable( std::string name, std::string *value )
     dm += "'";
 
     DEBUG_LOG( dm );
-
+#endif
 }
 
 
