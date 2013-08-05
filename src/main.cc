@@ -173,9 +173,9 @@ int main(int argc, char *argv[])
      * Load the init-file from the users home-directory, if we can.
      */
     std::string home = getenv( "HOME" );
-    if ( CFile::exists( home + "/.lumail/config.lua" ) )
-        if ( lua->load_file( home + "/.lumail/config.lua") )
-            init += 1;
+    if ( ( ! home.empty() ) && ( CFile::exists( home + "/.lumail/config.lua" ) ) )
+         if ( lua->load_file( home + "/.lumail/config.lua") )
+             init += 1;
 
     /**
      * If we have any init file specified then load it up too.
@@ -210,21 +210,23 @@ int main(int argc, char *argv[])
      */
     if ( !folder.empty() )
     {
-        if ( CFile::is_directory( folder ) )
+        /**
+         * Remove any trailing "/" character(s).
+         */
+        while ( folder.at(folder.size()-1) == '/' )
+            folder = folder.substr(0,folder.size()-1);
+
+        if ( CMaildir::is_maildir( folder ) )
         {
             /**
-             * This should be simplified.
+             * Open the single folder named on the command-line.
              */
-            lua->execute( "global_mode( \"index\" );" );
-            lua->execute( "maildir_limit( \"all\" );" );
-            lua->execute( "clear_selected_folders();");
-            lua->execute( "scroll_maildir_to( \"" + folder + "\");" );
-            lua->execute( "add_selected_folder()");
+            lua->execute( "set_selected_folder( \"" + folder + "\" );" );
             lua->execute( "global_mode( \"index\" );" );
         }
         else
         {
-            lua->execute("msg(\"Startup folder doesn't exist!\");" );
+            lua->execute("msg(\"Startup folder is not a Maildir!\");" );
         }
     }
 
