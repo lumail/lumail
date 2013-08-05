@@ -98,8 +98,8 @@ void CMessage::message_parse()
     /**
      * The path of the message on-disk.
      */
-    std::string *message_path = new std::string(path());
-    std::string orig_path     = *message_path;
+    std::string message_path = path();
+    std::string orig_path     = message_path;
 
     /**
      * Is "on_message_parse" a defined function?
@@ -107,26 +107,25 @@ void CMessage::message_parse()
     lua_getglobal(m_lua, "on_message_parse");
     if (lua_isfunction(m_lua, -1))
     {
-        lua_pushstring(m_lua, message_path->c_str() );
+        lua_pushstring(m_lua, message_path.c_str() );
         lua_pcall(m_lua, 1, 1, 0);
 
         const char *str = lua_tostring(m_lua,-1);
 
-        delete( message_path );
-        message_path = new std::string(str);
+        message_path = str;
     }
 
-    ifstream file( message_path->c_str() );
+    ifstream file( message_path.c_str() );
     m_me = new MimeEntity(file);
 
     /**
      * If the file has changed then we need to remove it
      * to avoid leaking copies of files.
      */
-    if ( strcmp( message_path->c_str(),
+    if ( strcmp( message_path.c_str(),
                  orig_path.c_str() ) != 0 )
     {
-        CFile::delete_file( message_path->c_str() );
+        CFile::delete_file( message_path.c_str() );
     }
 
 #ifdef LUMAIL_DEBUG
@@ -134,7 +133,6 @@ void CMessage::message_parse()
     DEBUG_LOG( dm );
 #endif
 
-    delete( message_path );
 }
 
 
