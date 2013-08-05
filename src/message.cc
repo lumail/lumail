@@ -89,17 +89,21 @@ void CMessage::message_parse()
         return;
     }
 
+
+#ifdef CRASH
+
     /**
      * Lua handle.
      */
     CLua        *lua = CLua::Instance();
     lua_State *m_lua = lua->get_lua();
 
+
     /**
      * The path of the message on-disk.
      */
     std::string message_path = path();
-    std::string orig_path     = message_path;
+    std::string orig_path    = message_path;
 
     /**
      * Is "on_message_parse" a defined function?
@@ -115,9 +119,13 @@ void CMessage::message_parse()
         message_path = str;
     }
 
-    ifstream file( message_path.c_str() );
+#endif
+
+    ifstream file( path().c_str() );
     m_me = new MimeEntity(file);
 
+
+#ifdef CRASH
     /**
      * If the file has changed then we need to remove it
      * to avoid leaking copies of files.
@@ -127,6 +135,8 @@ void CMessage::message_parse()
     {
         CFile::delete_file( message_path.c_str() );
     }
+#endif
+
 
 #ifdef LUMAIL_DEBUG
     std::string dm = "CMessage::message_parse() - end";
