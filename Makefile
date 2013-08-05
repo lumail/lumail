@@ -109,7 +109,7 @@ lumail: $(RELEASE_OBJECTS)
 #  The debug-build.
 #
 lumail-debug: $(DEBUG_OBJECTS)
-	$(LINKER) $@ $(LFLAGS) $(DEBUG_OBJECTS) $(LDLIBS)
+	$(LINKER) $@ $(LFLAGS) -ggdb $(DEBUG_OBJECTS) $(LDLIBS)
 
 
 #
