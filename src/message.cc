@@ -59,7 +59,10 @@ CMessage::CMessage(std::string filename)
 CMessage::~CMessage()
 {
     if ( m_me != NULL )
+    {
         delete( m_me );
+        m_me = NULL;
+    }
 }
 
 
