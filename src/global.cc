@@ -541,13 +541,14 @@ std::string * CGlobal::get_variable( std::string name )
 
     std::string dm = "Get variable named '";
     dm += name ;
-    dm += "' value is " ;
+    dm += "' value is '" ;
 
     if ( value != NULL )
         dm += *value;
     else
         dm += " NULL";
 
+    dm+= "'";
     DEBUG_LOG( dm );
 
 #endif /* LUMAIL_DEBUG */

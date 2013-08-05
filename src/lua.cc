@@ -480,6 +480,12 @@ std::vector<std::string> CLua::table_to_array( std::string name )
     if (lua_type(m_lua, -1)!=LUA_TTABLE)
     {
         lua_pop(m_lua, 1);
+
+#ifdef LUMAIL_DEBUG
+    std::string ds = "table_to_array() -> Not a table";
+    DEBUG_LOG( ds );
+#endif
+
         return results;
     }
 
