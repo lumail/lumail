@@ -89,7 +89,7 @@ utilities:
 clean:
 	test -d $(RELEASE_OBJDIR)  && rm -rf $(RELEASE_OBJDIR) || true
 	test -d $(DEBUG_OBJDIR)    && rm -rf $(DEBUG_OBJDIR)   || true
-	rm -f lumail lumail-debug                              || true
+	rm -f lumail lumail-debug core                         || true
 
 #
 #  Sources + objects.
