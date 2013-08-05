@@ -176,11 +176,6 @@ private:
     std::string getMimePart(mimetic::MimeEntity* pMe, std::string mtype );
 
     /**
-     * Decode a header-field.
-     */
-    std::string decode_field( std::string str );
-
-    /**
      * The file we represent.
      */
     std::string m_path;
