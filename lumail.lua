@@ -54,9 +54,13 @@ end
 -- There is only one folder which is special, and that is the one where
 -- lumail will record copies of outgoing mail(s).
 --
--- The sent-mail folder may be specified here:
+-- The sent-mail folder may be specified here, if it exists:
 --
-sent_mail( maildir_prefix() .. "/sent-mail" );
+-- NOTE:  This is commented out by default.
+--
+-- if ( is_maildir( maildir_prefix() .. "/sent-mail" ) ) then
+--   sent_mail( maildir_prefix() .. "/sent-mail" );
+--end
 
 
 --
@@ -396,6 +400,9 @@ do
 
       -- Show the message & the time.
       msg( str .. " time:" .. os.date("%X" ) );
+
+      -- Dump-stack for debug-purposes
+      dump_stack();
 
       --
       -- If the time between the last sync is more than
