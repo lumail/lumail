@@ -103,13 +103,13 @@ DEBUG_OBJECTS   := $(SOURCES:$(SRCDIR)/%.cc=$(DEBUG_OBJDIR)/%.o)
 #  The release-build.
 #
 lumail: $(RELEASE_OBJECTS)
-	$(LINKER) $@ $(LFLAGS) $(LDLIBS) $(RELEASE_OBJECTS)
+	$(LINKER) $@ $(LFLAGS) $(RELEASE_OBJECTS) $(LDLIBS)
 
 #
 #  The debug-build.
 #
 lumail-debug: $(DEBUG_OBJECTS)
-	$(LINKER) $@ $(LFLAGS) $(LDLIBS) $(DEBUG_OBJECTS)
+	$(LINKER) $@ $(LFLAGS) $(DEBUG_OBJECTS) $(LDLIBS)
 
 
 #
