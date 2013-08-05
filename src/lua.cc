@@ -521,9 +521,9 @@ std::vector<std::string> CLua::table_to_array( std::string name )
 /**
  * Return the value of the lua-defined variable.
  */
-bool CLua::get_bool( std::string  name )
+bool CLua::get_bool( std::string name, bool default_value )
 {
-    bool ret = false;
+    bool ret = default_value;
     lua_getglobal(m_lua, name.c_str() );
     if (lua_type(m_lua, -1) != LUA_TBOOLEAN )
     {

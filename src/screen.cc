@@ -945,13 +945,30 @@ std::vector<std::string> CScreen::get_completions( std::string token )
     std::vector<std::string> results;
 
     /**
+     * Should we be case insensitive?
+     */
+    CLua *lua = CLua::Instance();
+    bool ignore_case = lua->get_bool( "ignore_case", true );
+
+
+    /**
      * Attempt to match against built-in functions.
      */
     for( int i = 0; i < primitive_count ; i ++ )
     {
-        if( strcasestr( primitive_list[i].name, token.c_str() ) != 0 )
+        if ( ignore_case )
         {
-            results.push_back( primitive_list[i].name );
+            if( strcasestr( primitive_list[i].name, token.c_str() ) != 0 )
+            {
+                results.push_back( primitive_list[i].name );
+            }
+        }
+        else
+        {
+            if( strstr( primitive_list[i].name, token.c_str() ) != 0 )
+            {
+                results.push_back( primitive_list[i].name );
+            }
         }
     }
 
@@ -959,7 +976,6 @@ std::vector<std::string> CScreen::get_completions( std::string token )
     /**
      * Attempt to match against user-defined functions.
      */
-    CLua *lua = CLua::Instance();
     std::vector<std::string> f = lua->on_complete();
     if ( f.size() > 0 )
     {
@@ -967,9 +983,19 @@ std::vector<std::string> CScreen::get_completions( std::string token )
 
         for (it = f.begin(); it != f.end(); ++it)
         {
-            if( strcasestr( (*it).c_str(), token.c_str() ) != 0 )
+            if ( ignore_case )
             {
-                results.push_back( (*it) );
+                if( strcasestr( (*it).c_str(), token.c_str() ) != 0 )
+                {
+                    results.push_back( (*it) );
+                }
+            }
+            else
+            {
+                if( strstr( (*it).c_str(), token.c_str() ) != 0 )
+                {
+                    results.push_back( (*it) );
+                }
             }
         }
     }
@@ -1074,12 +1100,16 @@ std::vector<std::string> CScreen::get_completions( std::string token )
             {
                 e = e.substr(0,off);
 
-                if( strncasecmp( e.c_str(), token.c_str(), token.size() ) == 0 )
+                if ( ignore_case )
                 {
-                    /**
-                     * Ensure we reinstate the leading "$".
-                     */
-                    results.push_back( "$" + e );
+
+                    if( strncasecmp( e.c_str(), token.c_str(), token.size() ) == 0 )
+                        results.push_back( "$" + e );
+                }
+                else
+                {
+                    if( strncmp( e.c_str(), token.c_str(), token.size() ) == 0 )
+                        results.push_back( "$" + e );
                 }
             }
         }

@@ -134,9 +134,9 @@ public:
     std::vector<std::string> table_to_array( std::string name );
 
     /**
-     * Get global boolean vars
+     * Retrieve the value of a global boolean variable.
      */
-    bool get_bool( std::string  name );
+    bool get_bool( std::string name, bool default_value = false );
 
     /**
      * Dump the stack contents - only in debug-builds.
