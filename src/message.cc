@@ -73,8 +73,21 @@ CMessage::~CMessage()
  */
 void CMessage::message_parse()
 {
+#ifdef LUMAIL_DEBUG
+    {
+        std::string dm = "CMessage::message_parse() - start";
+        DEBUG_LOG( dm );
+    }
+#endif
+
     if ( m_me != NULL )
+    {
+#ifdef LUMAIL_DEBUG
+        std::string dm = "CMessage::message_parse() - early exit";
+        DEBUG_LOG( dm );
+#endif
         return;
+    }
 
     /**
      * Lua handle.
@@ -114,6 +127,11 @@ void CMessage::message_parse()
     {
         CFile::delete_file( message_path.c_str() );
     }
+
+#ifdef LUMAIL_DEBUG
+        std::string dm = "CMessage::message_parse() - end";
+        DEBUG_LOG( dm );
+#endif
 }
 
 

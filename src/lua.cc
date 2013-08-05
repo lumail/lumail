@@ -287,6 +287,11 @@ void CLua::execute(std::string lua)
  */
 bool CLua::call_function(std::string name)
 {
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CLua::call_function(\"" + name + "\");";
+    DEBUG_LOG( dm );
+#endif
+
     lua_getglobal(m_lua, name.c_str());
     if (lua_isfunction(m_lua, -1))
     {
