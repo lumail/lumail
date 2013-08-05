@@ -70,7 +70,8 @@ void CScreen::refresh_display()
      * Get the current mode.
      */
     CGlobal *global = CGlobal::Instance();
-    std::string * s = global->get_variable("global_mode");
+    std::string *s = global->get_variable("global_mode");
+    assert( s != NULL );
 
 
     if (strcmp(s->c_str(), "maildir") == 0)
