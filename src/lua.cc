@@ -449,6 +449,12 @@ std::vector<std::string> CLua::on_complete()
         results.push_back( d );
         lua_pop( m_lua , 1);
     }
+
+    /**
+     * Cleanup the table.
+     */
+    lua_pop(m_lua,1);
+
     return( results );
 }
 
@@ -495,6 +501,10 @@ std::vector<std::string> CLua::table_to_array( std::string name )
     }
 
 
+    /**
+     * Cleanup the table.
+     */
+    lua_pop(m_lua,1);
 
 #ifdef LUMAIL_DEBUG
     std::string de = "table_to_array(";
@@ -504,7 +514,6 @@ std::vector<std::string> CLua::table_to_array( std::string name )
 #endif
 
 
-    lua_pop( m_lua , 1);
     return( results );
 }
 
