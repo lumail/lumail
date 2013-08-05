@@ -657,97 +657,6 @@ std::string CMessage::format( std::string fmt )
 
 
 /**
- * Decode a header-field.  The format is
- *
- * =?<charset>?<encoding>?<data>?=
- */
-std::string CMessage::decode_field( std::string str )
-{
-    /**
-     * If the string is empty, or the first characters are not "=" and "?"
-     * we return unmodified.
-     */
-    if ( str.size() < 1 )
-        return(str);
-
-    if ( ( str.at(0) != '=' ) ||
-         ( str.at(1) != '?' ) )
-        return(str);
-
-    /**
-     * OK so we now need to break this down into the type.
-     */
-    size_t len = str.size();
-
-    std::string charset;
-    std::string encoding;
-    std::string data;
-
-    size_t i;
-    for(  i = 2; i < len; i++ )
-    {
-        if (str.at(i) != '?' )
-            charset += str.substr(i,1);
-        else
-            break;
-    }
-
-    i++;
-    for( ; i < len; i++ )
-    {
-        if (str.at(i) != '?' )
-            encoding += str.at(i);
-        else
-            break;
-    }
-    i++;
-
-    for( ; i < len; i++ )
-    {
-        if (str.at(i) != '?' )
-            data += str.at(i);
-        else
-            break;
-    }
-
-    std::string tail;
-
-    if ( str.size() >= i + 3 )
-        tail = str.substr(i+3);
-
-
-    /**
-     * Log what we found.
-     */
-#ifdef LUMAIL_DEBUG
-    std::string input = "CMessage::decode_field(\"";
-    input += str;
-    input += "\");";
-    DEBUG_LOG( input );
-
-    std::string parsed = "CHARSET:'" + charset + "' ENCODING:" + encoding +
-        " DATA:" + data + " TAIL:" + tail;
-    DEBUG_LOG( parsed);
-#endif
-
-
-    mimetic::Base64::Decoder qp;
-    mimetic::QP::Decoder     b64;
-
-    std::istringstream is(data);
-    std::ostringstream decoded;
-    std::istreambuf_iterator<char> ibeg(is), iend;
-    std::ostreambuf_iterator<char> oi(decoded);
-
-    if ( encoding == "B" )
-        decode(ibeg, iend, qp, oi);
-    if ( encoding == "Q" )
-        decode(ibeg, iend, b64, oi);
-
-    return( decoded.str() + tail ) ;
-}
-
-/**
  * Get the value of a header.
  */
 std::string CMessage::header( std::string name )
@@ -759,7 +668,7 @@ std::string CMessage::header( std::string name )
 
     Header & h = m_me->header();
     if (h.hasField(name ) )
-        return( decode_field( h.field(name).value() ) );
+        return( h.field(name).value() );
     else
         return "";
 }
