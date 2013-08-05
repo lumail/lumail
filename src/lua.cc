@@ -231,6 +231,10 @@ CLua::CLua()
     lua_pushstring(m_lua, LUMAIL_VERSION );
     lua_setglobal(m_lua, "VERSION" );
 
+    /**
+     * Load a panic-handler - which will call abort()
+     */
+    lua_atpanic(m_lua, abort);
 }
 
 
