@@ -89,9 +89,6 @@ void CMessage::message_parse()
         return;
     }
 
-
-#ifdef CRASH
-
     /**
      * Lua handle.
      */
@@ -109,23 +106,28 @@ void CMessage::message_parse()
      * Is "on_message_parse" a defined function?
      */
     lua_getglobal(m_lua, "on_message_parse");
-    if (lua_isfunction(m_lua, -1))
+    if (lua_isfunction(m_lua, -1) )
     {
         lua_pushstring(m_lua, message_path.c_str() );
-        lua_pcall(m_lua, 1, 1, 0);
+
+        assert( -1 != lua_pcall(m_lua, 1, 1, 0));
 
         const char *str = lua_tostring(m_lua,-1);
+
+#ifdef LUMAIL_DEBUG
+        std::string dm = "CMessage::message_parse(:) ";
+        dm += str;
+        DEBUG_LOG( dm );
+#endif
 
         message_path = str;
     }
 
-#endif
 
     ifstream file( path().c_str() );
     m_me = new MimeEntity(file);
 
 
-#ifdef CRASH
     /**
      * If the file has changed then we need to remove it
      * to avoid leaking copies of files.
@@ -135,7 +137,6 @@ void CMessage::message_parse()
     {
         CFile::delete_file( message_path.c_str() );
     }
-#endif
 
 
 #ifdef LUMAIL_DEBUG

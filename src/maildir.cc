@@ -25,6 +25,7 @@
 #include <dirent.h>
 #include <pcrecpp.h>
 
+#include "debug.h"
 #include "file.h"
 #include "global.h"
 #include "maildir.h"
@@ -39,6 +40,13 @@ CMaildir::CMaildir(std::string path)
     m_modified = 0;   /* mtime of the maildir */
     m_unread   = -1;  /* unread messages in maildir */
     m_total    = -1;  /* total messages in maildir */
+
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CMaildir::CMaildir(";
+    dm += m_path;
+    dm += ");";
+    DEBUG_LOG( dm );
+#endif
 }
 
 /**
@@ -46,6 +54,14 @@ CMaildir::CMaildir(std::string path)
  */
 CMaildir::~CMaildir()
 {
+
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CMaildir::~CMaildir(";
+    dm += path();
+    dm += ");";
+    DEBUG_LOG( dm );
+#endif
+
 }
 
 
