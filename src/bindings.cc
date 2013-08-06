@@ -243,14 +243,36 @@ int exec(lua_State * L)
  */
 int msg(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
+    char buf[1023] = { '\0' };
 
-    if (str == NULL)
+    /**
+     * Get the type of argument.
+     */
+    int t = lua_type(L, -1);
+    switch (t)
+    {
+    case LUA_TSTRING:
+        snprintf(buf, sizeof(buf)-1,"%s", lua_tostring(L, -1));
+        break;
+
+    case LUA_TBOOLEAN:
+        snprintf(buf, sizeof(buf)-1,lua_toboolean(L, -1) ? "true" : "false");
+        break;
+
+    case LUA_TNUMBER:
+        snprintf(buf, sizeof(buf)-1,"%g", lua_tonumber(L, -1));
+        break;
+    default:
+        snprintf(buf, sizeof(buf)-1,"Cannot print argument of type %s", lua_typename(L, t));
+        break;
+    }
+
+    if (strlen(buf) < 1 )
         return luaL_error(L, "Missing argument to msg(..)");
 
     CScreen::clear_status();
     move(CScreen::height() - 1, 0);
-    printw("%s", str);
+    printw("%s", buf);
     return 0;
 }
 
