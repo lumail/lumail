@@ -47,7 +47,7 @@ using namespace mimetic;
 CMessage::CMessage(std::string filename)
 {
     m_path         = filename;
-    m_updated_path = filename;
+    m_updated_path = "";
     m_me           = NULL;
     m_date         = 0;
     m_time_cache   = 0;
