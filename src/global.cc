@@ -546,7 +546,7 @@ std::string * CGlobal::get_variable( std::string name )
     if ( value != NULL )
         dm += *value;
     else
-        dm += " NULL";
+        dm += "NULL";
 
     dm+= "'";
     DEBUG_LOG( dm );
