@@ -344,6 +344,11 @@ std::vector<CMessage *> CMaildir::getMessages()
     dirs.push_back(m_path + "/cur/");
     dirs.push_back(m_path + "/new/");
 
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CMessage::getMessages()";
+    DEBUG_LOG( dm );
+#endif
+
     /**
      * For each directory.
      */
@@ -356,7 +361,6 @@ std::vector<CMessage *> CMaildir::getMessages()
         dp = opendir(path.c_str());
         if (dp)
         {
-
             while (true)
             {
                 de = readdir(dp);
@@ -369,6 +373,12 @@ std::vector<CMessage *> CMaildir::getMessages()
                 {
                     CMessage *t = new CMessage(std::string(path + de->d_name));
                     result.push_back(t);
+
+#ifdef LUMAIL_DEBUG
+                    std::string dm = "CMessage::getMessages() - found ";
+                    dm += path + de->d_name;
+                    DEBUG_LOG( dm );
+#endif
                 }
             }
             closedir(dp);

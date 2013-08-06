@@ -50,6 +50,13 @@ CMessage::CMessage(std::string filename)
     m_me         = NULL;
     m_date       = 0;
     m_time_cache = 0;
+
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CMessage::CMessage(";
+    dm += m_path;
+    dm += ");";
+    DEBUG_LOG( dm );
+#endif
 }
 
 
@@ -63,6 +70,13 @@ CMessage::~CMessage()
         delete( m_me );
         m_me = NULL;
     }
+
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CMessage::~CMessage(";
+    dm += m_path;
+    dm += ");";
+    DEBUG_LOG( dm );
+#endif
 }
 
 
