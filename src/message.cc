@@ -47,7 +47,6 @@ using namespace mimetic;
 CMessage::CMessage(std::string filename)
 {
     m_path         = filename;
-    m_updated_path = "";
     m_me           = NULL;
     m_date         = 0;
     m_time_cache   = 0;
@@ -79,17 +78,6 @@ CMessage::~CMessage()
     DEBUG_LOG( dm );
 #endif
 
-
-    /**
-     * If the file has changed then we need to remove it
-     * to avoid leaking copies of files.
-     */
-    if ( ! m_updated_path.empty() )
-    {
-        CFile::delete_file( m_updated_path );
-        m_updated_path = "";
-    }
-
 }
 
 
@@ -117,46 +105,10 @@ void CMessage::message_parse()
     }
 
     /**
-     * Lua handle.
+     * Open the file for parsing.
      */
-    CLua        *lua = CLua::Instance();
-    lua_State *m_lua = lua->get_lua();
-
-    /**
-     * Is "on_message_parse" a defined function?
-     */
-    lua_getglobal(m_lua, "on_message_parse");
-    if (lua_isfunction(m_lua, -1) )
-    {
-        lua_pushstring(m_lua, path().c_str() );
-        lua_pcall(m_lua, 1, 1, 0);
-
-        const char *str = lua_tostring(m_lua,-1);
-
-#ifdef LUMAIL_DEBUG
-        std::string dm = "CMessage::message_parse(:) ";
-        dm += str;
-        DEBUG_LOG( dm );
-#endif
-
-        m_updated_path = str;
-    }
-
-
-    /**
-     * If we updated the path use it.
-     */
-    if ( m_updated_path.empty() )
-    {
-        ifstream file( m_path.c_str() );
-        m_me = new MimeEntity(file);
-    }
-    else
-    {
-        ifstream file( m_updated_path.c_str());
-        m_me = new MimeEntity(file);
-    }
-
+    ifstream file( path().c_str());
+    m_me = new MimeEntity(file);
 
 #ifdef LUMAIL_DEBUG
     std::string dm = "CMessage::message_parse() - end";

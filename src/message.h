@@ -181,11 +181,6 @@ private:
     std::string m_path;
 
     /**
-     * The user might update our path via on_message_parse()
-     */
-    std::string m_updated_path;
-
-    /**
      * MIME Entity object for this message.
      */
     mimetic::MimeEntity *m_me;
