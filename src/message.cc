@@ -46,10 +46,11 @@ using namespace mimetic;
  */
 CMessage::CMessage(std::string filename)
 {
-    m_path       = filename;
-    m_me         = NULL;
-    m_date       = 0;
-    m_time_cache = 0;
+    m_path         = filename;
+    m_updated_path = filename;
+    m_me           = NULL;
+    m_date         = 0;
+    m_time_cache   = 0;
 
 #ifdef LUMAIL_DEBUG
     std::string dm = "CMessage::CMessage(";
@@ -77,6 +78,18 @@ CMessage::~CMessage()
     dm += ");";
     DEBUG_LOG( dm );
 #endif
+
+
+    /**
+     * If the file has changed then we need to remove it
+     * to avoid leaking copies of files.
+     */
+    if ( ! m_updated_path.empty() )
+    {
+        CFile::delete_file( m_updated_path );
+        m_updated_path = "";
+    }
+
 }
 
 
@@ -109,22 +122,14 @@ void CMessage::message_parse()
     CLua        *lua = CLua::Instance();
     lua_State *m_lua = lua->get_lua();
 
-
-    /**
-     * The path of the message on-disk.
-     */
-    std::string message_path = path();
-    std::string orig_path    = message_path;
-
     /**
      * Is "on_message_parse" a defined function?
      */
     lua_getglobal(m_lua, "on_message_parse");
     if (lua_isfunction(m_lua, -1) )
     {
-        lua_pushstring(m_lua, message_path.c_str() );
-
-        assert( -1 != lua_pcall(m_lua, 1, 1, 0));
+        lua_pushstring(m_lua, path().c_str() );
+        lua_pcall(m_lua, 1, 1, 0);
 
         const char *str = lua_tostring(m_lua,-1);
 
@@ -134,22 +139,22 @@ void CMessage::message_parse()
         DEBUG_LOG( dm );
 #endif
 
-        message_path = str;
+        m_updated_path = str;
     }
 
 
-    ifstream file( path().c_str() );
-    m_me = new MimeEntity(file);
-
-
     /**
-     * If the file has changed then we need to remove it
-     * to avoid leaking copies of files.
+     * If we updated the path use it.
      */
-    if ( strcmp( message_path.c_str(),
-                 orig_path.c_str() ) != 0 )
+    if ( m_updated_path.empty() )
     {
-        CFile::delete_file( message_path.c_str() );
+        ifstream file( m_path.c_str() );
+        m_me = new MimeEntity(file);
+    }
+    else
+    {
+        ifstream file( m_updated_path.c_str());
+        m_me = new MimeEntity(file);
     }
 
 
