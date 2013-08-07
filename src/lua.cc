@@ -313,13 +313,27 @@ bool CLua::call_function(std::string name)
 char *CLua::get_nested_table( std::string table, std::string key, std::string subkey )
 {
     char *result = NULL;
+    static char quit_string[] =  {"exit();"};
 
     /**
      * Ensure the table exists.
      */
     lua_getglobal(m_lua, table.c_str() );
     if (lua_isnil (m_lua, -1 ) )
+    {
+        /**
+         * If the table doesn't exist we'll return "exit();",
+         * if the keypress was one of: q/Q/x/X
+         */
+        if ( ( subkey.size() > 0 ) &&
+             ( ( subkey.at(0) == 'q' ) ||
+               ( subkey.at(0) == 'Q' ) ||
+               ( subkey.at(0) == 'x' ) ||
+               ( subkey.at(0) == 'X' ) ) )
+            result = quit_string;
+
         return result;
+    }
 
     /**
      * Get the sub-table.
