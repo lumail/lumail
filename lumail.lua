@@ -11,7 +11,7 @@
 --   $ lumail --rcfile ./lumail.lua
 --
 --
--- NOTE: This fille will also ensure that each file matching *.lua
+-- NOTE: This file will also ensure that each file matching *.lua
 --       beneath ~/.lumail.d/ will be loaded.
 --
 -- The configuration file(s) are responsible for determining which keystrokes
