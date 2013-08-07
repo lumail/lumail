@@ -221,7 +221,9 @@ end
 --
 -- You might consider something useful like this:
 --
---    os.execute( "imapsync ..." );
+--    function on_start()
+--       offlineimap()
+--    end
 --
 function on_start()
    msg("lumail v" .. VERSION .. " http://lumail.org/" );
@@ -317,7 +319,7 @@ end
 --
 function on_read_message( path )
    if ( is_new()  ) then
-      mark_read();
+      mark_read()
    end
 end
 
@@ -326,7 +328,7 @@ end
 -- Show the version of this client.
 --
 function show_version()
-   msg("This is lumail version " .. VERSION );
+   msg("This is lumail version " .. VERSION .. " from http://lumail.org/" )
 end
 
 
@@ -347,7 +349,7 @@ end
 function on_complete()
 
    --
-   -- Default to the colours.
+   -- Add the colours we support for the various display functions.
    --
    ret = { "blue", "cyan", "green", "magenta", "red", "white", "yellow" }
 
@@ -357,13 +359,15 @@ function on_complete()
    for k,v in pairs(_G) do
       ret[k] = k
    end
-  return(ret)
+
+   return(ret)
 end
+
 
 --
 -- This function is called when the client exits.
 --
--- It could also be used to run an imap-sync, or similar hook at exit-time.
+-- It could also be used to run a final imap-sync, or similar.
 --
 function on_exit()
    print("Lumail has now terminated.");
@@ -401,7 +405,7 @@ do
       -- Show the message & the time.
       msg( str .. " time:" .. os.date("%X" ) );
 
-      -- Dump-stack for debug-purposes
+      -- Dump the internal Lua-stack for debug-purposes.
       dump_stack();
 
       --
@@ -517,16 +521,17 @@ function message_page_up()
    scroll_index_up( screen_height() - 2 );
 end
 
+
 --
--- Wrap lines
+-- Should we wrap lines when showing a message?
 --
 function toggle_wrap_lines ()
     if wrap_lines == nil then
-	wrap_lines = true
+        wrap_lines = true
     elseif wrap_lines == true then
-	wrap_lines = false
+        wrap_lines = false
     elseif wrap_lines == false then
-	wrap_lines = true
+        wrap_lines = true
     end
 end
 
