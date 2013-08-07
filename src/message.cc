@@ -50,6 +50,7 @@ CMessage::CMessage(std::string filename)
     m_me           = NULL;
     m_date         = 0;
     m_time_cache   = 0;
+    m_read         = false;
 
 #ifdef LUMAIL_DEBUG
     std::string dm = "CMessage::CMessage(";
@@ -1291,4 +1292,33 @@ bool CMessage::save_attachment( int offset, std::string output_path )
 
 
     return( ret );
+}
+
+
+/**
+ * This method is responsible for invoking the Lua on_read_message hook.
+ *
+ * We record whether this message has previously been displayed to avoid
+ * triggering multiple times (i.e. once per screen refresh).
+ */
+bool CMessage::on_read_message()
+{
+    /**
+     * If we've been invoked, return.
+     */
+    if ( m_read )
+        return false;
+    else
+        m_read = true;
+
+    /**
+     * Call the hook.
+     */
+    CLua *lua = CLua::Instance();
+    lua->execute( "on_read_message(\"" + path() + "\");" );
+
+    /**
+     * Hook invoked.
+     */
+    return true;
 }

@@ -36,8 +36,6 @@
  */
 class CMessage
 {
-private:
-    time_t m_time_cache;
 
 public:
 
@@ -162,7 +160,24 @@ public:
      */
     time_t get_date_field();
 
+    /**
+     * Call the on_read_message() hook for this object.
+     *
+     * NOTE: This will only succeed once.
+     */
+    bool on_read_message();
+
 private:
+
+    /**
+     * Have we invoked the on_read_message hook?
+     */
+    bool m_read;
+
+    /**
+     * Cache of the mtime of the file.
+     */
+    time_t m_time_cache;
 
     /**
      * Parse the message, if that hasn't been done.

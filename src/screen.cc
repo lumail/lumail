@@ -699,9 +699,9 @@ void CScreen::drawMessage()
 
 
     /**
-     * We're reading a message so call our hook.
+     * We're reading a message so call the on_read_message() hook.
      */
-    lua->execute( "on_read_message(\"" + cur->path() + "\");" );
+    cur->on_read_message();
 }
 
 /**
