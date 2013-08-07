@@ -292,6 +292,16 @@ std::vector<CMaildir *> CGlobal::get_folders()
     std::vector<CMaildir*> display;
     std::string * filter = global->get_variable("maildir_limit");
 
+
+    /**
+     * If we have no folders then we must return the empty set.
+     *
+     * Most likely cause?  The maildir_prefix isn't set, or is set incorrectly.
+     */
+    if ( m_maildirs == NULL )
+        return( display );
+
+
     /**
      * Filter the folders to those we can display
      */
@@ -311,6 +321,7 @@ std::vector<CMaildir *> CGlobal::get_folders()
 
     return (display);
 }
+
 
 /**
  * Get all messages from the currently selected folders.
@@ -343,16 +354,22 @@ void CGlobal::update_maildirs()
         m_maildirs = NULL;
     }
 
+
     /**
-     * Now populate with fresh copies.
+     * Create a new vector to hold the results.
      */
     m_maildirs = new std::vector<CMaildir *>;
 
+
     /**
-     * Maildir prefix.
+     * Get the maildir-prefix, if this is empty we cannot find any maildirs,
+     * and we should thus return the empty set.
      */
     CGlobal *global     = CGlobal::Instance();
     std::string *prefix = global->get_variable( "maildir_prefix" );
+    if ( prefix == NULL )
+        return;
+
 
     /**
      * Get each maildir
