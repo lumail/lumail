@@ -596,6 +596,10 @@ void CLua::dump_stack()
             snprintf(buf, sizeof(buf)-1,lua_toboolean(m_lua, i) ? "true" : "false");
             break;
 
+        case LUA_TNIL:
+            snprintf(buf, sizeof(buf)-1,"nil");
+            break;
+
         case LUA_TNUMBER:
             snprintf(buf, sizeof(buf)-1,"%g", lua_tonumber(m_lua, i));
             break;

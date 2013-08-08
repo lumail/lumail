@@ -259,6 +259,10 @@ int msg(lua_State * L)
         snprintf(buf, sizeof(buf)-1,lua_toboolean(L, -1) ? "true" : "false");
         break;
 
+    case LUA_TNIL:
+        snprintf(buf, sizeof(buf)-1, "nil" );
+        break;
+
     case LUA_TNUMBER:
         snprintf(buf, sizeof(buf)-1,"%g", lua_tonumber(L, -1));
         break;
