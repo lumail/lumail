@@ -46,7 +46,7 @@ prefix = os.getenv( "HOME" ) .. "/Maildir"
 if ( is_directory(prefix) ) then
    maildir_prefix(prefix)
 else
-   abort( "The specified Maildir prefix isn't a directory: " .. prefix );
+   abort( "The specified Maildir prefix isn't a directory: " .. prefix )
 end
 
 
@@ -59,7 +59,7 @@ end
 -- NOTE:  This is commented out by default.
 --
 -- if ( is_maildir( maildir_prefix() .. "/sent-mail" ) ) then
---   sent_mail( maildir_prefix() .. "/sent-mail" );
+--   sent_mail( maildir_prefix() .. "/sent-mail" )
 --end
 
 
@@ -71,8 +71,8 @@ end
 --
 -- In this configuration file we use the `on_folder_selection()` function later.
 --
-default_email = "Steve Kemp <steve@steve.org.uk>";
-from( default_email );
+default_email = "Steve Kemp <steve@steve.org.uk>"
+from( default_email )
 
 
 --
@@ -81,10 +81,10 @@ from( default_email );
 -- Prefer /usr/sbin/sendmail, but use /usr/lib/sendmail if that exists
 --
 if ( executable( "/usr/sbin/sendmail" ) ) then
-   sendmail_path( "/usr/sbin/sendmail -t" );
+   sendmail_path( "/usr/sbin/sendmail -t" )
 end
 if ( executable( "/usr/lib/sendmail" ) ) then
-   sendmail_path( "/usr/lib/sendmail -t" );
+   sendmail_path( "/usr/lib/sendmail -t" )
 end
 
 --
@@ -122,7 +122,7 @@ end
 -- See "all_folders" , "new_folders", and "livejournal_folders" functions for
 -- example of use.
 --
-maildir_limit( "all" );
+maildir_limit( "all" )
 
 
 --
@@ -138,7 +138,7 @@ maildir_limit( "all" );
 --   $PATH   - The maildir path.
 --   $NAME   - The maildir name (i.e. dirname($PATH)).
 --
-maildir_format( "$CHECK - $UNREAD/$TOTAL - $PATH" );
+maildir_format( "$CHECK - $UNREAD/$TOTAL - $PATH" )
 
 
 --
@@ -150,7 +150,7 @@ maildir_format( "$CHECK - $UNREAD/$TOTAL - $PATH" );
 --        new  -> Show all unread messages.
 --       "str" -> Show all messages which match the substring "str".
 --
-index_limit( "all" );
+index_limit( "all" )
 
 
 --
@@ -169,7 +169,7 @@ index_limit( "all" );
 --   $TO
 --
 --
-index_format( "[$FLAGS] $DAY/$MONTH/$YEAR $FROM - $SUBJECT" );
+index_format( "[$FLAGS] $DAY/$MONTH/$YEAR $FROM - $SUBJECT" )
 
 
 --
@@ -189,11 +189,11 @@ headers = { "$TO", "$FROM", "$DATE", "$SUBJECT" }
 -- can make an email nicer to view, and it can be used with a
 -- setting such as this one:
 --
---     message_filter( "t-prot -cmekatlS --bigq --pgp-move-vrf -Mmutt -L/etc/t-prot/footers -A/etc/t-prot/ads" );
+--     message_filter( "t-prot -cmekatlS --bigq --pgp-move-vrf -Mmutt -L/etc/t-prot/footers -A/etc/t-prot/ads" )
 --
 -- The following would convert each message to be 100% upper-case
 --
---     message_filter( "tr '[:lower:]' '[:upper:]'" );
+--     message_filter( "tr '[:lower:]' '[:upper:]'" )
 --
 -- Note: There is no filter by default.
 --
@@ -213,7 +213,7 @@ function offlineimap()
 
    exec( "/usr/bin/offlineimap" )
    clear()
-   return true;
+   return true
 end
 
 --
@@ -226,7 +226,7 @@ end
 --    end
 --
 function on_start()
-   msg("lumail v" .. VERSION .. " http://lumail.org/" );
+   msg("lumail v" .. VERSION .. " http://lumail.org/" )
 end
 
 
@@ -243,14 +243,14 @@ function on_folder_selection( folder )
    -- Change the email address we use depending on our folder.
    --
    if ( string.find( folder, "debian-administration", 1, true )  ) then
-      from ("Steve <steve@debian-administration.org>");
+      from ("Steve <steve@debian-administration.org>")
    elseif ( string.find( folder, "debian" , 1, true )  ) then
-      from("Steve <skx@debian.org>");
+      from("Steve <skx@debian.org>")
    else
-      from( default_email );
+      from( default_email )
    end
 
-   msg( "There are " .. count_messages() .. " messages" );
+   msg( "There are " .. count_messages() .. " messages" )
 end
 
 
@@ -260,22 +260,22 @@ end
 function jump_to_end()
 
    mode = global_mode()
-   mode = string.lower( mode );
+   mode = string.lower( mode )
 
    if ( string.find( mode, "maildir" ) ) then
 
       -- Jump to last Maildir in the list.
-      jump_maildir_to( count_maildirs() - 1 );
+      jump_maildir_to( count_maildirs() - 1 )
 
    elseif (string.find(mode, "index" ) ) then
 
       -- Jump to the last message in the list.
-      jump_index_to( count_messages() - 1 );
+      jump_index_to( count_messages() - 1 )
 
    else
 
       -- Jump to the end of the message.
-      scroll_message_to( count_lines() - 2 );
+      scroll_message_to( count_lines() - 2 )
    end
 end
 
@@ -286,22 +286,22 @@ end
 function jump_to_start()
 
    mode = global_mode()
-   mode = string.lower( mode );
+   mode = string.lower( mode )
 
    if ( string.find( mode, "maildir" ) ) then
 
       -- Jump to the first Maildir
-      jump_maildir_to( 0 );
+      jump_maildir_to( 0 )
 
    elseif (string.find(mode, "index" ) ) then
 
       -- Jump to the first message.
-      jump_index_to( 0 );
+      jump_index_to( 0 )
 
    else
 
       -- Jump to the start of the message.
-      scroll_message_to( 0 );
+      scroll_message_to( 0 )
    end
 end
 
@@ -370,7 +370,7 @@ end
 -- It could also be used to run a final imap-sync, or similar.
 --
 function on_exit()
-   print("Lumail has now terminated.");
+   print("Lumail has now terminated.")
    io.write( "That's it man, game over man, game over!\n")
 end
 
@@ -391,22 +391,22 @@ do
 
    function on_idle()
       m = global_mode()
-      m = string.lower( m );
+      m = string.lower( m )
 
       str = ""
 
       -- Set the message we'll display
       if ( string.find( m, "maildir" ) ) then
-         str = "mode:" .. m ..  " limit:" .. maildir_limit();
+         str = "mode:" .. m ..  " limit:" .. maildir_limit()
       else
-         str = "mode:" .. m ;
+         str = "mode:" .. m
       end
 
       -- Show the message & the time.
-      msg( str .. " time:" .. os.date("%X" ) );
+      msg( str .. " time:" .. os.date("%X" ) )
 
       -- Dump the internal Lua-stack for debug-purposes.
-      dump_stack();
+      dump_stack()
 
       --
       -- If the time between the last sync is more than
@@ -416,7 +416,7 @@ do
       if ( ( ct - ls ) >=  ( 60 * 5 ) ) then
          ls = ct
          if ( offlineimap() ) then
-            msg( "offlineimap has synced your mail" );
+            msg( "offlineimap has synced your mail" )
          else
             msg("offlineimap not available." )
          end
@@ -433,8 +433,8 @@ end
 -- (Selected folders will be displayed with a "[x]" next to them in maildir-mode.)
 --
 function index()
-   global_mode( "index" );
-   clear();
+   global_mode( "index" )
+   clear()
 end
 
 
@@ -442,8 +442,8 @@ end
 -- Switch to the maildir-mode.
 --
 function maildir()
-   global_mode( "maildir" );
-   clear();
+   global_mode( "maildir" )
+   clear()
 end
 
 
@@ -451,8 +451,8 @@ end
 -- Move to message-mode with the currently selected message.
 --
 function view_message()
-   global_mode( "message");
-   clear();
+   global_mode( "message")
+   clear()
 end
 
 
@@ -460,8 +460,8 @@ end
 -- When in maildir-mode show all folders.
 --
 function all_folders()
-   maildir_limit( "all" );
-   clear();
+   maildir_limit( "all" )
+   clear()
 end
 
 
@@ -469,8 +469,8 @@ end
 -- When in maildir-mode show all folders which contain unread messages.
 --
 function new_folders()
-   maildir_limit( "new" );
-   clear();
+   maildir_limit( "new" )
+   clear()
 end
 
 
@@ -478,8 +478,8 @@ end
 -- When in maildir-mode show all folders which have a path matching the given pattern.
 --
 function livejournal_folders()
-   maildir_limit( "livejournal.[0-9]" );
-   clear();
+   maildir_limit( "livejournal.[0-9]" )
+   clear()
 end
 
 
@@ -487,18 +487,18 @@ end
 -- Navigation functions for maildir-mode
 --
 function maildir_down()
-   scroll_maildir_down( 1 );
+   scroll_maildir_down( 1 )
 end
 function maildir_page_down()
    -- The minus-two is to account for the status-area
-   scroll_maildir_down( screen_height() - 2  );
+   scroll_maildir_down( screen_height() - 2  )
 end
 function maildir_up()
-   scroll_maildir_up(1);
+   scroll_maildir_up(1)
 end
 function maildir_page_up()
    -- The minus-two is to account for the status-area
-   scroll_maildir_up( screen_height() -2 );
+   scroll_maildir_up( screen_height() -2 )
 end
 
 
@@ -507,18 +507,18 @@ end
 -- Navigation functions for index-mode
 --
 function message_down()
-   scroll_index_down( 1 );
+   scroll_index_down( 1 )
 end
 function message_page_down()
    -- The minus-two is to account for the status-area
-   scroll_index_down( screen_height() - 2 );
+   scroll_index_down( screen_height() - 2 )
 end
 function message_up()
-   scroll_index_up(1);
+   scroll_index_up(1)
 end
 function message_page_up()
    -- The minus-two is to account for the status-area
-   scroll_index_up( screen_height() - 2 );
+   scroll_index_up( screen_height() - 2 )
 end
 
 
@@ -541,15 +541,15 @@ end
 -- Search for the next folder/message which matches the entered pattern.
 --
 function search_next()
-   x = prompt("/:" );
-   m = global_mode();
+   x = prompt("/:" )
+   m = global_mode()
 
    if ( string.find( m, "maildir" ) ) then
-      scroll_maildir_to( x );
+      scroll_maildir_to( x )
    elseif (string.find(m, "index" ) ) then
-      scroll_index_to( x );
+      scroll_index_to( x )
    else
-      msg( "search_next() not implemented for mode:" .. m );
+      msg( "search_next() not implemented for mode:" .. m )
    end
 end
 
@@ -562,10 +562,10 @@ end
 -- client.  I like to open multiple folders at once, because that's how I roll.
 --
 function open_folder()
-   clear_selected_folders();
+   clear_selected_folders()
    add_selected_folder()
-   global_mode( "index" );
-   clear();
+   global_mode( "index" )
+   clear()
 end
 
 
@@ -574,16 +574,16 @@ end
 -- Open my most important folders.
 --
 function faves()
-   global_mode( "index" );
+   global_mode( "index" )
 
    -- ensure all folders are available
-   maildir_limit( "all" );
+   maildir_limit( "all" )
 
    -- clear the currently selected folders.
-   clear_selected_folders();
+   clear_selected_folders()
 
    -- The folders we care about
-   interesting = { "/.steve.org.uk", "/.people.kirsi",  "/.edinburgh-portraits.com" };
+   interesting = { "/.steve.org.uk", "/.people.kirsi",  "/.edinburgh-portraits.com" }
 
    -- For each one we're going to open
    for index,name in ipairs( interesting ) do
@@ -592,7 +592,7 @@ function faves()
       jump_maildir_to( 0 )
 
       -- Scroll forward until we find the matching folder
-      scroll_maildir_to( name );
+      scroll_maildir_to( name )
 
       --
       -- Note: "current_maildir" will return the value we've found.
@@ -607,8 +607,8 @@ function faves()
    end
 
    -- Now we've selected our folders, open them.
-   global_mode( "index" );
-   clear();
+   global_mode( "index" )
+   clear()
 end
 
 
@@ -636,7 +636,7 @@ function file_contents(file)
     if ( f ) then
        local content = f:read("*all")
        f:close()
-       return( content );
+       return( content )
     else
        return( "Error reading file: \"" .. file .. "\"" )
     end
@@ -725,7 +725,7 @@ end
 -- However to avoid duplication there is a global keymap.
 --
 --   For example this works in all modes:
---      kemymap['global']['Q'] = 'exit()';
+--      kemymap['global']['Q'] = 'exit()'
 --
 keymap = {}
 keymap['global']  = {}
@@ -742,13 +742,13 @@ keymap['global']['Q'] = "exit()"
 -- Compose a new message.
 keymap['global']['c'] = "compose()"
 -- repl-mode
-keymap['global'][':'] = "loadstring(prompt(\":\"))();";
+keymap['global'][':'] = "loadstring(prompt(\":\"))()"
 -- Execute-shell
-keymap['global']['!'] = "exec(prompt(\"Shell command:\"));";
+keymap['global']['!'] = "exec(prompt(\"Shell command:\"))"
 -- Move to Maildir-mode
-keymap['global']['M']   = 'maildir()';
+keymap['global']['M']   = 'maildir()'
 -- Move to Index-mode
-keymap['global']['I'] = 'index()';
+keymap['global']['I'] = 'index()'
 -- Show the client version
 keymap['global']['v'] = 'show_version()'
 -- Jump to end
@@ -769,7 +769,7 @@ keymap['message']['q'] = "index()"
 --  If viewing a folder quit means return to the maildir list.
 keymap['index']['q'] = "maildir()"
 -- If viewing a maildir list then q means exit.
-keymap['maildir']['q'] = "exit();"
+keymap['maildir']['q'] = "exit()"
 
 
 --
@@ -778,7 +778,7 @@ keymap['maildir']['q'] = "exit();"
 keymap['maildir']['a'] = 'all_folders()'
 keymap['maildir']['n'] = 'new_folders()'
 keymap['maildir']['l'] = 'livejournal_folders()'
-keymap['maildir']['g'] = 'maildir_limit( "(Google.*INBOX|Google.*All Mail)" );'
+keymap['maildir']['g'] = 'maildir_limit( "(Google.*INBOX|Google.*All Mail)" )'
 
 
 --
@@ -817,8 +817,8 @@ keymap['index']['d'] = 'delete()'
 --
 -- View all/new messages only.
 --
-keymap['index']['a'] = 'index_limit("all");'
-keymap['index']['n'] = 'index_limit("new");'
+keymap['index']['a'] = 'index_limit("all")'
+keymap['index']['n'] = 'index_limit("new")'
 
 --
 -- Selection bindings.
