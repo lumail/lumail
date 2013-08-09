@@ -25,6 +25,7 @@
 
 
 #include "bindings.h"
+#include "variables.h"
 #include "debug.h"
 #include "file.h"
 #include "global.h"
@@ -104,6 +105,7 @@ struct CLuaMapping primitive_list[] =
     {"maildir_limit", "Query or update the maildir-limit string.", (lua_CFunction) maildir_limit },
     {"maildir_prefix", "Query or update the root of the Maildir hierarchy.", (lua_CFunction) maildir_prefix },
     {"message_filter", "Query or update the filter to apply to messages being viewed.", (lua_CFunction) message_filter },
+    {"msg_filter", "Query or update the filter to apply to messages being processed.", (lua_CFunction) msg_filter },
     {"sendmail_path", "Query or update the sendmail-path, used for sending mails.", (lua_CFunction) sendmail_path },
     {"sent_mail", "Query or update the Maildir location to send outgoing mails to.", (lua_CFunction) sent_mail },
     {"sort", "Query or update the sorting string for index-mode.", (lua_CFunction) sort },
@@ -617,3 +619,4 @@ void CLua::dump_stack()
 #endif
 
 }
+

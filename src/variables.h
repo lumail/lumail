@@ -55,6 +55,7 @@ int maildir_format(lua_State *L );
 int maildir_limit(lua_State * L);
 int maildir_prefix(lua_State * L);
 int message_filter(lua_State * L);
+int msg_filter(lua_State * L);
 int sendmail_path(lua_State * L);
 int sent_mail(lua_State * L);
 int sort(lua_State * L);

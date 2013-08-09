@@ -143,10 +143,6 @@ public:
      */
     void dump_stack();
 
-    /**
-     * get the lua instance handle
-     */
-    lua_State *get_lua() { return( m_lua ); };
 
 protected:
 

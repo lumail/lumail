@@ -267,6 +267,14 @@ int message_filter(lua_State * L)
 }
 
 /**
+ * Get or set the msg filter.
+ */
+int msg_filter(lua_State * L)
+{
+    return( get_set_string_variable(L, "msg_filter" ) );
+}
+
+/**
  * Get, or set, the sendmail path.
  */
 int sendmail_path(lua_State * L)
