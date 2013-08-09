@@ -1,3 +1,37 @@
+lumail (0.17) stable; urgency=low
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+     - #66 - Removed inadequate header-field decoding, because it just
+             didn't work.  This is our biggest outstanding issue.
+     - #93 - Two new primitives: is_maildir & create_maildir.
+             The `sent_folder` setting is unset by default.
+     - #94 - Fixed a leak in the lua stack.
+     - #95 - Segfaults due to on_message_parse().
+     - #96 - Segfaults due to on_message_parse().
+     - #98 - Don't segfault if an empty configuration file is read.
+     - #99 - Setup a stub keymap if nothing is defined.
+             This just maps: q/Q/x/X to exit.
+   * The msg() primitive can now output boolean values in addition
+     to strings and numbers.  Other types will display an error.
+     (e.g. "function" or "table" are unsupported, but "nil" works.)
+   * New global variable "ignore_case" to disable case insensitive
+     TAB-completion.
+   * TAB-completion ambiguities can be navigated via "left" + "right"
+     arrows in addition to TAB.
+   * Installation of a lua "panic" handler.  To be called in extremis.
+   * Additional logging for lumail-debug.
+   * Allow compilation to succeed on older g++ versions, by reordering args.
+   * Simplified handling for the --folder command line flag.
+      http://lumail.org/cmdline/
+   * Only call on_read_message() once, regardless of how many times a message
+     is displayed/re-displayed.
+   * New filter "msg_filter" which replaces on_message_parse() - which caused
+     segfaults for complex reasons.  (i.e. We couldn't track it down!)
+
+ -- Steve Kemp <steve@steve.org.uk>  Fri, 9 Aug 2013 19:00:19 +0000
+
 lumail (0.16) stable; urgency=low
 
   * New release, fixing several bugs.
