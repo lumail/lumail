@@ -178,8 +178,24 @@ int CMaildir::all_messages()
  */
 std::string CMaildir::name()
 {
+    /**
+     * Since maildirs can never be renamed we can safely cache the
+     * name locally.
+     */
+    static std::string cache = "";
+    if ( !cache.empty() )
+        return( cache );
+
+    /**
+     * Find the last part of the name.
+     */
     unsigned found = m_path.find_last_of("/");
-    return (m_path.substr(found + 1));
+    if ( found != std::string::npos )
+        cache = m_path.substr(found + 1);
+    else
+        cache = m_path;
+
+    return (cache);
 }
 
 
