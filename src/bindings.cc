@@ -2961,7 +2961,12 @@ int log_message(lua_State *L)
     if (str == NULL)
         return luaL_error(L, "Missing argument to log_message(..)");
 
-    DEBUG_LOG( str );
+    /**
+     * Log the message, and force it to be written immediately
+     * bypassing the buffering.
+     */
+    CDebug::Instance()->debug( str, true );
+
 #endif
     return 0;
 }
