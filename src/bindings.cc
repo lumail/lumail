@@ -2156,8 +2156,8 @@ int reply(lua_State * L)
     /**
      * Get the subject, and sender, etc.
      */
-    std::string subject = mssg->subject();
-    std::string to      = mssg->from();
+    std::string subject = mssg->header("Subject");
+    std::string to      = mssg->header("From");
     std::string ref     = mssg->header( "Message-ID" );
 
 

@@ -176,8 +176,8 @@ bool sort_messages(CMessage *a, CMessage *b)
         if  ( ( sort != NULL ) && ( strcmp( sort->c_str(), "subject-desc" ) == 0 ) )
             asc = false;
 
-        std::string as = a->subject();
-        std::string bs = b->subject();
+        std::string as = a->header("Subject");
+        std::string bs = b->header("Subject");
 
         if ( ! asc )
         {
@@ -209,8 +209,8 @@ bool sort_messages(CMessage *a, CMessage *b)
         if  ( ( sort != NULL ) && ( strcmp( sort->c_str(), "from-desc" ) == 0 ) )
             asc = false;
 
-        std::string as = a->from();
-        std::string bs = b->from();
+        std::string as = a->header("From");
+        std::string bs = b->header("From");
 
         if ( ! asc )
         {

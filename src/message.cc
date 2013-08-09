@@ -692,7 +692,7 @@ std::string CMessage::format( std::string fmt )
              */
             if ( strcmp(std_name[i] , "TO" ) == 0 )
             {
-                body = to();
+                body = header( "To" );
             }
             if ( strcmp(std_name[i] , "DATE" ) == 0 )
             {
@@ -700,7 +700,7 @@ std::string CMessage::format( std::string fmt )
             }
             if ( strcmp(std_name[i] , "FROM" ) == 0 )
             {
-                body += from();
+                body += header( "From" );
             }
             if ( strcmp(std_name[i] , "FLAGS" ) == 0 )
             {
@@ -708,7 +708,7 @@ std::string CMessage::format( std::string fmt )
             }
             if ( strcmp(std_name[i] , "SUBJECT" ) == 0 )
             {
-                body = subject();
+                body = header( "Subject" );
             }
             if ( strcmp(std_name[i],  "YEAR" ) == 0 )
             {
@@ -765,13 +765,6 @@ std::string CMessage::header( std::string name )
 }
 
 
-/**
- * Get the sender of the message.
- */
-std::string CMessage::from()
-{
-    return( header( "From" ) );
-}
 
 /**
  * Get the date of the message.
@@ -1017,24 +1010,6 @@ time_t CMessage::get_date_field()
     return( m_date );
 }
 
-
-
-/**
- * Get the recipient of the message.
- */
-std::string CMessage::to()
-{
-    return( header( "To" ) );
-}
-
-
-/**
- * Get the subject of the message.
- */
-std::string CMessage::subject()
-{
-    return( header( "Subject" ) );
-}
 
 
 /**

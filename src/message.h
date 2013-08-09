@@ -121,24 +121,9 @@ public:
     std::string header( std::string name);
 
     /**
-     * Get the sender of the message.
-     */
-    std::string from();
-
-    /**
      * Get the date of the message.
      */
     std::string date(TDate fmt = EFULL);
-
-    /**
-     * Get the recipient of the message.
-     */
-    std::string to();
-
-    /**
-     * Get the subject of the message.
-     */
-    std::string subject();
 
     /**
      * Get the body of the message, as a vector of lines.
