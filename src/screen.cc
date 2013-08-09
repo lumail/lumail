@@ -801,6 +801,26 @@ void CScreen::clear_status()
 }
 
 
+/**
+ * Some simple remapping of keyboard input.
+ */
+const char *CScreen::get_key_name( int c )
+{
+    if ( c == '\n' )
+        return( "Enter" );
+    if ( c == 2 )
+        return( "j" );
+    if ( c == 3 )
+        return( "k" );
+    if ( c == ' ' )
+        return ( "Space" );
+
+    const char *name = keyname( c );
+    if ( name == NULL )
+        return( "UnkSymbol" );
+    return name;
+
+}
 
 /**
  * Clear the main display area, leaving the status-area alone.
@@ -927,6 +947,20 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
                 selected = 0;
         }
 
+        const char *name = get_key_name( key );
+        if ( strcmp( name, "KEY_RIGHT" ) == 0 )
+        {
+            selected += 1;
+            if ( selected >= (int)choices.size() )
+                selected = 0;
+        }
+        if ( strcmp( name, "KEY_LEFT" ) == 0 )
+        {
+            selected -= 1;
+            if ( selected < 0 )
+                selected = (int)(choices.size()-1);
+
+        }
     }
 
     delwin(childwin);

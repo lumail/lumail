@@ -83,6 +83,11 @@ public:
     static void clear_status();
 
     /**
+     * Some simple remapping of keyboard input.
+     */
+    static const char *get_key_name( int c );
+
+    /**
      * Choose a single item from a small selection, graphically.
      *
      * (This is used to resolve ambiguity in TAB-completion.)

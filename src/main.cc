@@ -32,26 +32,6 @@
 #include "screen.h"
 #include "version.h"
 
-/**
- * Some simple remapping of keyboard input.
- */
-const char *get_key_name( int c )
-{
-    if ( c == '\n' )
-        return( "Enter" );
-    if ( c == 2 )
-        return( "j" );
-    if ( c == 3 )
-        return( "k" );
-    if ( c == ' ' )
-        return ( "Space" );
-
-    const char *name = keyname( c );
-    if ( name == NULL )
-        return( "UnkSymbol" );
-    return name;
-
-}
 
 
 
@@ -263,7 +243,7 @@ int main(int argc, char *argv[])
              *
              * i.e. Ctrl-r -> ^R.
              */
-            const char *name = get_key_name( key );
+            const char *name = CScreen::get_key_name( key );
 
             /**
              * See if we can handle it via our keyboard map, or
