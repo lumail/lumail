@@ -105,6 +105,88 @@ void CMessage::message_parse()
         return;
     }
 
+
+    /**
+     * See if we're filtering the message of the body.
+     */
+    CGlobal     *global = CGlobal::Instance();
+    std::string *filter = global->get_variable("msg_filter");
+    std::string *tmp    = global->get_variable("tmp");
+
+    if ( ( filter != NULL ) && ( ! ( filter->empty() ) ) )
+    {
+        /**
+         * Generate a temporary file for the filter output.
+         */
+        char filename[256] = { '\0' };
+        snprintf( filename, sizeof(filename)-1, "%s/body.filter.XXXXXX", tmp->c_str() );
+
+        /**
+         * Open the file.
+         */
+        int fd  = mkstemp(filename);
+
+        /**
+         * Avoid "unused variable" warning.
+         */
+        (void)(fd);
+
+        /**
+         * Build up the command to execute.
+         */
+        std::string cmd = "/bin/cat " ;
+        cmd += path();
+        cmd += "|";
+        cmd += *filter;
+
+#ifdef LUMAIL_DEBUG
+        std::string dm = "CMessage::message_parse( filter: " + cmd + ");";
+        DEBUG_LOG( dm );
+#endif
+
+        /**
+         * Run through the popen dance.
+         */
+        FILE* pipe = popen(cmd.c_str(), "r");
+        if (pipe)
+        {
+            char buffer[16384] = { '\0' };
+            std::string tmp = "";
+
+            while(!feof(pipe))
+            {
+                if(fgets(buffer, sizeof(buffer)-1, pipe) != NULL)
+                    tmp += buffer;
+
+                memset(buffer, '\0', sizeof(buffer));
+            }
+            pclose(pipe);
+
+            /**
+             * Write the body out to disk.
+             */
+            ofstream on;
+            on.open(filename, ios::binary);
+            on.write(tmp.c_str(), tmp.size());
+            on.close();
+
+            /**
+             * Construct a message from the filter-output.
+             */
+            ifstream file( filename );
+            m_me = new MimeEntity(file);
+
+            /**
+             * Don't leak the filename
+             */
+            CFile::delete_file( filename );
+            return;
+        }
+    }
+
+
+
+
     /**
      * Open the file for parsing.
      */
