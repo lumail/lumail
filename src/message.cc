@@ -132,9 +132,12 @@ void CMessage::message_parse()
         (void)(fd);
 
         /**
-         * Build up the command to execute.
+         * Build up the command to execute, via cat.
          */
-        std::string cmd = "/bin/cat " ;
+        std::string cmd = "/bin/cat" ;
+        assert( CFile::exists( cmd ) );
+
+        cmd += " ";
         cmd += path();
         cmd += "|";
         cmd += *filter;
@@ -1218,9 +1221,12 @@ std::vector<std::string> CMessage::body()
         on.close();
 
         /**
-         * Build up the command to execute.
+         * Build up the command to execute, via cat.
          */
-        std::string cmd = "/bin/cat " ;
+        std::string cmd = "/bin/cat" ;
+        assert( CFile::exists( cmd ) );
+
+        cmd += " ";
         cmd += filename;
         cmd += "|";
         cmd += *filter;
