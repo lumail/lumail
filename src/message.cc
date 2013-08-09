@@ -258,7 +258,8 @@ std::string CMessage::flags()
     flags.erase(std::unique(flags.begin(), flags.end()), flags.end());
 
     /**
-     * Pad.
+     * Pad: TODO - This shouldn't be here.  It is just for $FLAGS
+     * in the index_format.
      */
     while( (int)strlen(flags.c_str()) < 4 )
         flags += " ";
