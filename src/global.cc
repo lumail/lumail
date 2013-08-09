@@ -265,13 +265,10 @@ bool sort_maildir_ptr_by_name(CMaildir *a, CMaildir *b)
     assert( NULL != a );
     assert( NULL != b );
 
-    std::string a_path = a->path();
-    std::string b_path = b->path();
-
-    std::transform(a_path.begin(), a_path.end(), a_path.begin(), tolower);
-    std::transform(b_path.begin(), b_path.end(), b_path.begin(), tolower);
-
-    return( strcmp( a_path.c_str(), b_path.c_str() ) < 0 );
+    /**
+     * Sort case-insesitively.
+     */
+    return( strcasecmp(a->path().c_str(), b->path().c_str() ) < 0 );
 }
 
 
