@@ -1685,6 +1685,9 @@ int mime_type(lua_State *L)
 
 /**
  * Attach a file via a mime-entity.
+ *
+ * TODO-MIME: Add a file to a given email message - used for compose()
+ * and reply().
  */
 bool mimetic_attach_file(lua_State *L, mimetic::MimeEntity *m, char* filename)
 {
@@ -1729,7 +1732,7 @@ bool mimetic_attach_file(lua_State *L, mimetic::MimeEntity *m, char* filename)
  *
  * Then add any referenced files to it.
  *
- * This is horrid..
+ * This is horrid.  TODO-MIME: Improve
  *
  */
 bool handle_attachments( lua_State *L, char *filename, std::vector<std::string> files )

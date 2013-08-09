@@ -1,0 +1,15 @@
+
+  The biggest outstanding issue is changing the MIME
+ library, which is used for parsing, attachment handling,
+ and (TODO) header-decoding/encoding.
+
+  There are two parts of the code that need updating:
+
+    src/message.cc
+    src/message.h
+
+  The header file has "TODO-MIME" in the places where changes
+ need to be made.
+
+  The second part that needs updating is the compositional
+ code in src/binding.cc.  This is less important/difficult.

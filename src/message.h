@@ -116,7 +116,9 @@ public:
     const time_t mtime();
 
     /**
-     * get a header from the message.
+     * Get a header from the message.
+     *
+     * TODO-MIME: Decode the value.
      */
     std::string header( std::string name);
 
@@ -127,16 +129,22 @@ public:
 
     /**
      * Get the body of the message, as a vector of lines.
+     *
+     * TODO-MIME: Get the body of the message.
      */
     std::vector<std::string> body();
 
     /**
      * Get the names of attachments to this message.
+     *
+     * TODO-MIME: Get the names of file attachments.
      */
     std::vector<std::string> attachments();
 
     /**
      * Save the given attachment.
+     *
+     * TODO-MIME: Write out the Nth attachment
      */
     bool save_attachment( int offset, std::string output_path );
 
@@ -172,6 +180,10 @@ private:
 
     /**
      * Attempt to find a MIME-part inside our message of the given type.
+     *
+     * Internal only.  Return the first MIME-part of the mesasge of
+     * the given-type.  We use 'text/plain' for display-purposes.
+     *
      */
     std::string getMimePart(mimetic::MimeEntity* pMe, std::string mtype );
 
@@ -181,7 +193,7 @@ private:
     std::string m_path;
 
     /**
-     * MIME Entity object for this message.
+     * mimetic entity object for this message.
      */
     mimetic::MimeEntity *m_me;
 
