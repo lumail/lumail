@@ -20,6 +20,7 @@
 #define _debug_h_ 1
 
 #include <cassert>
+#include <vector>
 #include <string>
 
 
@@ -97,6 +98,11 @@ class CDebug
    * The filename we log to.
    */
   std::string m_logfile;
+
+  /**
+   * Pending writes.
+   */
+  std::vector<std::string> m_pending;
 
 };
 

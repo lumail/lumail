@@ -92,15 +92,38 @@ void CDebug::debug( std::string line)
         return;
 
     /**
+     * Add the string to the pending list of log-messages
+     * which should be written.
+     */
+    m_pending.push_back( timestamp() + "  " + line );
+
+
+    /**
+     * If the pending list of logfile-entries to write is
+     * "small" then return.
+     */
+    if ( m_pending.size() < 50 )
+        return;
+
+    /**
      * Open the file.
      */
     std::fstream fs;
     fs.open ( m_logfile,  std::fstream::out | std::fstream::app);
 
     /**
-     * Log the timestamp + message.
+     * Write all pending log entries.
      */
-    fs << timestamp() << " " << line << "\n";
+    std::vector<std::string>::iterator it;
+    for (it = m_pending.begin(); it != m_pending.end(); ++it)
+    {
+        fs << (*it) << "\n";
+    }
+
+    /**
+     * Our pending set is now empty.
+     */
+    m_pending.clear();
 
     /**
      * Cleanup.
