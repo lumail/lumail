@@ -815,9 +815,10 @@ std::string CMessage::header( std::string name )
     else
         nstr = g_strdup ("");
 
-
-    std::string result( nstr );
+    char *decoded = g_mime_utils_header_decode_text ( nstr );
+    std::string result( decoded );
     g_free (nstr);
+    g_free (decoded);
     return( result );
 
 #endif
