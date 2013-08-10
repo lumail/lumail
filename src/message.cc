@@ -1091,6 +1091,10 @@ std::string CMessage::get_body()
     if ( m_message == NULL )
         message_parse();
 
+
+    std::string result;
+
+
     /**
      * Create an iterator
      */
@@ -1104,7 +1108,8 @@ std::string CMessage::get_body()
 
         GMimeObject *part  = g_mime_part_iter_get_current (iter);
 
-        if ( GMIME_IS_OBJECT( part ) )
+        if ( ( GMIME_IS_OBJECT( part ) ) &&
+             ( GMIME_IS_PART(part) ) )
         {
             /**
              * Get the content-type
@@ -1114,33 +1119,35 @@ std::string CMessage::get_body()
             /**
              * Get the content if it has the right type.
              */
-            if ( GMIME_IS_PART(part) &&
-                 g_mime_content_type_is_type (content_type, "text", "plain") &&
+            if ( g_mime_content_type_is_type (content_type, "text", "plain") &&
                  ( content == NULL ) )
             {
                 /**
                  * TODO: Not sure if this is correct.
+                 *
+                 * The previous version was:
+                 *
+                 *   content = g_mime_object_to_string(part);
+                 *
+                 * Which had weird leading text..
                  */
-                content = g_mime_object_to_string(part);
+
+                GMimeDataWrapper *c = g_mime_part_get_content_object( GMIME_PART(part) );
+                GMimeStream *stream = g_mime_stream_mem_new();
+
+                g_mime_data_wrapper_write_to_stream( c, stream );
+                GByteArray *b = ((GMimeStreamMem *)stream)->buffer;
+                result = ((const char *)b->data );
+
+                g_object_unref(stream);
             }
         }
     } while (g_mime_part_iter_next (iter));
 
     g_mime_part_iter_free (iter);
 
-    if ( content == NULL )
-    {
-        return "";
-    }
-    else
-    {
-        std::string body(content);
 
-        /**
-         * TODO-MIME:  Free the content?
-         */
-        return( body );
-    }
+    return( result );
 }
 #endif
 
@@ -1416,14 +1423,18 @@ std::vector<std::string> CMessage::attachments()
 
         GMimeObject *part  = g_mime_part_iter_get_current (iter);
 
-        const char *filename = g_mime_object_get_content_disposition_parameter(part, "filename");
-        const char *name =  g_mime_object_get_content_type_parameter(part, "name");
+        if ( ( GMIME_IS_OBJECT( part ) ) &&
+             ( GMIME_IS_PART(part) ) )
+        {
+            const char *filename = g_mime_object_get_content_disposition_parameter(part, "filename");
+            const char *name =  g_mime_object_get_content_type_parameter(part, "name");
 
-        if ( filename != NULL )
-            paths.push_back( filename );
-        else
-            if ( name != NULL )
-                paths.push_back( name );
+            if ( filename != NULL )
+                paths.push_back( filename );
+            else
+                if ( name != NULL )
+                    paths.push_back( name );
+        }
 
     } while (g_mime_part_iter_next (iter));
 
