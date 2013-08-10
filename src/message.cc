@@ -105,7 +105,7 @@ void CMessage::message_parse()
     /**
      * Parse unless we've done so already.
      */
-    if ( m_message != NULL )
+    if ( m_message == NULL )
         open_message();
 #endif
 
@@ -767,6 +767,34 @@ std::string CMessage::format( std::string fmt )
     return( result );
 }
 
+static char *
+escape_string (const char *string)
+{
+	const char *start, *inptr;
+	GString *str;
+	char *buf;
+
+	str = g_string_new ("");
+
+	inptr = string;
+
+	while (*inptr) {
+		start = inptr;
+		while (*inptr && *inptr != '"')
+			inptr++;
+
+		g_string_append_len (str, start, inptr - start);
+		if (*inptr == '"') {
+			g_string_append (str, "\\\"");
+			inptr++;
+		}
+	}
+
+	buf = str->str;
+	g_string_free (str, FALSE);
+
+	return buf;
+}
 
 /**
  * Get the value of a header.
@@ -778,6 +806,21 @@ std::string CMessage::header( std::string name )
      */
     message_parse();
 
+#ifdef GMIME
+    const char *str  = NULL;
+    char *nstr = NULL;
+
+    if ((str = g_mime_object_get_header ((GMimeObject *) m_message, name.c_str() ) ) )
+        nstr = escape_string (str);
+    else
+        nstr = g_strdup ("");
+
+
+    std::string result( nstr );
+    g_free (nstr);
+    return( result );
+
+#endif
     Header & h = m_me->header();
     if (h.hasField(name ) )
         return( h.field(name).value() );
