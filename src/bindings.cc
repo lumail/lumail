@@ -31,6 +31,10 @@
 #include <unistd.h>
 #include <dirent.h>
 
+#ifdef GMIME
+ #include <gmime/gmime.h>
+#endif
+
 #include "bindings.h"
 #include "variables.h"
 #include "debug.h"
@@ -41,6 +45,7 @@
 #include "lua.h"
 #include "global.h"
 #include "screen.h"
+
 
 
 int unused __attribute__((unused));
@@ -176,7 +181,17 @@ int sleep(lua_State *L )
  */
 int exit(lua_State * L)
 {
+    /**
+     * Close curses.
+     */
     endwin();
+
+#ifdef GMIME
+    /**
+     * Shutdown GMime.
+     */
+    g_mime_shutdown();
+#endif
 
     CLua *lua = CLua::Instance();
     lua->call_function("on_exit");
@@ -191,9 +206,20 @@ int exit(lua_State * L)
  */
 int abort(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
 
+    /**
+     * Close curses.
+     */
     endwin();
+
+#ifdef GMIME
+    /**
+     * Shutdown GMime.
+     */
+    g_mime_shutdown();
+#endif
+
+    const char *str = lua_tostring(L, -1);
 
     if (str != NULL)
         std::cerr << str << std::endl;

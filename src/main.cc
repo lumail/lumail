@@ -181,6 +181,11 @@ int main(int argc, char *argv[])
     if ( init == 0 )
     {
         endwin();
+
+#ifdef GMIME
+        g_mime_shutdown();
+#endif
+
         std::cerr << "No init file was loaded!" << std::endl;
         std::cerr << "We try to load both /etc/lumail.lua and ~/.lumail/config.lua if present." << std::endl;
         std::cerr << "You could try: ./lumail --rcfile ./lumail.lua" << std::endl;
@@ -282,7 +287,8 @@ int main(int argc, char *argv[])
     lua->call_function("exit");
 
     /**
-     * This code is never reached.
+     * This code is never reached as the Lua "exit" primitive
+     * will call on_exit, if defined, then terminate.
      */
     exit(0);
     return 0;
