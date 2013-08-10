@@ -132,22 +132,16 @@ public:
 
     /**
      * Get the body of the message, as a vector of lines.
-     *
-     * TODO-MIME: Get the body of the message.
      */
     std::vector<std::string> body();
 
     /**
      * Get the names of attachments to this message.
-     *
-     * TODO-MIME: Get the names of file attachments.
      */
     std::vector<std::string> attachments();
 
     /**
      * Save the given attachment.
-     *
-     * TODO-MIME: Write out the Nth attachment
      */
     bool save_attachment( int offset, std::string output_path );
 
