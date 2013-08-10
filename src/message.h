@@ -121,9 +121,7 @@ public:
     const time_t mtime();
 
     /**
-     * Get a header from the message.
-     *
-     * TODO-MIME: Decode the value.
+     * Retrieve the value of a given header from the message.
      */
     std::string header( std::string name);
 
@@ -198,7 +196,8 @@ private:
 
     /**
      * Parse the message, if that hasn't been done.
-     * Uses "on_message_parse" if that is defined.
+     *
+     * NOTE:  This calls the Lua-defined "msg_filter" if that is set.
      */
     void message_parse();
 
@@ -208,6 +207,7 @@ private:
      * Internal only.  Return the first MIME-part of the mesasge of
      * the given-type.  We use 'text/plain' for display-purposes.
      *
+     * TODO-MIME: Probably obsolete when GMime is used.
      */
     std::string getMimePart(mimetic::MimeEntity* pMe, std::string mtype );
 
@@ -218,6 +218,8 @@ private:
 
     /**
      * mimetic entity object for this message.
+     *
+     * TODO-MIME:  This will go away.
      */
     mimetic::MimeEntity *m_me;
 

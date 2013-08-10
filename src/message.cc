@@ -797,7 +797,7 @@ escape_string (const char *string)
 }
 
 /**
- * Get the value of a header.
+ * Retrieve the value of a given header from the message.
  */
 std::string CMessage::header( std::string name )
 {
@@ -820,8 +820,8 @@ std::string CMessage::header( std::string name )
     g_free (nstr);
     g_free (decoded);
     return( result );
-
 #endif
+
     Header & h = m_me->header();
     if (h.hasField(name ) )
         return( h.field(name).value() );
