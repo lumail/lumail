@@ -44,7 +44,11 @@ LVER=lua5.1
 CPPFLAGS+=-std=gnu++0x -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) -I/usr/include/ncursesw/
 LDLIBS+=$(shell pkg-config --libs ${LVER}) -lncursesw  -lmimetic -lpcre -lpcrecpp
 
-
+#
+#  Experiments in gmime.
+#
+GMIME_LIBS=$(shell pkg-config --libs  gmime-2.6)
+GMIME_INC=$(shell pkg-config --cflags gmime-2.6)
 
 
 #
@@ -103,13 +107,13 @@ DEBUG_OBJECTS   := $(SOURCES:$(SRCDIR)/%.cc=$(DEBUG_OBJDIR)/%.o)
 #  The release-build.
 #
 lumail: $(RELEASE_OBJECTS)
-	$(LINKER) $@ $(LFLAGS) $(RELEASE_OBJECTS) $(LDLIBS)
+	$(LINKER) $@ $(LFLAGS) $(GMIME_LIBS) $(RELEASE_OBJECTS) $(LDLIBS)
 
 #
 #  The debug-build.
 #
 lumail-debug: $(DEBUG_OBJECTS)
-	$(LINKER) $@ $(LFLAGS) -rdynamic -ggdb $(DEBUG_OBJECTS) $(LDLIBS)
+	$(LINKER) $@ $(LFLAGS) $(GMIME_LIBS) -rdynamic -ggdb $(DEBUG_OBJECTS) $(LDLIBS)
 
 
 #
@@ -117,7 +121,7 @@ lumail-debug: $(DEBUG_OBJECTS)
 #
 $(RELEASE_OBJECTS): $(RELEASE_OBJDIR)/%.o : $(SRCDIR)/%.cc
 	@mkdir $(RELEASE_OBJDIR) 2>/dev/null || true
-	$(CC) $(CPPFLAGS) -O2 -c $< -o $@
+	$(CC) $(CPPFLAGS) $(GMIME_INC) -O2 -c $< -o $@
 
 #
 #  Build the objects for the debug build.
@@ -126,5 +130,5 @@ $(RELEASE_OBJECTS): $(RELEASE_OBJDIR)/%.o : $(SRCDIR)/%.cc
 #
 $(DEBUG_OBJECTS): $(DEBUG_OBJDIR)/%.o : $(SRCDIR)/%.cc
 	@mkdir $(DEBUG_OBJDIR) 2>/dev/null || true
-	$(CC) -ggdb -DLUMAIL_DEBUG=1 $(CPPFLAGS) -c $< -o $@
+	$(CC) -ggdb -DLUMAIL_DEBUG=1 $(CPPFLAGS) $(GMIME_INC) -c $< -o $@
 
