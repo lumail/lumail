@@ -1078,6 +1078,73 @@ time_t CMessage::get_date_field()
 }
 
 
+#ifdef GMIME
+
+/**
+ * Get the body from our message, using GMime.
+ */
+std::string CMessage::get_body()
+{
+    /**
+     * Parse the message, if not yet done.
+     */
+    if ( m_message != NULL )
+        close_message();
+
+    /**
+     * Create an iterator
+     */
+    GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
+    const char *content = NULL;
+
+    /**
+     * Iterate over the message.
+     */
+    do {
+
+        GMimeObject *part  = g_mime_part_iter_get_current (iter);
+
+        if ( GMIME_IS_OBJECT( part ) )
+        {
+            /**
+             * Get the content-type
+             */
+            GMimeContentType *content_type = g_mime_object_get_content_type (part);
+
+            /**
+             * Get the content if it has the right type.
+             */
+            if ( GMIME_IS_PART(part) &&
+                 g_mime_content_type_is_type (content_type, "text", "plain") &&
+                 ( content == NULL ) )
+            {
+                /**
+                 * TODO: Not sure if this is correct.
+                 */
+                content = g_mime_object_to_string(part);
+            }
+        }
+    } while (g_mime_part_iter_next (iter));
+
+    g_mime_part_iter_free (iter);
+
+    if ( content == NULL )
+    {
+        return "";
+    }
+    else
+    {
+        std::string body(content);
+
+        /**
+         * TODO-MIME:  Free the content?
+         */
+        return( body );
+    }
+}
+#endif
+
+
 
 /**
  * Given a MIME-part retrieve the appropriate part from it.
@@ -1219,7 +1286,11 @@ std::vector<std::string> CMessage::body()
      * Note: We handle nested MIME-entities here.
      *
      */
+#ifdef GMIME
+    std::string body = get_body();
+#else
     std::string body = getMimePart( m_me, "text/plain" );
+#endif
 
     /**
      * If we failed to find a part of text/plain then just grab the whole damn

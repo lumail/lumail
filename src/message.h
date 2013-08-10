@@ -181,6 +181,12 @@ private:
      * Cleanup the message with gmime.
      */
     void close_message();
+
+    /**
+     * Get the text/plain part of the message, via GMime.
+     */
+    std::string get_body();
+
 #endif /* GMIME */
 
 
