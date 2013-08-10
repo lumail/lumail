@@ -117,12 +117,22 @@ int main(int argc, char *argv[])
 
     if (version)
     {
-#ifdef LUMAIL_DEBUG
-        std::cout << "lumail-debug v" << LUMAIL_VERSION ;
-#else
         std::cout << "lumail v" << LUMAIL_VERSION ;
+#ifdef LUMAIL_DEBUG
+        std::cout << " (debug-build)";
 #endif
-        std::cout << " compiled against " << LUA_VERSION << "." << std::endl;
+        std::cout << std::endl;
+
+
+        std::cout << "Built against " << LUA_VERSION;
+
+#ifdef GMIME
+        char g_ver[1024] = { '\0' };
+        snprintf(g_ver, sizeof(g_ver)-1, " and GMime %d.%d.%d",
+                 gmime_major_version, gmime_minor_version, gmime_micro_version );
+        std::cout << g_ver ;
+#endif
+        std::cout << std::endl;
         return 0;
     }
 
