@@ -52,6 +52,10 @@ CMessage::CMessage(std::string filename)
     m_time_cache   = 0;
     m_read         = false;
 
+#ifdef GMIME
+    m_message      = NULL;
+#endif
+
 #ifdef LUMAIL_DEBUG
     std::string dm = "CMessage::CMessage(";
     dm += m_path;
@@ -66,6 +70,12 @@ CMessage::CMessage(std::string filename)
  */
 CMessage::~CMessage()
 {
+
+#ifdef GMIME
+    if ( m_message != NULL )
+        close_message();
+#endif
+
     if ( m_me != NULL )
     {
         delete( m_me );
@@ -89,6 +99,17 @@ CMessage::~CMessage()
  */
 void CMessage::message_parse()
 {
+
+#ifdef GMIME
+
+    /**
+     * Parse unless we've done so already.
+     */
+    if ( m_message != NULL )
+        open_message();
+#endif
+
+
 #ifdef LUMAIL_DEBUG
     {
         std::string dm = "CMessage::message_parse() - start";
@@ -1386,3 +1407,35 @@ bool CMessage::on_read_message()
      */
     return true;
 }
+
+#ifdef GMIME
+
+void CMessage::open_message()
+{
+    GMimeParser *parser;
+    GMimeStream *stream;
+    int fd;
+
+    if ((fd = open ( m_path.c_str(), O_RDONLY, 0)) == -1)
+        return;
+
+    stream = g_mime_stream_fs_new (fd);
+
+    parser = g_mime_parser_new_with_stream (stream);
+    g_object_unref (stream);
+
+    m_message = g_mime_parser_construct_message (parser);
+    g_object_unref (parser);
+}
+
+void CMessage::close_message()
+{
+    /**
+     * g_message should be a constructed message.
+     *
+     * TODO: how do we free it?
+     */
+    if ( m_message == NULL )
+        return;
+}
+#endif

@@ -32,7 +32,11 @@
 #include "screen.h"
 #include "version.h"
 
-
+#ifdef GMIME
+ #include <glib.h>
+ #include <glib/gstdio.h>
+ #include <gmime/gmime.h>
+#endif
 
 
 
@@ -130,6 +134,10 @@ int main(int argc, char *argv[])
         CDebug *d = CDebug::Instance();
         d->set_logfile( debug );
     }
+
+#if GMIME
+    g_mime_init (0);
+#endif
 
     /**
      * Initialise the screen.

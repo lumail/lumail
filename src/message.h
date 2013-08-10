@@ -24,6 +24,11 @@
 #include <stdint.h>
 #include <mimetic/mimetic.h>
 
+#ifdef GMIME
+ #include <glib.h>
+ #include <glib/gstdio.h>
+ #include <gmime/gmime.h>
+#endif
 
 /**
  * A class for working with a single message.
@@ -162,6 +167,25 @@ public:
 
 private:
 
+#ifdef GMIME
+
+    /**
+     * The GMIME message object.
+     */
+    GMimeMessage *m_message;
+
+    /**
+     * Parse the message with gmime.
+     */
+    void open_message();
+
+    /**
+     * Cleanup the message with gmime.
+     */
+    void close_message();
+#endif /* GMIME */
+
+
     /**
      * Have we invoked the on_read_message hook?
      */
@@ -201,6 +225,7 @@ private:
      * Cached time/date object.
      */
     time_t m_date;
+
 
 };
 
