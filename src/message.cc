@@ -1088,8 +1088,8 @@ std::string CMessage::get_body()
     /**
      * Parse the message, if not yet done.
      */
-    if ( m_message != NULL )
-        close_message();
+    if ( m_message == NULL )
+        message_parse();
 
     /**
      * Create an iterator
@@ -1402,6 +1402,35 @@ std::vector<std::string> CMessage::attachments()
      */
     message_parse();
 
+#ifdef GMIME
+
+    /**
+     * Create an iterator
+     */
+    GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
+
+    /**
+     * Iterate over the message.
+     */
+    do {
+
+        GMimeObject *part  = g_mime_part_iter_get_current (iter);
+
+        const char *filename = g_mime_object_get_content_disposition_parameter(part, "filename");
+        const char *name =  g_mime_object_get_content_type_parameter(part, "name");
+
+        if ( filename != NULL )
+            paths.push_back( filename );
+        else
+            if ( name != NULL )
+                paths.push_back( name );
+
+    } while (g_mime_part_iter_next (iter));
+
+    g_mime_part_iter_free (iter);
+
+#else
+
 
     /**
      * Iterate over every part.
@@ -1423,6 +1452,8 @@ std::vector<std::string> CMessage::attachments()
         }
     }
 
+#endif
+
     return( paths );
 }
 
@@ -1432,7 +1463,107 @@ std::vector<std::string> CMessage::attachments()
  */
 bool CMessage::save_attachment( int offset, std::string output_path )
 {
+
+    /**
+     * Ensure the message has been read.
+     */
+    message_parse();
+
+    /**
+     * Did we succeed?
+     */
     bool ret = false;
+
+#ifdef GMIME
+
+    /**
+     * Create an iterator
+     */
+    GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
+
+    /**
+     * The current object number.
+     */
+    int count = 1;
+
+    /**
+     * Iterate over the message.
+     */
+    do {
+
+        GMimeObject *part  = g_mime_part_iter_get_current (iter);
+
+        /**
+         * Get the filename - only one of these will succeed.
+         */
+        const char *filename = g_mime_object_get_content_disposition_parameter(part, "filename");
+        const char *name =  g_mime_object_get_content_type_parameter(part, "name");
+
+        /**
+         * We'll set this to the filename, if one succeeded.
+         */
+        const char *nm = NULL;
+
+        if ( filename != NULL )
+            nm = filename;
+        else
+            if ( name != NULL )
+                nm = name;
+
+        /**
+         * OK did we get a filename?  If so test to see if it is the correct
+         * attachment number, and if so save it.
+         */
+        if ( nm != NULL )
+        {
+
+            /**
+             * Are we saving this one?
+             */
+            if ( count == offset )
+            {
+                FILE *fp = NULL;
+
+                if ( (fp = fopen (output_path.c_str(), "wt" ) ) == NULL )
+                {
+                    CLua *lua = CLua::Instance();
+                    lua->execute( "alert('failed to open');" );
+                }
+                else
+                {
+
+                    GMimeDataWrapper *content;
+                    GMimeStream *ostream;
+
+                    content = g_mime_part_get_content_object ((GMimePart *) part);
+                    if(!content) /* part is incomplete. */
+                    {
+                        CLua *lua = CLua::Instance();
+                        lua->execute( "alert('content was incomplete');" );
+                    }
+
+                    ostream = g_mime_stream_file_new (fp);
+
+
+                    g_mime_data_wrapper_write_to_stream (content, ostream);
+
+                    g_object_unref(content);
+                    g_object_unref(ostream);
+                }
+            }
+
+            /**
+             * We've found an attachment so bump the count.
+             */
+            count += 1;
+        }
+
+    } while (g_mime_part_iter_next (iter));
+
+    g_mime_part_iter_free (iter);
+
+#else
+
 
     /**
      * Ensure the message has been read.
@@ -1492,6 +1623,7 @@ bool CMessage::save_attachment( int offset, std::string output_path )
 
     }
 
+#endif
 
     return( ret );
 }
