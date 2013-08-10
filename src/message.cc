@@ -767,6 +767,7 @@ std::string CMessage::format( std::string fmt )
     return( result );
 }
 
+#ifdef GMIME
 static char *
 escape_string (const char *string)
 {
@@ -795,6 +796,7 @@ escape_string (const char *string)
 
 	return buf;
 }
+#endif
 
 /**
  * Retrieve the value of a given header from the message.
