@@ -1,15 +1,26 @@
 
-  The biggest outstanding issue is changing the MIME
- library, which is used for parsing, attachment handling,
- and (TODO) header-decoding/encoding.
+The biggest outstanding issue which has hit release 0.1-0.17 has
+been the inability to decode header-fields correctly.
 
-  There are two parts of the code that need updating:
+We also failed to encode outgoing messages, just assumed they
+were 8bit clean.
 
-    src/message.cc
-    src/message.h
+We've now made the decision to move to GMime for
+all our MIME handling:
 
-  The header file has "TODO-MIME" in the places where changes
- need to be made.
+  * Header encoding/decoding
+  * Attachment iteration, extraction, and addition.
 
-  The second part that needs updating is the compositional
- code in src/binding.cc.  This is less important/difficult.
+This is being tracked in the following github bug:
+
+  https://github.com/skx/lumail/issues/101
+
+The code affected primarily lives in src/message.{cc h}, which is
+where direct manipulation of messages happens.  There is a small
+amount of code in src/bindings.cc which relates to adding
+attachments to (outgoing) messages which also needs to be cleaned
+up and ported though.
+
+src/message.h has "TODO-MIME" in the places where changes need to
+be made.
+
