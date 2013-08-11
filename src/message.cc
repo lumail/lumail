@@ -64,9 +64,7 @@ CMessage::CMessage(std::string filename)
  */
 CMessage::~CMessage()
 {
-
-    if ( m_message != NULL )
-        close_message();
+    close_message();
 
 
 #ifdef LUMAIL_DEBUG
@@ -80,23 +78,18 @@ CMessage::~CMessage()
 
 
 /**
- * Parse the message, through the filter if present.
+ * Parse the message.
  *
- * This uses on_message_parse, if present.
+ * This will use the Lua-defined `msg_filter` if it is defined.
  */
 void CMessage::message_parse()
 {
-    /**
-     * Parse unless we've done so already.
-     *
-     * TODO: Move this *AFTER* the filter.  D'oh.
-     */
-    if ( m_message == NULL )
-        open_message();
+    if ( m_message != NULL )
+        return;
 
 
     /**
-     * See if we're filtering the message of the body.
+     * See if we're filtering the body.
      */
     CGlobal     *global = CGlobal::Instance();
     std::string *filter = global->get_variable("msg_filter");
@@ -131,11 +124,6 @@ void CMessage::message_parse()
         cmd += "|";
         cmd += *filter;
 
-#ifdef LUMAIL_DEBUG
-        std::string dm = "CMessage::message_parse( filter: " + cmd + ");";
-        DEBUG_LOG( dm );
-#endif
-
         /**
          * Run through the popen dance.
          */
@@ -163,6 +151,10 @@ void CMessage::message_parse()
             on.close();
 
             /**
+             * Parse the message, from the temporary file.
+             */
+            open_message( filename );
+            /**
              * Don't leak the filename
              */
             CFile::delete_file( filename );
@@ -170,6 +162,11 @@ void CMessage::message_parse()
         }
     }
 
+    /**
+     * OK we've not parsed the message, and there is not filter present.
+     * so parse the literal message.
+     */
+    open_message( path().c_str() );
 }
 
 
@@ -1421,13 +1418,13 @@ bool CMessage::on_read_message()
 /**
  * Open & parse the message.
  */
-void CMessage::open_message()
+void CMessage::open_message( const char *filename )
 {
     GMimeParser *parser;
     GMimeStream *stream;
     int fd;
 
-    if ((fd = open ( m_path.c_str(), O_RDONLY, 0)) == -1)
+    if ((fd = open( filename, O_RDONLY, 0)) == -1)
         return;
 
     stream = g_mime_stream_fs_new (fd);
@@ -1444,17 +1441,13 @@ void CMessage::open_message()
  */
 void CMessage::close_message()
 {
-    /**
-     * g_message should be a constructed message.
-     *
-     * TODO: how do we free it?
-     */
-    if ( m_message == NULL )
-        return;
-
-    g_object_unref( m_message );
-    m_message = NULL;
+    if ( m_message != NULL )
+    {
+        g_object_unref( m_message );
+        m_message = NULL;
+    }
 }
+
 
 
 /**

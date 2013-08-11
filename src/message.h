@@ -168,7 +168,7 @@ private:
     /**
      * Parse the message with gmime.
      */
-    void open_message();
+    void open_message( const char *filename );
 
     /**
      * Cleanup the message with gmime.
