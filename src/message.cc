@@ -223,13 +223,6 @@ std::string CMessage::flags()
     std::sort( flags.begin(), flags.end());
     flags.erase(std::unique(flags.begin(), flags.end()), flags.end());
 
-    /**
-     * Pad: TODO - This shouldn't be here.  It is just for $FLAGS
-     * in the index_format.
-     */
-    while( (int)strlen(flags.c_str()) < 4 )
-        flags += " ";
-
     return flags;
 }
 
@@ -670,7 +663,13 @@ std::string CMessage::format( std::string fmt )
             }
             if ( strcmp(std_name[i] , "FLAGS" ) == 0 )
             {
+                /**
+                 * Ensure the flags are suitably padded.
+                 */
                 body = flags();
+
+                while( body.size() < 4 )
+                    body += " ";
             }
             if ( strcmp(std_name[i] , "SUBJECT" ) == 0 )
             {
