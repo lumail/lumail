@@ -23,6 +23,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <fcntl.h>
 #include <string>
 #include <unistd.h>
 #include <pcrecpp.h>
