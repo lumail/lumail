@@ -1093,8 +1093,11 @@ std::string CMessage::get_body()
                 const char *data = (const char *)b->data;
                 size_t size = b->len;
 
-                result = (data);
-                result = result.substr(0,size);
+                if ( ( size > 0 ) && ( data != NULL ) )
+                {
+                    result = (data);
+                    result = result.substr(0,size);
+                }
 
                 g_object_unref(stream);
             }
