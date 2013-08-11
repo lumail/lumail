@@ -10,9 +10,13 @@
 
 
 
-int main( int argc, char *argv[] )
+/**
+ * Dump the first text/plain part of a MIME-encoded message.
+ *
+ * If no such part is found try to dump the message-body regardless.
+ */
+void dump_mail( char *filename )
 {
-
     std::string result;
     g_mime_init(0);
 
@@ -21,8 +25,8 @@ int main( int argc, char *argv[] )
     GMimeStream *stream;
     int fd;
 
-    if ((fd = open( argv[1], O_RDONLY, 0)) == -1)
-        return 0;
+    if ((fd = open( filename, O_RDONLY, 0)) == -1)
+        return;
 
     stream = g_mime_stream_fs_new (fd);
 
@@ -83,7 +87,7 @@ int main( int argc, char *argv[] )
     {
         bool in_header = true;
 
-        std::ifstream input ( argv[1] );
+        std::ifstream input ( filename );
         if ( input.is_open() )
         {
             while( input.good() )
@@ -107,8 +111,25 @@ int main( int argc, char *argv[] )
         }
     }
 
-
+    /**
+     * Show the result.
+     */
+    std::cout << "Filename: " << filename << std::endl;
     std::cout << result << std::endl;
+}
+
+
+/**
+ * For each argument, do the dumping.
+ */
+int main( int argc, char *argv[] )
+{
+
+    for( int i = 1; i <argc; i++ )
+    {
+        dump_mail( argv[i] );
+    }
+
     return ( 0 );
 
 }
