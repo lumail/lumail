@@ -1,3 +1,14 @@
+/**
+ * Given a "simple message".  Add attachments to it, using GMime, and write out
+ * a new file with the updated result.
+ *
+ * NOTE: We've discovered that GMime won't let you output to the same file as the
+ * input, because of the way it looks things up on demand.
+ *
+ * So you must output to a *new* file, and later replace that if you wish to
+ * effect an in-place expansion.
+ *
+ */
 
 #include <string>
 #include <string.h>
@@ -151,21 +162,26 @@ int main( int argc, char *argv[] )
      * now that we've finished referencing the multipart directly (the message still
      * holds it's own ref) we can unref it.
      */
-     g_object_unref (multipart);
+    g_object_unref (multipart);
 
-     /**
-      * Output the the updated message, which now contains the attachments,
-      * and is well-formed.
-      */
-     FILE *f = NULL;
-     if ((f = fopen ( "message.out","wb")) == NULL)
-     {
-         return -1;
-     }
+    /**
+     * Output the the updated message, which now contains the attachments,
+     * and is well-formed.
+     */
+    FILE *f = NULL;
+    if ((f = fopen ( "message.out","wb")) == NULL)
+    {
+        return -1;
+    }
 
-     GMimeStream *ostream = g_mime_stream_file_new (f);
-     g_mime_object_write_to_stream ((GMimeObject *) message, ostream);
-     g_object_unref(ostream);
+    GMimeStream *ostream = g_mime_stream_file_new (f);
+    g_mime_object_write_to_stream ((GMimeObject *) message, ostream);
+    g_object_unref(ostream);
+
+    /**
+     * Show the results.
+     */
+    std::cout <<  "Converted input.txt into message.out\n" << std::endl;
 
     return ( 0 );
 
