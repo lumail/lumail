@@ -32,11 +32,9 @@
 #include "screen.h"
 #include "version.h"
 
-#ifdef GMIME
- #include <glib.h>
- #include <glib/gstdio.h>
- #include <gmime/gmime.h>
-#endif
+#include <glib.h>
+#include <glib/gstdio.h>
+#include <gmime/gmime.h>
 
 
 
@@ -126,12 +124,11 @@ int main(int argc, char *argv[])
 
         std::cout << "Built against " << LUA_VERSION;
 
-#ifdef GMIME
         char g_ver[1024] = { '\0' };
         snprintf(g_ver, sizeof(g_ver)-1, " and GMime %d.%d.%d",
                  gmime_major_version, gmime_minor_version, gmime_micro_version );
         std::cout << g_ver ;
-#endif
+
         std::cout << std::endl;
         return 0;
     }
@@ -145,9 +142,7 @@ int main(int argc, char *argv[])
         d->set_logfile( debug );
     }
 
-#if GMIME
     g_mime_init (0);
-#endif
 
     /**
      * Initialise the screen.
@@ -192,9 +187,7 @@ int main(int argc, char *argv[])
     {
         endwin();
 
-#ifdef GMIME
         g_mime_shutdown();
-#endif
 
         std::cerr << "No init file was loaded!" << std::endl;
         std::cerr << "We try to load both /etc/lumail.lua and ~/.lumail/config.lua if present." << std::endl;

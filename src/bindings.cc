@@ -31,9 +31,7 @@
 #include <unistd.h>
 #include <dirent.h>
 
-#ifdef GMIME
- #include <gmime/gmime.h>
-#endif
+#include <gmime/gmime.h>
 
 #include "bindings.h"
 #include "variables.h"
@@ -186,12 +184,10 @@ int exit(lua_State * L)
      */
     endwin();
 
-#ifdef GMIME
     /**
      * Shutdown GMime.
      */
     g_mime_shutdown();
-#endif
 
     CLua *lua = CLua::Instance();
     lua->call_function("on_exit");
@@ -212,12 +208,10 @@ int abort(lua_State * L)
      */
     endwin();
 
-#ifdef GMIME
     /**
      * Shutdown GMime.
      */
     g_mime_shutdown();
-#endif
 
     const char *str = lua_tostring(L, -1);
 

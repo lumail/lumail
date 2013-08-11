@@ -22,13 +22,10 @@
 
 #include <string>
 #include <stdint.h>
-#include <mimetic/mimetic.h>
+#include <glib.h>
+#include <glib/gstdio.h>
+#include <gmime/gmime.h>
 
-#ifdef GMIME
- #include <glib.h>
- #include <glib/gstdio.h>
- #include <gmime/gmime.h>
-#endif
 
 /**
  * A class for working with a single message.
@@ -165,9 +162,6 @@ public:
 
 private:
 
-
-#ifdef GMIME
-
     /**
      * The GMIME message object.
      */
@@ -188,8 +182,6 @@ private:
      */
     std::string get_body();
 
-#endif /* GMIME */
-
 
     /**
      * Have we invoked the on_read_message hook?
@@ -208,27 +200,12 @@ private:
      */
     void message_parse();
 
-    /**
-     * Attempt to find a MIME-part inside our message of the given type.
-     *
-     * Internal only.  Return the first MIME-part of the mesasge of
-     * the given-type.  We use 'text/plain' for display-purposes.
-     *
-     * TODO-MIME: Probably obsolete when GMime is used.
-     */
-    std::string getMimePart(mimetic::MimeEntity* pMe, std::string mtype );
 
     /**
      * The file we represent.
      */
     std::string m_path;
 
-    /**
-     * mimetic entity object for this message.
-     *
-     * TODO-MIME:  This will go away.
-     */
-    mimetic::MimeEntity *m_me;
 
     /**
      * Cached time/date object.

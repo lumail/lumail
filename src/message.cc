@@ -47,14 +47,10 @@ using namespace mimetic;
 CMessage::CMessage(std::string filename)
 {
     m_path         = filename;
-    m_me           = NULL;
     m_date         = 0;
     m_time_cache   = 0;
     m_read         = false;
-
-#ifdef GMIME
     m_message      = NULL;
-#endif
 
 #ifdef LUMAIL_DEBUG
     std::string dm = "CMessage::CMessage(";
@@ -71,16 +67,9 @@ CMessage::CMessage(std::string filename)
 CMessage::~CMessage()
 {
 
-#ifdef GMIME
     if ( m_message != NULL )
         close_message();
-#endif
 
-    if ( m_me != NULL )
-    {
-        delete( m_me );
-        m_me = NULL;
-    }
 
 #ifdef LUMAIL_DEBUG
     std::string dm = "CMessage::~CMessage(";
@@ -99,32 +88,13 @@ CMessage::~CMessage()
  */
 void CMessage::message_parse()
 {
-
-#ifdef GMIME
-
     /**
      * Parse unless we've done so already.
+     *
+     * TODO: Move this *AFTER* the filter.  D'oh.
      */
     if ( m_message == NULL )
         open_message();
-#endif
-
-
-#ifdef LUMAIL_DEBUG
-    {
-        std::string dm = "CMessage::message_parse() - start";
-        DEBUG_LOG( dm );
-    }
-#endif
-
-    if ( m_me != NULL )
-    {
-#ifdef LUMAIL_DEBUG
-        std::string dm = "CMessage::message_parse() - early exit";
-        DEBUG_LOG( dm );
-#endif
-        return;
-    }
 
 
     /**
@@ -195,32 +165,12 @@ void CMessage::message_parse()
             on.close();
 
             /**
-             * Construct a message from the filter-output.
-             */
-            ifstream file( filename );
-            m_me = new MimeEntity(file);
-
-            /**
              * Don't leak the filename
              */
             CFile::delete_file( filename );
             return;
         }
     }
-
-
-
-
-    /**
-     * Open the file for parsing.
-     */
-    ifstream file( path().c_str());
-    m_me = new MimeEntity(file);
-
-#ifdef LUMAIL_DEBUG
-    std::string dm = "CMessage::message_parse() - end";
-    DEBUG_LOG( dm );
-#endif
 
 }
 
@@ -767,7 +717,10 @@ std::string CMessage::format( std::string fmt )
     return( result );
 }
 
-#ifdef GMIME
+
+/**
+ * TODO: Document.
+ */
 static char *
 escape_string (const char *string)
 {
@@ -798,7 +751,7 @@ escape_string (const char *string)
 
     return buf;
 }
-#endif
+
 
 /**
  * Retrieve the value of a given header from the message.
@@ -810,9 +763,8 @@ std::string CMessage::header( std::string name )
      */
     message_parse();
 
-#ifdef GMIME
     const char *str  = NULL;
-    char *nstr = NULL;
+    char *nstr       = NULL;
 
     if ((str = g_mime_object_get_header ((GMimeObject *) m_message, name.c_str() ) ) )
         nstr = escape_string (str);
@@ -824,13 +776,6 @@ std::string CMessage::header( std::string name )
     g_free (nstr);
     g_free (decoded);
     return( result );
-#endif
-
-    Header & h = m_me->header();
-    if (h.hasField(name ) )
-        return( h.field(name).value() );
-    else
-        return "";
 }
 
 
@@ -1080,8 +1025,6 @@ time_t CMessage::get_date_field()
 }
 
 
-#ifdef GMIME
-
 /**
  * Get the body from our message, using GMime.
  */
@@ -1152,129 +1095,6 @@ std::string CMessage::get_body()
 
     return( result );
 }
-#endif
-
-
-
-/**
- * Given a MIME-part retrieve the appropriate part from it.
- */
-std::string CMessage::getMimePart(mimetic::MimeEntity* pMe, std::string mtype )
-{
-    mimetic::Header& h = pMe->header();
-
-    /**
-     * If the header matches then return.
-     */
-    std::string enc = h.contentTransferEncoding().mechanism();
-    std::string type= h.contentType().str();
-
-    if ( type.find( mtype ) != std::string::npos )
-    {
-        std::string body = (pMe)->body();
-        std::string decoded;
-
-        if (strcasecmp(enc.c_str(), "quoted-printable" ) == 0 )
-        {
-            mimetic::QP::Decoder qp;
-            decode(body.begin(), body.end(), qp, std::back_inserter(decoded));
-            return( decoded );
-        }
-        if (strcasecmp(enc.c_str(), "base64" ) == 0 )
-        {
-            mimetic::Base64::Decoder b64;
-            decode(body.begin(), body.end(), b64, std::back_inserter(decoded));
-            return( decoded );
-        }
-
-        return( body );
-    }
-
-    /**
-     * Iterate over any sub-parts.
-     */
-    mimetic::MimeEntityList& parts = pMe->body().parts();
-    mimetic::MimeEntityList::iterator mbit = parts.begin(), meit = parts.end();
-    for(; mbit != meit; ++mbit)
-    {
-
-        /**
-         * get the encoding and content-type.
-         */
-        mimetic::Header& mh = (*mbit)->header();
-        std::string enc = mh.contentTransferEncoding().mechanism();
-        std::string type= mh.contentType().str();
-
-        /**
-         * See if the part matches directly.
-         */
-        if ( type.find( mtype ) != std::string::npos )
-        {
-            std::string body = (*mbit)->body();
-            std::string decoded;
-
-            if (strcasecmp(enc.c_str(), "quoted-printable" ) == 0 )
-            {
-                mimetic::QP::Decoder qp;
-                decode(body.begin(), body.end(), qp, std::back_inserter(decoded));
-                return( decoded );
-            }
-            if (strcasecmp(enc.c_str(), "base64" ) == 0 )
-            {
-                mimetic::Base64::Decoder b64;
-                decode(body.begin(), body.end(), b64, std::back_inserter(decoded));
-                return( decoded );
-            }
-
-            return( body );
-        }
-
-        /**
-         * There are also nested parts because MIME is nasty.
-         */
-        mimetic::MimeEntityList& np = (*mbit)->body().parts();
-        mimetic::MimeEntityList::iterator bit = np.begin(), eit = np.end();
-        for(; bit != eit; ++bit)
-        {
-            /**
-             * See if a nested entry matches.
-             */
-            mimetic::Header& nh = (*bit)->header();
-
-            /**
-             * Get the encoding-type and the content-type.
-             */
-            std::string enc = nh.contentTransferEncoding().mechanism();
-            std::string type= nh.contentType().str();
-
-            /**
-             * If the type matches, then return the (decoded?) body
-             */
-            if ( type.find( mtype ) != std::string::npos )
-            {
-                std::string body = (*bit)->body();
-                std::string decoded;
-
-                if (strcasecmp(enc.c_str(), "quoted-printable" ) == 0 )
-                {
-                    mimetic::QP::Decoder qp;
-                    decode(body.begin(), body.end(), qp, std::back_inserter(decoded));
-                    return( decoded );
-                }
-                if (strcasecmp(enc.c_str(), "base64" ) == 0 )
-                {
-
-                    mimetic::Base64::Decoder b64;
-                    decode(body.begin(), body.end(), b64, std::back_inserter(decoded));
-                    return( decoded );
-                }
-
-                return( body );
-            }
-        }
-    }
-    return "";
-}
 
 
 /**
@@ -1291,24 +1111,10 @@ std::vector<std::string> CMessage::body()
 
 
     /**
-     * Attempt to get the body from the message.
-     *
-     * Note: We handle nested MIME-entities here.
-     *
+     * Attempt to get the body from the message as one
+     * long line.
      */
-#ifdef GMIME
     std::string body = get_body();
-#else
-    std::string body = getMimePart( m_me, "text/plain" );
-#endif
-
-    /**
-     * If we failed to find a part of text/plain then just grab the whole damn
-     * thing and hope for the best.
-     */
-    if ( body.empty() )
-        body = m_me->body();
-
 
     /**
      * At this point we have a std::string containing the body.
@@ -1412,8 +1218,6 @@ std::vector<std::string> CMessage::attachments()
      */
     message_parse();
 
-#ifdef GMIME
-
     /**
      * Create an iterator
      */
@@ -1444,31 +1248,6 @@ std::vector<std::string> CMessage::attachments()
 
     g_mime_part_iter_free (iter);
 
-#else
-
-
-    /**
-     * Iterate over every part.
-     */
-    mimetic::MimeEntityList& parts = m_me->body().parts();
-    mimetic::MimeEntityList::iterator mbit = parts.begin(), meit = parts.end();
-    for(; mbit != meit; ++mbit)
-    {
-        MimeEntity *p = *mbit;
-        const mimetic::ContentDisposition& cd = p->header().contentDisposition();
-        string fn = cd.param("filename");
-
-        /**
-         * Store the filename.
-         */
-        if ( ! fn.empty() )
-        {
-            paths.push_back( fn );
-        }
-    }
-
-#endif
-
     return( paths );
 }
 
@@ -1488,8 +1267,6 @@ bool CMessage::save_attachment( int offset, std::string output_path )
      * Did we succeed?
      */
     bool ret = false;
-
-#ifdef GMIME
 
     /**
      * Create an iterator
@@ -1578,69 +1355,6 @@ bool CMessage::save_attachment( int offset, std::string output_path )
 
     g_mime_part_iter_free (iter);
 
-#else
-
-
-    /**
-     * Ensure the message has been read.
-     */
-    message_parse();
-
-    /**
-     * Iterate over every part.
-     */
-    mimetic::MimeEntityList& parts = m_me->body().parts();
-    mimetic::MimeEntityList::iterator mbit = parts.begin(), meit = parts.end();
-    int m_off = 1;
-
-    for(; mbit != meit; ++mbit)
-    {
-        MimeEntity *p = *mbit;
-        const mimetic::ContentDisposition& cd = p->header().contentDisposition();
-        string fn = cd.param("filename");
-
-        if ( ! fn.empty() )
-        {
-            if ( m_off == offset )
-            {
-                std::string body = p->body();
-                std::string decoded;
-
-                /**
-                 * Encoding type.
-                 */
-                std::string enc = p->header().contentTransferEncoding().mechanism();
-
-
-                std::ofstream myfile;
-                myfile.open(output_path, ios::binary|ios::out);
-
-
-                if (strcasecmp(enc.c_str(), "quoted-printable" ) == 0 )
-                {
-                    mimetic::QP::Decoder qp;
-                    decode(body.begin(), body.end(), qp, std::back_inserter(decoded));
-                }
-                if (strcasecmp(enc.c_str(), "base64" ) == 0 )
-                {
-
-                    mimetic::Base64::Decoder b64;
-                    decode(body.begin(), body.end(), b64, std::back_inserter(decoded));
-                }
-
-
-                myfile << decoded;
-                myfile.close();
-
-                ret = true;
-            }
-            m_off += 1;
-        }
-
-    }
-
-#endif
-
     return( ret );
 }
 
@@ -1673,8 +1387,10 @@ bool CMessage::on_read_message()
     return true;
 }
 
-#ifdef GMIME
 
+/**
+ * Open & parse the message.
+ */
 void CMessage::open_message()
 {
     GMimeParser *parser;
@@ -1693,6 +1409,9 @@ void CMessage::open_message()
     g_object_unref (parser);
 }
 
+/**
+ * Close the mesasge.
+ */
 void CMessage::close_message()
 {
     /**
@@ -1702,8 +1421,10 @@ void CMessage::close_message()
      */
     if ( m_message == NULL )
         return;
+
+    g_object_unref( m_message );
+    m_message = NULL;
 }
-#endif
 
 
 /**

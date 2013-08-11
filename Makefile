@@ -42,7 +42,7 @@ CC=g++
 LINKER=$(CC) -o
 LVER=lua5.1
 CPPFLAGS+=-std=gnu++0x -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) -I/usr/include/ncursesw/
-LDLIBS+=$(shell pkg-config --libs ${LVER}) -lncursesw  -lmimetic -lpcre -lpcrecpp
+LDLIBS+=$(shell pkg-config --libs ${LVER}) -lncursesw  -lpcre -lpcrecpp
 
 #
 #  Experiments in gmime.
