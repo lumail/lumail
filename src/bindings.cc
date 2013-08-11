@@ -1728,11 +1728,16 @@ int compose(lua_State * L)
     int ret = prompt( L);
     if ( ret != 1 )
     {
-        lua_pushstring(L, "Error receiving recipient" );
+        lua_pushstring(L, "Error receiving recipient." );
         return( msg(L ) );
-
     }
+
     const char *recipient = lua_tostring(L,-1);
+    if ( strlen(recipient) < 1 )
+    {
+        lua_pushstring(L, "Empty recipient, aborting." );
+        return( msg(L ) );
+    }
 
     /**
      * Prompt for subject.
@@ -1745,7 +1750,17 @@ int compose(lua_State * L)
         return( msg(L ) );
     }
 
-    const char *subject = lua_tostring(L,-1);
+    /**
+     * Get the subject.
+     */
+    const char *subject         = lua_tostring(L,-1);
+    const char *default_subject = "No subject";
+
+    /**
+     * If empty, use the default.
+     */
+    if ( strlen(subject) < 1 )
+        subject = default_subject;
 
     CGlobal *global   = CGlobal::Instance();
     std::string *from = global->get_variable( "from" );
