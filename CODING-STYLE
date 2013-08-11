@@ -1,4 +1,7 @@
 
+Source Code Formatting
+----------------------
+
 To ensure that the code, potentially coming from many developers,
 remains understandable here are some brief notes on coding-style:
 
@@ -23,7 +26,29 @@ Example of good style:
 Example of bad style:
 
         if ( foo ) {
-           ...
+         ...
         } else {
-           ...
+         // This is a comment
+         ...
         }
+
+
+Debug Target
+------------
+
+We explicitly build two versions of lumail when you run "make":
+
+* lumail
+   * The real executable.
+* lumail-debug
+   * A similar executable with additional debugging checks.
+
+While I do not expect many people to run the latter version, because
+it is slower, it is very useful to have.  I will not change this
+default behaviour because it can be useful.
+
+I encourage additional assertions and checks being added to the
+debug-binary.
+
+
+
