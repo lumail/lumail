@@ -26,7 +26,6 @@
 #include <string>
 #include <unistd.h>
 #include <pcrecpp.h>
-#include <mimetic/mimetic.h>
 
 #include <sys/stat.h>
 #include <time.h>

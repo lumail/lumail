@@ -30,10 +30,8 @@
 /**
  * A class for working with a single message.
  *
- * The constructor will be passed a reference to a filename, which is assumed to be file
- * beneath a Maildir folder.
- *
- * Using the mimetic library we'll parse the message and make various fields available.
+ * The constructor will be passed a reference to a filename, which is assumed
+ * to be file beneath a Maildir folder.
  *
  */
 class CMessage
