@@ -1579,7 +1579,9 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
         g_mime_part_set_content_encoding (attachment, GMIME_CONTENT_ENCODING_BASE64);
 
 
-        // attach the attachment to the multipart
+        /**
+         * Add the attachment to the multipart
+         */
         g_mime_multipart_add (multipart, (GMimeObject*)attachment);
         g_object_unref (attachment);
     }
