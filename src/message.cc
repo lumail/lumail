@@ -1475,21 +1475,21 @@ void CMessage::close_message()
 void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> attachments )
 {
     /**
-     * So here we have a file which contains something like:
+     * When this code is called we have a file, on-disk, which contains something like:
      *
-     *    TO: foo@bar.com
+     *    To: foo@bar.com
      *    Subject: moi
      *    From: me@example.com
      *
-     *    Text
-     *    More text
+     *    Body text..
+     *    More text..
      *
      *    --
      *    Sig
      *
      *
-     * We also have a vector/array of filenames which are attachments to add
-     * to the message.
+     * We also have a vector of filenames which should be added as attachments
+     * to this mail.
      *
      * If there are no attachments then we can return immediately, otherwise
      * we need to add the attachments to the mail - which means parsing it,
@@ -1499,12 +1499,17 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
 
 
     /**
-     * Simplest case.
+     * Simplest case - if there are no attachments we merely return.
      *
-     * TODO: Probably need to do more work here; ensuring the subject, etc,
-     * are 7-big clean, and suitably encoded.
+     * This means our message is non-MIME.  Ideally we shouldn't return,
+     * instead we should always proceed, as this will encode our outgoing
+     * headers, etc.
      *
-     * Meh.  Mime is hard, people will understand.
+     * For the moment I've left this early termination in place because
+     * I'm loathe to make too many changes to this code while it is still
+     * new.  It will become apparent pretty quickly if I've made the
+     * wrong choice.
+     *
      */
     if ( attachments.size() < 1 )
     {
@@ -1621,24 +1626,33 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
      g_object_unref (multipart);
 
      /**
-      * Output the updated message.
+      * Output the updated message.  First pick a tmpfile.
+      *
+      * NOTE: We must use a temporary file.  If we attempt to overwrite the
+      * input file we'll get corruption, due to GMime caching.
       */
      CGlobal *global   = CGlobal::Instance();
      std::string *tmp  = global->get_variable( "tmp" );
      char tmpfile[256] = { '\0' };
      snprintf( tmpfile, sizeof(tmpfile)-1, "%s/mytemp.XXXXXX", tmp->c_str() );
 
+     /**
+      * Write out the updated message.
+      */
      FILE *f = NULL;
      if ((f = fopen ( tmpfile,"wb")) == NULL)
      {
          DEBUG_LOG( "CMessage::add_attachments_to_mail - Failed to open tmpfile" );
          return;
      }
-
      GMimeStream *ostream = g_mime_stream_file_new (f);
      g_mime_object_write_to_stream ((GMimeObject *) message, ostream);
      g_object_unref(ostream);
 
+     /**
+      * Now rename the temporary file over the top of the input
+      * message.
+      */
      CFile::delete_file( filename );
      CFile::move( tmpfile, filename );
 }
