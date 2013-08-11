@@ -154,6 +154,8 @@ void CFile::copy( std::string src, std::string dst )
 
     isrc.close();
     odst.close();
+
+    assert( CFile::exists( dst ) );
 }
 
 
@@ -171,7 +173,12 @@ bool CFile::move( std::string src, std::string dst )
     DEBUG_LOG( dm );
 #endif
 
-    return( rename( src.c_str(), dst.c_str() ) == 0 );
+    int ret = rename( src.c_str(), dst.c_str() );
+
+    assert( CFile::exists(dst) );
+    assert( !CFile::exists(src) );
+
+    return( ret == 0 );
 }
 
 
