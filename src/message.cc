@@ -1039,7 +1039,6 @@ std::string CMessage::get_body()
 
     std::string result;
 
-
     /**
      * Create an iterator
      */
@@ -1092,6 +1091,39 @@ std::string CMessage::get_body()
 
     g_mime_part_iter_free (iter);
 
+
+    /**
+     * If the result is empty then we'll just revert to reading the
+     * message, and skipping the header.
+     */
+    if ( result.empty() )
+    {
+
+        bool in_header = true;
+
+        std::ifstream input ( path() );
+        if ( input.is_open() )
+        {
+            while( input.good() )
+            {
+                std::string line;
+                getline( input, line );
+
+                if ( in_header )
+                {
+                    if ( line.length() <= 0 )
+                        in_header = false;
+                }
+                else
+                {
+                    result += line;
+                    result += "\n";
+                }
+
+            }
+            input.close();
+        }
+    }
 
     return( result );
 }
