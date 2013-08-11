@@ -1498,7 +1498,112 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
     if ( attachments.size() < 1 )
         return;
 
+    GMimeMessage *message;
+    GMimeParser  *parser;
+    GMimeStream  *stream;
+    int fd;
+
+
+
+    if ((fd = open ( filename, O_RDONLY, 0)) == -1)
+        return;
+
+    stream = g_mime_stream_fs_new (fd);
+
+    parser = g_mime_parser_new_with_stream (stream);
+    g_object_unref (stream);
+
+    message = g_mime_parser_construct_message (parser);
+    g_object_unref (parser);
+
+
+    GMimeMultipart *multipart;
+    GMimePart *attachment;
+    GMimeDataWrapper *content;
+
     /**
-     * Right so we have a list of files.  Lets get on with it.
+     * Create a new multipart message.
      */
+    multipart = g_mime_multipart_new();
+    GMimeContentType *type = g_mime_content_type_new ("multipart", "mixed");
+    g_mime_object_set_content_type (GMIME_OBJECT (multipart), type);
+
+
+    /**
+     * first, add the message's toplevel mime part into the multipart
+     */
+    g_mime_multipart_add (multipart, g_mime_message_get_mime_part (message));
+
+    /**
+     * now set the multipart as the message's top-level mime part
+     */
+    g_mime_message_set_mime_part (message,(GMimeObject*) multipart);
+
+    std::vector<std::string>::iterator it;
+    for (it = attachments.begin(); it != attachments.end(); ++it)
+    {
+        std::string name = (*it);
+
+        if ((fd = open (name.c_str(), O_RDONLY)) == -1)
+            return;
+
+        stream = g_mime_stream_fs_new (fd);
+
+        /**
+         * the stream isn't encoded, so just use DEFAULT
+         */
+        content = g_mime_data_wrapper_new_with_stream (stream, GMIME_CONTENT_ENCODING_DEFAULT);
+
+        g_object_unref (stream);
+
+        /**
+         * if you knew the mime-type of the file, you could use that instead
+         * of application/octet-stream
+         */
+        attachment = g_mime_part_new_with_type ("application", "octet-stream");
+        g_mime_part_set_content_object (attachment, content);
+        g_object_unref (content);
+
+        /**
+         * set the filename?
+         */
+        g_mime_part_set_filename (attachment, basename (name.c_str()));
+
+        /**
+         * NOTE: We might want to base64 encode this for transport...
+         *
+         * NOTE: if you want o get really fancy, you could use
+         * g_mime_part_get_best_content_encoding()
+         * to calculate the most efficient encoding algorithm to use.
+         */
+        g_mime_part_set_content_encoding (attachment, GMIME_CONTENT_ENCODING_BASE64);
+
+
+        // attach the attachment to the multipart
+        g_mime_multipart_add (multipart, (GMimeObject*)attachment);
+        g_object_unref (attachment);
+    }
+
+
+    /**
+     * now that we've finished referencing the multipart directly (the message still
+     * holds it's own ref) we can unref it.
+     */
+     g_object_unref (multipart);
+
+     /**
+      * Create a new file to hold the updated message.
+      */
+     FILE *f = NULL;
+     if ((f = fopen ( "/tmp/foo.msg","wb")) == NULL)
+         return;
+
+     GMimeStream *ostream = g_mime_stream_file_new (f);
+     g_mime_object_write_to_stream ((GMimeObject *) message, ostream);
+     g_object_unref(ostream);
+
+     /**
+      * Now replace the original file with the new one.
+      */
+     CFile::move( "/tmp/foo.msg", filename );
 }
