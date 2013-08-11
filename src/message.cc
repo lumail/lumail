@@ -1594,18 +1594,15 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
      g_object_unref (multipart);
 
      /**
-      * Create a new file to hold the updated message.
+      * Overwrite the original file with the updated message, which now
+      * contains the attachments.
       */
      FILE *f = NULL;
-     if ((f = fopen ( "/tmp/foo.msg","wb")) == NULL)
+     if ((f = fopen ( filename,"wb")) == NULL)
          return;
 
      GMimeStream *ostream = g_mime_stream_file_new (f);
      g_mime_object_write_to_stream ((GMimeObject *) message, ostream);
      g_object_unref(ostream);
 
-     /**
-      * Now replace the original file with the new one.
-      */
-     CFile::move( "/tmp/foo.msg", filename );
 }
