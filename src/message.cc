@@ -1712,4 +1712,42 @@ void CMessage::close_message()
  */
 void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> attachments )
 {
+    /**
+     * So here we have a file which contains something like:
+     *
+     *    TO: foo@bar.com
+     *    Subject: moi
+     *    From: me@example.com
+     *
+     *    Text
+     *    More text
+     *
+     *    --
+     *    Sig
+     *
+     *
+     * We also have a vector/array of filenames which are attachments to add
+     * to the message.
+     *
+     * If there are no attachments then we can return immediately, otherwise
+     * we need to add the attachments to the mail - which means parsing it,
+     * adding the attachments, and returning an (updated) file.
+     *
+     */
+
+
+    /**
+     * Simplest case.
+     *
+     * TODO: Probably need to do more work here; ensuring the subject, etc,
+     * are 7-big clean, and suitably encoded.
+     *
+     * Meh.  Mime is hard, people will understand.
+     */
+    if ( attachments.size() < 1 )
+        return;
+
+    /**
+     * Right so we have a list of files.  Lets get on with it.
+     */
 }
