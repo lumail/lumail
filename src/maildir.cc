@@ -427,7 +427,11 @@ std::string CMaildir::message_in(std::string path, bool is_new)
     /**
      * Filename is: $time.xxx.$hostname.
      */
-    std::string hostname = "localhost" ;   // TODO - mimetic::gethostname();
+
+    char host[1024] = {'\0'};
+    gethostname(host, sizeof(host)-1);
+    std::string hostname( host );
+
     time_t current_time = time(NULL);
 
     /**
