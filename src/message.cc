@@ -771,30 +771,32 @@ std::string CMessage::format( std::string fmt )
 static char *
 escape_string (const char *string)
 {
-	const char *start, *inptr;
-	GString *str;
-	char *buf;
+    const char *start, *inptr;
+    GString *str;
+    char *buf;
 
-	str = g_string_new ("");
+    str = g_string_new ("");
 
-	inptr = string;
+    inptr = string;
 
-	while (*inptr) {
-		start = inptr;
-		while (*inptr && *inptr != '"')
-			inptr++;
+    while (*inptr)
+    {
+        start = inptr;
+        while (*inptr && *inptr != '"')
+            inptr++;
 
-		g_string_append_len (str, start, inptr - start);
-		if (*inptr == '"') {
-			g_string_append (str, "\\\"");
-			inptr++;
-		}
-	}
+        g_string_append_len (str, start, inptr - start);
+        if (*inptr == '"')
+        {
+            g_string_append (str, "\\\"");
+            inptr++;
+        }
+    }
 
-	buf = str->str;
-	g_string_free (str, FALSE);
+    buf = str->str;
+    g_string_free (str, FALSE);
 
-	return buf;
+    return buf;
 }
 #endif
 
@@ -1104,8 +1106,8 @@ std::string CMessage::get_body()
     /**
      * Iterate over the message.
      */
-    do {
-
+    do
+    {
         GMimeObject *part  = g_mime_part_iter_get_current (iter);
 
         if ( ( GMIME_IS_OBJECT( part ) ) &&
@@ -1142,7 +1144,8 @@ std::string CMessage::get_body()
                 g_object_unref(stream);
             }
         }
-    } while (g_mime_part_iter_next (iter));
+    }
+    while (g_mime_part_iter_next (iter));
 
     g_mime_part_iter_free (iter);
 
@@ -1419,8 +1422,8 @@ std::vector<std::string> CMessage::attachments()
     /**
      * Iterate over the message.
      */
-    do {
-
+    do
+    {
         GMimeObject *part  = g_mime_part_iter_get_current (iter);
 
         if ( ( GMIME_IS_OBJECT( part ) ) &&
@@ -1436,7 +1439,8 @@ std::vector<std::string> CMessage::attachments()
                     paths.push_back( name );
         }
 
-    } while (g_mime_part_iter_next (iter));
+    }
+    while (g_mime_part_iter_next (iter));
 
     g_mime_part_iter_free (iter);
 
@@ -1500,8 +1504,8 @@ bool CMessage::save_attachment( int offset, std::string output_path )
     /**
      * Iterate over the message.
      */
-    do {
-
+    do
+    {
         GMimeObject *part  = g_mime_part_iter_get_current (iter);
 
         /**
@@ -1569,7 +1573,8 @@ bool CMessage::save_attachment( int offset, std::string output_path )
             count += 1;
         }
 
-    } while (g_mime_part_iter_next (iter));
+    }
+    while (g_mime_part_iter_next (iter));
 
     g_mime_part_iter_free (iter);
 
