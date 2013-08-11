@@ -37,8 +37,6 @@
 #include "message.h"
 #include "global.h"
 
-using namespace std;
-using namespace mimetic;
 
 
 /**
@@ -159,8 +157,8 @@ void CMessage::message_parse()
             /**
              * Write the body out to disk.
              */
-            ofstream on;
-            on.open(filename, ios::binary);
+            std::ofstream on;
+            on.open(filename, std::ios::binary);
             on.write(tmp.c_str(), tmp.size());
             on.close();
 
@@ -1177,8 +1175,8 @@ std::vector<std::string> CMessage::body()
          */
         (void)(fd);
 
-        ofstream on;
-        on.open(filename, ios::binary);
+        std::ofstream on;
+        on.open(filename, std::ios::binary);
         on.write(body.c_str(), body.size());
         on.close();
 
