@@ -1077,6 +1077,7 @@ std::string CMessage::get_body()
                 g_mime_data_wrapper_write_to_stream( c, stream );
                 GByteArray *b = ((GMimeStreamMem *)stream)->buffer;
                 result = ((const char *)b->data );
+                result = result.substr(0, b->len );
 
                 g_object_unref(stream);
             }
