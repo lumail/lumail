@@ -2,7 +2,7 @@ Source: lumail
 Section: mail
 Priority: optional
 Maintainer: Steve Kemp <steve@steve.org.uk>
-Build-Depends: debhelper (>> 7.0.0), libncursesw5-dev, liblua5.1-0-dev, libmimetic-dev, pkg-config, libpcre3-dev
+Build-Depends: debhelper (>> 7.0.0), libncursesw5-dev, liblua5.1-0-dev, pkg-config, libpcre3-dev, libgmime-2.6-dev
 Standards-Version: 3.9.4
 Homepage: http://www.lumail.org/
 
