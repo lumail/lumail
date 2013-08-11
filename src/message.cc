@@ -1490,7 +1490,10 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
      * Meh.  Mime is hard, people will understand.
      */
     if ( attachments.size() < 1 )
+    {
+        DEBUG_LOG( "CMessage::add_attachments_to_mail - No attachments for this message" );
         return;
+    }
 
     GMimeMessage *message;
     GMimeParser  *parser;
@@ -1500,7 +1503,10 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
 
 
     if ((fd = open ( filename, O_RDONLY, 0)) == -1)
+    {
+        DEBUG_LOG( "CMessage::add_attachments_to_mail - Failed to open filename for reading" );
         return;
+    }
 
     stream = g_mime_stream_fs_new (fd);
 
@@ -1523,6 +1529,13 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
     g_mime_object_set_content_type (GMIME_OBJECT (multipart), type);
 
 
+    GMimeContentType *new_type;
+    GMimeObject *mime_part;
+
+    mime_part = g_mime_message_get_mime_part (message);
+    new_type = g_mime_content_type_new_from_string ("text/plain; charset=UTF-8");
+    g_mime_object_set_content_type (mime_part, new_type);
+
     /**
      * first, add the message's toplevel mime part into the multipart
      */
@@ -1539,7 +1552,10 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
         std::string name = (*it);
 
         if ((fd = open (name.c_str(), O_RDONLY)) == -1)
+        {
+            DEBUG_LOG( "CMessage::add_attachments_to_mail - Failed to open attachment" );
             return;
+        }
 
         stream = g_mime_stream_fs_new (fd);
 
@@ -1588,15 +1604,24 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
      g_object_unref (multipart);
 
      /**
-      * Overwrite the original file with the updated message, which now
-      * contains the attachments.
+      * Output the updated message.
       */
+     CGlobal *global   = CGlobal::Instance();
+     std::string *tmp  = global->get_variable( "tmp" );
+     char tmpfile[256] = { '\0' };
+     snprintf( tmpfile, sizeof(tmpfile)-1, "%s/mytemp.XXXXXX", tmp->c_str() );
+
      FILE *f = NULL;
-     if ((f = fopen ( filename,"wb")) == NULL)
+     if ((f = fopen ( tmpfile,"wb")) == NULL)
+     {
+         DEBUG_LOG( "CMessage::add_attachments_to_mail - Failed to open tmpfile" );
          return;
+     }
 
      GMimeStream *ostream = g_mime_stream_file_new (f);
      g_mime_object_write_to_stream ((GMimeObject *) message, ostream);
      g_object_unref(ostream);
 
+     CFile::delete_file( filename );
+     CFile::move( tmpfile, filename );
 }
