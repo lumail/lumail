@@ -189,7 +189,7 @@ std::string CMaildir::name()
     /**
      * Find the last part of the name.
      */
-    unsigned found = m_path.find_last_of("/");
+    size_t found = m_path.find_last_of("/");
     if ( found != std::string::npos )
         cache = m_path.substr(found + 1);
     else
