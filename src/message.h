@@ -153,15 +153,14 @@ public:
     bool on_read_message();
 
     /**
-     * Update a basic email, on-disk, to include the named
-     * attachments.
+     * Update a basic email, on-disk, to include the named attachments.
      */
     static void add_attachments_to_mail(char *filename, std::vector<std::string> attachments );
 
 private:
 
     /**
-     * The GMIME message object.
+     * The GMime message object.
      */
     GMimeMessage *m_message;
 
@@ -179,7 +178,6 @@ private:
      * Get the text/plain part of the message, via GMime.
      */
     std::string get_body();
-
 
     /**
      * Have we invoked the on_read_message hook?
