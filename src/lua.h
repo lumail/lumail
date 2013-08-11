@@ -102,11 +102,6 @@ public:
     void execute(std::string lua);
 
     /**
-     * Call a single Lua function, passing no arguments and ignoring the return code.
-     */
-    bool call_function(std::string name);
-
-    /**
      * Lookup a value in a nested table.
      *
      * (Used for keybinding lookups.)

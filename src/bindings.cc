@@ -190,7 +190,7 @@ int exit(lua_State * L)
     g_mime_shutdown();
 
     CLua *lua = CLua::Instance();
-    lua->call_function("on_exit");
+    lua->execute("on_exit()");
 
     exit(0);
     return 0;

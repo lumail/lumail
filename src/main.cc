@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
     /**
      * We're starting, so call the on_start() function.
      */
-    lua->call_function("on_start");
+    lua->execute("on_start()");
 
     /**
      * If we have a starting folder, select it.
@@ -249,7 +249,7 @@ int main(int argc, char *argv[])
             /*
              * Timeout - so we go round the loop again.
              */
-            lua->call_function("on_idle");
+            lua->execute("on_idle()");
         }
         else
         {
@@ -287,7 +287,7 @@ int main(int argc, char *argv[])
      * routine(s).
      *
      */
-    lua->call_function("exit");
+    lua->execute("exit()");
 
     /**
      * This code is never reached as the Lua "exit" primitive
