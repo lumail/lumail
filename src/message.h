@@ -157,7 +157,14 @@ public:
      */
     bool on_read_message();
 
+    /**
+     * Update a basic email, on-disk, to include the named
+     * attachments.
+     */
+    static void add_attachments_to_mail(char *filename, std::vector<std::string> attachments );
+
 private:
+
 
 #ifdef GMIME
 

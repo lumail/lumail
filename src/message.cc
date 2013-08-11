@@ -1699,3 +1699,12 @@ void CMessage::close_message()
         return;
 }
 #endif
+
+
+/**
+ * Update a basic email, on-disk, to include the named
+ * attachments.
+ */
+void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> attachments )
+{
+}
