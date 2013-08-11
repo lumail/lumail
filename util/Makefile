@@ -6,7 +6,7 @@ all: add-attachments-to-simple-mail  dump-mime
 
 clean:
 	rm add-attachments-to-simple-mail  dump-mime || true
-
+	rm input.txt message.out || true
 
 
 dump-mime: dump-mime.c Makefile
