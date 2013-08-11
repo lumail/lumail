@@ -1061,22 +1061,40 @@ std::string CMessage::get_body()
                  ( content == NULL ) )
             {
                 /**
-                 * TODO: Not sure if this is correct.
-                 *
-                 * The previous version was:
+                 * The previous version of this code was just:
                  *
                  *   content = g_mime_object_to_string(part);
                  *
-                 * Which had weird leading text..
+                 * Unfortunately that was prefixed with the MIME-type, etc.
+                 * So we have this complex code instead.
                  */
 
+                /**
+                 * Get the "data".
+                 */
                 GMimeDataWrapper *c = g_mime_part_get_content_object( GMIME_PART(part) );
-                GMimeStream *stream = g_mime_stream_mem_new();
 
+                /**
+                 * Write it to a memory-based stream..
+                 */
+                GMimeStream *stream = g_mime_stream_mem_new();
                 g_mime_data_wrapper_write_to_stream( c, stream );
+
+                /**
+                 * Now steal the data from the memory that stream
+                 * has allocated.
+                 */
                 GByteArray *b = ((GMimeStreamMem *)stream)->buffer;
-                result = ((const char *)b->data );
-                result = result.substr(0, b->len );
+
+
+                /**
+                 * We must truncate it.  Or bad things will happen.
+                 */
+                const char *data = (const char *)b->data;
+                size_t size = b->len;
+
+                result = (data);
+                result = result.substr(0,size);
 
                 g_object_unref(stream);
             }
