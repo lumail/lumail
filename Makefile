@@ -80,11 +80,6 @@ release: clean style
 	mv $(DIST_PREFIX)/$(BASE)-$(VERSION).tar.gz .
 	rm -rf $(DIST_PREFIX)/$(BASE)-$(VERSION)
 
-#
-#  Build the utilties
-#
-utilities:
-	cd ./util && make
 
 
 #
