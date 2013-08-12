@@ -46,8 +46,10 @@
  */
 CLumail::CLumail()
 {
-
-    g_mime_init (0);
+    if ( getenv( "RFC2047" ) != NULL)
+        g_mime_init(GMIME_ENABLE_RFC2047_WORKAROUNDS);
+    else
+        g_mime_init (0);
 
     m_screen = new CScreen();
     m_screen->setup();
