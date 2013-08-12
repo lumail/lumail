@@ -19,7 +19,6 @@
 void dump_mail( char *filename )
 {
     std::string result;
-    g_mime_init(0);
 
     GMimeMessage *m_message;
     GMimeParser *parser;
@@ -69,11 +68,10 @@ void dump_mail( char *filename )
                 char *converted;
                 gint64 len;
                 GMimeDataWrapper *c = g_mime_part_get_content_object( GMIME_PART(part) );
-                GMimeStream *stream = g_mime_stream_mem_new();
+                GMimeStream *memstream = g_mime_stream_mem_new();
 
-                g_mime_data_wrapper_write_to_stream( c, stream );
-                len = g_mime_stream_length(stream);
-                guint8 *b = g_byte_array_free (g_mime_stream_mem_get_byte_array((GMimeStreamMem *)stream), false);
+                len = g_mime_data_wrapper_write_to_stream( c, memstream );
+                guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
 
                 if ( (charset =  g_mime_content_type_get_parameter(content_type, "charset")) != NULL &&  (strcasecmp(charset, "utf-8") != 0))
                 {
@@ -83,19 +81,25 @@ void dump_mail( char *filename )
                     converted = g_mime_iconv_strndup(cv, (const char *) b, len );
                     result = (const char*)converted;
                     g_mime_iconv_close(cv);
+                    g_free(converted);
                 }
                 else
                 {
                     result = ((const char *)b );
                 }
-                g_free(b);
-                g_object_unref(stream);
+                g_mime_stream_close(memstream);
+                g_object_unref(memstream);
+                return;
             }
         }
     }
     while (g_mime_part_iter_next (iter));
 
     g_mime_part_iter_free (iter);
+    g_object_unref(m_message);
+    g_mime_stream_close(stream);
+    g_object_unref(stream);
+
 
 
     /**
@@ -144,10 +148,12 @@ void dump_mail( char *filename )
 int main( int argc, char *argv[] )
 {
 
+    g_mime_init(0);
     for( int i = 1; i <argc; i++ )
     {
         dump_mail( argv[i] );
     }
+    g_mime_shutdown();
 
     return ( 0 );
 
