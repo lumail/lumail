@@ -98,7 +98,6 @@ void dump_mail( char *filename )
                 }
                 g_mime_stream_close(memstream);
                 g_object_unref(memstream);
-                return;
             }
         }
     }
