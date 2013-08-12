@@ -109,7 +109,7 @@ lumail: $(RELEASE_OBJECTS)
 #  The debug-build.
 #
 lumail-debug: $(DEBUG_OBJECTS)
-	$(LINKER) $@ $(LFLAGS) -rdynamic -ggdb $(DEBUG_OBJECTS) $(LDLIBS) $(GMIME_LIBS)
+	$(LINKER) $@ $(LFLAGS) -rdynamic -ggdb -fsanitize=address -fno-omit-frame-pointer $(DEBUG_OBJECTS) $(LDLIBS) $(GMIME_LIBS)
 
 
 #
