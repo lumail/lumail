@@ -543,7 +543,7 @@ do
    --
    -- This variable is used to allow searches to reuse prior input.
    --
-   local search_next_prev = '';
+   local search_next_prev = ''
 
    --
    -- Search for the next folder/message which matches the entered pattern.
