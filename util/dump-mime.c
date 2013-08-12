@@ -1,5 +1,6 @@
 
 #include <string>
+#include <string.h>
 #include <fcntl.h>
 #include <iostream>
 #include <fstream>
@@ -63,13 +64,31 @@ void dump_mail( char *filename )
             if ( ( ( content_type == NULL ) || ( g_mime_content_type_is_type (content_type, "text", "plain")  ) ) &&
                 ( content == NULL ) )
             {
+
+                const char *charset;
+                char *converted;
+                gint64 len;
                 GMimeDataWrapper *c = g_mime_part_get_content_object( GMIME_PART(part) );
                 GMimeStream *stream = g_mime_stream_mem_new();
 
                 g_mime_data_wrapper_write_to_stream( c, stream );
-                GByteArray *b = ((GMimeStreamMem *)stream)->buffer;
-                result = ((const char *)b->data );
-                result = result.substr(0, b->len );
+                len = g_mime_stream_length(stream);
+                guint8 *b = g_byte_array_free (g_mime_stream_mem_get_byte_array((GMimeStreamMem *)stream), false);
+
+                if ( (charset =  g_mime_content_type_get_parameter(content_type, "charset")) != NULL &&  (strcasecmp(charset, "utf-8") != 0))
+                {
+                    iconv_t cv;
+
+                    cv = g_mime_iconv_open ("UTF-8", charset);
+                    converted = g_mime_iconv_strndup(cv, (const char *) b, len );
+                    result = (const char*)converted;
+                    g_mime_iconv_close(cv);
+                }
+                else
+                {
+                    result = ((const char *)b );
+                }
+                g_free(b);
                 g_object_unref(stream);
             }
         }
