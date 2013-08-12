@@ -559,47 +559,15 @@ bool CMessage::mark_read()
 /**
  * Mark the message as unread.
  */
-bool CMessage::mark_new()
+bool CMessage::mark_unread()
 {
-    /*
-     * Get the current path, and build a new one.
-     */
-    std::string c_path = path();
-    std::string n_path = "";
-
-    size_t offset = std::string::npos;
-
-    /**
-     * If we find /cur/ in the path then rename to be /new/
-     */
-    if ( ( offset = c_path.find( "/cur/" ) )!= std::string::npos )
+    if ( has_flag( 'S' ) )
     {
-        /**
-         * Path component before /cur/ + after it.
-         */
-        std::string before = c_path.substr(0,offset);
-        std::string after  = c_path.substr(offset+strlen("/cur/"));
-
-        n_path = before + "/new/" + after;
-        if ( rename(  c_path.c_str(), n_path.c_str() )  == 0 )
-        {
-            path( n_path );
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    else
-    {
-        /**
-         * The file is old, but not in the old folder.  That means we need to
-         * add "N" to the flag-component of the path.
-         */
-        add_flag( 'N' );
+        remove_flag( 'S' );
         return true;
     }
+
+    return false;
 }
 
 

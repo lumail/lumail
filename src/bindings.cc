@@ -1177,7 +1177,7 @@ int header(lua_State * L)
 /**
  * Mark the message as new.
  */
-int mark_new(lua_State * L)
+int mark_unread(lua_State * L)
 {
     /**
      * Get the path (optional).
@@ -1192,7 +1192,7 @@ int mark_new(lua_State * L)
         return( 0 );
     }
     else
-        msg->mark_new();
+        msg->mark_unread();
 
     if ( str != NULL )
         delete( msg );

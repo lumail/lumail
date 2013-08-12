@@ -137,7 +137,7 @@ int count_lines(lua_State *L);
 
 /* message helpers */
 int is_new(lua_State *L);
-int mark_new(lua_State *L);
+int mark_unread(lua_State *L);
 int mark_read(lua_State *L);
 int header(lua_State *L);
 

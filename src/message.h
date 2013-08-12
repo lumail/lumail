@@ -101,9 +101,9 @@ public:
     bool is_new();
 
     /**
-     * Mark a message as new.
+     * Mark a message as unread.
      */
-    bool mark_new();
+    bool mark_unread();
 
     /**
      * Mark a message as read.
