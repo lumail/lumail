@@ -180,7 +180,7 @@ void CLumail::run_event_loop()
 
             /**
              * See if we can handle it via our keyboard map, or
-             * the luau function "on_key".
+             * the Lua function "on_key".
              */
             if ( (!m_lua->on_key( name )) && ( !m_lua->on_keypress(name)) )
             {
