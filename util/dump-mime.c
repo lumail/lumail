@@ -97,8 +97,6 @@ void dump_mail( char *filename )
 
     g_mime_part_iter_free (iter);
     g_object_unref(m_message);
-    g_mime_stream_close(stream);
-    g_object_unref(stream);
 
 
 
