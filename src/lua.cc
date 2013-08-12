@@ -166,6 +166,7 @@ struct CLuaMapping primitive_list[] =
 /**
  * prompts.
  */
+    {"choose_string", "Prompt for one of a small set of strings", (lua_CFunction) choose_string},
     {"prompt", "Prompt for input.", (lua_CFunction) prompt },
     {"prompt_chars", "Prompt for input, until one of a given number of characters is entered.", (lua_CFunction) prompt_chars },
     {"prompt_maildir", "Prompt for an (existing) Maildir.", (lua_CFunction) prompt_maildir },

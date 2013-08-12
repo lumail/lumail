@@ -154,6 +154,7 @@ int msg(lua_State * L);
 int mime_type(lua_State *L);
 
 /* prompt for input */
+int choose_string(lua_State * L);
 int prompt(lua_State * L);
 int prompt_chars(lua_State *L);
 int prompt_yn(lua_State * L);

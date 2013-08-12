@@ -418,6 +418,43 @@ int alert(lua_State * L)
 /**
  * Prompt for input.
  */
+int choose_string(lua_State * L)
+{
+    std::vector<std::string> choices;
+
+    /**
+     * Get all the options.
+     */
+    int n = lua_gettop(L);
+
+    for (int i = 1; i <= n; i++)
+    {
+        const char *str =  lua_tostring(L, i);
+        if ( str != NULL )
+            choices.push_back( str );
+    }
+
+    noecho();
+    curs_set(0);
+
+    /**
+     * Prompt for clarification in the multiple-matches.
+     */
+    std::string choice = CScreen::choose_string( choices );
+
+    /**
+     * Reset the cursor.
+     */
+    curs_set(1);
+    echo();
+
+    lua_pushstring(L, choice.c_str() );
+    return 1;
+}
+
+/**
+ * Prompt for input.
+ */
 int prompt(lua_State * L)
 {
     /**
