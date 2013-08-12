@@ -874,7 +874,7 @@ end
 --
 -- Store persistant history.
 --
-history_file( os.getenv( "HOME" ) .. "/.lumail.history" );
+history_file( os.getenv( "HOME" ) .. "/.lumail.history" )
 
 ---
 --
