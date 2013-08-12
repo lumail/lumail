@@ -87,14 +87,14 @@ void dump_mail( char *filename )
                     else
                     {
                         if ( b != NULL )
-                            result = (const char *)b;
+                            result = std::string((const char *)b, len);
                     }
                     g_mime_iconv_close(cv);
                 }
                 else
                 {
                     if ( b != NULL )
-                        result = ((const char *)b );
+                        result = std::string((const char *)b, len);
                 }
                 g_mime_stream_close(memstream);
                 g_object_unref(memstream);
