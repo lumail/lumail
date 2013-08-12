@@ -537,19 +537,46 @@ end
 
 
 
---
--- Search for the next folder/message which matches the entered pattern.
---
-function search_next()
-   x = prompt("/:" )
-   m = global_mode()
 
-   if ( string.find( m, "maildir" ) ) then
-      scroll_maildir_to( x )
-   elseif (string.find(m, "index" ) ) then
-      scroll_index_to( x )
-   else
-      msg( "search_next() not implemented for mode:" .. m )
+
+do
+   --
+   -- This variable is used to allow searches to reuse prior input.
+   --
+   local search_next_prev = '';
+
+   --
+   -- Search for the next folder/message which matches the entered pattern.
+   --
+   function search_next()
+
+      --
+      -- The search pattern.
+      --
+      x = prompt("/:" )
+
+      --
+      -- If the user didn't enter anything then use the previous input.
+      --
+      if ( x == "" ) then x = search_next_prev end
+
+      --
+      -- Save the input for the next search.
+      --
+      search_next_prev = x
+
+      --
+      --  Get the mode, so we can do the correct kind of searching.
+      --
+      m = global_mode()
+
+      if ( string.find( m, "maildir" ) ) then
+         scroll_maildir_to( x )
+      elseif (string.find(m, "index" ) ) then
+         scroll_index_to( x )
+      else
+         msg( "search_next() not implemented for mode:" .. m )
+      end
    end
 end
 
