@@ -79,18 +79,22 @@ void dump_mail( char *filename )
 
                     cv = g_mime_iconv_open ("UTF-8", charset);
                     converted = g_mime_iconv_strndup(cv, (const char *) b, len );
-                    if (converted != NULL) 
+                    if (converted != NULL)
                     {
                         result = (const char*)converted;
                         g_free(converted);
                     }
                     else
-                        result = (const char *)b;
+                    {
+                        if ( b != NULL )
+                            result = (const char *)b;
+                    }
                     g_mime_iconv_close(cv);
                 }
                 else
                 {
-                    result = ((const char *)b );
+                    if ( b != NULL )
+                        result = ((const char *)b );
                 }
                 g_mime_stream_close(memstream);
                 g_object_unref(memstream);
