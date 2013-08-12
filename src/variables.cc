@@ -144,6 +144,14 @@ int completion_chars(lua_State *L)
 }
 
 /**
+ * Get, or set, the display-filter.
+ */
+int display_filter(lua_State * L)
+{
+    return( get_set_string_variable(L, "display_filter" ) );
+}
+
+/**
  * Get, or set, the editor
  */
 int editor(lua_State * L)
@@ -199,6 +207,16 @@ int index_limit(lua_State * L)
     }
 
     return ret;
+}
+
+
+
+/**
+ * Get or set the mail filter.
+ */
+int mail_filter(lua_State * L)
+{
+    return( get_set_string_variable(L, "mail_filter" ) );
 }
 
 /**
@@ -258,21 +276,6 @@ int maildir_prefix(lua_State * L)
     return( get_set_string_variable(L, "maildir_prefix" ) );
 }
 
-/**
- * Get, or set, the message-filter.
- */
-int message_filter(lua_State * L)
-{
-    return( get_set_string_variable(L, "message_filter" ) );
-}
-
-/**
- * Get or set the msg filter.
- */
-int msg_filter(lua_State * L)
-{
-    return( get_set_string_variable(L, "msg_filter" ) );
-}
 
 /**
  * Get, or set, the sendmail path.

@@ -98,9 +98,6 @@ int editor(lua_State *L);
 /* get/set completion characters */
 int completion_chars(lua_State *L);
 
-/* get/set the message-filter.*/
-int message_filter(lua_State *L);
-
 /* get/set the index-format. */
 int index_format(lua_State *L);
 

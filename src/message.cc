@@ -80,7 +80,7 @@ CMessage::~CMessage()
 /**
  * Parse the message.
  *
- * This will use the Lua-defined `msg_filter` if it is defined.
+ * This will use the Lua-defined `mail_filter` if it is defined.
  */
 void CMessage::message_parse()
 {
@@ -92,7 +92,7 @@ void CMessage::message_parse()
      * See if we're filtering the body.
      */
     CGlobal     *global = CGlobal::Instance();
-    std::string *filter = global->get_variable("msg_filter");
+    std::string *filter = global->get_variable("mail_filter");
     std::string *tmp    = global->get_variable("tmp");
 
     if ( ( filter != NULL ) && ( ! ( filter->empty() ) ) )
@@ -1172,7 +1172,7 @@ std::vector<std::string> CMessage::body()
      *
      */
     CGlobal     *global = CGlobal::Instance();
-    std::string *filter = global->get_variable("message_filter");
+    std::string *filter = global->get_variable("display_filter");
     std::string *tmp    = global->get_variable("tmp");
 
     if ( ( filter != NULL ) && ( ! ( filter->empty() ) ) )
