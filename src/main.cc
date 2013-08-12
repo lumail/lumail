@@ -22,19 +22,13 @@
 #include <iostream>
 #include <fstream>
 #include <getopt.h>
-
-#include "debug.h"
-#include "file.h"
-#include "input.h"
-#include "lua.h"
-#include "message.h"
-#include "maildir.h"
-#include "screen.h"
-#include "version.h"
-
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <gmime/gmime.h>
+
+#include "debug.h"
+#include "lumail.h"
+#include "version.h"
 
 
 
@@ -133,6 +127,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+
     /**
      * Set the debug-logfile name.
      */
@@ -142,86 +137,39 @@ int main(int argc, char *argv[])
         d->set_logfile( debug );
     }
 
-    g_mime_init (0);
 
     /**
-     * Initialise the screen.
+     * Create the application.
      */
-    CScreen screen = CScreen();
-    screen.setup();
+    CLumail *obj = new CLumail();
 
     /**
-     * Number of init-files we've loaded.
+     * Load the default init files, and optionally the
+     * one specified on the command line.
      */
-    int init = 0;
-
-    /**
-     * Create the Lua intepreter.
-     */
-    CLua *lua = CLua::Instance();
-    if ( lua->load_file("/etc/lumail.lua") )
-        init += 1;
-
-    /**
-     * Load the init-file from the users home-directory, if we can.
-     */
-    std::string home = getenv( "HOME" );
-    if ( ( ! home.empty() ) && ( CFile::exists( home + "/.lumail/config.lua" ) ) )
-         if ( lua->load_file( home + "/.lumail/config.lua") )
-             init += 1;
-
-    /**
-     * If we have any init file specified then load it up too.
-     */
-    if (!rcfile.empty())
+    if ( !obj->load_init_files( rcfile ) )
     {
-        if ( lua->load_file(rcfile.c_str()) )
-            init += 1;
-    }
-
-
-    /**
-     *  Ensure we've loaded something.
-     */
-    if ( init == 0 )
-    {
-        endwin();
-
-        g_mime_shutdown();
+        delete( obj );
 
         std::cerr << "No init file was loaded!" << std::endl;
-        std::cerr << "We try to load both /etc/lumail.lua and ~/.lumail/config.lua if present." << std::endl;
-        std::cerr << "You could try: ./lumail --rcfile ./lumail.lua" << std::endl;
+
+        std::cerr << "We tried to load both: /etc/lumail.lua & ~/.lumail/config.lua."
+                  << std::endl;
+
+        std::cerr << "You should specify an init file to load via --rcfile"
+                  << std::endl;
         return -1;
     }
 
-
-    /**
-     * We're starting, so call the on_start() function.
-     */
-    lua->execute("on_start()");
 
     /**
      * If we have a starting folder, select it.
      */
     if ( !folder.empty() )
     {
-        /**
-         * Remove any trailing "/" character(s).
-         */
-        while ( folder.at(folder.size()-1) == '/' )
-            folder = folder.substr(0,folder.size()-1);
-
-        if ( CMaildir::is_maildir( folder ) )
+        if ( ! obj->open_folder( folder ) )
         {
-            /**
-             * Open the single folder named on the command-line.
-             */
-            lua->execute( "set_selected_folder( \"" + folder + "\" );" );
-            lua->execute( "global_mode( \"index\" );" );
-        }
-        else
-        {
+            CLua *lua = CLua::Instance();
             lua->execute("msg(\"Startup folder is not a Maildir!\");" );
         }
     }
@@ -231,68 +179,25 @@ int main(int argc, char *argv[])
      */
     if ( !eval.empty() )
     {
+        CLua *lua = CLua::Instance();
         lua->execute( eval.c_str() );
 
         if ( exit_after_eval )
+        {
             lua->execute( "exit()" );
+        }
     }
+
 
     /**
      * Now enter our event-loop
      */
-    while (true)
-    {
-        int key = CInput::Instance()->get_char();
+    obj->run_event_loop();
 
-        if (key == ERR)
-        {
-            /*
-             * Timeout - so we go round the loop again.
-             */
-            lua->execute("on_idle()");
-        }
-        else
-        {
-            /**
-             * The human-readable version of the key which has
-             * been pressed.
-             *
-             * i.e. Ctrl-r -> ^R.
-             */
-            const char *name = CScreen::get_key_name( key );
-
-            /**
-             * See if we can handle it via our keyboard map, or
-             * the luau function "on_key".
-             */
-            if ( (!lua->on_key( name )) && ( !lua->on_keypress(name)) )
-            {
-                /**
-                 * Both calls failed, so show a message.
-                 */
-                std::string foo = "msg(\"Unbound key: ";
-                foo += std::string(name) + "\");";
-                lua->execute(foo);
-            }
-        }
-
-        screen.refresh_display();
-    }
 
     /**
-     * We've been terminated.
-     *
-     * We call the lua-version of exit, because this will run our
-     * on-exit hook/function, after ending the curses window(ing)
-     * routine(s).
-     *
+     * Cleanup.
      */
-    lua->execute("exit()");
-
-    /**
-     * This code is never reached as the Lua "exit" primitive
-     * will call on_exit, if defined, then terminate.
-     */
-    exit(0);
-    return 0;
+    delete(obj);
+    return -3;
 }
