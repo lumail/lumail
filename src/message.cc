@@ -1030,11 +1030,15 @@ std::string CMessage::get_body()
     if ( m_message == NULL )
         message_parse();
 
-
+    /**
+     * The body we'll return back to the caller.  May be empty if there
+     * is no text/plain part in the message.
+     */
     std::string result;
 
+
     /**
-     * Create an iterator
+     * Create an iterator to walk over the MIME-parts of the message.
      */
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
     const char *content = NULL;
@@ -1049,68 +1053,109 @@ std::string CMessage::get_body()
         if ( ( GMIME_IS_OBJECT( part ) ) &&
              ( GMIME_IS_PART(part) ) )
         {
+
             /**
              * Get the content-type
              */
             GMimeContentType *content_type = g_mime_object_get_content_type (part);
 
             /**
-             * Get the content if it has the right type.
+             * If the content-type is NULL then text/plain is implied.
+             *
+             * If the content-type is text/plain AND we don't yet have any content
+             * then we can try to get it from this part.
+             *
              */
-            if ( g_mime_content_type_is_type (content_type, "text", "plain") &&
+            if ( ( ( content_type == NULL ) ||
+                   ( g_mime_content_type_is_type (content_type, "text", "plain") ) ) &&
                  ( content == NULL ) )
             {
-                /**
-                 * The previous version of this code was just:
-                 *
-                 *   content = g_mime_object_to_string(part);
-                 *
-                 * Unfortunately that was prefixed with the MIME-type, etc.
-                 * So we have this complex code instead.
-                 */
 
                 /**
-                 * Get the "data".
+                 * We'll use iconv to conver the content to UTF-8 if that is
+                 * not already the correct set.
                  */
-                GMimeDataWrapper *c = g_mime_part_get_content_object( GMIME_PART(part) );
+                const char *charset;
+                char *converted;
+                gint64 len;
 
                 /**
-                 * Write it to a memory-based stream..
+                 * Get the content, and setup a memory-stream to read it.
                  */
-                GMimeStream *stream = g_mime_stream_mem_new();
-                g_mime_data_wrapper_write_to_stream( c, stream );
+                GMimeDataWrapper *c    = g_mime_part_get_content_object( GMIME_PART(part) );
+                GMimeStream *memstream = g_mime_stream_mem_new();
 
                 /**
-                 * Now steal the data from the memory that stream
-                 * has allocated.
+                 * Get the size + data.
                  */
-                GByteArray *b = ((GMimeStreamMem *)stream)->buffer;
-
+                len = g_mime_data_wrapper_write_to_stream( c, memstream );
+                guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
 
                 /**
-                 * We must truncate it.  Or bad things will happen.
+                 * If we have a character set, and it isn't UTF-8 ...
                  */
-                const char *data = (const char *)b->data;
-                size_t size = b->len;
-
-                if ( ( size > 0 ) && ( data != NULL ) )
+                if ( (charset = g_mime_content_type_get_parameter(content_type, "charset")) != NULL &&
+                     (strcasecmp(charset, "utf-8") != 0))
                 {
-                    result = (data);
-                    result = result.substr(0,size);
-                }
 
-                g_object_unref(stream);
+                    /**
+                     * Convert it.
+                     */
+                    iconv_t cv;
+
+                    cv = g_mime_iconv_open ("UTF-8", charset);
+                    converted = g_mime_iconv_strndup(cv, (const char *) b, len );
+                    if (converted != NULL)
+                    {
+                        /**
+                         * If that succeeded update our return value with it.
+                         */
+                        result = (const char*)converted;
+                        g_free(converted);
+                    }
+                    else
+                    {
+                        /**
+                         * The conversion failed; but if we have data return
+                         * it regardless.
+                         */
+                        if ( b != NULL )
+                            result = (const char *)b;
+                    }
+                    g_mime_iconv_close(cv);
+                }
+                else
+                {
+                    /**
+                     * No character set found, or it is already UTF-8.
+                     *
+                     * Save the result.
+                     */
+                    if ( b != NULL )
+                        result = ((const char *)b );
+                }
+                g_mime_stream_close(memstream);
+                g_object_unref(memstream);
             }
         }
     }
     while (g_mime_part_iter_next (iter));
 
+    /**
+     * Cleanup.
+     */
     g_mime_part_iter_free (iter);
 
 
     /**
      * If the result is empty then we'll just revert to reading the
-     * message, and skipping the header.
+     * message body, and returning that.
+     *
+     * This can happen if:
+     *
+     *  * There is no text/plain part of the message.
+     *  * The message is bogus.
+     *
      */
     if ( result.empty() )
     {
@@ -1141,6 +1186,9 @@ std::string CMessage::get_body()
         }
     }
 
+    /**
+     * All done.
+     */
     return( result );
 }
 
