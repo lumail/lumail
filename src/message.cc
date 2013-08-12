@@ -713,41 +713,6 @@ std::string CMessage::format( std::string fmt )
 
 
 /**
- * TODO: Document.
- */
-static char *
-escape_string (const char *string)
-{
-    const char *start, *inptr;
-    GString *str;
-    char *buf;
-
-    str = g_string_new ("");
-
-    inptr = string;
-
-    while (*inptr)
-    {
-        start = inptr;
-        while (*inptr && *inptr != '"')
-            inptr++;
-
-        g_string_append_len (str, start, inptr - start);
-        if (*inptr == '"')
-        {
-            g_string_append (str, "\\\"");
-            inptr++;
-        }
-    }
-
-    buf = str->str;
-    g_string_free (str, FALSE);
-
-    return buf;
-}
-
-
-/**
  * Retrieve the value of a given header from the message.
  */
 std::string CMessage::header( std::string name )
@@ -757,18 +722,37 @@ std::string CMessage::header( std::string name )
      */
     message_parse();
 
-    const char *str  = NULL;
-    char *nstr       = NULL;
+    /**
+     * The result.
+     */
+    std::string result;
 
-    if ((str = g_mime_object_get_header ((GMimeObject *) m_message, name.c_str() ) ) )
-        nstr = escape_string (str);
-    else
-        nstr = g_strdup ("");
+    /**
+     * Get the header.
+     */
+    const char *str = g_mime_object_get_header ((GMimeObject *) m_message, name.c_str() );
 
-    char *decoded = g_mime_utils_header_decode_text ( nstr );
-    std::string result( decoded );
-    g_free (nstr);
-    g_free (decoded);
+    /**
+     * If that succeeded, decode it.
+     */
+    if ( str != NULL )
+    {
+        char *decoded = g_mime_utils_header_decode_text ( str );
+
+#ifdef LUMAIL_DEBUG
+        std::string dm = "CMessage::header('";
+        dm +=  (( str != NULL ) ? str : "NULL" );
+        dm += "') -> '";
+        dm +=  (( decoded != NULL ) ? decoded : "NULL" );
+        dm += "'" ;
+        DEBUG_LOG( dm );
+#endif
+
+
+        result = decoded;
+
+        g_free (decoded);
+    }
     return( result );
 }
 
