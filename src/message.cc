@@ -1458,7 +1458,7 @@ void CMessage::open_message( const char *filename )
 }
 
 /**
- * Close the mesasge.
+ * Close the message.
  */
 void CMessage::close_message()
 {
