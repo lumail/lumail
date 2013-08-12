@@ -870,6 +870,12 @@ if ( is_directory( os.getenv( "HOME" ) .. "/.lumail.d" ) ) then
 end
 
 
+
+--
+-- Store persistant history.
+--
+history_file( os.getenv( "HOME" ) .. "/.lumail.history" );
+
 ---
 --
 --   Further primitives which are not included here are documented

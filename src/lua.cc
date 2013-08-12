@@ -64,6 +64,7 @@ struct CLuaMapping primitive_list[] =
     {"exec", "Execute an external command.", (lua_CFunction) exec },
     {"exit", "Exit lumail.", (lua_CFunction) exit },
     {"help", "Show brief help for primitives.", (lua_CFunction) show_help },
+    {"history_file", "The path to log history to.", (lua_CFunction) history_file },
     {"log_message", "Add a message to the debug-log.", (lua_CFunction) log_message },
     {"mime_type", "Get the MIME-type for a file.", (lua_CFunction) mime_type },
     {"msg", "Write a message to the status-area.", (lua_CFunction) msg },

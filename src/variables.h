@@ -50,6 +50,7 @@ int display_filter(lua_State * L);
 int editor(lua_State * L);
 int from(lua_State * L);
 int global_mode(lua_State * L);
+int history_file(lua_State *L);
 int index_format(lua_State * L);
 int index_limit(lua_State * L);
 int mail_filter(lua_State * L);

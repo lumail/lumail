@@ -67,6 +67,7 @@ CGlobal::CGlobal()
     set_variable( "completion_chars",new std::string("'\"( ,") );
     set_variable( "editor",          new std::string("/usr/bin/vim") );
     set_variable( "global_mode",     new std::string("maildir"));
+    set_variable( "history_file",    new std::string( "" ) );
     set_variable( "index_format",    new std::string( "[$FLAGS] $FROM - $SUBJECT" ) );
     set_variable( "index_limit",     new std::string("all") );
     set_variable( "maildir_format",  new std::string( "$CHECK - $PATH" ) );

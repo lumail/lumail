@@ -32,6 +32,7 @@
 #include <dirent.h>
 
 #include "debug.h"
+#include "history.h"
 #include "variables.h"
 #include "global.h"
 #include "file.h"
@@ -175,6 +176,29 @@ int global_mode(lua_State * L)
     return( get_set_string_variable(L, "global_mode" ) );
 }
 
+/**
+ * Get, or set, the history persistance file.
+ */
+int history_file(lua_State *L )
+{
+    /**
+     * This is valid only if we're setting the limit.
+     */
+    const char *str = lua_tostring(L, -1);
+
+    int ret =  get_set_string_variable( L, "history_file" );
+
+    /**
+     * Load the history.
+     */
+    if ( str != NULL )
+    {
+        CHistory *history = CHistory::Instance();
+        history->set_file( str );
+    }
+
+    return( ret );
+}
 /**
  * Get, or set, the index-format
  */
