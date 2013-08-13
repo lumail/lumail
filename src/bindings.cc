@@ -826,6 +826,31 @@ int jump_index_to(lua_State * L)
     return (0);
 }
 
+/**
+ * Jump to the oldest new mail that can be found. If none is found
+ * do nothing. This method expects that the message list is sorted by age
+ */
+int jump_index_to_new(lua_State *L)
+{
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
+
+    for (unsigned int pos = 0; pos<messages->size(); ++pos)
+    {
+        if (messages->at(pos)->is_new())
+        {
+            lua_pushinteger(L,pos);
+            global->set_selected_message(pos);
+            break;
+        }
+    }
+
+    /**
+     * We've changed messages, so reset the current position.
+     */
+    global->set_message_offset(0);
+    return (0);
+}
 
 /**
  * scroll to the folder matching the pattern.
@@ -1165,25 +1190,6 @@ int newmail_displayed(lua_State * L)
 
     lua_pushboolean(L,false);
     return(0);
-}
-
-/**
- * give me the position of the first unread message.
- * This method expects that the message list is sorted by age
- */
-int first_new_message(lua_State *L)
-{
-    CGlobal *global = CGlobal::Instance();
-    std::vector<CMessage *> *messages = global->get_messages();
-    for (unsigned int pos = 0; pos<messages->size(); ++pos)
-    {
-        if (messages->at(pos)->is_new())
-        {
-            lua_pushinteger(L,pos);
-            return (1);
-        }
-    }
-    return (0);
 }
 
 /**
