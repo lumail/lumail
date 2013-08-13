@@ -3,6 +3,9 @@ lumail (0.18) stable; urgency=low
   * New release, fixing several bugs.
   * References here are to the Github repository issue tracker:
     https://github.com/skx/lumail/issues
+     - #113 - Added primitives for better iteration:
+	      http://lumail.org/lua/index_offset.html
+	      http://lumail.org/lua/maildir_offset.html
      - #111 - Better header-file usage to avoid compilation failure(s).
      - #110 - Allow search_next() to reuse prior input.
      - #107 - Some messages are displayed with corruption
@@ -20,6 +23,10 @@ lumail (0.18) stable; urgency=low
       http://lumail.org/lua/mail_filter.html
    * Renamed "message_filter" to display_filter():
       http://lumail.org/lua/display_filter.html
+   * Allow "--rcfile path" to be specified multiple times.
+   * Updated the prompts used by the reply() and compose() primitives.
+   * New hook: on_mode_change():
+      http://lumail.org/lua/on_mode_change.html
 
  -- Steve Kemp <steve@steve.org.uk>  Mon, 12 Aug 2013 22:55:22 +0000
 
