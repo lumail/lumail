@@ -593,7 +593,7 @@ void CGlobal::set_variable( std::string name, std::string *value )
     m_variables[ name ] = value;
 
     /**
-     * if global_mode is changed to index mode call hook
+     * if global_mode is changed from maildir to index call this hook
      */
     if (name == "global_mode" && *value == "index" && *current == "maildir")
         index_hook();
@@ -625,7 +625,7 @@ std::unordered_map<std::string, std::string *> CGlobal::get_variables()
 }
 
 /**
- * This method is responsible for invoking the Lua index hook()
+ * This method is responsible for invoking the Lua index_hook()
  */
 void CGlobal::index_hook()
 {

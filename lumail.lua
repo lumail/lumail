@@ -305,6 +305,20 @@ function jump_to_start()
    end
 end
 
+--
+-- This function is called when the global_mode is changed from maildir to index
+--
+-- Here it is used to jump to the oldest unread message if there is at least one
+--
+-- otherwise it will jump to the last message in the selected folders
+--
+function index_hook()
+    if (newmail_displayed()) then
+        jump_index_to(first_new_message());
+    else
+        jump_to_end();
+    end
+end
 
 --
 -- This function is called when a message is displayed.

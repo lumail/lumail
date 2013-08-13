@@ -1147,7 +1147,8 @@ int is_new(lua_State *L)
 }
 
 /**
- * are there unread messages in currently displayed
+ * are there unread messages displayed in the currently selected
+ * folders
  */
 int newmail_displayed(lua_State * L)
 {
@@ -1157,15 +1158,19 @@ int newmail_displayed(lua_State * L)
     {
         if (msg->is_new())
         {
-            lua_pushboolean(L,1);
+            lua_pushboolean(L,true);
             return (1);
         }
     }
 
-    lua_pushboolean(L,0);
+    lua_pushboolean(L,false);
     return(0);
 }
 
+/**
+ * give me the position of the first unread message.
+ * This methids expects that the message list is sorted by age
+ */
 int first_new_message(lua_State *L)
 {
     CGlobal *global = CGlobal::Instance();
