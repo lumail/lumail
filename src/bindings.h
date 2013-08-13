@@ -20,6 +20,11 @@
 #define _bindings_h  1
 
 #include "lua.h"
+
+
+/**
+ * Forward declaration of class.
+ */
 class CMessage;
 
 
@@ -98,9 +103,6 @@ int editor(lua_State *L);
 /* get/set completion characters */
 int completion_chars(lua_State *L);
 
-/* get/set the message-filter.*/
-int message_filter(lua_State *L);
-
 /* get/set the index-format. */
 int index_format(lua_State *L);
 
@@ -142,7 +144,7 @@ int count_lines(lua_State *L);
 int is_new(lua_State *L);
 int newmail_displayed(lua_State *L);
 int first_new_message(lua_State *L);
-int mark_new(lua_State *L);
+int mark_unread(lua_State *L);
 int mark_read(lua_State *L);
 int header(lua_State *L);
 
@@ -159,6 +161,7 @@ int msg(lua_State * L);
 int mime_type(lua_State *L);
 
 /* prompt for input */
+int choose_string(lua_State * L);
 int prompt(lua_State * L);
 int prompt_chars(lua_State *L);
 int prompt_yn(lua_State * L);

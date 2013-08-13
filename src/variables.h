@@ -46,16 +46,17 @@ int unread_message_colour(lua_State *L);
  * General getters/setters.
  */
 int completion_chars(lua_State *L);
+int display_filter(lua_State * L);
 int editor(lua_State * L);
 int from(lua_State * L);
 int global_mode(lua_State * L);
+int history_file(lua_State *L);
 int index_format(lua_State * L);
 int index_limit(lua_State * L);
+int mail_filter(lua_State * L);
 int maildir_format(lua_State *L );
 int maildir_limit(lua_State * L);
 int maildir_prefix(lua_State * L);
-int message_filter(lua_State * L);
-int msg_filter(lua_State * L);
 int sendmail_path(lua_State * L);
 int sent_mail(lua_State * L);
 int sort(lua_State * L);

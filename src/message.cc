@@ -20,25 +20,21 @@
 #include <stdint.h>
 #include <cstdlib>
 #include <iostream>
-#include <iostream>
 #include <fstream>
 #include <sstream>
+#include <fcntl.h>
 #include <string>
 #include <unistd.h>
 #include <pcrecpp.h>
-#include <mimetic/mimetic.h>
-
 #include <sys/stat.h>
 #include <time.h>
 
 #include "debug.h"
 #include "file.h"
+#include "global.h"
 #include "lua.h"
 #include "message.h"
-#include "global.h"
 
-using namespace std;
-using namespace mimetic;
 
 
 /**
@@ -47,10 +43,10 @@ using namespace mimetic;
 CMessage::CMessage(std::string filename)
 {
     m_path         = filename;
-    m_me           = NULL;
     m_date         = 0;
     m_time_cache   = 0;
     m_read         = false;
+    m_message      = NULL;
 
 #ifdef LUMAIL_DEBUG
     std::string dm = "CMessage::CMessage(";
@@ -66,11 +62,8 @@ CMessage::CMessage(std::string filename)
  */
 CMessage::~CMessage()
 {
-    if ( m_me != NULL )
-    {
-        delete( m_me );
-        m_me = NULL;
-    }
+    close_message();
+
 
 #ifdef LUMAIL_DEBUG
     std::string dm = "CMessage::~CMessage(";
@@ -83,34 +76,21 @@ CMessage::~CMessage()
 
 
 /**
- * Parse the message, through the filter if present.
+ * Parse the message.
  *
- * This uses on_message_parse, if present.
+ * This will use the Lua-defined `mail_filter` if it is defined.
  */
 void CMessage::message_parse()
 {
-#ifdef LUMAIL_DEBUG
-    {
-        std::string dm = "CMessage::message_parse() - start";
-        DEBUG_LOG( dm );
-    }
-#endif
-
-    if ( m_me != NULL )
-    {
-#ifdef LUMAIL_DEBUG
-        std::string dm = "CMessage::message_parse() - early exit";
-        DEBUG_LOG( dm );
-#endif
+    if ( m_message != NULL )
         return;
-    }
 
 
     /**
-     * See if we're filtering the message of the body.
+     * See if we're filtering the body.
      */
     CGlobal     *global = CGlobal::Instance();
-    std::string *filter = global->get_variable("msg_filter");
+    std::string *filter = global->get_variable("mail_filter");
     std::string *tmp    = global->get_variable("tmp");
 
     if ( ( filter != NULL ) && ( ! ( filter->empty() ) ) )
@@ -142,11 +122,6 @@ void CMessage::message_parse()
         cmd += "|";
         cmd += *filter;
 
-#ifdef LUMAIL_DEBUG
-        std::string dm = "CMessage::message_parse( filter: " + cmd + ");";
-        DEBUG_LOG( dm );
-#endif
-
         /**
          * Run through the popen dance.
          */
@@ -168,17 +143,15 @@ void CMessage::message_parse()
             /**
              * Write the body out to disk.
              */
-            ofstream on;
-            on.open(filename, ios::binary);
+            std::ofstream on;
+            on.open(filename, std::ios::binary);
             on.write(tmp.c_str(), tmp.size());
             on.close();
 
             /**
-             * Construct a message from the filter-output.
+             * Parse the message, from the temporary file.
              */
-            ifstream file( filename );
-            m_me = new MimeEntity(file);
-
+            open_message( filename );
             /**
              * Don't leak the filename
              */
@@ -187,20 +160,11 @@ void CMessage::message_parse()
         }
     }
 
-
-
-
     /**
-     * Open the file for parsing.
+     * OK we've not parsed the message, and there is not filter present.
+     * so parse the literal message.
      */
-    ifstream file( path().c_str());
-    m_me = new MimeEntity(file);
-
-#ifdef LUMAIL_DEBUG
-    std::string dm = "CMessage::message_parse() - end";
-    DEBUG_LOG( dm );
-#endif
-
+    open_message( path().c_str() );
 }
 
 
@@ -256,13 +220,6 @@ std::string CMessage::flags()
      */
     std::sort( flags.begin(), flags.end());
     flags.erase(std::unique(flags.begin(), flags.end()), flags.end());
-
-    /**
-     * Pad: TODO - This shouldn't be here.  It is just for $FLAGS
-     * in the index_format.
-     */
-    while( (int)strlen(flags.c_str()) < 4 )
-        flags += " ";
 
     return flags;
 }
@@ -600,47 +557,15 @@ bool CMessage::mark_read()
 /**
  * Mark the message as unread.
  */
-bool CMessage::mark_new()
+bool CMessage::mark_unread()
 {
-    /*
-     * Get the current path, and build a new one.
-     */
-    std::string c_path = path();
-    std::string n_path = "";
-
-    size_t offset = std::string::npos;
-
-    /**
-     * If we find /cur/ in the path then rename to be /new/
-     */
-    if ( ( offset = c_path.find( "/cur/" ) )!= std::string::npos )
+    if ( has_flag( 'S' ) )
     {
-        /**
-         * Path component before /cur/ + after it.
-         */
-        std::string before = c_path.substr(0,offset);
-        std::string after  = c_path.substr(offset+strlen("/cur/"));
-
-        n_path = before + "/new/" + after;
-        if ( rename(  c_path.c_str(), n_path.c_str() )  == 0 )
-        {
-            path( n_path );
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    else
-    {
-        /**
-         * The file is old, but not in the old folder.  That means we need to
-         * add "N" to the flag-component of the path.
-         */
-        add_flag( 'N' );
+        remove_flag( 'S' );
         return true;
     }
+
+    return false;
 }
 
 
@@ -692,7 +617,7 @@ std::string CMessage::format( std::string fmt )
              */
             if ( strcmp(std_name[i] , "TO" ) == 0 )
             {
-                body = to();
+                body = header( "To" );
             }
             if ( strcmp(std_name[i] , "DATE" ) == 0 )
             {
@@ -700,15 +625,21 @@ std::string CMessage::format( std::string fmt )
             }
             if ( strcmp(std_name[i] , "FROM" ) == 0 )
             {
-                body += from();
+                body += header( "From" );
             }
             if ( strcmp(std_name[i] , "FLAGS" ) == 0 )
             {
+                /**
+                 * Ensure the flags are suitably padded.
+                 */
                 body = flags();
+
+                while( body.size() < 4 )
+                    body += " ";
             }
             if ( strcmp(std_name[i] , "SUBJECT" ) == 0 )
             {
-                body = subject();
+                body = header( "Subject" );
             }
             if ( strcmp(std_name[i],  "YEAR" ) == 0 )
             {
@@ -748,7 +679,7 @@ std::string CMessage::format( std::string fmt )
 
 
 /**
- * Get the value of a header.
+ * Retrieve the value of a given header from the message.
  */
 std::string CMessage::header( std::string name )
 {
@@ -757,21 +688,41 @@ std::string CMessage::header( std::string name )
      */
     message_parse();
 
-    Header & h = m_me->header();
-    if (h.hasField(name ) )
-        return( h.field(name).value() );
-    else
-        return "";
+    /**
+     * The result.
+     */
+    std::string result;
+
+    /**
+     * Get the header.
+     */
+    const char *str = g_mime_object_get_header ((GMimeObject *) m_message, name.c_str() );
+
+    /**
+     * If that succeeded, decode it.
+     */
+    if ( str != NULL )
+    {
+        char *decoded = g_mime_utils_header_decode_text ( str );
+
+#ifdef LUMAIL_DEBUG
+        std::string dm = "CMessage::header('";
+        dm +=  (( str != NULL ) ? str : "NULL" );
+        dm += "') -> '";
+        dm +=  (( decoded != NULL ) ? decoded : "NULL" );
+        dm += "'" ;
+        DEBUG_LOG( dm );
+#endif
+
+
+        result = decoded;
+
+        g_free (decoded);
+    }
+    return( result );
 }
 
 
-/**
- * Get the sender of the message.
- */
-std::string CMessage::from()
-{
-    return( header( "From" ) );
-}
 
 /**
  * Get the date of the message.
@@ -1018,143 +969,177 @@ time_t CMessage::get_date_field()
 }
 
 
-
 /**
- * Get the recipient of the message.
+ * Get the body from our message, using GMime.
  */
-std::string CMessage::to()
+std::string CMessage::get_body()
 {
-    return( header( "To" ) );
-}
-
-
-/**
- * Get the subject of the message.
- */
-std::string CMessage::subject()
-{
-    return( header( "Subject" ) );
-}
-
-
-/**
- * Given a MIME-part retrieve the appropriate part from it.
- */
-std::string CMessage::getMimePart(mimetic::MimeEntity* pMe, std::string mtype )
-{
-    mimetic::Header& h = pMe->header();
+    /**
+     * Parse the message, if not yet done.
+     */
+    if ( m_message == NULL )
+        message_parse();
 
     /**
-     * If the header matches then return.
+     * The body we'll return back to the caller.  May be empty if there
+     * is no text/plain part in the message.
      */
-    std::string enc = h.contentTransferEncoding().mechanism();
-    std::string type= h.contentType().str();
+    std::string result;
 
-    if ( type.find( mtype ) != std::string::npos )
-    {
-        std::string body = (pMe)->body();
-        std::string decoded;
-
-        if (strcasecmp(enc.c_str(), "quoted-printable" ) == 0 )
-        {
-            mimetic::QP::Decoder qp;
-            decode(body.begin(), body.end(), qp, std::back_inserter(decoded));
-            return( decoded );
-        }
-        if (strcasecmp(enc.c_str(), "base64" ) == 0 )
-        {
-            mimetic::Base64::Decoder b64;
-            decode(body.begin(), body.end(), b64, std::back_inserter(decoded));
-            return( decoded );
-        }
-
-        return( body );
-    }
 
     /**
-     * Iterate over any sub-parts.
+     * Create an iterator to walk over the MIME-parts of the message.
      */
-    mimetic::MimeEntityList& parts = pMe->body().parts();
-    mimetic::MimeEntityList::iterator mbit = parts.begin(), meit = parts.end();
-    for(; mbit != meit; ++mbit)
+    GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
+    const char *content = NULL;
+
+    /**
+     * Iterate over the message.
+     */
+    do
     {
+        GMimeObject *part  = g_mime_part_iter_get_current (iter);
 
-        /**
-         * get the encoding and content-type.
-         */
-        mimetic::Header& mh = (*mbit)->header();
-        std::string enc = mh.contentTransferEncoding().mechanism();
-        std::string type= mh.contentType().str();
-
-        /**
-         * See if the part matches directly.
-         */
-        if ( type.find( mtype ) != std::string::npos )
+        if ( ( GMIME_IS_OBJECT( part ) ) &&
+             ( GMIME_IS_PART(part) ) )
         {
-            std::string body = (*mbit)->body();
-            std::string decoded;
-
-            if (strcasecmp(enc.c_str(), "quoted-printable" ) == 0 )
-            {
-                mimetic::QP::Decoder qp;
-                decode(body.begin(), body.end(), qp, std::back_inserter(decoded));
-                return( decoded );
-            }
-            if (strcasecmp(enc.c_str(), "base64" ) == 0 )
-            {
-                mimetic::Base64::Decoder b64;
-                decode(body.begin(), body.end(), b64, std::back_inserter(decoded));
-                return( decoded );
-            }
-
-            return( body );
-        }
-
-        /**
-         * There are also nested parts because MIME is nasty.
-         */
-        mimetic::MimeEntityList& np = (*mbit)->body().parts();
-        mimetic::MimeEntityList::iterator bit = np.begin(), eit = np.end();
-        for(; bit != eit; ++bit)
-        {
-            /**
-             * See if a nested entry matches.
-             */
-            mimetic::Header& nh = (*bit)->header();
 
             /**
-             * Get the encoding-type and the content-type.
+             * Get the content-type
              */
-            std::string enc = nh.contentTransferEncoding().mechanism();
-            std::string type= nh.contentType().str();
+            GMimeContentType *content_type = g_mime_object_get_content_type (part);
 
             /**
-             * If the type matches, then return the (decoded?) body
+             * If the content-type is NULL then text/plain is implied.
+             *
+             * If the content-type is text/plain AND we don't yet have any content
+             * then we can try to get it from this part.
+             *
              */
-            if ( type.find( mtype ) != std::string::npos )
+            if ( ( ( content_type == NULL ) ||
+                   ( g_mime_content_type_is_type (content_type, "text", "plain") ) ) &&
+                 ( content == NULL ) )
             {
-                std::string body = (*bit)->body();
-                std::string decoded;
 
-                if (strcasecmp(enc.c_str(), "quoted-printable" ) == 0 )
-                {
-                    mimetic::QP::Decoder qp;
-                    decode(body.begin(), body.end(), qp, std::back_inserter(decoded));
-                    return( decoded );
-                }
-                if (strcasecmp(enc.c_str(), "base64" ) == 0 )
+                /**
+                 * We'll use iconv to conver the content to UTF-8 if that is
+                 * not already the correct set.
+                 */
+                const char *charset;
+                char *converted;
+                gint64 len;
+
+                /**
+                 * Get the content, and setup a memory-stream to read it.
+                 */
+                GMimeDataWrapper *c    = g_mime_part_get_content_object( GMIME_PART(part) );
+                GMimeStream *memstream = g_mime_stream_mem_new();
+
+                /**
+                 * Get the size + data.
+                 */
+                len = g_mime_data_wrapper_write_to_stream( c, memstream );
+                guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
+
+                /**
+                 * If we have a character set, and it isn't UTF-8 ...
+                 */
+                if ( (charset = g_mime_content_type_get_parameter(content_type, "charset")) != NULL &&
+                     (strcasecmp(charset, "utf-8") != 0))
                 {
 
-                    mimetic::Base64::Decoder b64;
-                    decode(body.begin(), body.end(), b64, std::back_inserter(decoded));
-                    return( decoded );
-                }
+                    /**
+                     * Convert it.
+                     */
+                    iconv_t cv;
 
-                return( body );
+                    cv = g_mime_iconv_open ("UTF-8", charset);
+                    converted = g_mime_iconv_strndup(cv, (const char *) b, len );
+                    if (converted != NULL)
+                    {
+                        /**
+                         * If that succeeded update our return value with it.
+                         */
+                        result = (const char*)converted;
+                        g_free(converted);
+                    }
+                    else
+                    {
+                        /**
+                         * The conversion failed; but if we have data return
+                         * it regardless.
+                         */
+                        if ( b != NULL )
+                            result = std::string((const char *)b, len );
+                    }
+                    g_mime_iconv_close(cv);
+                }
+                else
+                {
+                    /**
+                     * No character set found, or it is already UTF-8.
+                     *
+                     * Save the result.
+                     */
+                    if ( b != NULL )
+                        result = std::string((const char *)b, len );
+                }
+                g_mime_stream_close(memstream);
+                g_object_unref(memstream);
             }
         }
     }
-    return "";
+    while (g_mime_part_iter_next (iter));
+
+    /**
+     * Cleanup.
+     */
+    g_mime_part_iter_free (iter);
+
+
+    /**
+     * If the result is empty then we'll just revert to reading the
+     * message body, and returning that.
+     *
+     * This can happen if:
+     *
+     *  * There is no text/plain part of the message.
+     *  * The message is bogus.
+     *
+     */
+    if ( result.empty() )
+    {
+
+        bool in_header = true;
+
+        std::ifstream input ( path() );
+        if ( input.is_open() )
+        {
+            while( input.good() )
+            {
+                std::string line;
+                getline( input, line );
+
+                if ( in_header )
+                {
+                    if ( line.length() <= 0 )
+                        in_header = false;
+                }
+                else
+                {
+                    result += line;
+                    result += "\n";
+                }
+
+            }
+            input.close();
+        }
+    }
+
+    /**
+     * All done.
+     */
+    return( result );
 }
 
 
@@ -1172,20 +1157,10 @@ std::vector<std::string> CMessage::body()
 
 
     /**
-     * Attempt to get the body from the message.
-     *
-     * Note: We handle nested MIME-entities here.
-     *
+     * Attempt to get the body from the message as one
+     * long line.
      */
-    std::string body = getMimePart( m_me, "text/plain" );
-
-    /**
-     * If we failed to find a part of text/plain then just grab the whole damn
-     * thing and hope for the best.
-     */
-    if ( body.empty() )
-        body = m_me->body();
-
+    std::string body = get_body();
 
     /**
      * At this point we have a std::string containing the body.
@@ -1195,7 +1170,7 @@ std::vector<std::string> CMessage::body()
      *
      */
     CGlobal     *global = CGlobal::Instance();
-    std::string *filter = global->get_variable("message_filter");
+    std::string *filter = global->get_variable("display_filter");
     std::string *tmp    = global->get_variable("tmp");
 
     if ( ( filter != NULL ) && ( ! ( filter->empty() ) ) )
@@ -1216,8 +1191,8 @@ std::vector<std::string> CMessage::body()
          */
         (void)(fd);
 
-        ofstream on;
-        on.open(filename, ios::binary);
+        std::ofstream on;
+        on.open(filename, std::ios::binary);
         on.write(body.c_str(), body.size());
         on.close();
 
@@ -1289,26 +1264,35 @@ std::vector<std::string> CMessage::attachments()
      */
     message_parse();
 
+    /**
+     * Create an iterator
+     */
+    GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
 
     /**
-     * Iterate over every part.
+     * Iterate over the message.
      */
-    mimetic::MimeEntityList& parts = m_me->body().parts();
-    mimetic::MimeEntityList::iterator mbit = parts.begin(), meit = parts.end();
-    for(; mbit != meit; ++mbit)
+    do
     {
-        MimeEntity *p = *mbit;
-        const mimetic::ContentDisposition& cd = p->header().contentDisposition();
-        string fn = cd.param("filename");
+        GMimeObject *part  = g_mime_part_iter_get_current (iter);
 
-        /**
-         * Store the filename.
-         */
-        if ( ! fn.empty() )
+        if ( ( GMIME_IS_OBJECT( part ) ) &&
+             ( GMIME_IS_PART(part) ) )
         {
-            paths.push_back( fn );
+            const char *filename = g_mime_object_get_content_disposition_parameter(part, "filename");
+            const char *name =  g_mime_object_get_content_type_parameter(part, "name");
+
+            if ( filename != NULL )
+                paths.push_back( filename );
+            else
+                if ( name != NULL )
+                    paths.push_back( name );
         }
+
     }
+    while (g_mime_part_iter_next (iter));
+
+    g_mime_part_iter_free (iter);
 
     return( paths );
 }
@@ -1319,7 +1303,6 @@ std::vector<std::string> CMessage::attachments()
  */
 bool CMessage::save_attachment( int offset, std::string output_path )
 {
-    bool ret = false;
 
     /**
      * Ensure the message has been read.
@@ -1327,58 +1310,96 @@ bool CMessage::save_attachment( int offset, std::string output_path )
     message_parse();
 
     /**
-     * Iterate over every part.
+     * Did we succeed?
      */
-    mimetic::MimeEntityList& parts = m_me->body().parts();
-    mimetic::MimeEntityList::iterator mbit = parts.begin(), meit = parts.end();
-    int m_off = 1;
+    bool ret = false;
 
-    for(; mbit != meit; ++mbit)
+    /**
+     * Create an iterator
+     */
+    GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
+
+    /**
+     * The current object number.
+     */
+    int count = 1;
+
+    /**
+     * Iterate over the message.
+     */
+    do
     {
-        MimeEntity *p = *mbit;
-        const mimetic::ContentDisposition& cd = p->header().contentDisposition();
-        string fn = cd.param("filename");
+        GMimeObject *part  = g_mime_part_iter_get_current (iter);
 
-        if ( ! fn.empty() )
+        /**
+         * Get the filename - only one of these will succeed.
+         */
+        const char *filename = g_mime_object_get_content_disposition_parameter(part, "filename");
+        const char *name =  g_mime_object_get_content_type_parameter(part, "name");
+
+        /**
+         * We'll set this to the filename, if one succeeded.
+         */
+        const char *nm = NULL;
+
+        if ( filename != NULL )
+            nm = filename;
+        else
+            if ( name != NULL )
+                nm = name;
+
+        /**
+         * OK did we get a filename?  If so test to see if it is the correct
+         * attachment number, and if so save it.
+         */
+        if ( nm != NULL )
         {
-            if ( m_off == offset )
+
+            /**
+             * Are we saving this one?
+             */
+            if ( count == offset )
             {
-                std::string body = p->body();
-                std::string decoded;
+                FILE *fp = NULL;
 
-                /**
-                 * Encoding type.
-                 */
-                std::string enc = p->header().contentTransferEncoding().mechanism();
-
-
-                std::ofstream myfile;
-                myfile.open(output_path, ios::binary|ios::out);
-
-
-                if (strcasecmp(enc.c_str(), "quoted-printable" ) == 0 )
+                if ( (fp = fopen (output_path.c_str(), "wt" ) ) == NULL )
                 {
-                    mimetic::QP::Decoder qp;
-                    decode(body.begin(), body.end(), qp, std::back_inserter(decoded));
+                    CLua *lua = CLua::Instance();
+                    lua->execute( "alert('failed to open');" );
                 }
-                if (strcasecmp(enc.c_str(), "base64" ) == 0 )
+                else
                 {
 
-                    mimetic::Base64::Decoder b64;
-                    decode(body.begin(), body.end(), b64, std::back_inserter(decoded));
+                    GMimeDataWrapper *content;
+                    GMimeStream *ostream;
+
+                    content = g_mime_part_get_content_object ((GMimePart *) part);
+                    if(!content) /* part is incomplete. */
+                    {
+                        CLua *lua = CLua::Instance();
+                        lua->execute( "alert('content was incomplete');" );
+                    }
+
+                    ostream = g_mime_stream_file_new (fp);
+
+
+                    g_mime_data_wrapper_write_to_stream (content, ostream);
+
+                    g_object_unref(content);
+                    g_object_unref(ostream);
                 }
-
-
-                myfile << decoded;
-                myfile.close();
-
-                ret = true;
             }
-            m_off += 1;
+
+            /**
+             * We've found an attachment so bump the count.
+             */
+            count += 1;
         }
 
     }
+    while (g_mime_part_iter_next (iter));
 
+    g_mime_part_iter_free (iter);
 
     return( ret );
 }
@@ -1410,4 +1431,228 @@ bool CMessage::on_read_message()
      * Hook invoked.
      */
     return true;
+}
+
+
+/**
+ * Open & parse the message.
+ */
+void CMessage::open_message( const char *filename )
+{
+    GMimeParser *parser;
+    GMimeStream *stream;
+    int fd;
+
+    if ((fd = open( filename, O_RDONLY, 0)) == -1)
+        return;
+
+    stream = g_mime_stream_fs_new (fd);
+
+    parser = g_mime_parser_new_with_stream (stream);
+    g_object_unref (stream);
+
+    m_message = g_mime_parser_construct_message (parser);
+    g_object_unref (parser);
+}
+
+/**
+ * Close the message.
+ */
+void CMessage::close_message()
+{
+    if ( m_message != NULL )
+    {
+        g_object_unref( m_message );
+        m_message = NULL;
+    }
+}
+
+
+
+/**
+ * Update a basic email, on-disk, to include the named attachments.
+ */
+void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> attachments )
+{
+    /**
+     * When this code is called we have a file, on-disk, which contains something like:
+     *
+     *    To: foo@bar.com
+     *    Subject: moi
+     *    From: me@example.com
+     *
+     *    Body text..
+     *    More text..
+     *
+     *    --
+     *    Sig
+     *
+     *
+     * We also have a vector of filenames which should be added as attachments
+     * to this mail.
+     *
+     * If there are no attachments then we can return immediately, otherwise
+     * we need to add the attachments to the mail - which means parsing it,
+     * adding the attachments, and returning an (updated) file.
+     *
+     */
+
+
+    /**
+     * Simplest case - if there are no attachments we merely return.
+     *
+     * This means our message is non-MIME.  Ideally we shouldn't return,
+     * instead we should always proceed, as this will encode our outgoing
+     * headers, etc.
+     *
+     * For the moment I've left this early termination in place because
+     * I'm loathe to make too many changes to this code while it is still
+     * new.  It will become apparent pretty quickly if I've made the
+     * wrong choice.
+     *
+     */
+    if ( attachments.size() < 1 )
+    {
+        DEBUG_LOG( "CMessage::add_attachments_to_mail - No attachments for this message" );
+        return;
+    }
+
+    GMimeMessage *message;
+    GMimeParser  *parser;
+    GMimeStream  *stream;
+    int fd;
+
+
+
+    if ((fd = open ( filename, O_RDONLY, 0)) == -1)
+    {
+        DEBUG_LOG( "CMessage::add_attachments_to_mail - Failed to open filename for reading" );
+        return;
+    }
+
+    stream = g_mime_stream_fs_new (fd);
+
+    parser = g_mime_parser_new_with_stream (stream);
+    g_object_unref (stream);
+
+    message = g_mime_parser_construct_message (parser);
+    g_object_unref (parser);
+
+
+    GMimeMultipart *multipart;
+    GMimePart *attachment;
+    GMimeDataWrapper *content;
+
+    /**
+     * Create a new multipart message.
+     */
+    multipart = g_mime_multipart_new();
+    GMimeContentType *type = g_mime_content_type_new ("multipart", "mixed");
+    g_mime_object_set_content_type (GMIME_OBJECT (multipart), type);
+
+
+    GMimeContentType *new_type;
+    GMimeObject *mime_part;
+
+    mime_part = g_mime_message_get_mime_part (message);
+    new_type = g_mime_content_type_new_from_string ("text/plain; charset=UTF-8");
+    g_mime_object_set_content_type (mime_part, new_type);
+
+    /**
+     * first, add the message's toplevel mime part into the multipart
+     */
+    g_mime_multipart_add (multipart, g_mime_message_get_mime_part (message));
+
+    /**
+     * now set the multipart as the message's top-level mime part
+     */
+    g_mime_message_set_mime_part (message,(GMimeObject*) multipart);
+
+    std::vector<std::string>::iterator it;
+    for (it = attachments.begin(); it != attachments.end(); ++it)
+    {
+        std::string name = (*it);
+
+        if ((fd = open (name.c_str(), O_RDONLY)) == -1)
+        {
+            DEBUG_LOG( "CMessage::add_attachments_to_mail - Failed to open attachment" );
+            return;
+        }
+
+        stream = g_mime_stream_fs_new (fd);
+
+        /**
+         * the stream isn't encoded, so just use DEFAULT
+         */
+        content = g_mime_data_wrapper_new_with_stream (stream, GMIME_CONTENT_ENCODING_DEFAULT);
+
+        g_object_unref (stream);
+
+        /**
+         * if you knew the mime-type of the file, you could use that instead
+         * of application/octet-stream
+         */
+        attachment = g_mime_part_new_with_type ("application", "octet-stream");
+        g_mime_part_set_content_object (attachment, content);
+        g_object_unref (content);
+
+        /**
+         * set the filename?
+         */
+        g_mime_part_set_filename (attachment, CFile::basename(name).c_str());
+
+        /**
+         * NOTE: We might want to base64 encode this for transport...
+         *
+         * NOTE: if you want o get really fancy, you could use
+         * g_mime_part_get_best_content_encoding()
+         * to calculate the most efficient encoding algorithm to use.
+         */
+        g_mime_part_set_content_encoding (attachment, GMIME_CONTENT_ENCODING_BASE64);
+
+
+        /**
+         * Add the attachment to the multipart
+         */
+        g_mime_multipart_add (multipart, (GMimeObject*)attachment);
+        g_object_unref (attachment);
+    }
+
+
+    /**
+     * now that we've finished referencing the multipart directly (the message still
+     * holds it's own ref) we can unref it.
+     */
+     g_object_unref (multipart);
+
+     /**
+      * Output the updated message.  First pick a tmpfile.
+      *
+      * NOTE: We must use a temporary file.  If we attempt to overwrite the
+      * input file we'll get corruption, due to GMime caching.
+      */
+     CGlobal *global   = CGlobal::Instance();
+     std::string *tmp  = global->get_variable( "tmp" );
+     char tmpfile[256] = { '\0' };
+     snprintf( tmpfile, sizeof(tmpfile)-1, "%s/mytemp.XXXXXX", tmp->c_str() );
+
+     /**
+      * Write out the updated message.
+      */
+     FILE *f = NULL;
+     if ((f = fopen ( tmpfile,"wb")) == NULL)
+     {
+         DEBUG_LOG( "CMessage::add_attachments_to_mail - Failed to open tmpfile" );
+         return;
+     }
+     GMimeStream *ostream = g_mime_stream_file_new (f);
+     g_mime_object_write_to_stream ((GMimeObject *) message, ostream);
+     g_object_unref(ostream);
+
+     /**
+      * Now rename the temporary file over the top of the input
+      * message.
+      */
+     CFile::delete_file( filename );
+     CFile::move( tmpfile, filename );
 }

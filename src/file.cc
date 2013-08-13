@@ -22,9 +22,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
-#include <cstdlib>
 #include <string.h>
-#include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -129,6 +127,20 @@ bool CFile::delete_file(std::string path)
 
 
 /**
+ * Get the basename of a file.
+ */
+std::string CFile::basename( std::string path )
+{
+    size_t offset = path.find_last_of( "/" );
+
+    if ( offset != std::string::npos )
+        return( path.substr( offset + 1 ) );
+    return
+        path;
+}
+
+
+/**
  * Copy a file.
  */
 void CFile::copy( std::string src, std::string dst )
@@ -154,6 +166,8 @@ void CFile::copy( std::string src, std::string dst )
 
     isrc.close();
     odst.close();
+
+    assert( CFile::exists( dst ) );
 }
 
 
@@ -171,7 +185,12 @@ bool CFile::move( std::string src, std::string dst )
     DEBUG_LOG( dm );
 #endif
 
-    return( rename( src.c_str(), dst.c_str() ) == 0 );
+    int ret = rename( src.c_str(), dst.c_str() );
+
+    assert( CFile::exists(dst) );
+    assert( !CFile::exists(src) );
+
+    return( ret == 0 );
 }
 
 

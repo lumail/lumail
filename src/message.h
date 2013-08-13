@@ -22,16 +22,16 @@
 
 #include <string>
 #include <stdint.h>
-#include <mimetic/mimetic.h>
+#include <glib.h>
+#include <glib/gstdio.h>
+#include <gmime/gmime.h>
 
 
 /**
  * A class for working with a single message.
  *
- * The constructor will be passed a reference to a filename, which is assumed to be file
- * beneath a Maildir folder.
- *
- * Using the mimetic library we'll parse the message and make various fields available.
+ * The constructor will be passed a reference to a filename, which is assumed
+ * to be file beneath a Maildir folder.
  *
  */
 class CMessage
@@ -101,9 +101,9 @@ public:
     bool is_new();
 
     /**
-     * Mark a message as new.
+     * Mark a message as unread.
      */
-    bool mark_new();
+    bool mark_unread();
 
     /**
      * Mark a message as read.
@@ -116,29 +116,14 @@ public:
     const time_t mtime();
 
     /**
-     * get a header from the message.
+     * Retrieve the value of a given header from the message.
      */
     std::string header( std::string name);
-
-    /**
-     * Get the sender of the message.
-     */
-    std::string from();
 
     /**
      * Get the date of the message.
      */
     std::string date(TDate fmt = EFULL);
-
-    /**
-     * Get the recipient of the message.
-     */
-    std::string to();
-
-    /**
-     * Get the subject of the message.
-     */
-    std::string subject();
 
     /**
      * Get the body of the message, as a vector of lines.
@@ -167,7 +152,32 @@ public:
      */
     bool on_read_message();
 
+    /**
+     * Update a basic email, on-disk, to include the named attachments.
+     */
+    static void add_attachments_to_mail(char *filename, std::vector<std::string> attachments );
+
 private:
+
+    /**
+     * The GMime message object.
+     */
+    GMimeMessage *m_message;
+
+    /**
+     * Parse the message with gmime.
+     */
+    void open_message( const char *filename );
+
+    /**
+     * Cleanup the message with gmime.
+     */
+    void close_message();
+
+    /**
+     * Get the text/plain part of the message, via GMime.
+     */
+    std::string get_body();
 
     /**
      * Have we invoked the on_read_message hook?
@@ -181,29 +191,23 @@ private:
 
     /**
      * Parse the message, if that hasn't been done.
-     * Uses "on_message_parse" if that is defined.
+     *
+     * NOTE:  This calls the Lua-defined "msg_filter" if that is set.
      */
     void message_parse();
 
-    /**
-     * Attempt to find a MIME-part inside our message of the given type.
-     */
-    std::string getMimePart(mimetic::MimeEntity* pMe, std::string mtype );
 
     /**
      * The file we represent.
      */
     std::string m_path;
 
-    /**
-     * MIME Entity object for this message.
-     */
-    mimetic::MimeEntity *m_me;
 
     /**
      * Cached time/date object.
      */
     time_t m_date;
+
 
 };
 

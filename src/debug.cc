@@ -54,8 +54,9 @@ CDebug::CDebug()
     }
 }
 
+
 /**
- * Set the logfile.
+ * Set the path to the file we're logging to.
  */
 void CDebug::set_logfile( std::string path )
 {
@@ -63,7 +64,7 @@ void CDebug::set_logfile( std::string path )
 }
 
 /**
- * Get the date/time stamp.
+ * Get the current date/time-stamp.
  */
 std::string CDebug::timestamp()
 {
@@ -80,8 +81,10 @@ std::string CDebug::timestamp()
 
 /**
  * Add a new string to the log.
+ *
+ * NOTE: The string might be buffered and not hit the disk immediately.
  */
-void CDebug::debug( std::string line)
+void CDebug::debug( std::string line, bool force)
 {
 #ifdef LUMAIL_DEBUG
 
@@ -95,14 +98,14 @@ void CDebug::debug( std::string line)
      * Add the string to the pending list of log-messages
      * which should be written.
      */
-    m_pending.push_back( timestamp() + "  " + line );
+    m_pending.push_back( timestamp() + " " + line );
 
 
     /**
      * If the pending list of logfile-entries to write is
-     * "small" then return.
+     * "small" then return, unless we're forcing the write.
      */
-    if ( m_pending.size() < 50 )
+    if ( ( m_pending.size() < 50 ) && ( force == false ) )
         return;
 
     /**

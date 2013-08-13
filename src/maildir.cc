@@ -18,7 +18,6 @@
 
 #include <vector>
 #include <algorithm>
-
 #include <sstream>
 #include <iomanip>
 #include <sys/types.h>
@@ -178,8 +177,24 @@ int CMaildir::all_messages()
  */
 std::string CMaildir::name()
 {
-    unsigned found = m_path.find_last_of("/");
-    return (m_path.substr(found + 1));
+    /**
+     * Since maildirs can never be renamed we can safely cache the
+     * name locally.
+     */
+    static std::string cache = "";
+    if ( !cache.empty() )
+        return( cache );
+
+    /**
+     * Find the last part of the name.
+     */
+    size_t found = m_path.find_last_of("/");
+    if ( found != std::string::npos )
+        cache = m_path.substr(found + 1);
+    else
+        cache = m_path;
+
+    return (cache);
 }
 
 
@@ -411,7 +426,11 @@ std::string CMaildir::message_in(std::string path, bool is_new)
     /**
      * Filename is: $time.xxx.$hostname.
      */
-    std::string hostname = mimetic::gethostname();
+
+    char host[1024] = {'\0'};
+    gethostname(host, sizeof(host)-1);
+    std::string hostname( host );
+
     time_t current_time = time(NULL);
 
     /**

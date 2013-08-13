@@ -19,7 +19,6 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
-#include <algorithm>
 #include <fstream>
 #include <string.h>
 #include <cctype>
@@ -27,12 +26,14 @@
 #include <dirent.h>
 #include <cursesw.h>
 
+#include "debug.h"
 #include "file.h"
 #include "input.h"
 #include "lang.h"
 #include "lua.h"
 #include "global.h"
 #include "history.h"
+#include "maildir.h"
 #include "message.h"
 #include "screen.h"
 

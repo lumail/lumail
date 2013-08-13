@@ -56,6 +56,11 @@ public:
      */
     void clear();
 
+    /**
+     * Set the file to write history from.
+     */
+    void set_file( const char *path );
+
 protected:
 
     /**
@@ -77,6 +82,11 @@ private:
      * List of history items.
      */
     std::vector<std::string> m_history;
+
+    /**
+     * The file to write to, may be unset.
+     */
+    std::string m_filename;
 
 };
 

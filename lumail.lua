@@ -189,11 +189,11 @@ headers = { "$TO", "$FROM", "$DATE", "$SUBJECT" }
 -- can make an email nicer to view, and it can be used with a
 -- setting such as this one:
 --
---     message_filter( "t-prot -cmekatlS --bigq --pgp-move-vrf -Mmutt -L/etc/t-prot/footers -A/etc/t-prot/ads" )
+--     display_filter( "t-prot -cmekatlS --bigq --pgp-move-vrf -Mmutt -L/etc/t-prot/footers -A/etc/t-prot/ads" )
 --
 -- The following would convert each message to be 100% upper-case
 --
---     message_filter( "tr '[:lower:]' '[:upper:]'" )
+--     display_filter( "tr '[:lower:]' '[:upper:]'" )
 --
 -- Note: There is no filter by default.
 --
@@ -537,19 +537,46 @@ end
 
 
 
---
--- Search for the next folder/message which matches the entered pattern.
---
-function search_next()
-   x = prompt("/:" )
-   m = global_mode()
 
-   if ( string.find( m, "maildir" ) ) then
-      scroll_maildir_to( x )
-   elseif (string.find(m, "index" ) ) then
-      scroll_index_to( x )
-   else
-      msg( "search_next() not implemented for mode:" .. m )
+
+do
+   --
+   -- This variable is used to allow searches to reuse prior input.
+   --
+   local search_next_prev = ''
+
+   --
+   -- Search for the next folder/message which matches the entered pattern.
+   --
+   function search_next()
+
+      --
+      -- The search pattern.
+      --
+      x = prompt("/:" )
+
+      --
+      -- If the user didn't enter anything then use the previous input.
+      --
+      if ( x == "" ) then x = search_next_prev end
+
+      --
+      -- Save the input for the next search.
+      --
+      search_next_prev = x
+
+      --
+      --  Get the mode, so we can do the correct kind of searching.
+      --
+      m = global_mode()
+
+      if ( string.find( m, "maildir" ) ) then
+         scroll_maildir_to( x )
+      elseif (string.find(m, "index" ) ) then
+         scroll_index_to( x )
+      else
+         msg( "search_next() not implemented for mode:" .. m )
+      end
    end
 end
 
@@ -869,6 +896,12 @@ if ( is_directory( os.getenv( "HOME" ) .. "/.lumail.d" ) ) then
    load_directory( os.getenv( "HOME" ) .. "/.lumail.d" )
 end
 
+
+
+--
+-- Store persistant history.
+--
+history_file( os.getenv( "HOME" ) .. "/.lumail.history" )
 
 ---
 --

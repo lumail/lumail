@@ -8,8 +8,7 @@ debian/lumail/
 debian/lumail-dbg/
 debian/*.substvars
 debian/*.log
-tests/history_tests
-tests/file_tests
-util/lumail-dump
+util/add-attachments-to-simple-mail
+util/dump-mime
 obj.debug
 obj.release

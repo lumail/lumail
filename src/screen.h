@@ -21,7 +21,7 @@
 
 #include <vector>
 #include <unordered_map>
-#include "maildir.h"
+
 
 /**
  * This class contains simple functions relating to the screen-handling.

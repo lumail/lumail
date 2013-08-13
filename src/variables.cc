@@ -32,9 +32,11 @@
 #include <dirent.h>
 
 #include "debug.h"
-#include "variables.h"
-#include "global.h"
 #include "file.h"
+#include "global.h"
+#include "history.h"
+#include "maildir.h"
+#include "variables.h"
 
 
 /**
@@ -144,6 +146,14 @@ int completion_chars(lua_State *L)
 }
 
 /**
+ * Get, or set, the display-filter.
+ */
+int display_filter(lua_State * L)
+{
+    return( get_set_string_variable(L, "display_filter" ) );
+}
+
+/**
  * Get, or set, the editor
  */
 int editor(lua_State * L)
@@ -167,6 +177,29 @@ int global_mode(lua_State * L)
     return( get_set_string_variable(L, "global_mode" ) );
 }
 
+/**
+ * Get, or set, the history persistance file.
+ */
+int history_file(lua_State *L )
+{
+    /**
+     * This is valid only if we're setting the limit.
+     */
+    const char *str = lua_tostring(L, -1);
+
+    int ret =  get_set_string_variable( L, "history_file" );
+
+    /**
+     * Load the history.
+     */
+    if ( str != NULL )
+    {
+        CHistory *history = CHistory::Instance();
+        history->set_file( str );
+    }
+
+    return( ret );
+}
 /**
  * Get, or set, the index-format
  */
@@ -199,6 +232,16 @@ int index_limit(lua_State * L)
     }
 
     return ret;
+}
+
+
+
+/**
+ * Get or set the mail filter.
+ */
+int mail_filter(lua_State * L)
+{
+    return( get_set_string_variable(L, "mail_filter" ) );
 }
 
 /**
@@ -258,21 +301,6 @@ int maildir_prefix(lua_State * L)
     return( get_set_string_variable(L, "maildir_prefix" ) );
 }
 
-/**
- * Get, or set, the message-filter.
- */
-int message_filter(lua_State * L)
-{
-    return( get_set_string_variable(L, "message_filter" ) );
-}
-
-/**
- * Get or set the msg filter.
- */
-int msg_filter(lua_State * L)
-{
-    return( get_set_string_variable(L, "msg_filter" ) );
-}
 
 /**
  * Get, or set, the sendmail path.
@@ -354,22 +382,4 @@ std::string get_editor()
     return( "vim" );
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

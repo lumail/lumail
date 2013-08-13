@@ -17,6 +17,8 @@
  */
 
 
+#include <fstream>
+
 #include "debug.h"
 #include "history.h"
 
@@ -77,6 +79,17 @@ void CHistory::add( std::string entry)
 {
     m_history.push_back(entry);
     assert( m_history.size() > 0 );
+
+    /**
+     * If we've got a filename append the history.
+     */
+    if ( ! m_filename.empty() )
+    {
+        std::fstream fs;
+        fs.open ( m_filename,  std::fstream::out | std::fstream::app);
+        fs << entry << "\n";
+        fs.close();
+    }
 }
 
 
@@ -87,4 +100,37 @@ void CHistory::clear()
 {
     m_history.clear();
     assert( m_history.size() == 0 );
+}
+
+/**
+ * Set the file.
+ */
+void CHistory::set_file( const char *filename)
+{
+    /**
+     * Clear the current history.
+     */
+    m_history.clear();
+    assert( m_history.size() == 0 );
+
+    /**
+     * Save the filename
+     */
+    m_filename = filename;
+
+    /**
+     * Load the prior history
+     */
+    std::ifstream input ( m_filename );
+    if ( input.is_open() )
+    {
+        while( input.good() )
+        {
+            std::string line;
+            getline( input, line );
+
+            m_history.push_back( line );
+        }
+        input.close();
+    }
 }
