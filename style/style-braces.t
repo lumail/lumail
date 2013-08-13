@@ -46,7 +46,7 @@ sub checkFile
     return if ( !-f $file );
 
     # We only care about .cc + .h
-    return  unless( $file =~ /\.(cc|h)$/ );
+    return unless ( $file =~ /\.(cc|h)$/ );
 
     #
     #  Count hanging braces characters
@@ -68,7 +68,8 @@ sub countBraces
       die "Cannot open $file - $!";
     foreach my $line (<$handle>)
     {
-        chomp( $line );
+        chomp($line);
+
         # Look for lines with trailing "{".
         if ( $line =~ /\{$/ )
         {
@@ -76,12 +77,12 @@ sub countBraces
 
             $line =~ s/[ \t]//g;
 
-            if ( length( $line ) != 1 )
+            if ( length($line) != 1 )
             {
                 print "Bogus Line: $orig\n";
             }
 
-            $count += ( length( $line ) - 1 );
+            $count += ( length($line) - 1 );
 
         }
     }
