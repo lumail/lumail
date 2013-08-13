@@ -492,7 +492,7 @@ int prompt(lua_State * L)
  */
 int prompt_yn(lua_State * L)
 {
-    const char *def_prompt = "y/n?>";
+    const char *def_prompt = "(y)es, (n)o?";
 
     /**
      * Get the prompt string.
@@ -1929,7 +1929,7 @@ int compose(lua_State * L)
         /**
          * Use prompt_chars() to get the input
          */
-        lua_pushstring(L,"Send mail?  y/n/a>" );
+        lua_pushstring(L,"Send mail: (y)es, (n)o, or (a)dd an attachment?" );
         lua_pushstring(L,"anyANY");
 
         ret = prompt_chars(L);
@@ -2234,7 +2234,7 @@ int reply(lua_State * L)
         /**
          * Use prompt_chars() to get the input
          */
-        lua_pushstring(L,"Send mail?  y/n/a>" );
+        lua_pushstring(L,"Send mail: (y)es, (n)o, or (a)dd an attachment?" );
         lua_pushstring(L,"anyANY");
 
         ret = prompt_chars(L);
