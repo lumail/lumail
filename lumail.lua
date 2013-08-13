@@ -306,21 +306,6 @@ function jump_to_start()
 end
 
 --
--- This function is called when the global_mode is changed from maildir to index
---
--- Here it is used to jump to the oldest unread message if there is at least one
---
--- otherwise it will jump to the last message in the selected folders
---
-function index_hook()
-    if (newmail_displayed()) then
-        jump_index_to_new()
-    else
-        jump_to_end()
-    end
-end
-
---
 -- This function is called when a message is displayed.
 --
 -- The argument is the path to the message on-disk.
@@ -447,8 +432,15 @@ end
 -- (Selected folders will be displayed with a "[x]" next to them in maildir-mode.)
 --
 function index()
-   global_mode( "index" )
-   clear()
+    old_mode = global_mode()
+    old_mode = string.lower( old_mode );
+    global_mode( "index" );
+    if (string.find(old_mode, 'maildir') and newmail_displayed()) then
+        jump_index_to_new()
+    else
+        jump_to_end()
+    end
+    clear();
 end
 
 
@@ -605,8 +597,7 @@ end
 function open_folder()
    clear_selected_folders()
    add_selected_folder()
-   global_mode( "index" )
-   clear()
+   index()
 end
 
 
