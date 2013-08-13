@@ -107,11 +107,13 @@ int completion_chars(lua_State *L);
 int index_format(lua_State *L);
 
 /* scroll up/down the maildir list. */
+int maildir_offset(lua_State *L);
 int scroll_maildir_down(lua_State * L);
 int scroll_maildir_up(lua_State * L);
 int jump_maildir_to(lua_State *L);
 
 /* scroll up/down the index. */
+int index_offset(lua_State *L);
 int scroll_index_down(lua_State * L);
 int scroll_index_up(lua_State * L);
 int jump_index_to(lua_State * L);

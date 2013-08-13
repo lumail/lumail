@@ -124,6 +124,7 @@ struct CLuaMapping primitive_list[] =
 /**
  * Index functions
  */
+    {"index_offset", "Get the current offset into the index.", (lua_CFunction) index_offset},
     {"jump_index_to", "Jump to the named offset in the message list.", (lua_CFunction) jump_index_to },
     {"scroll_index_down", "Scroll the message list down.", (lua_CFunction) scroll_index_down },
     {"scroll_index_up", "Scroll the message list up.", (lua_CFunction) scroll_index_up },
@@ -156,6 +157,7 @@ struct CLuaMapping primitive_list[] =
     {"current_maildir", "Return the path to the current Maildir.", (lua_CFunction) current_maildir },
     {"current_maildirs", "Get the names of all currently visible Maildirs.", (lua_CFunction) current_maildirs },
     {"jump_maildir_to", "Jump the Maildir list to the given offset.", (lua_CFunction) jump_maildir_to },
+    {"maildir_offset", "Get the current offset into the maildir list.", (lua_CFunction) maildir_offset},
     {"maildirs_matching", "Return the maildirs matching the given regexp.", (lua_CFunction) maildirs_matching },
     {"scroll_maildir_down", "Scroll the maildir list down.", (lua_CFunction) scroll_maildir_down },
     {"scroll_maildir_to", "Scroll the maildir to the next entry matching the given regexp.", (lua_CFunction) scroll_maildir_to },
