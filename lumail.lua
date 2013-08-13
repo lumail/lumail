@@ -435,12 +435,28 @@ function index()
     old_mode = global_mode()
     old_mode = string.lower( old_mode );
     global_mode( "index" );
-    if (string.find(old_mode, 'maildir') and newmail_displayed()) then
+    if (string.find(old_mode, 'maildir')) then
         jump_index_to_new()
     else
         jump_to_end()
     end
     clear();
+end
+
+--
+-- This function will jump to the oldest unread message or the newest
+-- if all are read
+--
+function jump_index_to_new()
+    count = count_messages()
+    i = 0
+    while( i < count ) do
+        jump_index_to( i )
+        if is_new() then
+            break
+        end
+        i = i + 1
+   end
 end
 
 

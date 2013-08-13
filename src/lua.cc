@@ -139,8 +139,6 @@ struct CLuaMapping primitive_list[] =
     {"delete", "Delete the current message.", (lua_CFunction) delete_message },
     {"header", "Retrieve the value of the given header from the current message.", (lua_CFunction) header },
     {"is_new", "Is the current message new/unread?", (lua_CFunction) is_new },
-    {"newmail_displayed", "Is at least one of the currently displayed messages new?", (lua_CFunction) newmail_displayed },
-    {"jump_index_to_new", "Jump to the oldest new message", jump_index_to_new },
     {"mark_unread", "Mark the current message as unread.", (lua_CFunction) mark_unread },
     {"mark_read", "Mark the current message as old/read.", (lua_CFunction) mark_read },
     {"reply", "Reply to the current message.", (lua_CFunction) reply },

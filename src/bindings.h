@@ -146,10 +146,6 @@ int mark_unread(lua_State *L);
 int mark_read(lua_State *L);
 int header(lua_State *L);
 
-/* index mode helpers */
-int newmail_displayed(lua_State *L);
-int jump_index_to_new(lua_State *L);
-
 /* delete a message */
 int delete_message(lua_State *L);
 
