@@ -437,8 +437,6 @@ function index()
     global_mode( "index" );
     if (string.find(old_mode, 'maildir')) then
         jump_index_to_new()
-    else
-        jump_to_end()
     end
     clear();
 end
