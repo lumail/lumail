@@ -704,6 +704,19 @@ int scroll_maildir_up(lua_State * L)
 
 
 /**
+ * Get the current offset into the maildir list.
+ */
+int maildir_offset(lua_State *L)
+{
+    CGlobal *global = CGlobal::Instance();
+    int offset = global->get_selected_folder();
+
+    lua_pushinteger(L, offset);
+    return (1);
+}
+
+
+/**
  * Jump to the given entry in the maildir list.
  */
 int jump_maildir_to(lua_State * L)
@@ -805,6 +818,19 @@ int scroll_message_up(lua_State *L)
 
     global->set_message_offset(cur);
     return (0);
+}
+
+
+/**
+ * Get the current offset into the message-list.
+ */
+int index_offset(lua_State *L)
+{
+    CGlobal *global = CGlobal::Instance();
+    int offset = global->get_selected_message();
+
+    lua_pushinteger(L, offset);
+    return (1);
 }
 
 
