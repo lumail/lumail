@@ -174,7 +174,42 @@ int from(lua_State * L)
  */
 int global_mode(lua_State * L)
 {
-    return( get_set_string_variable(L, "global_mode" ) );
+    /**
+     * This is valid only if we're setting the limit.
+     */
+    const char *new_mode = lua_tostring(L, -1);
+
+    CGlobal *global           = CGlobal::Instance();
+    std::string *current_mode = global->get_variable("global_mode");
+
+    /**
+     * If the mode is changing we'll call a function.
+     */
+    std::string invoke = "";
+
+    if ( ( current_mode != NULL ) &&
+         ( ! current_mode->empty() ) &&
+         ( new_mode != NULL ) &&
+         ( strcmp( new_mode , current_mode->c_str() ) != 0 ) )
+    {
+        invoke = "on_mode_change( \"";
+        invoke += *current_mode;
+        invoke += "\", \"";
+        invoke += new_mode;
+        invoke += "\");";
+    }
+
+    /**
+     * Get the current mode.
+     */
+    int ret = get_set_string_variable( L, "global_mode" );
+
+    if ( !invoke.empty() )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( invoke );
+    }
+    return( ret );
 }
 
 /**
