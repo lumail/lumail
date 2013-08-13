@@ -129,6 +129,20 @@ bool CFile::delete_file(std::string path)
 
 
 /**
+ * Get the basename of a file.
+ */
+std::string CFile::basename( std::string path )
+{
+    size_t offset = path.find_last_of( "/" );
+
+    if ( offset != std::string::npos )
+        return( path.substr( offset + 1 ) );
+    return
+        path;
+}
+
+
+/**
  * Copy a file.
  */
 void CFile::copy( std::string src, std::string dst )

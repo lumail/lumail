@@ -28,6 +28,7 @@
 #include <unistd.h>
 #include <pcrecpp.h>
 
+
 #include <sys/stat.h>
 #include <time.h>
 
@@ -1601,7 +1602,7 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
         /**
          * set the filename?
          */
-        g_mime_part_set_filename (attachment, basename (name.c_str()));
+        g_mime_part_set_filename (attachment, CFile::basename(name).c_str());
 
         /**
          * NOTE: We might want to base64 encode this for transport...

@@ -58,6 +58,12 @@ public:
 
 
     /**
+     * Get the basename of a file.
+     */
+    static std::string basename( std::string path );
+
+
+    /**
      * Copy a file.
      */
     static void copy( std::string src, std::string dest );
