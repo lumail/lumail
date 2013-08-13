@@ -27,6 +27,8 @@ class CLua;
 class CScreen;
 
 
+#include <vector>
+
 
 /**
  * This class is the driver for our whole application.
@@ -47,9 +49,9 @@ public:
     ~CLumail();
 
     /**
-     * Load our standard init files, also the named file if it is present.
+     * Load our standard init files, also the extra files if they're present.
      */
-    bool load_init_files( std::string path = "");
+    bool load_init_files( std::vector<std::string> extra );
 
     /**
      * Open the given maildir.

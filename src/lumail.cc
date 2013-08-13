@@ -76,7 +76,7 @@ CLumail::~CLumail()
 /**
  * Load our standard init files, also the named file if it is present.
  */
-bool CLumail::load_init_files( std::string path )
+bool CLumail::load_init_files( std::vector<std::string> extra )
 {
     /**
      * Number of init-files we've loaded.
@@ -102,10 +102,15 @@ bool CLumail::load_init_files( std::string path )
     /**
      * If we have any init file specified then load it up too.
      */
-    if ((!path.empty()) && ( CFile::exists( path ) ) )
+    std::vector<std::string>::iterator it;
+    for (it = extra.begin(); it != extra.end(); ++it)
     {
-        if ( m_lua->load_file(path.c_str()) )
-            init += 1;
+        std::string path = (*it);
+        if (CFile::exists( path ))
+        {
+            if ( m_lua->load_file(path.c_str()) )
+                init += 1;
+        }
     }
 
     if ( init > 0 )

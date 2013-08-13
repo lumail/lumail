@@ -43,12 +43,12 @@ int main(int argc, char *argv[])
      */
     int c;
 
-    bool version         = false; /* show version */
-    bool exit_after_eval = false; /* exit after eval? */
-    std::string rcfile   = "";    /* load rc file */
-    std::string eval     = "";    /* code to evaluate */
-    std::string folder   = "";    /* open folder */
-    std::string debug    = "";    /* debug-log */
+    bool version         = false;      /* show version */
+    bool exit_after_eval = false;      /* exit after eval? */
+    std::vector<std::string> rcfile;   /* load startup file(s) */
+    std::string eval     = "";         /* code to evaluate */
+    std::string folder   = "";         /* open folder */
+    std::string debug    = "";         /* debug-log */
 
     while (1)
     {
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
             folder = optarg;
             break;
         case 'r':
-            rcfile = optarg;
+            rcfile.push_back(optarg);
             break;
         case 'v':
             version = true;
