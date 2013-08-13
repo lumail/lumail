@@ -1169,7 +1169,7 @@ int newmail_displayed(lua_State * L)
 
 /**
  * give me the position of the first unread message.
- * This methids expects that the message list is sorted by age
+ * This method expects that the message list is sorted by age
  */
 int first_new_message(lua_State *L)
 {
