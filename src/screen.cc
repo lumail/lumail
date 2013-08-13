@@ -19,7 +19,6 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
-#include <algorithm>
 #include <fstream>
 #include <string.h>
 #include <cctype>

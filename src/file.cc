@@ -22,9 +22,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
-#include <cstdlib>
 #include <string.h>
-#include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
