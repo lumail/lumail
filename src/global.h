@@ -170,6 +170,11 @@ public:
      */
     std::unordered_map<std::string, std::string *> get_variables();
 
+    /**
+     * method to invoke the Lua index_hook
+     */
+    void index_hook();
+
 
 protected:
 

@@ -582,17 +582,24 @@ void CGlobal::set_variable( std::string name, std::string *value )
 {
     assert( ! name.empty() );
 
-    /**
-     * Free the current value, if one is set.
-     */
     std::string *current = m_variables[name];
-    if ( current != NULL )
-        delete( current );
 
     /**
      * Store new value.
      */
     m_variables[ name ] = value;
+
+    /**
+     * if global_mode is changed to index mode call hook
+     */
+    if (name == "global_mode" && *value == "index" && *current == "maildir")
+        index_hook();
+
+    /**
+     * Free the current value, if one is set.
+     */
+    if ( current != NULL )
+        delete( current );
 
 #ifdef LUMAIL_DEBUG
     std::string dm = "Set variable named '" ;
@@ -612,4 +619,13 @@ void CGlobal::set_variable( std::string name, std::string *value )
 std::unordered_map<std::string, std::string *> CGlobal::get_variables()
 {
     return( m_variables );
+}
+
+/**
+ * This method is responsible for invoking the Lua index hook()
+ */
+void CGlobal::index_hook()
+{
+    CLua *lua = CLua::Instance();
+    lua->execute("index_hook();");
 }

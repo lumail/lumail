@@ -140,6 +140,8 @@ int count_lines(lua_State *L);
 
 /* message helpers */
 int is_new(lua_State *L);
+int newmail_displayed(lua_State *L);
+int first_new_message(lua_State *L);
 int mark_new(lua_State *L);
 int mark_read(lua_State *L);
 int header(lua_State *L);

@@ -1057,7 +1057,7 @@ int count_lines(lua_State * L)
 /**
  * Is the named/current message new?
  */
-int is_new(lua_State * L)
+int is_new(lua_State *L)
 {
     /**
      * Get the path (optional).
@@ -1088,6 +1088,40 @@ int is_new(lua_State * L)
     return( ret );
 }
 
+/**
+ * are there unread messages in currently displayed
+ */
+int newmail_displayed(lua_State * L)
+{
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
+    for (CMessage *msg : *messages)
+    {
+        if (msg->is_new())
+        {
+            lua_pushboolean(L,1);
+            return (1);
+        }
+    }
+
+    lua_pushboolean(L,0);
+    return(0);
+}
+
+int first_new_message(lua_State *L)
+{
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
+    for (unsigned int pos = 0; pos<messages->size(); ++pos)
+    {
+        if (messages->at(pos)->is_new())
+        {
+            lua_pushinteger(L,pos);
+            return (1);
+        }
+    }
+    return (0);
+}
 
 /**
  * Mark the message as read.
