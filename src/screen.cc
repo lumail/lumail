@@ -27,6 +27,7 @@
 #include <dirent.h>
 #include <cursesw.h>
 
+#include "debug.h"
 #include "file.h"
 #include "input.h"
 #include "lang.h"
