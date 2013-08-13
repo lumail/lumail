@@ -314,9 +314,9 @@ end
 --
 function index_hook()
     if (newmail_displayed()) then
-        jump_index_to(first_new_message());
+        jump_index_to(first_new_message())
     else
-        jump_to_end();
+        jump_to_end()
     end
 end
 
