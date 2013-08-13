@@ -22,8 +22,13 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
-#include "maildir.h"
-#include "message.h"
+
+/**
+ * Forward declaration of classes.
+ */
+class CMaildir;
+class CMessage;
+
 
 /**
  * A singleton class to store global data:

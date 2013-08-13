@@ -20,6 +20,11 @@
 #define _bindings_h  1
 
 #include "lua.h"
+
+
+/**
+ * Forward declaration of class.
+ */
 class CMessage;
 
 

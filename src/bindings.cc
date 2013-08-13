@@ -39,6 +39,7 @@
 #include "file.h"
 #include "input.h"
 #include "maildir.h"
+#include "message.h"
 #include "lang.h"
 #include "lua.h"
 #include "global.h"

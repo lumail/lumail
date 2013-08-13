@@ -32,10 +32,11 @@
 #include <dirent.h>
 
 #include "debug.h"
-#include "history.h"
-#include "variables.h"
-#include "global.h"
 #include "file.h"
+#include "global.h"
+#include "history.h"
+#include "maildir.h"
+#include "variables.h"
 
 
 /**

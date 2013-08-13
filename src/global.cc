@@ -30,6 +30,8 @@
 #include "file.h"
 #include "global.h"
 #include "lua.h"
+#include "maildir.h"
+#include "message.h"
 
 /**
  * Instance-handle.

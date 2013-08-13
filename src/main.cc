@@ -27,6 +27,7 @@
 #include <gmime/gmime.h>
 
 #include "debug.h"
+#include "lua.h"
 #include "lumail.h"
 #include "version.h"
 

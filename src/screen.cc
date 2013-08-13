@@ -34,6 +34,7 @@
 #include "lua.h"
 #include "global.h"
 #include "history.h"
+#include "maildir.h"
 #include "message.h"
 #include "screen.h"
 

@@ -19,8 +19,14 @@
 #ifndef _lumail_h_
 #define _lumail_h_ 1
 
-#include "lua.h"
-#include "screen.h"
+
+/**
+ * Forward declaration of classes.
+ */
+class CLua;
+class CScreen;
+
+
 
 /**
  * This class is the driver for our whole application.

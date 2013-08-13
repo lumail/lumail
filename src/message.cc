@@ -20,23 +20,20 @@
 #include <stdint.h>
 #include <cstdlib>
 #include <iostream>
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <fcntl.h>
 #include <string>
 #include <unistd.h>
 #include <pcrecpp.h>
-
-
 #include <sys/stat.h>
 #include <time.h>
 
 #include "debug.h"
 #include "file.h"
+#include "global.h"
 #include "lua.h"
 #include "message.h"
-#include "global.h"
 
 
 
