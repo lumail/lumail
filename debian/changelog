@@ -3,6 +3,8 @@ lumail (0.18) stable; urgency=low
   * New release, fixing several bugs.
   * References here are to the Github repository issue tracker:
     https://github.com/skx/lumail/issues
+     - #116 - New primitive "body" for returning body-content:
+	      http://lumail.org/lua/body.html
      - #113 - Added primitives for better iteration:
 	      http://lumail.org/lua/index_offset.html
 	      http://lumail.org/lua/maildir_offset.html
