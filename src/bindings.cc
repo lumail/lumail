@@ -2020,8 +2020,7 @@ int compose(lua_State * L)
 
             cont = false;
             CFile::delete_file( filename );
-            lua_pushstring(L, SENDING_ABORTED);
-            return( msg(L ) );
+            return 0;
         }
         if (  ( response[0] == 'a' ) ||
               ( response[0] == 'A' ) )
@@ -2327,8 +2326,7 @@ int reply(lua_State * L)
             cont = false;
             CFile::delete_file( filename );
 
-            lua_pushstring(L, SENDING_ABORTED);
-            return( msg(L ) );
+            return 0;
         }
         if ( ( response[0] == 'a' ) ||
              ( response[0] == 'A' ) )

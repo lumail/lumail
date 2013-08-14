@@ -323,6 +323,17 @@ function on_read_message( path )
 end
 
 
+
+--
+-- This is called if the user replies "no" to the "send message?"
+-- prompt which is issued at the end of the compose() and reply()
+-- functions.
+--
+function on_message_aborted()
+   msg( "Sending message aborted." )
+end
+
+
 --
 -- Show the version of this client.
 --
