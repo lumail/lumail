@@ -194,7 +194,7 @@ int primitive_count = (sizeof(primitive_list)/sizeof(struct CLuaMapping));
 
 
 /**
- * Get access to our LUA interpreter.
+ * Get access to this singleton object.
  */
 CLua *CLua::Instance()
 {
@@ -212,15 +212,17 @@ CLua *CLua::Instance()
 CLua::CLua()
 {
     /**
-     * Create a new LUA object.
+     * Create a new Lua object.
      */
     m_lua = luaL_newstate();
+
 
     /**
      * Register the libraries.
      */
     luaopen_base(m_lua);
     luaL_openlibs(m_lua);
+
 
     /**
      * Now register our primitives.
@@ -238,6 +240,7 @@ CLua::CLua()
     lua_pushstring(m_lua, LUMAIL_VERSION );
     lua_setglobal(m_lua, "VERSION" );
 
+
     /**
      * Load a panic-handler - which will call abort()
      */
@@ -246,7 +249,7 @@ CLua::CLua()
 
 
 /**
- * Load the specified lua file, and evaluate it.
+ * Load the specified Lua file, and evaluate it.
  */
 bool CLua::load_file(std::string filename)
 {
@@ -296,7 +299,9 @@ void CLua::execute(std::string lua)
 
 
 /**
- * get the value from a nested table.
+ * Lookup a value in a nested-table.
+ *
+ * (Used for keybinding lookups.)
  */
 char *CLua::get_nested_table( std::string table, std::string key, std::string subkey )
 {
@@ -312,6 +317,9 @@ char *CLua::get_nested_table( std::string table, std::string key, std::string su
         /**
          * If the table doesn't exist we'll return "exit();",
          * if the keypress was one of: q/Q/x/X
+         *
+         * We can do this here because we don't call the function
+         * from elsewhere.
          */
         if ( ( subkey.size() > 0 ) &&
              ( ( subkey.at(0) == 'q' ) ||
@@ -392,8 +400,9 @@ bool CLua::on_keypress(const char *keypress)
     return( result != NULL );
 }
 
+
 /**
- * Invoke the lua-defined on_key() callback.
+ * Invoke the Lua-defined on_key() callback.
  */
 bool CLua::on_key(const char *key )
 {
@@ -427,7 +436,7 @@ bool CLua::on_key(const char *key )
 
 
 /**
- * Invoke the "on_complete" callback, which is defined by the user, if it exists.
+ * Invoke the "on_complete" callback, which might be defined by the user.
  */
 std::vector<std::string> CLua::on_complete()
 {
@@ -471,7 +480,7 @@ std::vector<std::string> CLua::on_complete()
 
 
 /**
- * convert a table to an array of strings.
+ * Convert a Lua table to an array of strings.
  */
 std::vector<std::string> CLua::table_to_array( std::string name )
 {
@@ -536,7 +545,7 @@ std::vector<std::string> CLua::table_to_array( std::string name )
 
 
 /**
- * Return the value of the lua-defined variable.
+ * Return the value of the Lua-defined boolean variable.
  */
 bool CLua::get_bool( std::string name, bool default_value )
 {
@@ -555,7 +564,7 @@ bool CLua::get_bool( std::string name, bool default_value )
 
 
 /**
- * Dump the stack contents - only in debug-builds.
+ * Dump the Lua stack contents - only in debug-builds.
  */
 void CLua::dump_stack()
 {

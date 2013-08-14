@@ -87,12 +87,12 @@ class CLua
 public:
 
     /**
-     * Get access to the singleton instance.
+     * Get access to this singleton instance.
      */
     static CLua *Instance();
 
     /**
-     * Load and execute a single file of Lua code.
+     * Load the specified Lua file, and evaluate it.
      */
     bool load_file(std::string filename);
 
@@ -102,7 +102,7 @@ public:
     void execute(std::string lua);
 
     /**
-     * Lookup a value in a nested table.
+     * Lookup a value in a nested-table.
      *
      * (Used for keybinding lookups.)
      */
@@ -114,27 +114,27 @@ public:
     bool on_keypress(const char *keypress );
 
     /**
-     * Invoke the on_key() lua-defined callback.
+     * Invoke the Lua-defined on_key() callback.
      */
     bool on_key(const char *key );
 
     /**
-     * Call the completion function from Lua.
+     * Invoke the "on_complete" callback, which might be defined by the user.
      */
     std::vector<std::string> on_complete();
 
     /**
-     * convert a table to an array of strings.
+     * Convert a Lua table to an array of strings.
      */
     std::vector<std::string> table_to_array( std::string name );
 
     /**
-     * Retrieve the value of a global boolean variable.
+     * Return the value of the Lua-defined boolean variable.
      */
     bool get_bool( std::string name, bool default_value = false );
 
     /**
-     * Dump the stack contents - only in debug-builds.
+     * Dump the Lua stack contents - only in debug-builds.
      */
     void dump_stack();
 
