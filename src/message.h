@@ -130,6 +130,13 @@ public:
      */
     std::vector<std::string> body();
 
+
+    /**
+     * Get the text/plain part of the message, via GMime.
+     */
+    std::string get_body();
+
+
     /**
      * Get the names of attachments to this message.
      */
@@ -173,11 +180,6 @@ private:
      * Cleanup the message with gmime.
      */
     void close_message();
-
-    /**
-     * Get the text/plain part of the message, via GMime.
-     */
-    std::string get_body();
 
     /**
      * Have we invoked the on_read_message hook?

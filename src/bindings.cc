@@ -109,7 +109,11 @@ CMessage *get_message_for_operation( const char *path )
 void call_message_hook( const char *hook, const char *filename )
 {
     CLua *lua = CLua::Instance();
-    lua->execute( std::string( hook ) + "(\"" + std::string(filename) + "\");" );
+    std::string cmd = std::string( hook ) + "(\"" + std::string(filename) + "\");";
+
+    DEBUG_LOG( cmd );
+
+    lua->execute( cmd );
 }
 
 
@@ -1197,6 +1201,39 @@ int mark_read(lua_State * L)
         delete( msg );
 
     return( 0 );
+}
+
+
+/**
+ * Get the body of the message, as displayed.
+ */
+int body(lua_State * L)
+{
+    /**
+     * Get the path (optional) to the message.
+     */
+    const char *str = lua_tostring(L, -1);
+
+    CMessage *msg = get_message_for_operation( str );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+    std::string body = msg->get_body();
+
+    if ( body.empty() )
+        lua_pushstring(L, "");
+    else
+        lua_pushstring(L, body.c_str());
+
+
+    if ( str != NULL )
+        delete( msg );
+
+    return( 1 );
 }
 
 
