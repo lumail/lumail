@@ -45,10 +45,10 @@ int main(int argc, char *argv[])
 
     bool version         = false;      /* show version */
     bool exit_after_eval = false;      /* exit after eval? */
-    std::vector<std::string> rcfile;   /* load startup file(s) */
-    std::string eval     = "";         /* code to evaluate */
     std::string folder   = "";         /* open folder */
     std::string debug    = "";         /* debug-log */
+    std::vector<std::string> rcfile;   /* load startup file(s) */
+    std::vector<std::string> eval;     /* code to evaluate */
 
     while (1)
     {
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 #endif
             break;
         case 'e':
-            eval = optarg;
+            eval.push_back(optarg);
             break;
         case 'f':
             folder = optarg;
@@ -176,17 +176,24 @@ int main(int argc, char *argv[])
     }
 
     /**
-     * If evaluating code then do that now, then exit.
+     * If evaluating code then do that now.
      */
     if ( !eval.empty() )
     {
         CLua *lua = CLua::Instance();
-        lua->execute( eval.c_str() );
 
+        /**
+         * Load each string specified on the command line.
+         */
+        std::vector<std::string>::iterator it;
+        for (it = eval.begin(); it != eval.end(); ++it)
+            lua->execute( (*it) );
+
+        /**
+         * If we're to exit afterwards, do so.
+         */
         if ( exit_after_eval )
-        {
             lua->execute( "exit()" );
-        }
     }
 
 
