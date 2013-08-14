@@ -51,18 +51,6 @@
 
 
 /**
- * Displayed literally if sending a mail is aborted.
- */
-#define SENDING_ABORTED "Sending email aborted by user."
-
-
-/**
- * Displayed literally if sending a mail is aborted.
- */
-#define REPLY_ABORTED "Sending reply aborted by user."
-
-
-/**
  * Displayed literally if an operation is carried out on the current
  * message, but no message is currently selected.
  */
