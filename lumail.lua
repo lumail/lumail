@@ -305,7 +305,6 @@ function jump_to_start()
    end
 end
 
-
 --
 -- This function is called when a message is displayed.
 --
@@ -433,8 +432,87 @@ end
 -- (Selected folders will be displayed with a "[x]" next to them in maildir-mode.)
 --
 function index()
-   global_mode( "index" )
-   clear()
+    global_mode( "index" )
+    clear()
+end
+
+--
+-- This function will be called if the global mode changes
+--
+function on_mode_change( old, new)
+    -- check if we are switching from maildir to index mode, if so try to jump
+    -- the first unread mail or go to the last one
+    if string.find(old,'maildir') and string.find(new,'index') then
+        if (newmail_displayed()) then
+            jump_to_first_unread()
+        else
+            jump_to_end()
+        end
+    end
+end
+
+--
+-- Test if there is currently a new message displayed
+--
+function newmail_displayed()
+    -- save old limit + mode
+    old_index_limit = index_limit()
+    old_global_mode = global_mode()
+
+    -- check if we can count any new messages
+    index_limit( "new" )
+    global_mode( "index" )
+    c = count_messages()
+
+    -- restore
+    index_limit( old_index_limit )
+    global_mode( old_global_mode )
+
+    if ( c > 0 ) then
+        return true
+    else
+        return false
+    end
+end
+
+
+--
+-- Jump to the first unread mail starting from pos.
+-- Do nothing if all mails are marked read
+--
+function jump_to_next_unread_from_pos(pos)
+    cur = index_offset()
+    count = count_messages()
+    i = pos
+    while( i < count ) do
+        jump_index_to( i )
+        if is_new() then
+            break
+        end
+        i = i + 1
+    end
+    if i == count then
+        jump_index_to(cur)
+    end
+end
+
+
+--
+-- This function will jump to the first unread message. If all messages are read
+-- to nothing
+--
+function jump_to_first_unread()
+    jump_to_next_unread_from_pos(0)
+end
+
+
+--
+-- This  function will jump to the next unread message.
+-- If all are read do nothing
+--
+function jump_to_next_unread()
+    cur = index_offset()
+    jump_to_next_unread_from_pos(cur+1)
 end
 
 
@@ -591,8 +669,7 @@ end
 function open_folder()
    clear_selected_folders()
    add_selected_folder()
-   global_mode( "index" )
-   clear()
+   index()
 end
 
 
@@ -846,6 +923,12 @@ keymap['index']['d'] = 'delete()'
 --
 keymap['index']['a'] = 'index_limit("all")'
 keymap['index']['n'] = 'index_limit("new")'
+
+--
+-- Jump to the next unread mail in index or message mode
+--
+keymap['index']['N'] = 'jump_to_next_unread()'
+keymap['message']['N'] = 'jump_to_next_unread()'
 
 --
 -- Selection bindings.
