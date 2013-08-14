@@ -42,9 +42,9 @@ CLua *CLua::pinstance = NULL;
 
 /**
  * This is a list of all the functions that we export to our
- * embedded lua-interpreter.
+ * embedded Lua-interpreter.
  *
- * The function is externally declared in our header so that we
+ * The struct is externally declared in our header so that we
  * can access it from elsewhere.
  *
  * (Specifically we want to make the function-names available to
@@ -127,28 +127,28 @@ struct CLuaMapping primitive_list[] =
     {"index_offset", "Get the current offset into the index.", (lua_CFunction) index_offset},
     {"jump_index_to", "Jump to the named offset in the message list.", (lua_CFunction) jump_index_to },
     {"scroll_index_down", "Scroll the message list down.", (lua_CFunction) scroll_index_down },
-    {"scroll_index_up", "Scroll the message list up.", (lua_CFunction) scroll_index_up },
     {"scroll_index_to", "Scroll the message list to the given offset.", (lua_CFunction) scroll_index_to },
+    {"scroll_index_up", "Scroll the message list up.", (lua_CFunction) scroll_index_up },
 
 /**
  * Message-Related functions
  */
     {"body", "Retrieve the body of the current message.", (lua_CFunction) body },
     {"compose", "Compose a new outgoing email.", (lua_CFunction) compose },
-    {"count_messages", "Count the messages in the currently selected Maildir(s).", (lua_CFunction) count_messages },
     {"count_lines", "Count the number of lines in the message body", (lua_CFunction) count_lines},
+    {"count_messages", "Count the messages in the currently selected Maildir(s).", (lua_CFunction) count_messages },
     {"current_message", "Retrieve the path to the current message.", (lua_CFunction) current_message },
     {"delete", "Delete the current message.", (lua_CFunction) delete_message },
     {"header", "Retrieve the value of the given header from the current message.", (lua_CFunction) header },
     {"is_new", "Is the current message new/unread?", (lua_CFunction) is_new },
-    {"mark_unread", "Mark the current message as unread.", (lua_CFunction) mark_unread },
     {"mark_read", "Mark the current message as old/read.", (lua_CFunction) mark_read },
+    {"mark_unread", "Mark the current message as unread.", (lua_CFunction) mark_unread },
     {"reply", "Reply to the current message.", (lua_CFunction) reply },
     {"save", "Save the current message in a new location, and delete it.", (lua_CFunction) save_message },
     {"save_message", "Save the current message in a new location, and delete it.", (lua_CFunction) save_message },
     {"scroll_message_down", "Scroll the current message down.", (lua_CFunction) scroll_message_down },
-    {"scroll_message_up", "Scroll the current message up.", (lua_CFunction) scroll_message_up },
     {"scroll_message_to", "Scroll the current message to the given offset.", (lua_CFunction) scroll_message_to },
+    {"scroll_message_up", "Scroll the current message up.", (lua_CFunction) scroll_message_up },
     {"send_email", "Send an email, via Lua.", (lua_CFunction) send_email },
 
 /**
