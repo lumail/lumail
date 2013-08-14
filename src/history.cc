@@ -77,6 +77,12 @@ std::string CHistory::at( size_t offset )
  */
 void CHistory::add( std::string entry)
 {
+    /**
+     * Don't add empty entries.
+     */
+    if ( entry.empty() )
+        return;
+
     m_history.push_back(entry);
     assert( m_history.size() > 0 );
 
@@ -129,7 +135,8 @@ void CHistory::set_file( const char *filename)
             std::string line;
             getline( input, line );
 
-            m_history.push_back( line );
+            if ( ! line.empty() )
+                m_history.push_back( line );
         }
         input.close();
     }
