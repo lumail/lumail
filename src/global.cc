@@ -74,8 +74,8 @@ CGlobal::CGlobal()
     set_variable( "index_limit",     new std::string("all") );
     set_variable( "maildir_format",  new std::string( "$CHECK - $PATH" ) );
     set_variable( "maildir_limit",   new std::string("all") );
-    set_variable( "message_filter",  new std::string("") );
-    set_variable( "msg_filter",      new std::string("") );
+    set_variable( "display_filter",  new std::string("") );
+    set_variable( "mail_filter",     new std::string("") );
     set_variable( "sendmail_path",   new std::string( "/usr/lib/sendmail -t" ) );
 
 
