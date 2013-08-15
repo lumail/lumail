@@ -877,6 +877,15 @@ keymap['global']['KEY_RESIZE'] = 'refresh_display()'
 
 
 --
+-- THIS FAILS.
+--
+--   Even after:  stuff( "Ѫ" );
+--
+-- I guess something still isn't quite right.
+--
+keymap['global']['Ѫ'] = 'msg("UTF-8 rocks!");'
+
+--
 -- Quitting means different things in different modes.
 --
 --  If viewing a message quit means return to the index.
