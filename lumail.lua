@@ -329,8 +329,18 @@ end
 -- prompt which is issued at the end of the compose() and reply()
 -- functions.
 --
-function on_message_aborted()
+function on_message_aborted( path )
    msg( "Sending message aborted." )
+end
+
+
+--
+-- This function is called when a message is deleted.
+--
+-- You might save the message to ~/Maildir/.trash, or similar.
+--
+function on_delete_message( path )
+   msg( "Message deleted: " .. path );
 end
 
 

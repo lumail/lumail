@@ -1321,13 +1321,18 @@ int delete_message( lua_State *L )
         lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
         return( 0 );
     }
-    else
-    {
-        CFile::delete_file( msg->path().c_str() );
 
-        CLua *lua = CLua::Instance();
-        lua->execute( "msg(\"Deleted: " + msg->path() + "\");" );
-    }
+    /**
+     * Call the on_delete_message hook - before we remove the file
+     * from disk.
+     */
+    call_message_hook( "on_delete_message", msg->path().c_str() );
+
+
+    /**
+     * Now delete the file.
+     */
+    CFile::delete_file( msg->path().c_str() );
 
     /**
      * Free the message.
