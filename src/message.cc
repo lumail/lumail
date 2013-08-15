@@ -1362,7 +1362,7 @@ bool CMessage::save_attachment( int offset, std::string output_path )
             {
                 FILE *fp = NULL;
 
-                if ( (fp = fopen (output_path.c_str(), "wt" ) ) == NULL )
+                if ( (fp = fopen (output_path.c_str(), "wb" ) ) == NULL )
                 {
                     CLua *lua = CLua::Instance();
                     lua->execute( "alert('failed to open');" );
@@ -1381,11 +1381,7 @@ bool CMessage::save_attachment( int offset, std::string output_path )
                     }
 
                     ostream = g_mime_stream_file_new (fp);
-
-
                     g_mime_data_wrapper_write_to_stream (content, ostream);
-
-                    g_object_unref(content);
                     g_object_unref(ostream);
                 }
             }
