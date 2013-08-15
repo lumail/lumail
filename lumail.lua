@@ -879,7 +879,7 @@ keymap['global']['KEY_RESIZE'] = 'refresh_display()'
 --
 -- THIS FAILS.
 --
---   Even after:  stuff( "Ѫ" );
+--   Even after:  stuff( "msg('Ѫ')" );
 --
 -- I guess something still isn't quite right.
 --
