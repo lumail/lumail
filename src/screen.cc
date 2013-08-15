@@ -36,7 +36,7 @@
 #include "maildir.h"
 #include "message.h"
 #include "screen.h"
-
+#include "utfstring.h"
 
 #ifndef DEFAULT_UNREAD_COLOUR
 # define DEFAULT_UNREAD_COLOUR "red"
@@ -232,7 +232,7 @@ void CScreen::drawMaildir()
         /**
          * The item we'll draw for this row.
          */
-        std::string display = "";
+        UTFString display = "";
 
         /**
          * Format.
@@ -244,7 +244,7 @@ void CScreen::drawMaildir()
          * Overwrite the full length.
          */
         while ((int)display.size() < (CScreen::width() - 3))
-            display += std::string(" ");
+            display += UTFString(" ");
 
         move(row, 2);
 
@@ -390,7 +390,7 @@ void CScreen::drawIndex()
         /**
          * What we'll output for this row.
          */
-        std::string  buf;
+        UTFString buf;
 
         /**
          * The current object.
@@ -448,12 +448,13 @@ void CScreen::drawIndex()
          * Pad.
          */
         while ((int)buf.size() < (CScreen::width() - 3))
-            buf += std::string(" ");
+            buf += UTFString(" ");
+
         /**
          * Truncate.
          */
         if ((int)buf.size() > (CScreen::width() - 3))
-            buf[(CScreen::width() - 3)] = '\0';
+            buf.resize((CScreen::width() - 3));
 
         move(row, 2);
         printw("%s", buf.c_str());
@@ -851,7 +852,7 @@ void CScreen::clear_main()
     int width = CScreen::width();
     int height = CScreen::height();
 
-    std::string blank = "";
+    UTFString blank = "";
     while( (int)blank.length() < width )
         blank += " ";
 
