@@ -631,7 +631,7 @@ void CScreen::drawMessage()
     /**
      * Now draw the body.
      */
-    std::vector<std::string> body = cur->body();
+    std::vector<UTFString> body = cur->body();
 
     int textspace = (int)(CScreen::height() - headers.size() - attachments.size() - 1 );
     if (textspace < 2)
@@ -660,7 +660,7 @@ void CScreen::drawMessage()
     for( int row_idx = 0, line_idx = 0;;)
     {
 
-        std::string line = "";
+        UTFString line = "";
 
         /** Get current line */
         if ( (line_idx + offset) < (int)body.size() )

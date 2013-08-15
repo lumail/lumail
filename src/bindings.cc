@@ -1134,7 +1134,7 @@ int count_lines(lua_State * L)
     /**
      * If that succeeded get the body.
      */
-    std::vector<std::string> body = msg->body();
+    std::vector<UTFString> body = msg->body();
     lua_pushinteger(L, body.size() );
     return 1;
 }
@@ -2225,7 +2225,7 @@ int reply(lua_State * L)
     /**
      * Body
      */
-    std::vector<std::string> body = mssg->body();
+    std::vector<UTFString> body = mssg->body();
     int lines =(int)body.size();
     for( int i = 0; i < lines; i++ )
     {
