@@ -21,7 +21,7 @@
 
 #include <vector>
 #include <unordered_map>
-
+#include "utfstring.h"
 
 /**
  * This class contains simple functions relating to the screen-handling.
@@ -102,7 +102,7 @@ public:
     /**
      * Read a line of input via the status-line.
      */
-    static std::string get_line();
+    static UTFString get_line();
 
 private:
 

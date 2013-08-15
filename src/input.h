@@ -21,6 +21,8 @@
 
 #include <string>
 #include <vector>
+#include "utfstring.h"
+
 
 /**
  * Singleton class to maintain a faux input-buffer.
@@ -43,7 +45,7 @@ public:
     /**
      * Enqueue some input to the input buffer.
      */
-    void add( std::string input );
+    void add( UTFString input );
 
 
 protected:
@@ -65,7 +67,7 @@ private:
     /**
      * Our pending input.
      */
-    std::string m_pending;
+    UTFString m_pending;
 
     /**
      * The current position within our pending-input string.

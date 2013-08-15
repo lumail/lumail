@@ -17,8 +17,9 @@
  */
 
 
+#define _XOPEN_SOURCE_EXTENDED 1
 #include <cstdlib>
-#include <cursesw.h>
+#include <ncurses.h>
 #include "input.h"
 
 
@@ -56,7 +57,7 @@ CInput::CInput()
 /**
  * Enqueue some input to the input buffer.
  */
-void CInput::add( std::string input )
+void CInput::add( UTFString input )
 {
     m_pending = input;
     m_offset  = 0;
@@ -92,5 +93,7 @@ int CInput::get_char()
     /**
      * Otherwise defer to ncurses.
      */
-    return( getch() );
+    wint_t c;
+    get_wch(&c);
+    return( c );
 }

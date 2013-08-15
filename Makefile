@@ -45,11 +45,16 @@ CPPFLAGS+=-std=gnu++0x -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shel
 LDLIBS+=$(shell pkg-config --libs ${LVER}) -lncursesw -lpcrecpp
 
 #
-#  Experiments in gmime.
+#  GMime is used for MIME handling.
 #
 GMIME_LIBS=$(shell pkg-config --libs  gmime-2.6)
 GMIME_INC=$(shell pkg-config --cflags gmime-2.6)
 
+#
+# UTF-8-aware string handling.
+#
+GLIBMM_LIBS=$(shell pkg-config --libs  glibmm-2.4)
+GLIBMM_INC=$(shell pkg-config --cflags glibmm-2.4)
 
 #
 #  Build both targets by default.
@@ -103,13 +108,13 @@ DEBUG_OBJECTS   := $(SOURCES:$(SRCDIR)/%.cc=$(DEBUG_OBJDIR)/%.o)
 #  The release-build.
 #
 lumail: $(RELEASE_OBJECTS)
-	$(LINKER) $@ $(LFLAGS) $(RELEASE_OBJECTS) $(LDLIBS) $(GMIME_LIBS)
+	$(LINKER) $@ $(LFLAGS) $(RELEASE_OBJECTS) $(LDLIBS) $(GMIME_LIBS) $(GLIBMM_LIBS)
 
 #
 #  The debug-build.
 #
 lumail-debug: $(DEBUG_OBJECTS)
-	$(LINKER) $@ $(LFLAGS) -rdynamic -ggdb $(DEBUG_OBJECTS) $(LDLIBS) $(GMIME_LIBS)
+	$(LINKER) $@ $(LFLAGS) -rdynamic -ggdb $(DEBUG_OBJECTS) $(LDLIBS) $(GMIME_LIBS) $(GLIBMM_LIBS)
 
 
 #
@@ -117,7 +122,7 @@ lumail-debug: $(DEBUG_OBJECTS)
 #
 $(RELEASE_OBJECTS): $(RELEASE_OBJDIR)/%.o : $(SRCDIR)/%.cc
 	@mkdir $(RELEASE_OBJDIR) 2>/dev/null || true
-	$(CC) $(CPPFLAGS) $(GMIME_INC) -O2 -c $< -o $@
+	$(CC) $(CPPFLAGS) $(GMIME_INC) $(GLIBMM_INC) -O2 -c $< -o $@
 
 #
 #  Build the objects for the debug build.
@@ -126,5 +131,5 @@ $(RELEASE_OBJECTS): $(RELEASE_OBJDIR)/%.o : $(SRCDIR)/%.cc
 #
 $(DEBUG_OBJECTS): $(DEBUG_OBJDIR)/%.o : $(SRCDIR)/%.cc
 	@mkdir $(DEBUG_OBJDIR) 2>/dev/null || true
-	$(CC) -ggdb -DLUMAIL_DEBUG=1 $(CPPFLAGS) $(GMIME_INC) -c $< -o $@
+	$(CC) -ggdb -DLUMAIL_DEBUG=1 $(CPPFLAGS) $(GMIME_INC) $(GLIBMM_INC) -c $< -o $@
 

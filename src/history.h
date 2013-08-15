@@ -21,6 +21,8 @@
 
 #include <string>
 #include <vector>
+#include "utfstring.h"
+
 
 /**
  * Singleton class to maintain a per-execution history of input
@@ -44,12 +46,12 @@ public:
     /**
      * Get the Nth piece of history.
      */
-    std::string at( size_t offset );
+    UTFString at( size_t offset );
 
     /**
      * Add a new string to the history.
      */
-    void add( std::string entry);
+    void add( UTFString entry);
 
     /**
      * Clear the history.
@@ -81,7 +83,7 @@ private:
     /**
      * List of history items.
      */
-    std::vector<std::string> m_history;
+    std::vector<UTFString> m_history;
 
     /**
      * The file to write to, may be unset.

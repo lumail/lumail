@@ -1171,9 +1171,9 @@ std::vector<std::string> CScreen::get_completions( std::string token )
 /**
  * Read a line of input from the user.
  */
-std::string CScreen::get_line()
+UTFString CScreen::get_line()
 {
-    std::string buffer;
+    UTFString buffer;
 
     int old_curs = curs_set(1);
     int pos = 0;
@@ -1228,14 +1228,12 @@ std::string CScreen::get_line()
         {
             break;
         }
-        else if (isprint(c))
+        else if (g_unichar_isprint(c))
         {
             /**
              * Insert the character into the buffer-string.
              */
-            char tmp[2] = { '\0', '\0'};
-            tmp[0]= c;
-            buffer.insert(pos, tmp);
+            buffer.insert(pos, 1, c);
             pos +=1;
         }
         else if (c == 1 )   /* ctrl-a : beginning of line*/
