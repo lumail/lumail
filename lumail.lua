@@ -877,11 +877,8 @@ keymap['global']['KEY_RESIZE'] = 'refresh_display()'
 
 
 --
--- THIS FAILS.
+-- THIS WORKS :D.
 --
---   Even after:  stuff( "msg('Ѫ')" );
---
--- I guess something still isn't quite right.
 --
 keymap['global']['Ѫ'] = 'msg("UTF-8 rocks!");'
 
