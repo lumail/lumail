@@ -815,11 +815,27 @@ const char *CScreen::get_key_name( int c )
         return( "k" );
     if ( c == ' ' )
         return ( "Space" );
+    if ( c == KEY_LEFT )
+        return ( "KEY_LEFT" );
+    if ( c == KEY_RIGHT )
+        return ( "KEY_RIGHT" );
+    if ( c == KEY_UP )
+        return ( "KEY_UP" );
+    if ( c == KEY_DOWN )
+        return ( "KEY_DOWN" );
+    if ( c == KEY_END )
+        return ( "KEY_END" );
+    if ( c == KEY_HOME )
+        return ( "KEY_HOME" );
+    if ( c == KEY_NPAGE )
+        return ( "KEY_NPAGE" );
+    if ( c == KEY_PPAGE )
+        return ( "KEY_PPAGE" );
 
-    const char *name = keyname( c );
+    const char * name = key_name( c );
     if ( name == NULL )
         return( "UnkSymbol" );
-    return name;
+    return( name );
 
 }
 
@@ -1228,14 +1244,6 @@ UTFString CScreen::get_line()
         {
             break;
         }
-        else if (g_unichar_isprint(c))
-        {
-            /**
-             * Insert the character into the buffer-string.
-             */
-            buffer.insert(pos, 1, c);
-            pos +=1;
-        }
         else if (c == 1 )   /* ctrl-a : beginning of line*/
         {
             pos = 0;
@@ -1395,6 +1403,15 @@ UTFString CScreen::get_line()
                 }
             }
         }
+        else if (g_unichar_isprint(c))
+        {
+            /**
+             * Insert the character into the buffer-string.
+             */
+            buffer.insert(pos, 1, c);
+            pos +=1;
+        }
+
     }
 
     if (old_curs != ERR)
