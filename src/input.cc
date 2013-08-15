@@ -95,5 +95,7 @@ int CInput::get_char()
      */
     wint_t c;
     get_wch(&c);
+    if ( c == 0 )
+        c = ERR;
     return( c );
 }

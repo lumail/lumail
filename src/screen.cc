@@ -1203,7 +1203,7 @@ UTFString CScreen::get_line()
     {
         gunichar c;
 
-        mvaddnstr(y, x, buffer.c_str(), buffer.size());
+        mvaddnstr(y, x, buffer.c_str(), buffer.bytes());
 
         /**
          * Clear the line.
