@@ -34,17 +34,17 @@
 #include <gmime/gmime.h>
 
 #include "bindings.h"
-#include "variables.h"
 #include "debug.h"
 #include "file.h"
+#include "global.h"
 #include "input.h"
-#include "maildir.h"
-#include "message.h"
 #include "lang.h"
 #include "lua.h"
-#include "global.h"
+#include "maildir.h"
+#include "message.h"
 #include "screen.h"
-
+#include "utfstring.h"
+#include "variables.h"
 
 
 int unused __attribute__((unused));
@@ -316,7 +316,7 @@ int stuff(lua_State * L)
     if (str == NULL)
         return luaL_error(L, "Missing argument to stuff(..)");
 
-    CInput::Instance()->add( std::string( str ) );
+    CInput::Instance()->add( UTFString( str ) );
 
     return 0;
 }

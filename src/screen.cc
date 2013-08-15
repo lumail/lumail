@@ -1219,6 +1219,7 @@ UTFString CScreen::get_line()
     while( true )
     {
         gunichar c;
+        bool isKey;
 
         mvaddnstr(y, x, buffer.c_str(), buffer.bytes());
 
@@ -1236,12 +1237,12 @@ UTFString CScreen::get_line()
         /**
          * Get input - paying attention to the buffer set by 'stuff()'.
          */
-        c = CInput::Instance()->get_char();
+        isKey = (CInput::Instance()->get_wchar(&c) == KEY_CODE_YES);
 
         /**
          * Ropy input-handler.
          */
-        if (c == KEY_ENTER || c == '\n' || c == '\r')
+        if ( (isKey && c == KEY_ENTER) || (c == '\n' || c == '\r')  )
         {
             break;
         }
@@ -1261,18 +1262,18 @@ UTFString CScreen::get_line()
             buffer = buffer.substr(0,pos);
         }
         else if ( ( c == 2 ) ||    /* ctrl-b : back char */
-                  (c == KEY_LEFT) )
+                  (  isKey && c == KEY_LEFT) )
         {
             if (pos > 0)
                 pos -= 1;
         }
         else if ( ( c == 6 ) || /* ctrl-f: forward char */
-                  (c == KEY_RIGHT) )
+                  ( isKey &&  c == KEY_RIGHT) )
         {
             if (pos < (int)buffer.size())
                 pos += 1;
         }
-        else if ( c == KEY_UP )
+        else if ( isKey &&  c == KEY_UP )
         {
             hoff -= 1;
             if ( hoff >= 0 )
@@ -1285,7 +1286,7 @@ UTFString CScreen::get_line()
                 hoff = 0;
             }
         }
-        else if ( c == KEY_DOWN )
+        else if ( isKey && c == KEY_DOWN )
         {
             hoff += 1;
             if ( hoff < history->size() )
@@ -1298,7 +1299,7 @@ UTFString CScreen::get_line()
                 hoff = history->size();
             }
         }
-        else if (c == KEY_BACKSPACE)
+        else if (isKey && c == KEY_BACKSPACE)
         {
             if (pos > 0)
             {
@@ -1404,7 +1405,7 @@ UTFString CScreen::get_line()
                 }
             }
         }
-        else if (g_unichar_isprint(c))
+        else if ( !isKey && g_unichar_isprint(c) )
         {
             /**
              * Insert the character into the buffer-string.

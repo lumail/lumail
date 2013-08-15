@@ -67,7 +67,7 @@ void CInput::add( UTFString input )
 /**
  * Get a character from either our faux buffer, or via curses.
  */
-int CInput::get_char()
+int CInput::get_wchar(gunichar *wch)
 {
     /**
      * If we have pending history - return the next character from it.
@@ -83,19 +83,16 @@ int CInput::get_char()
              * Get the character and return it,
              * updating our current-offset.
              */
-            int c = m_pending.at( m_offset );
+            gunichar c = m_pending.at( m_offset );
+            *wch = c;
             m_offset += 1;
 
-            return( c );
+            return ( OK );
         }
     }
 
     /**
      * Otherwise defer to ncurses.
      */
-    wint_t c;
-    get_wch(&c);
-    if ( c == 0 )
-        c = ERR;
-    return( c );
+    return( get_wch(wch) );
 }
