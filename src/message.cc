@@ -572,9 +572,9 @@ bool CMessage::mark_unread()
 /**
  * Format the message for display in the header - via the lua format string.
  */
-std::string CMessage::format( std::string fmt )
+UTFString CMessage::format( std::string fmt )
 {
-    std::string result = fmt;
+    UTFString result = fmt;
 
     /**
      * Get the format-string we'll expand from the global
@@ -681,7 +681,7 @@ std::string CMessage::format( std::string fmt )
 /**
  * Retrieve the value of a given header from the message.
  */
-std::string CMessage::header( std::string name )
+UTFString CMessage::header( std::string name )
 {
     /**
      * Ensure the message has been read.
@@ -691,7 +691,7 @@ std::string CMessage::header( std::string name )
     /**
      * The result.
      */
-    std::string result;
+    UTFString result;
 
     /**
      * Get the header.
@@ -972,7 +972,7 @@ time_t CMessage::get_date_field()
 /**
  * Get the body from our message, using GMime.
  */
-std::string CMessage::get_body()
+UTFString CMessage::get_body()
 {
     /**
      * Parse the message, if not yet done.
@@ -984,7 +984,7 @@ std::string CMessage::get_body()
      * The body we'll return back to the caller.  May be empty if there
      * is no text/plain part in the message.
      */
-    std::string result;
+    UTFString result;
 
 
     /**
@@ -1146,9 +1146,9 @@ std::string CMessage::get_body()
 /**
  * Get the body of the message, as a vector of lines.
  */
-std::vector<std::string> CMessage::body()
+std::vector<UTFString> CMessage::body()
 {
-    std::vector<std::string> result;
+    std::vector<UTFString> result;
 
     /**
      * Ensure the message has been read.
@@ -1160,7 +1160,7 @@ std::vector<std::string> CMessage::body()
      * Attempt to get the body from the message as one
      * long line.
      */
-    std::string body = get_body();
+    UTFString body = get_body();
 
     /**
      * At this point we have a std::string containing the body.

@@ -25,6 +25,7 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <gmime/gmime.h>
+#include "utfstring.h"
 
 
 /**
@@ -68,7 +69,7 @@ public:
     /**
      * Format the message for display in the header - via the lua format string.
      */
-    std::string format( std::string fmt = "");
+    UTFString format( std::string fmt = "");
 
     /**
      * Get the flags for this message.
@@ -118,7 +119,7 @@ public:
     /**
      * Retrieve the value of a given header from the message.
      */
-    std::string header( std::string name);
+    UTFString header( std::string name);
 
     /**
      * Get the date of the message.
@@ -128,13 +129,13 @@ public:
     /**
      * Get the body of the message, as a vector of lines.
      */
-    std::vector<std::string> body();
+    std::vector<UTFString> body();
 
 
     /**
      * Get the text/plain part of the message, via GMime.
      */
-    std::string get_body();
+    UTFString get_body();
 
 
     /**
