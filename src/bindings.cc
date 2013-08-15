@@ -311,9 +311,9 @@ int msg(lua_State * L)
  */
 int stuff(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
+    UTFString str = lua_tostring(L, -1);
 
-    if (str == NULL)
+    if (str.empty())
         return luaL_error(L, "Missing argument to stuff(..)");
 
     CInput::Instance()->add( UTFString( str ) );
