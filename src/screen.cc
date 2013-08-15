@@ -806,7 +806,7 @@ void CScreen::clear_status()
 /**
  * Some simple remapping of keyboard input.
  */
-const char *CScreen::get_key_name( int c )
+const char *CScreen::get_key_name( gunichar c, bool isKeyCode)
 {
     if ( c == '\n' )
         return( "Enter" );
@@ -816,28 +816,16 @@ const char *CScreen::get_key_name( int c )
         return( "k" );
     if ( c == ' ' )
         return ( "Space" );
-    if ( c == KEY_LEFT )
-        return ( "KEY_LEFT" );
-    if ( c == KEY_RIGHT )
-        return ( "KEY_RIGHT" );
-    if ( c == KEY_UP )
-        return ( "KEY_UP" );
-    if ( c == KEY_DOWN )
-        return ( "KEY_DOWN" );
-    if ( c == KEY_END )
-        return ( "KEY_END" );
-    if ( c == KEY_HOME )
-        return ( "KEY_HOME" );
-    if ( c == KEY_NPAGE )
-        return ( "KEY_NPAGE" );
-    if ( c == KEY_PPAGE )
-        return ( "KEY_PPAGE" );
 
-    const char * name = key_name( c );
+    const char *name;
+    if (isKeyCode)
+        name = keyname( c );
+    else
+        name = key_name( c );
+
     if ( name == NULL )
         return( "UnkSymbol" );
     return( name );
-
 }
 
 /**
@@ -947,10 +935,13 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
         }
         wrefresh(childwin);
 
-        int key = CInput::Instance()->get_char();
-        if ( key == '\n' )
+        gunichar key;
+        bool isKeyCode;
+        isKeyCode = (CInput::Instance()->get_wchar(&key) == KEY_CODE_YES);
+
+        if ( !isKeyCode && key == '\n' )
             done = true;
-        if ( key == 27 )
+        if ( !isKeyCode  && key == 27 )
         {
             delwin(childwin);
             clear_main();
@@ -958,21 +949,20 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
             timeout(1000);
             return "";
         }
-        if ( key == '\t' )
+        if ( !isKeyCode && key == '\t' )
         {
             selected += 1;
             if ( selected >= (int)choices.size() )
                 selected = 0;
         }
 
-        const char *name = get_key_name( key );
-        if ( strcmp( name, "KEY_RIGHT" ) == 0 )
+        if ( isKeyCode && key == KEY_RIGHT )
         {
             selected += 1;
             if ( selected >= (int)choices.size() )
                 selected = 0;
         }
-        if ( strcmp( name, "KEY_LEFT" ) == 0 )
+        if ( isKeyCode && key == KEY_LEFT )
         {
             selected -= 1;
             if ( selected < 0 )
@@ -1219,7 +1209,7 @@ UTFString CScreen::get_line()
     while( true )
     {
         gunichar c;
-        bool isKey;
+        bool isKeyCode;
 
         mvaddnstr(y, x, buffer.c_str(), buffer.bytes());
 
@@ -1237,12 +1227,12 @@ UTFString CScreen::get_line()
         /**
          * Get input - paying attention to the buffer set by 'stuff()'.
          */
-        isKey = (CInput::Instance()->get_wchar(&c) == KEY_CODE_YES);
+        isKeyCode = (CInput::Instance()->get_wchar(&c) == KEY_CODE_YES);
 
         /**
          * Ropy input-handler.
          */
-        if ( (isKey && c == KEY_ENTER) || (c == '\n' || c == '\r')  )
+        if ( (isKeyCode && c == KEY_ENTER) || (c == '\n' || c == '\r')  )
         {
             break;
         }
@@ -1262,18 +1252,18 @@ UTFString CScreen::get_line()
             buffer = buffer.substr(0,pos);
         }
         else if ( ( c == 2 ) ||    /* ctrl-b : back char */
-                  (  isKey && c == KEY_LEFT) )
+                  (  isKeyCode && ( c == KEY_LEFT) ) )
         {
             if (pos > 0)
                 pos -= 1;
         }
         else if ( ( c == 6 ) || /* ctrl-f: forward char */
-                  ( isKey &&  c == KEY_RIGHT) )
+                  ( isKeyCode && ( c == KEY_RIGHT) ) )
         {
             if (pos < (int)buffer.size())
                 pos += 1;
         }
-        else if ( isKey &&  c == KEY_UP )
+        else if ( isKeyCode && (  c == KEY_UP ) )
         {
             hoff -= 1;
             if ( hoff >= 0 )
@@ -1286,7 +1276,7 @@ UTFString CScreen::get_line()
                 hoff = 0;
             }
         }
-        else if ( isKey && c == KEY_DOWN )
+        else if ( isKeyCode &&  ( c == KEY_DOWN ) )
         {
             hoff += 1;
             if ( hoff < history->size() )
@@ -1299,7 +1289,7 @@ UTFString CScreen::get_line()
                 hoff = history->size();
             }
         }
-        else if (isKey && c == KEY_BACKSPACE)
+        else if (isKeyCode &&  ( c == KEY_BACKSPACE))
         {
             if (pos > 0)
             {
@@ -1405,7 +1395,7 @@ UTFString CScreen::get_line()
                 }
             }
         }
-        else if ( !isKey && g_unichar_isprint(c) )
+        else if ( !isKeyCode && g_unichar_isprint(c) )
         {
             /**
              * Insert the character into the buffer-string.

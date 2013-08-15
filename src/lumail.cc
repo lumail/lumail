@@ -166,9 +166,10 @@ void CLumail::run_event_loop()
      */
     while (true)
     {
-        int key = CInput::Instance()->get_char();
+        gunichar key;
+        int  r = CInput::Instance()->get_wchar(&key);
 
-        if (key == ERR)
+        if (r== ERR)
         {
             /*
              * Timeout - so we go round the loop again.
@@ -183,7 +184,7 @@ void CLumail::run_event_loop()
              *
              * i.e. Ctrl-r -> ^R.
              */
-            const char *name = CScreen::get_key_name( key );
+            const char *name = CScreen::get_key_name( key, r == KEY_CODE_YES );
 
             /**
              * See if we can handle it via our keyboard map, or

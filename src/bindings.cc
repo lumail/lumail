@@ -400,7 +400,8 @@ int alert(lua_State * L)
         waddstr(childwin,progress);
         wrefresh(childwin);
 
-        int key = CInput::Instance()->get_char();
+        gunichar key;
+        CInput::Instance()->get_wchar(&key);
         if ( key == '\n' )
             done = true;
 
@@ -501,14 +502,14 @@ int prompt_yn(lua_State * L)
     /**
      * Get the prompt string.
      */
-    const char *str = lua_tostring(L, -1);
+    UTFString str = lua_tostring(L, -1);
     if (str == NULL)
         str = def_prompt;
 
     /**
      * Push the characters and the prompt.
      */
-    lua_pushstring(L, str);
+    lua_pushstring(L, str.c_str());
     lua_pushstring(L,"ynYN");
 
     /**
@@ -545,15 +546,15 @@ int prompt_chars(lua_State *L)
     /**
      * Get the prompt string, and response set.
      */
-    const char *str   = lua_tostring(L, -2);
-    const char *chars = lua_tostring(L, -1);
+    UTFString str   = lua_tostring(L, -2);
+    UTFString chars = lua_tostring(L, -1);
 
     /**
      * Ensure both were set.
      */
-    if (str == NULL)
+    if (str.empty())
         return luaL_error(L, "Missing prompt to function prompt_chars(..)");
-    if (chars == NULL)
+    if (chars.empty())
         return luaL_error(L, "Missing characters to function prompt_chars(..)");
 
 
@@ -571,21 +572,22 @@ int prompt_chars(lua_State *L)
          */
         CScreen::clear_status();
         move(height - 1, 0);
-        printw(str);
+        printw(str.c_str());
 
-        int key = CInput::Instance()->get_char();
+
+        gunichar key;
+        CInput::Instance()->get_wchar(&key);
 
         /**
          * See if the character was in the input string.
          */
-        for( unsigned int i = 0; i < strlen(chars); i++ )
+        for( unsigned int i = 0; i < chars.size(); i++ )
         {
             if ( chars[i] == key )
             {
-                char resp[2] = { '\0' };
-                resp[0] = key;
-                resp[1] = '\0';
-                lua_pushstring(L, resp );
+
+                Glib::ustring buf(1, key);
+                lua_pushstring(L, buf.c_str());
                 done = false;
             }
         }
@@ -651,8 +653,8 @@ int prompt_maildir(lua_State * L)
             }
         }
 
-        int key = CInput::Instance()->get_char();
-        if (key == ERR)
+        gunichar key;
+        if (CInput::Instance()->get_wchar(&key) == ERR)
         {
             /**
              * NOP

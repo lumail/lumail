@@ -85,7 +85,7 @@ public:
     /**
      * Some simple remapping of keyboard input.
      */
-    static const char *get_key_name( int c );
+    static const char *get_key_name( gunichar c, bool isKeyCode);
 
     /**
      * Choose a single item from a small selection, graphically.
