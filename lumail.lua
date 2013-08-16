@@ -340,7 +340,7 @@ end
 -- You might save the message to ~/Maildir/.trash, or similar.
 --
 function on_delete_message( path )
-   msg( "Message deleted: " .. path );
+   msg( "Message deleted: " .. path )
 end
 
 
@@ -890,7 +890,7 @@ keymap['global']['KEY_RESIZE'] = 'refresh_display()'
 -- THIS WORKS :D.
 --
 --
-keymap['global']['Ѫ'] = 'msg("UTF-8 rocks!");'
+keymap['global']['Ѫ'] = 'msg("UTF-8 rocks!")'
 
 --
 -- Quitting means different things in different modes.
