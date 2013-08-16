@@ -393,7 +393,7 @@ int alert(lua_State * L)
 
 
 /**
- * Prompt for input.
+ * Prompt the user to select one of a small set of strings.
  */
 int choose_string(lua_State * L)
 {
@@ -544,7 +544,6 @@ int prompt_chars(lua_State *L)
         CScreen::clear_status();
         move(height - 1, 0);
         printw(str.c_str());
-
 
         gunichar key;
         CInput::Instance()->get_wchar(&key);
