@@ -2107,6 +2107,21 @@ int compose(lua_State * L)
 
 
 /**
+ * Offset within the message we're displaying.
+ */
+int message_offset(lua_State * L)
+{
+    /**
+     * How many lines we've scrolled down the message.
+     */
+    CGlobal *global = CGlobal::Instance();
+    int offset = global->get_message_offset();
+
+    lua_pushinteger(L, offset);
+    return (1);
+}
+
+/**
  * Reply to an existing mail.
  */
 int reply(lua_State * L)

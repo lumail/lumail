@@ -76,6 +76,9 @@ int compose(lua_State *i);
 /* reply to an existing mail */
 int reply(lua_State *i);
 
+/* display-offset of the message. */
+int message_offset(lua_State *L);
+
 /* send a mail via script */
 int send_email(lua_State *L);
 

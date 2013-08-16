@@ -143,6 +143,7 @@ struct CLuaMapping primitive_list[] =
     {"is_new", "Is the current message new/unread?", (lua_CFunction) is_new },
     {"mark_read", "Mark the current message as old/read.", (lua_CFunction) mark_read },
     {"mark_unread", "Mark the current message as unread.", (lua_CFunction) mark_unread },
+    {"message_offset", "The offset within the message we've scrolled to", (lua_CFunction) message_offset },
     {"reply", "Reply to the current message.", (lua_CFunction) reply },
     {"save", "Save the current message in a new location, and delete it.", (lua_CFunction) save_message },
     {"save_message", "Save the current message in a new location, and delete it.", (lua_CFunction) save_message },
