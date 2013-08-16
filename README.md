@@ -96,6 +96,9 @@ Contributing
 
 I welcome bug reports, and pull-requests.
 
+* There is a [development roadmap](ROADMAP.md) in the repository.
+* For coding-style & coding-notes please see [CODING-STYLE](CODING-STYLE).
+
 If you submit two or more functional patches I'm happy to give you direct commit
 access to the repository.
 
