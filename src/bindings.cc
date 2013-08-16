@@ -1662,12 +1662,10 @@ int mime_type(lua_State *L)
      */
     static std::map< std::string, std::string> table;
 
-
     /**
      * Default MIME-type if we can't find the real one.
      */
     const char *default_type = "application/octet-stream";
-
 
     /**
      * Get the file to test.
@@ -1692,7 +1690,6 @@ int mime_type(lua_State *L)
          */
         std::string extension = filename.substr(offset+1);
         std::transform(extension.begin(), extension.end(), extension.begin(), tolower);
-
 
         /**
          * If we've not already populated our map..
@@ -1723,8 +1720,29 @@ int mime_type(lua_State *L)
                         pcrecpp::StringPiece input(line.c_str());
                         while (regex.Consume(&input, &piece))
                             data.push_back(piece);
+
                         for (size_t i = 1; i < data.size(); i++)
+                        {
+                            /**
+                             * The results here will be something like
+                             *    ext1 ext2 ext3 -> type
+                             */
+                            std::string suffixes = data[i];
+                            std::string m_type  = data[0];
+
+                            /**
+                             * Split suffixes on whitespace.
+                             */
+                            std::istringstream helper(suffixes);
+                            std::string tmp;
+                            while (std::getline(helper, tmp, ' '))
+                            {
+                                table[tmp] = m_type;
+                                DEBUG_LOG( "MIME[" + tmp + "] -> " + m_type );
+                            }
+
                             table[data[i]] = data[0];
+                        }
                         data.clear();
                     }
                     file.close();
@@ -1762,10 +1780,18 @@ int mime_type(lua_State *L)
          */
         std::string value = table[ extension ];
 
-        DEBUG_LOG( "MIME type of " + filename + " is " + value );
+        /**
+         * Log the value.
+         */
+        DEBUG_LOG( "MIME type of " + filename + " [suffix:" + extension + "] is "
+                   + value );
 
         if ( value.empty() )
+        {
+            DEBUG_LOG( "Using default MIME value: " + std::string(default_type)  );
+
             value = default_type;
+        }
 
         lua_pushstring(L, value.c_str());
         return(1);
