@@ -2933,8 +2933,6 @@ int save_attachment(lua_State *L)
 
 /**
  * Dump the Lua stack to our debug-log.
- *
- * NOTE: Only present if lumail is compiled with debugging.
  */
 int lua_dump_stack(lua_State *L)
 {
@@ -2947,8 +2945,6 @@ int lua_dump_stack(lua_State *L)
 
 /**
  * Log a message to the debug-log.
- *
- * NOTE: Only present if lumail is compiled with debugging.
  */
 int log_message(lua_State *L)
 {
