@@ -1585,11 +1585,19 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
         g_object_unref (stream);
 
         /**
+         * Find the MIME-type of the file.
+         */
+        CLua *lua = CLua::Instance();
+        std::string type = lua->get_mime_type( name );
+
+        /**
          * if you knew the mime-type of the file, you could use that instead
          * of application/octet-stream
          */
-        attachment = g_mime_part_new_with_type ("application", "octet-stream");
+        attachment = g_mime_part_new();
+        GMimeContentType *a_type = g_mime_content_type_new_from_string (type.c_str());
         g_mime_part_set_content_object (attachment, content);
+        g_mime_object_set_content_type((GMimeObject *)attachment, a_type);
         g_object_unref (content);
 
         /**

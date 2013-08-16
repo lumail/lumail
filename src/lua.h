@@ -134,6 +134,11 @@ public:
     bool get_bool( std::string name, bool default_value = false );
 
     /**
+     * Get the MIME-type of a given file.  Using the suffix-only.
+     */
+    std::string get_mime_type( std::string filename );
+
+    /**
      * Dump the Lua stack contents - only in debug-builds.
      */
     void dump_stack();

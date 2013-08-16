@@ -562,6 +562,25 @@ bool CLua::get_bool( std::string name, bool default_value )
 
 }
 
+/**
+ * Get the MIME-type of a given file.  Using the suffix-only.
+ */
+std::string CLua::get_mime_type( std::string filename )
+{
+#ifdef LUMAIL_DEBUG
+    DEBUG_LOG( "CLua::get_mime_type(" + filename + ")" );
+#endif
+
+    lua_pushstring(m_lua, filename.c_str() );
+    if ( mime_type( m_lua ) != 1 )
+        return "application/octet-stream";
+    const char *type = lua_tostring(m_lua,-1);
+
+#ifdef LUMAIL_DEBUG
+    DEBUG_LOG( "CLua::get_mime_type(" + filename + ") -> " + std::string( type ) );
+#endif
+    return( type );
+}
 
 /**
  * Dump the Lua stack contents - only in debug-builds.
