@@ -323,52 +323,23 @@ int stuff(lua_State * L)
 
 /**
  * Alert: Draw a message and await explicit confirmation.
- *
- * TODO: Simplify the argument parsing by remembering the stack can
- *       be accessed in ascending order too.
  */
 int alert(lua_State * L)
 {
-    /**
-     * Here we're trying to get the alert-text and the timeout
-     * but if we only have a single argument then we'll default
-     * to a period of 60 seconds.
-     */
-    const char *str    = lua_tostring(L, -2);
-    const char *period = lua_tostring(L, -1);
+    const int DEFAULT_TIMEOUT = 30;
 
-    int time_out;
+    const char *str = luaL_checkstring(L, 1);
+    int time_out    = luaL_optinteger(L, 2, DEFAULT_TIMEOUT);
 
-    /**
-     * If the string is null and the period isn't that means
-     * we only got a single argument - so that should be the
-     * string.
-     *
-     * Optional arguments are weird in Lua, unless you pass
-     * tables around...
-     */
-    if ( ( str == NULL ) && ( period != NULL ) )
-    {
-        str      = period;
-        time_out = 30;
-    }
-    else
-    {
-        if ( period == NULL  )
-            time_out = 30;
-        else
-            time_out = atoi( period );
-    }
-
-    /**
-     * Ensure the timeout is a positive integer.
-     */
-    if ( time_out < 0 )
-        time_out = 60;
-
-    if ( str == NULL )
+    if (time_out < 0)
+        return luaL_error(L, "timeout must be a positive integer.");
+    if (str == NULL)
         return luaL_error(L, "Missing argument to alert(..)");
 
+    /**
+     * Cleanup
+     */
+    lua_pop(L, 2);
 
     echo();
     timeout(0);
