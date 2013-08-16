@@ -63,7 +63,6 @@ public:
 
     /**
      * Get all selected folders:
-     *  TODO: This should be std::vector<CMaildir *>
      */
     std::vector<std::string> get_selected_folders();
 
