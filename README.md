@@ -53,7 +53,7 @@ Although we might become more complex in the future the code currently builds
 via a simple `Makefile`, and running `make` with no arguments should be sufficient.
 
 Once compiled the client may be executed directly, but you will need to supply
-a valid (lua) configuration file:
+a valid (Lua) configuration file:
 
      $ ./lumail --rcfile ./lumail.lua
 
@@ -71,13 +71,14 @@ If you examine the supplied [lumail.lua](https://raw.github.com/skx/lumail/maste
 The main part of the configuration is to point the mail-client at your local
 `Maildir` location, from which all sub-folders will be determined at run-time.
 
-At startup the following two Lua files are evaluated, if present:
+At startup the following files are loaded and executed, if they are present:
 
 * `/etc/lumail.lua`
+* `/etc/lumail.d/*.lua`
 * `~/.lumail/config.lua`
 
-If neither of those files are present then the client will abort with an error.
-This is to ensure that the keymap(s) are defined, etc.
+If zero configuration files are loaded then the client will abort with an error
+message.  This is to ensure that the keymap(s) are defined, etc.
 
 Once you have configuration file you can use any of the [supplied Lua primitives](http://lumail.org/lua/) to do interesting things.  The [online Lua examples](http://lumail.org/examples/) are a good starting point for reference.
 
