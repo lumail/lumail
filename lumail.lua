@@ -1,18 +1,24 @@
+----
+----
 --
--- When lumail launches it will look for two configuration files, if they
--- exist they will be loaded in turn:
+-- When lumail launches it will look for the following configuration files:
 --
 --   /etc/lumail.lua
+--   /etc/lumail.d/*.lua
 --   ~/.lumail/config.lua
 --
--- If you wish to load an additional configuration file you can add it via
--- the --rcfile argument:
+-- Each of these files will be loaded in turn.  If none are present then
+-- the client will abort with an error message.
 --
---   $ lumail --rcfile ./lumail.lua
+-- If you wish to load additional configuration file(s) you may do so via
+-- the "--rcfile" argument.  Multiple additional files may be specified:
 --
+--   $ lumail --rcfile ./one.lua --rcfile ./two.lua
 --
--- NOTE: This file will also ensure that each file matching *.lua
---       beneath ~/.lumail.d/ will be loaded.
+-- NOTE: This file will also cause ~/.lumail.d/*.lua to be loaded.
+--
+---
+---
 --
 -- The configuration file(s) are responsible for determining which keystrokes
 -- are recognized, and what they will do.
@@ -23,12 +29,13 @@
 --
 --   http://lumail.org/examples/
 --
--- The lumail primitives themselves are documented here:
+-- The lumail primitives themselves, from which the examples are built, are
+-- documented here:
 --
 --   http://lumail.org/lua/
 --
--- Steve
--- --
+----
+----
 --
 
 
@@ -43,6 +50,9 @@
 --
 prefix = os.getenv( "HOME" ) .. "/Maildir"
 
+--
+-- Ensure the directory exists.
+--
 if ( is_directory(prefix) ) then
    maildir_prefix(prefix)
 else
@@ -64,12 +74,12 @@ end
 
 
 --
--- Set the from address for yourself, which is used for
--- composing/replying.
+-- Set the from address for yourself, which is used for composing/replying.
 --
 -- This can be changed in one of the available hooks.
 --
--- In this configuration file we use the `on_folder_selection()` function later.
+-- In this configuration file we use the `on_folder_selection()` function
+-- to change this on a per-folder basis.
 --
 default_email = "Steve Kemp <steve@steve.org.uk>"
 from( default_email )
@@ -86,6 +96,7 @@ end
 if ( executable( "/usr/lib/sendmail" ) ) then
    sendmail_path( "/usr/lib/sendmail -t" )
 end
+
 
 --
 -- Specify the editor to use for composing/replying to email messages.
@@ -117,7 +128,7 @@ end
 --
 --    all  -> Show all maildir folders.
 --    new  -> Show all maildir folders which contain unread messages.
---   "str" -> Show all maildir folders which match the substring "str".
+--   "pat" -> Show all maildir folders which match the regular expression "pat".
 --
 -- See "all_folders" , "new_folders", and "livejournal_folders" functions for
 -- example of use.
@@ -148,7 +159,7 @@ maildir_format( "$CHECK - $UNREAD/$TOTAL - $PATH" )
 --
 --        all  -> Show all message.
 --        new  -> Show all unread messages.
---       "str" -> Show all messages which match the substring "str".
+--       "pat" -> Show all messages which match the regular expression "pat".
 --
 index_limit( "all" )
 
@@ -203,6 +214,8 @@ headers = { "$TO", "$FROM", "$DATE", "$SUBJECT" }
 -- This function will invoke offlineimap, if it is installed
 -- and configured for the current user.
 --
+-- It is called via the on_idle() function defined later.
+--
 function offlineimap()
    if ( not file_exists( os.getenv( "HOME" ) .. "/.offlineimaprc" ) ) then
       return false
@@ -231,7 +244,8 @@ end
 
 
 --
--- This function is called when a folder is added/removed to the selected set.  Or toggled.
+-- This function is called when a folder is added/removed to the selected set.,
+-- or toggled.
 --
 -- It is where you can run per-folder hooks.
 --
@@ -305,6 +319,7 @@ function jump_to_start()
    end
 end
 
+
 --
 -- This function is called when a message is displayed.
 --
@@ -313,8 +328,6 @@ end
 -- Here we use the "is_new()" and "mark_read()" functions with that path.
 --
 -- (If the path were omitted then the current-message would be implicit.)
---
--- We mark any new message(s) read when we read them here.
 --
 function on_read_message( path )
    if ( is_new()  ) then
@@ -457,8 +470,9 @@ function index()
     clear()
 end
 
+
 --
--- This function will be called if the global mode changes
+-- This function will be called when the global mode changes
 --
 function on_mode_change( old, new)
     -- check if we are switching from maildir to index mode, if so try to jump
@@ -499,6 +513,7 @@ end
 
 --
 -- Jump to the first unread mail starting from pos.
+--
 -- Do nothing if all mails are marked read
 --
 function jump_to_next_unread_from_pos(pos)
@@ -574,7 +589,8 @@ end
 
 
 --
--- When in maildir-mode show all folders which have a path matching the given pattern.
+-- When in maildir-mode show all folders which have a path matching
+-- the given regular expression.
 --
 function livejournal_folders()
    maildir_limit( "livejournal.[0-9]" )
