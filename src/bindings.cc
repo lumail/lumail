@@ -2778,6 +2778,9 @@ int create_maildir(lua_State *L)
     else
         lua_pushboolean(L,0);
 
+    CGlobal *global = CGlobal::Instance();
+    global->update_maildirs();
+
     return 1;
 }
 
