@@ -158,7 +158,7 @@ bool sort_messages(CMessage *a, CMessage *b)
         if ( asc )
             return (a->mtime() < b->mtime());
         else
-            return (b->mtime() <= a->mtime());
+            return (b->mtime() < a->mtime());
 
     }
 
@@ -252,7 +252,7 @@ bool sort_messages(CMessage *a, CMessage *b)
         if ( asc )
             return ( at < bt );
         else
-            return ( bt <= at );
+            return ( bt < at );
 
     }
 
