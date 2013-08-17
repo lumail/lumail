@@ -434,30 +434,43 @@ std::string CMaildir::message_in(std::string path, bool is_new)
     gethostname(host, sizeof(host)-1);
     std::string hostname( host );
 
-    time_t current_time = time(NULL);
-
     /**
-     * Convert the seconds to a string.
+     * Loop until we found a file that is unique.
      */
-    std::stringstream ss;
-    ss << current_time;
-    std::string since_epoch = ss.str();
+    while( true )
+    {
+        /**
+         * Convert the seconds past the epoch to a string.
+         */
+        time_t current_time = time(NULL);
+        std::stringstream ss;
+        ss << current_time;
+        std::string since_epoch = ss.str();
 
-    path += since_epoch;
-    path += ".";
-    path += hostname;
+        std::string file = since_epoch;
+        file += ".";
+        file += hostname;
 
-    /**
-     * Generate the temporary file.
-     */
-    path += ":2";
+        /**
+         * Random number.
+         */
+        int r = rand() % 1000;
+        ss << r;
+        file += ss.str();
 
-    if ( is_new )
-        path += ",N";
-    else
-        path += ",S";
+        /**
+         * Generate the temporary file.
+         */
+        file += ":2";
 
-    return( path );
+        if ( is_new )
+            file += ",N";
+        else
+            file += ",S";
+
+        if ( ! CFile::exists( path  + file ) )
+            return( path + file );
+    }
 }
 
 /**
