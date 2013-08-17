@@ -1,15 +1,39 @@
-.TH lumail 1 "January 2009" Unix "User Manuals"
+.\" Manpage for lumail.
+.TH man 8 "17 Aug 2013" "1.0" "lumail man page"
 .SH NAME
-lumail \- console based email client
+lumail \- A console-based mail-client with integrated Lua scripting support.
 .SH SYNOPSIS
-lumail [args].
-.PP
+lumail [options]
 .SH DESCRIPTION
-.\" Putting a newline after each sentence can generate better output.
-lumail is documented online on the website
-http://lumail.org/
+lumail is a console-based mail-client with fully integrated Lua scripting support.
+The integrated Lua scripting support is used for all configuration, in addition
+to automating common email tasks.
+.TP
+The client is fully configurable via Lua, but operates solely upon local Maildir hierachies, with no support for IMAP, POP3, or mbox files.
+
+.SH OPTIONS
+.TP
+.BR \-d ", " \-\-debug
+Specify the path to the debug-log to create.
+.TP
+.BR \-e ", " \-\-eval
+Evaluate the given Lua expression.
+.TP
+.BR \-f ", " \-\-folder " "  ~/Maildir/.path/
+Open the given Maildir on startup.
+.TP
+.BR \-r ", " \-\-rcfile " " "file"
+Load the given configuration file.
+.TP
+.BR \-x ", " \-\-exit
+Exit after evaluation of any supplied strings.
+.TP
+.BR \-v ", " \-\-version
+Display version information.
+
+.SH SEE ALSO
+lua(1)
+.SH BUGS
+Bugs are tracked online https://github.com/skx/lumail/
 .SH AUTHOR
-Steve Kemp <steve@steve.org.uk>
-.SH "SEE ALSO"
-.\" Always quote multiple words for .SH
-There are no other references.
+Steve Kemp (steve@steve.org.uk)
