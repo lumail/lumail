@@ -345,6 +345,9 @@ bool CMaildir::matches_filter( std::string *filter )
  *
  * The return value is *all possible messages*, no attention to `index_limit`
  * is paid.
+ *
+ *  TODO:  Use CFile::files_in_directory().
+ *
  */
 std::vector<CMessage *> CMaildir::getMessages()
 {
