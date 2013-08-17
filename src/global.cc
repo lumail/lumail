@@ -77,7 +77,7 @@ CGlobal::CGlobal()
     set_variable( "display_filter",  new std::string("") );
     set_variable( "mail_filter",     new std::string("") );
     set_variable( "sendmail_path",   new std::string( "/usr/lib/sendmail -t" ) );
-
+    set_variable( "sort",            new std::string( "date-asc" ) );
 
     /**
      * Default colours.
@@ -143,7 +143,7 @@ bool sort_messages(CMessage *a, CMessage *b)
     /**
      * Sort by date.  Default if nothing is explicitly set.
      */
-    if ( ( sort == NULL ) ||
+    if ( ( sort->empty() ) ||
          ( strcmp( sort->c_str(), "date-asc" ) == 0 ) ||
          ( strcmp( sort->c_str(), "date-desc" ) == 0 ) )
     {
@@ -152,7 +152,7 @@ bool sort_messages(CMessage *a, CMessage *b)
         /**
          * Are we descending?
          */
-        if  ( ( sort != NULL ) && ( strcmp( sort->c_str(), "date-desc" ) == 0 ) )
+        if  ( ( ! sort->empty() ) && ( strcmp( sort->c_str(), "date-desc" ) == 0 ) )
             asc = false;
 
         if ( asc )
@@ -165,7 +165,7 @@ bool sort_messages(CMessage *a, CMessage *b)
     /**
      * Sort by subject, asc/desc.
      */
-    if (  ( sort != NULL ) &&
+    if (  ( !sort->empty() ) &&
           ( ( strcmp(sort->c_str(), "subject" ) == 0 )  ||
             ( strcmp(sort->c_str(), "subject-asc" ) == 0 )  ||
             ( strcmp(sort->c_str(), "subject-desc" ) == 0 )  ) )
@@ -176,7 +176,7 @@ bool sort_messages(CMessage *a, CMessage *b)
         /**
          * Are we descending?
          */
-        if  ( ( sort != NULL ) && ( strcmp( sort->c_str(), "subject-desc" ) == 0 ) )
+        if  ( ( ! sort->empty() ) && ( strcmp( sort->c_str(), "subject-desc" ) == 0 ) )
             asc = false;
 
         std::string as = a->header("Subject");
@@ -198,7 +198,7 @@ bool sort_messages(CMessage *a, CMessage *b)
     /**
      * Sort by sender, asc/desc.
      */
-    if (  ( sort != NULL ) &&
+    if (  ( !sort->empty() ) &&
           ( ( strcmp(sort->c_str(), "from" ) == 0 )  ||
             ( strcmp(sort->c_str(), "from-asc" ) == 0 )  ||
             ( strcmp(sort->c_str(), "from-desc" ) == 0 )  ) )
@@ -232,7 +232,7 @@ bool sort_messages(CMessage *a, CMessage *b)
     /**
      * Sort by the date-header
      */
-    if (  ( sort != NULL ) &&
+    if (  ( ! sort->empty() ) &&
           ( ( strcmp(sort->c_str(), "header" ) == 0 )  ||
             ( strcmp(sort->c_str(), "header-asc" ) == 0 )  ||
             ( strcmp(sort->c_str(), "header-desc" ) == 0 )  ) )

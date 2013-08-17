@@ -67,6 +67,9 @@ CMessage *get_message_for_operation( const char *path )
     if ( path != NULL )
     {
         msg = new CMessage( path );
+
+        DEBUG_LOG( "get_message_for_operation:"  + std::string(msg->header( "Subject" ) ) );
+
         return(msg);
     }
 
@@ -95,7 +98,11 @@ CMessage *get_message_for_operation( const char *path )
     if ( ( count < 1 ) || ( selected >=  count ) )
         return NULL;
     else
+    {
+        DEBUG_LOG( "get_message_for_operation:"  + std::string(messages->at(selected)->header( "Subject" ) ) );
+
         return(  messages->at(selected) );
+    }
 
 }
 
