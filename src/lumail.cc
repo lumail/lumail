@@ -84,12 +84,47 @@ bool CLumail::load_init_files( std::vector<std::string> extra )
     int init = 0;
 
     /**
-     * Create the Lua intepreter.
+     * If we've got /etc/lumail.lua then load it.
      */
     if ( m_lua->load_file("/etc/lumail.lua") )
     {
         init += 1;
     }
+
+    /**
+     * Load /etc/lumail.d/ if present.
+     */
+    if ( CFile::is_directory( "/etc/lumail.d/" ) )
+    {
+        std::vector<std::string> files = CFile::files_in_directory( "/etc/lumail.d" );
+        std::vector<std::string>::iterator it;
+
+        for (it = files.begin(); it != files.end(); ++it)
+        {
+            std::string file = (*it);
+
+            /**
+             * If the file ends in .lua then load it.
+             */
+            size_t offset = file.rfind('.');
+            if(offset != std::string::npos)
+            {
+                /**
+                 * Get the lower-case version.
+                 */
+                std::string extension = file.substr(offset+1);
+                std::transform(extension.begin(), extension.end(),
+                               extension.begin(), tolower );
+
+                if ( extension == "lua" )
+                {
+                    m_lua->load_file( file );
+                    init += 1;
+                }
+            }
+        }
+    }
+
 
     /**
      * Load the init-file from the users home-directory, if we can.
@@ -100,7 +135,7 @@ bool CLumail::load_init_files( std::vector<std::string> extra )
              init += 1;
 
     /**
-     * If we have any init file specified then load it up too.
+     * If we have any init files specified then load it up too.
      */
     std::vector<std::string>::iterator it;
     for (it = extra.begin(); it != extra.end(); ++it)
