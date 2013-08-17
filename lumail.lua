@@ -1045,16 +1045,3 @@ history_file( os.getenv( "HOME" ) .. "/.lumail.history" )
 --
 ---
 
-
-
-function mtd()
-     cur = global_mode()
-     global_mode('index')
-
-     while count_messages() > 0 do
-        jump_to_end()
-        save(os.getenv( "HOME") .. "/Maildir/.foo" )
-     end
-
-     global_mode(cur)
- end
