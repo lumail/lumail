@@ -2993,48 +2993,36 @@ int load_directory(lua_State *L)
      */
     CLua *lua = CLua::Instance();
 
+    /**
+     * Get the files in the directory.
+     */
+    std::vector<std::string> files = CFile::files_in_directory( path );
+    std::vector<std::string>::iterator it;
     int count = 0;
-    dirent *de;
-    DIR *dp;
 
-    dp = opendir(path);
-    if (dp)
+    for (it = files.begin(); it != files.end(); ++it)
     {
-        std::string base = path;
-        base += "/";
+        std::string file = (*it);
 
-        while (true)
+        /**
+         * If the file ends in .lua then load it.
+         */
+        size_t offset = file.rfind('.');
+        if(offset != std::string::npos)
         {
-            de = readdir(dp);
-            if (de == NULL)
-                break;
-
             /**
-             * Build up the complete file.
+             * Get the lower-case version.
              */
-            std::string file = base + de->d_name;
+            std::string extension = file.substr(offset+1);
+            std::transform(extension.begin(), extension.end(), extension.begin(), tolower );
 
-            /**
-             * If the file ends in .lua then load it.
-             */
-            size_t offset = file.rfind('.');
-            if(offset != std::string::npos)
+            if ( strcmp( "lua", extension.c_str() ) == 0 )
             {
-                /**
-                 * Get the lower-case version.
-                 */
-                std::string extension = file.substr(offset+1);
-                std::transform(extension.begin(), extension.end(), extension.begin(), tolower );
-
-                if ( strcmp( "lua", extension.c_str() ) == 0 )
-                {
-                    lua->load_file( file );
-                    count += 1;
-                }
-
+                lua->load_file( file );
+                count += 1;
             }
+
         }
-        closedir(dp);
     }
 
     /**
