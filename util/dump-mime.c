@@ -37,6 +37,18 @@ void dump_mail( char *filename )
     g_object_unref (parser);
 
     /**
+     * Dump some headers.
+     */
+    const char *to = g_mime_object_get_header ((GMimeObject *) m_message, "to" );
+    const char *from = g_mime_object_get_header ((GMimeObject *) m_message, "from" );
+    const char *subject = g_mime_object_get_header ((GMimeObject *) m_message, "subject" );
+
+    std::cout << "Filename: " << filename << std::endl;
+    std::cout << "To: " << to << std::endl;
+    std::cout << "From: " << from << std::endl;
+    std::cout << "Subject: " << subject << std::endl;
+
+    /**
      * Create an iterator
      */
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
@@ -143,7 +155,6 @@ void dump_mail( char *filename )
     /**
      * Show the result.
      */
-    std::cout << "Filename: " << filename << std::endl;
     std::cout << result << std::endl;
 }
 
