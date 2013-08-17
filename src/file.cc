@@ -95,6 +95,58 @@ bool CFile::is_directory(std::string path)
 }
 
 
+
+/**
+ * Get the files in the given directory.
+ *
+ * NOTE: Directories are excluded.
+ */
+std::vector<std::string> CFile::files_in_directory(std::string path)
+{
+    std::vector<std::string> results;
+
+    assert( CFile::is_directory( path ) == true );
+
+    dirent *de;
+    DIR *dp;
+
+    dp = opendir(path.c_str());
+    if (dp)
+    {
+        std::string base = path;
+        base += "/";
+
+        while (true)
+        {
+            de = readdir(dp);
+            if (de == NULL)
+                break;
+
+            /**
+             * Ignore . + ..
+             */
+            if ( ( strcmp( de->d_name, "." ) != 0 ) &&
+                 ( strcmp( de->d_name, ".." ) != 0 ) )
+            {
+                /**
+                 * Build up the complete file.
+                 */
+                std::string file = base + de->d_name;
+
+                /**
+                 * Return the results.
+                 */
+                if ( ! CFile::is_directory( file ) )
+                    results.push_back( file );
+            }
+        }
+        closedir(dp);
+    }
+
+    return( results );
+}
+
+
 /**
  * Remove a file.
  */

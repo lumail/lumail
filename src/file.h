@@ -52,6 +52,13 @@ public:
 
 
     /**
+     * Get the files in the given directory.
+     *
+     * NOTE: Directories are excluded.
+     */
+    static std::vector<std::string> files_in_directory(std::string path);
+
+    /**
      * Delete a file.
      */
     static bool delete_file(std::string path);
