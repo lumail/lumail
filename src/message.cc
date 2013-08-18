@@ -1487,31 +1487,16 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
      * We also have a vector of filenames which should be added as attachments
      * to this mail.
      *
-     * If there are no attachments then we can return immediately, otherwise
-     * we need to add the attachments to the mail - which means parsing it,
-     * adding the attachments, and returning an (updated) file.
+     * If there are no attachments then we could return immediately, which would
+     * send a naive/simple/non-MIME message.  Instead we choose to proceed
+     * regardless.
+     *
+     * If we have attachments then we need to add each one in turn, if not we
+     * just create a minimal MIME message.  Either way we'll be multi-part/mixed.
+     *
      *
      */
 
-
-    /**
-     * Simplest case - if there are no attachments we merely return.
-     *
-     * This means our message is non-MIME.  Ideally we shouldn't return,
-     * instead we should always proceed, as this will encode our outgoing
-     * headers, etc.
-     *
-     * For the moment I've left this early termination in place because
-     * I'm loathe to make too many changes to this code while it is still
-     * new.  It will become apparent pretty quickly if I've made the
-     * wrong choice.
-     *
-     */
-    if ( attachments.size() < 1 )
-    {
-        DEBUG_LOG( "CMessage::add_attachments_to_mail - No attachments for this message" );
-        return;
-    }
 
     GMimeMessage *message;
     GMimeParser  *parser;
@@ -1591,8 +1576,8 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
         std::string type = lua->get_mime_type( name );
 
         /**
-         * if you knew the mime-type of the file, you could use that instead
-         * of application/octet-stream
+         * Here we use the mime-type we've returned and set that for the
+         * attachment.
          */
         attachment = g_mime_part_new();
         GMimeContentType *a_type = g_mime_content_type_new_from_string (type.c_str());
@@ -1601,12 +1586,12 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
         g_object_unref (content);
 
         /**
-         * set the filename?
+         * set the filename.
          */
         g_mime_part_set_filename (attachment, CFile::basename(name).c_str());
 
         /**
-         * NOTE: We might want to base64 encode this for transport...
+         * Here we use base64 encoding.
          *
          * NOTE: if you want o get really fancy, you could use
          * g_mime_part_get_best_content_encoding()
