@@ -241,6 +241,16 @@ CLua::CLua()
     lua_pushstring(m_lua, LUMAIL_VERSION );
     lua_setglobal(m_lua, "VERSION" );
 
+    /**
+     * Set a global variable into the Lua environment.
+     */
+#ifdef LUMAIL_DEBUG
+    lua_pushboolean(m_lua, 1 );
+#else
+    lua_pushboolean(m_lua, 0 );
+#endif
+    lua_setglobal(m_lua, "DEBUG" );
+
 
     /**
      * Load a panic-handler - which will call abort()
