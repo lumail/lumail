@@ -47,6 +47,7 @@ CMessage::CMessage(std::string filename)
     m_time_cache   = 0;
     m_read         = false;
     m_message      = NULL;
+    m_fd           = -1;
 
 #ifdef LUMAIL_DEBUG
     std::string dm = "CMessage::CMessage(";
@@ -1439,19 +1440,24 @@ void CMessage::open_message( const char *filename )
 {
     GMimeParser *parser;
     GMimeStream *stream;
-    int fd = open( filename, O_RDONLY, 0);
+    m_fd = open( filename, O_RDONLY, 0);
 
-    if ( fd < 0 )
+    if ( m_fd < 0 )
     {
+        char *reason = strerror(errno);
         std::string error = "alert(\"Failed to open file ";
-        error += filename;
+        error += reason;
         error += "\", 30 );" ;
         CLua *lua = CLua::Instance();
         lua->execute( error );
         return;
     }
+    else
+    {
+        DEBUG_LOG( "file->open : " + std::string( filename ) );
+    }
 
-    stream = g_mime_stream_fs_new (fd);
+    stream = g_mime_stream_fs_new (m_fd);
 
     parser = g_mime_parser_new_with_stream (stream);
     g_object_unref (stream);
@@ -1469,6 +1475,13 @@ void CMessage::close_message()
     {
         g_object_unref( m_message );
         m_message = NULL;
+    }
+
+
+    if ( m_fd > 0 )
+    {
+        DEBUG_LOG( "file->close" );
+        close( m_fd );
     }
 }
 

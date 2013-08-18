@@ -173,6 +173,12 @@ private:
     GMimeMessage *m_message;
 
     /**
+     * The file-descriptor for this message.
+     */
+    int m_fd;
+
+
+    /**
      * Parse the message with gmime.
      */
     void open_message( const char *filename );
