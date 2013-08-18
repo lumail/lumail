@@ -191,11 +191,18 @@ void CMessage::path( std::string new_path )
      * Reset the cached stat() data.
      */
     m_time_cache = 0;
+
+    /**
+     * Close the message.
+     */
+    close_message();
 }
 
 
 /**
  * Get the flags for this message.
+ *
+ * NOTE: This doesn't parse the message, it just reads the filename.
  */
 std::string CMessage::flags()
 {
@@ -229,9 +236,16 @@ std::string CMessage::flags()
 
 /**
  * Add a flag to a message.
+ *
+ * NOTE: This only updates the path to the file, it doesn't change the state.
+ * however we close the message just in case because we might have an open
+ * file-handle to the previous name.
+
  */
 void CMessage::add_flag( char c )
 {
+    close_message();
+
     /**
      * Flags are upper-case.
      */
@@ -339,9 +353,15 @@ bool CMessage::has_flag( char c )
 
 /**
  * Remove a flag from a message.
+ *
+ * NOTE: This only updates the path to the file, it doesn't change the state.
+ * however we close the message just in case because we might have an open
+ * file-handle to the previous name.
  */
 void CMessage::remove_flag( char c )
 {
+    close_message();
+
     /**
      * Flags are upper-case.
      */
@@ -676,6 +696,7 @@ UTFString CMessage::format( std::string fmt )
         if ( result.empty() )
             result = "[unset]";
     }
+
     return( result );
 }
 
