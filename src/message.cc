@@ -83,6 +83,9 @@ CMessage::~CMessage()
  */
 void CMessage::message_parse()
 {
+    /**
+     * If we've already parsed the message then we're good.
+     */
     if ( m_message != NULL )
         return;
 
@@ -106,11 +109,6 @@ void CMessage::message_parse()
          * Open the file.
          */
         int fd  = mkstemp(filename);
-
-        /**
-         * Avoid "unused variable" warning.
-         */
-        (void)(fd);
 
         /**
          * Build up the command to execute, via cat.
@@ -153,12 +151,15 @@ void CMessage::message_parse()
              * Parse the message, from the temporary file.
              */
             open_message( filename );
-            /**
-             * Don't leak the filename
-             */
-            CFile::delete_file( filename );
-            return;
         }
+
+        /**
+         * Don't leak the filename
+         */
+        close(fd);
+        CFile::delete_file( filename );
+        return;
+
     }
 
     /**
@@ -1189,11 +1190,6 @@ std::vector<UTFString> CMessage::body()
          */
         int fd  = mkstemp(filename);
 
-        /**
-         * Avoid "unused variable" warning.
-         */
-        (void)(fd);
-
         std::ofstream on;
         on.open(filename, std::ios::binary);
         on.write(body.c_str(), body.size());
@@ -1238,6 +1234,7 @@ std::vector<UTFString> CMessage::body()
         /**
          * Don't leak the temporary file.
          */
+        close( fd );
         CFile::delete_file( filename );
     }
 
