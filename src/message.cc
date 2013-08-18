@@ -707,6 +707,8 @@ UTFString CMessage::header( std::string name )
 
 #ifdef LUMAIL_DEBUG
         std::string dm = "CMessage::header('";
+        dm += name ;
+        dm += "' -> '";
         dm +=  (( str != NULL ) ? str : "NULL" );
         dm += "') -> '";
         dm +=  (( decoded != NULL ) ? decoded : "NULL" );
