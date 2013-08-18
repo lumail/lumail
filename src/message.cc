@@ -723,6 +723,9 @@ UTFString CMessage::header( std::string name )
 
         g_free (decoded);
     }
+
+    close_message();
+
     return( result );
 }
 
@@ -1143,6 +1146,7 @@ UTFString CMessage::get_body()
     /**
      * All done.
      */
+    close_message();
     return( result );
 }
 
@@ -1248,6 +1252,8 @@ std::vector<UTFString> CMessage::body()
         result.push_back( line );
     }
 
+
+    close_message();
     return(result);
 }
 
@@ -1294,6 +1300,7 @@ std::vector<std::string> CMessage::attachments()
 
     g_mime_part_iter_free (iter);
 
+    close_message();
     return( paths );
 }
 
@@ -1397,6 +1404,7 @@ bool CMessage::save_attachment( int offset, std::string output_path )
 
     g_mime_part_iter_free (iter);
 
+    close_message();
     return( ret );
 }
 
