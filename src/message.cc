@@ -1439,10 +1439,17 @@ void CMessage::open_message( const char *filename )
 {
     GMimeParser *parser;
     GMimeStream *stream;
-    int fd;
+    int fd = open( filename, O_RDONLY, 0);
 
-    if ((fd = open( filename, O_RDONLY, 0)) == -1)
+    if ( fd < 0 )
+    {
+        std::string error = "alert(\"Failed to open file ";
+        error += filename;
+        error += "\", 30 );" ;
+        CLua *lua = CLua::Instance();
+        lua->execute( error );
         return;
+    }
 
     stream = g_mime_stream_fs_new (fd);
 
