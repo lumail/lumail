@@ -707,6 +707,24 @@ UTFString CMessage::format( std::string fmt )
 UTFString CMessage::header( std::string name )
 {
     /**
+     * If we have a cached value, use it.
+     */
+    static std::unordered_map<std::string, UTFString> cache;
+
+    std::string cache_key = path() + name;
+    UTFString cached_val  = cache[cache_key];
+    if ( !cached_val.empty() )
+    {
+#ifdef LUMAIL_DEBUG
+        std::string dm = "CMessage::header - returning cached value for header - ";
+        dm += name ;
+        DEBUG_LOG( dm );
+#endif
+        return( cached_val );
+    }
+
+
+    /**
      * Ensure the message has been read.
      */
     message_parse();
@@ -746,6 +764,11 @@ UTFString CMessage::header( std::string name )
     }
 
     close_message();
+
+    /**
+     * Save in cache.
+     */
+    cache[cache_key] =result;
 
     return( result );
 }
