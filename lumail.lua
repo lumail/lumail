@@ -490,24 +490,29 @@ end
 -- Test if there is currently a new message displayed
 --
 function newmail_displayed()
-    -- save old limit + mode
-    old_index_limit = index_limit()
-    old_global_mode = global_mode()
 
-    -- check if we can count any new messages
-    index_limit( "new" )
-    global_mode( "index" )
-    c = count_messages()
+   --
+   -- save old limit + mode
+   --
+   -- See also: http://lumail.org/examples/state.html
+   --
+   old_index_limit = index_limit()
+   old_global_mode = global_mode()
 
-    -- restore
-    index_limit( old_index_limit )
-    global_mode( old_global_mode )
+   -- check if we can count any new messages
+   index_limit( "new" )
+   global_mode( "index" )
+   c = count_messages()
 
-    if ( c > 0 ) then
-        return true
-    else
-        return false
-    end
+   -- restore
+   index_limit( old_index_limit )
+   global_mode( old_global_mode )
+
+   if ( c > 0 ) then
+      return true
+   else
+      return false
+   end
 end
 
 
@@ -517,19 +522,19 @@ end
 -- Do nothing if all mails are marked read
 --
 function jump_to_next_unread_from_pos(pos)
-    cur = index_offset()
-    count = count_messages()
-    i = pos
-    while( i < count ) do
-        jump_index_to( i )
-        if is_new() then
-            break
-        end
-        i = i + 1
-    end
-    if i == count then
-        jump_index_to(cur)
-    end
+   cur = index_offset()
+   count = count_messages()
+   i = pos
+   while( i < count ) do
+      jump_index_to( i )
+      if is_new() then
+         break
+      end
+      i = i + 1
+   end
+   if i == count then
+      jump_index_to(cur)
+   end
 end
 
 
@@ -538,7 +543,7 @@ end
 -- to nothing
 --
 function jump_to_first_unread()
-    jump_to_next_unread_from_pos(0)
+   jump_to_next_unread_from_pos(0)
 end
 
 
@@ -547,8 +552,8 @@ end
 -- If all are read do nothing
 --
 function jump_to_next_unread()
-    cur = index_offset()
-    jump_to_next_unread_from_pos(cur+1)
+   cur = index_offset()
+   jump_to_next_unread_from_pos(cur+1)
 end
 
 
@@ -1044,4 +1049,5 @@ history_file( os.getenv( "HOME" ) .. "/.lumail.history" )
 --
 --
 ---
+
 
