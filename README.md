@@ -1,3 +1,11 @@
+"!https://travis-ci.org/skx/lumail.png!":https://travis-ci.org/skx/lumail
+
+
+
+
+
+
+
 Lumail
 ======
 
