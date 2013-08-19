@@ -76,7 +76,10 @@ int get_set_string_variable( lua_State *L, const char * name )
     }
 
     std::string * s = g->get_variable(name);
-    lua_pushstring(L, s->c_str());
+    if ( s )
+        lua_pushstring(L, s->c_str());
+    else
+        lua_pushnil( L );
     return( 1 );
 }
 
