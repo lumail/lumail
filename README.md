@@ -1,5 +1,4 @@
-"!https://travis-ci.org/skx/lumail.png!":https://travis-ci.org/skx/lumail
-
+[![Build Status](https://travis-ci.org/skx/lumail.png)](https://travis-ci.org/skx/lumail)
 
 
 
