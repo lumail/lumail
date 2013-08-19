@@ -143,6 +143,7 @@ std::vector<std::string> CFile::files_in_directory(std::string path)
         closedir(dp);
     }
 
+    std::sort(results.begin(), results.end());
     return( results );
 }
 
