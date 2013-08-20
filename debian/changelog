@@ -1,3 +1,36 @@
+lumail (0.19) stable; urgency=low
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+    #102 - You can now bind functions to UTF-8 kesy
+         - UTF-8 input input works via prompt()
+         - Keymappings exist for KEY_LEFT, etc.
+    #118 - Don't free attachments when writing them to disk, via
+           save_attachment().
+    #119 - Fixed segfaults in: display_filter() & mail_filter().
+    #120 - Updated the Debian manpage.
+    #121 - Clarified the documentation for the default sort order.
+    #122 - Avoid filename collisions when saving messages.
+    #123 - Add new maildirs to the display immediately.
+    #124 - Close filehandles sooner rather than later to avoid
+           running out of handles when processing large Maildirs.
+  * Allow multiple "--eval" strings on the command-line.
+  * Added default on_message_aborted() handler, and removed the
+    hard-wired status message from the C-code.
+  * New primitive: on_delete_message(), documented here:
+      http://lumail.org/lua/on_delete_message.html
+  * New primitive: message_offset(), documented here:
+      http://lumail.org/lua/message_offset.html
+  * Improved the implementation of alert().
+  * Improved the implementation of mime_type().
+  * Set the correct MIME-type on file attachments added to outgoing messages.
+  * Two new variables "DEBUG" & "VERSION" are documented:
+      http://lumail.org/lua/DEBUG.html
+      http://lumail.org/lua/VERSION.html
+
+ -- Steve Kemp <steve@steve.org.uk>  Tue, 20 Aug 2013 07:33:00 +0000
+
 lumail (0.18) stable; urgency=low
 
   * New release, fixing several bugs.
