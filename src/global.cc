@@ -16,15 +16,14 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <algorithm>
-#include <iostream>
 #include <cstdlib>
 #include <fstream>
-#include <string.h>
-#include <stdlib.h>
+#include <iostream>
 #include <pcrecpp.h>
+#include <stdlib.h>
+#include <string.h>
+
 
 #include "debug.h"
 #include "file.h"
@@ -32,6 +31,7 @@
 #include "lua.h"
 #include "maildir.h"
 #include "message.h"
+
 
 /**
  * Instance-handle.
