@@ -306,6 +306,24 @@ int msg(lua_State * L)
     if (strlen(buf) < 1 )
         return luaL_error(L, "Missing argument to msg(..)");
 
+    /**
+     * Are we evaluating?
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::string *f  = global->get_variable( "eval_exit" );
+    if ( ( f != NULL ) && ( strcmp( f->c_str(), "true" ) == 0 ) )
+    {
+        def_prog_mode();
+        endwin();
+
+        std::cout << buf << std::endl;
+
+        reset_prog_mode();
+        refresh();
+
+        return 0;
+    }
+
     CScreen::clear_status();
     move(CScreen::height() - 1, 0);
     printw("%s", buf);
