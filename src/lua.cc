@@ -17,7 +17,6 @@
  */
 
 
-#include <iostream>
 #include <cstdlib>
 #include <fstream>
 #include <string.h>
@@ -75,7 +74,7 @@ struct CLuaMapping primitive_list[] =
     {"stuff", "Stuff keys into the input-buffer", (lua_CFunction) stuff },
 
 /**
- * File/Path utilities
+ * File/Path utilities.  Defined in src/bindings_file.cc
  */
     {"create_maildir", "Create a new maildir.", (lua_CFunction) create_maildir },
     {"executable", "Is the given file executable?", (lua_CFunction) executable },
@@ -94,7 +93,7 @@ struct CLuaMapping primitive_list[] =
     {"toggle_selected_folder", "Toggle the folder into/out-of the selected set.", (lua_CFunction) toggle_selected_folder },
 
 /**
- * Get/Set variables
+ * Get/Set variables: defined in src/variables.cc
  */
     {"completion_chars", "Get/set the characters to tokenize on for completion.", (lua_CFunction) completion_chars },
     {"editor", "Query or update the editor to use.", (lua_CFunction) editor },
@@ -113,7 +112,7 @@ struct CLuaMapping primitive_list[] =
     {"get_variables", "Retrieve all known-variables and their values.", (lua_CFunction) get_variables },
 
 /**
- * Colour getters/setters
+ * Colour getters/setters.  Defined in src/variables.cc
  */
     {"attachment_colour", "Get/Set the colour to use for drawing attachments.", (lua_CFunction) attachment_colour },
     {"body_colour", "Get/Set the colour to use for drawing message-bodies.", (lua_CFunction) body_colour },
@@ -168,7 +167,7 @@ struct CLuaMapping primitive_list[] =
 
 
 /**
- * prompts.
+ * Prompts.  Defined in src/bindings_prompts.cc
  */
     {"choose_string", "Prompt for one of a small set of strings", (lua_CFunction) choose_string},
     {"prompt", "Prompt for input.", (lua_CFunction) prompt },
@@ -177,14 +176,14 @@ struct CLuaMapping primitive_list[] =
     {"prompt_yn", "Prompt for a yes/no answer.", (lua_CFunction) prompt_yn },
 
 /**
- * Attachments
+ * Attachments. Defined in src/bindings_mime.cc
  */
     {"attachments", "Retrieve the list of attachments in the current message.", (lua_CFunction) attachments },
     {"count_attachments", "Count the number of attachments the current message contains.", (lua_CFunction) count_attachments },
     {"save_attachment", "Save the given attachment to disk, from the current message.", (lua_CFunction) save_attachment },
 
 /**
- * Body parts.
+ * Body parts. Defined in src/bindings_mime.cc
  */
     { "count_body_parts", "Return the count of body-parts", (lua_CFunction) count_body_parts },
     { "get_body_parts", "Get the body-parts of the message", (lua_CFunction) get_body_parts },
