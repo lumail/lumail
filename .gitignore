@@ -10,5 +10,6 @@ debian/*.substvars
 debian/*.log
 util/add-attachments-to-simple-mail
 util/dump-mime
+util/dump-parts
 obj.debug
 obj.release
