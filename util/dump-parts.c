@@ -12,9 +12,7 @@
 
 
 /**
- * Dump the first text/plain part of a MIME-encoded message.
- *
- * If no such part is found try to dump the message-body regardless.
+ * Output a list of the parts included in the current message.
  */
 void dump_mail( char *filename )
 {
