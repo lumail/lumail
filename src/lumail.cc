@@ -19,25 +19,20 @@
 
 
 #include <algorithm>
-#include <cstdlib>
 #include <curses.h>
-#include <iostream>
-#include <fstream>
 #include <getopt.h>
+
 
 #include "debug.h"
 #include "file.h"
-#include "lumail.h"
 #include "input.h"
 #include "lua.h"
-#include "message.h"
+#include "lumail.h"
 #include "maildir.h"
+#include "message.h"
 #include "screen.h"
 #include "version.h"
 
-#include <glib.h>
-#include <glib/gstdio.h>
-#include <gmime/gmime.h>
 
 
 

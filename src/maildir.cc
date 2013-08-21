@@ -16,19 +16,19 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#include <vector>
 #include <algorithm>
-#include <sstream>
-#include <iomanip>
-#include <sys/types.h>
 #include <dirent.h>
+#include <iomanip>
 #include <pcrecpp.h>
+#include <sstream>
+#include <vector>
 
 #include "debug.h"
 #include "file.h"
 #include "global.h"
 #include "maildir.h"
 #include "message.h"
+
 
 /**
  * Constructor.
