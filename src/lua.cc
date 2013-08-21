@@ -183,7 +183,12 @@ struct CLuaMapping primitive_list[] =
     {"count_attachments", "Count the number of attachments the current message contains.", (lua_CFunction) count_attachments },
     {"save_attachment", "Save the given attachment to disk, from the current message.", (lua_CFunction) save_attachment },
 
-
+/**
+ * Body parts.
+ */
+    { "count_body_parts", "Return the count of body-parts", (lua_CFunction) count_body_parts },
+    { "get_body_parts", "Get the body-parts of the message", (lua_CFunction) get_body_parts },
+    { "has_body_part", "Does the message have a part of the given MIME-type?", (lua_CFunction) has_body_part },
 };
 
 

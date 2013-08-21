@@ -1716,3 +1716,14 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
      CFile::delete_file( filename );
      CFile::move( tmpfile, filename );
 }
+
+
+/**
+ * Return the MIME-types of body-parts.
+ */
+std::vector<std::string> CMessage::body_mime_parts()
+{
+    std::vector<std::string> results;
+
+    return( results );
+}

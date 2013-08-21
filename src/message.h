@@ -165,6 +165,11 @@ public:
      */
     static void add_attachments_to_mail(char *filename, std::vector<std::string> attachments );
 
+    /**
+     * Return the MIME-types of body-parts.
+     */
+    std::vector<std::string> body_mime_parts();
+
 private:
 
     /**

@@ -3059,3 +3059,145 @@ int load_directory(lua_State *L)
     lua_pushinteger(L, count );
     return 1;
 }
+
+
+/**
+ * Body-part handling.
+ */
+int count_body_parts(lua_State *L)
+{
+    /**
+     * Get the path (optional).
+     */
+    const char *str = lua_tostring(L, -1);
+    int ret = 0;
+
+    CMessage *msg = get_message_for_operation( str );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+    else
+    {
+        /**
+         * Get the parts, and store their count.
+         */
+        std::vector<std::string> parts = msg->body_mime_parts();
+        int count = parts.size();
+
+        /**
+         * Setup the return values.
+         */
+        lua_pushinteger(L, count );
+        ret = 1;
+    }
+
+    if ( str != NULL )
+        delete( msg );
+
+    return( ret );
+}
+
+int get_body_parts(lua_State *L)
+{
+    /**
+     * Get the path (optional).
+     */
+    const char *str = lua_tostring(L, -1);
+
+    CMessage *msg = get_message_for_operation( str );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+    else
+    {
+        /**
+         * Get the parts, and prepare to iterate over them.
+         */
+        std::vector<std::string> parts = msg->body_mime_parts();
+        std::vector<std::string>::iterator it;
+
+        /**
+         * create a new table.
+         */
+        lua_newtable(L);
+
+        /**
+         * Lua indexes start at one.
+         */
+        int i = 1;
+
+
+        /**
+         * For each attachment, add it to the table.
+         */
+        for (it = parts.begin(); it != parts.end(); ++it)
+        {
+            std::string name = (*it);
+
+            lua_pushnumber(L,i);
+            lua_pushstring(L,name.c_str());
+            lua_settable(L,-3);
+            i++;
+        }
+    }
+
+    if ( str != NULL )
+        delete( msg );
+
+    return( 1 );
+}
+
+
+
+/**
+ * Does the given message have a part of the given type.  e.g. text/plain.
+ */
+int has_body_part(lua_State *L)
+{
+    /**
+     * Get the content-type.
+     */
+    const char *type = lua_tostring(L, -1);
+
+    CMessage *msg = get_message_for_operation( NULL );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+    /**
+     * Get the parts, and prepare to iterate over them.
+     */
+    std::vector<std::string> parts = msg->body_mime_parts();
+    std::vector<std::string>::iterator it;
+
+    /**
+     * Did we find at least one, part?
+     */
+    for (it = parts.begin(); it != parts.end(); ++it)
+    {
+        std::string ct = (*it);
+
+        if ( strcmp( ct.c_str(), type ) == 0 )
+        {
+            /**
+             * Found a matching type.
+             */
+            lua_pushboolean(L,1);
+            return 1;
+        }
+    }
+
+    lua_pushboolean(L, 0 );
+    return( 1 );
+}
+
+

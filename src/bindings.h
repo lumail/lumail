@@ -241,6 +241,14 @@ int count_attachments(lua_State *L);
 int save_attachment(lua_State *L);
 
 /**
+ * Body-part handling.
+ */
+int count_body_parts(lua_State *L);
+int get_body_parts(lua_State *L);
+int has_body_part(lua_State *L);
+
+
+/**
  * Debugging code.
  */
 int lua_dump_stack(lua_State *L);
