@@ -54,7 +54,7 @@ struct CLuaMapping primitive_list[] =
 {
 
 /**
- * Basic primitives
+ * Basic primitives: defined in src/primitives.cc
  */
     {"abort", "Exit lumail with an error message.", (lua_CFunction) abort },
     {"alert", "Show an alert which requires confirmation.", (lua_CFunction) alert },
@@ -84,7 +84,7 @@ struct CLuaMapping primitive_list[] =
     {"load_directory", "Load *.lua from beneath the given directory.  (Not recursively.)", (lua_CFunction) load_directory },
 
 /**
- * Folder Selection
+ * Folder Selection: defined in src/bindings_folders.cc
  */
     {"add_selected_folder", "Add the current folder to the list of selected folders", (lua_CFunction) add_selected_folder },
     {"clear_selected_folders", "Clear the list of selected-folders.", (lua_CFunction) clear_selected_folders },
