@@ -131,6 +131,10 @@ private:
     int m_unread;
     int m_total;
 
+    /**
+     * Cached name.
+     */
+    std::string m_name;
 };
 
 #endif /* _maildir_h_ */

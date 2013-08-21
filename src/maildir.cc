@@ -36,6 +36,7 @@
 CMaildir::CMaildir(std::string path)
 {
     m_path     = path;
+    m_name     = "";
     m_modified = 0;   /* mtime of the maildir */
     m_unread   = -1;  /* unread messages in maildir */
     m_total    = -1;  /* total messages in maildir */
@@ -181,20 +182,21 @@ std::string CMaildir::name()
      * Since maildirs can never be renamed we can safely cache the
      * name locally.
      */
-    static std::string cache = "";
-    if ( !cache.empty() )
-        return( cache );
+    if ( !m_name.empty() )
+        return( m_name );
 
     /**
      * Find the last part of the name.
      */
-    size_t found = m_path.find_last_of("/");
-    if ( found != std::string::npos )
-        cache = m_path.substr(found + 1);
-    else
-        cache = m_path;
+    std::string p = path();
 
-    return (cache);
+    size_t found = p.find_last_of("/");
+    if ( found != std::string::npos )
+        m_name = p.substr(found + 1);
+    else
+        m_name = p;
+
+    return (m_name);
 }
 
 
