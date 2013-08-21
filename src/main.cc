@@ -27,6 +27,7 @@
 #include <gmime/gmime.h>
 
 #include "debug.h"
+#include "global.h"
 #include "lua.h"
 #include "lumail.h"
 #include "version.h"
@@ -180,7 +181,17 @@ int main(int argc, char *argv[])
      */
     if ( !eval.empty() )
     {
-        CLua *lua = CLua::Instance();
+        CLua       *lua = CLua::Instance();
+        CGlobal *global = CGlobal::Instance();
+
+        /**
+         * If we're going to exit after the eval mark that
+         * globally, so the user can know they're running
+         * in such a fashion.
+         */
+        if ( exit_after_eval )
+            global->set_variable( "eval_exit", new std::string("true") );
+
 
         /**
          * Load each string specified on the command line.
