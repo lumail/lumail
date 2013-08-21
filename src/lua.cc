@@ -121,7 +121,7 @@ struct CLuaMapping primitive_list[] =
     {"unread_message_colour", "Get/Set the colour to use for drawing unread messages.", (lua_CFunction) unread_message_colour },
 
 /**
- * Index functions
+ * Index functions: defined in src/bindings_index.cc
  */
     {"index_offset", "Get the current offset into the index.", (lua_CFunction) index_offset},
     {"jump_index_to", "Jump to the named offset in the message list.", (lua_CFunction) jump_index_to },
