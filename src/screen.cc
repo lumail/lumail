@@ -17,26 +17,26 @@
  */
 
 #include <algorithm>
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-#include <string.h>
 #include <cctype>
-#include <sys/ioctl.h>
-#include <dirent.h>
+#include <cstdlib>
 #include <cursesw.h>
+#include <dirent.h>
+#include <iostream>
+#include <string.h>
+#include <sys/ioctl.h>
 
 #include "debug.h"
 #include "file.h"
+#include "global.h"
+#include "history.h"
 #include "input.h"
 #include "lang.h"
 #include "lua.h"
-#include "global.h"
-#include "history.h"
 #include "maildir.h"
 #include "message.h"
 #include "screen.h"
 #include "utfstring.h"
+
 
 #ifndef DEFAULT_UNREAD_COLOUR
 # define DEFAULT_UNREAD_COLOUR "red"
