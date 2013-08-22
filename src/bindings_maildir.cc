@@ -1,5 +1,5 @@
 /**
- * bindings-maildir.cc - Bindings for all maildir-related Lua primitives.
+ * bindings_maildir.cc - Bindings for all maildir-related Lua primitives.
  *
  * This file is part of lumail: http://lumail.org/
  *
@@ -41,9 +41,15 @@
  */
 int count_maildirs(lua_State *L)
 {
+    /**
+     * Get all maildirs.
+     */
     CGlobal *global = CGlobal::Instance();
-
     std::vector<CMaildir *> folders = global->get_folders();
+
+    /**
+     * Store the count.
+     */
     lua_pushinteger(L, folders.size() );
     return 1;
 }
@@ -59,9 +65,16 @@ int current_maildir(lua_State * L)
      */
     CGlobal *global = CGlobal::Instance();
     std::vector<CMaildir *> display = global->get_folders();
-    int selected = global->get_selected_folder();
 
+    /**
+     * Get the selected object.
+     */
+    int selected = global->get_selected_folder();
     CMaildir *x = display[selected];
+
+    /**
+     * Store the path.
+     */
     lua_pushstring(L, x->path().c_str());
     return 1;
 }
@@ -178,7 +191,7 @@ int maildirs_matching(lua_State *L)
 
 
 /**
- * scroll up/down the maildir list.
+ * scroll down the maildir list.
  */
 int scroll_maildir_down(lua_State * L)
 {
