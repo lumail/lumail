@@ -1075,7 +1075,7 @@ function toggle_maildir_names()
    --
    -- Update the format.
    --
-   maildir_format( fmt );
+   maildir_format( fmt )
 end
 
 --
