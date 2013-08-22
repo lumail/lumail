@@ -61,7 +61,7 @@ int jump_index_to(lua_State * L)
 
 
 /**
- * scroll up/down the message list.
+ * scroll down the message list.
  */
 int scroll_index_down(lua_State * L)
 {
