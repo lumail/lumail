@@ -171,9 +171,9 @@ public:
     std::vector<std::string> body_mime_parts();
 
     /**
-     * Get the given MIME-part.
+     * Return the content of the Nth MIME-part.
      */
-    std::string get_body_part( int offset );
+    bool get_body_part( int offset, char **data, size_t *len );
 
 private:
 

@@ -1767,7 +1767,10 @@ std::vector<std::string> CMessage::body_mime_parts()
 }
 
 
-std::string CMessage::get_body_part( int offset )
+/**
+ * Return the content of the Nth MIME part.
+ */
+bool CMessage::get_body_part( int offset, char **data, size_t *length )
 {
     /**
      * Ensure the message has been read.
@@ -1777,7 +1780,7 @@ std::string CMessage::get_body_part( int offset )
     /**
      * The return value.
      */
-    std::string result;
+    bool ret = false;
 
     /**
      * Create an iterator
@@ -1814,7 +1817,20 @@ std::string CMessage::get_body_part( int offset )
                 len = g_mime_data_wrapper_write_to_stream( c, memstream );
                 guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
 
-                result = std::string((const char *)b, len );
+                assert(b);
+                assert(len);
+
+                /**
+                 * Allocate memory and fill it out.
+                 */
+                *data = (char*)malloc( len + 1 );
+                memcpy( *data, b, len );
+                *length = (size_t)len;
+
+                g_mime_stream_close(memstream);
+                g_object_unref(memstream);
+
+                ret = true;
             }
 
             count += 1;
@@ -1828,5 +1844,5 @@ std::string CMessage::get_body_part( int offset )
     g_mime_part_iter_free (iter);
     close_message();
 
-    return( result );
+    return( ret );
 }
