@@ -266,9 +266,21 @@ int get_body_part(lua_State *L)
         /**
          * Save the message.
          */
-        std::string result  = msg->get_body_part(offset);
-        lua_pushstring(L, result.c_str() );
-        return 1;
+        char *result = NULL;
+        size_t len = 0;
+
+        if ( msg->get_body_part(offset, &result, &len ) )
+        {
+            lua_pushlstring(L, result, len);
+            free(result);
+
+            return 1;
+        }
+        else
+        {
+            lua_pushnil( L );
+            return 1;
+        }
     }
 }
 
