@@ -449,6 +449,53 @@ bool CLua::on_key(const char *key )
 
 
 /**
+ * Invoke the on_get_body() callback.
+ */
+std::vector<UTFString> CLua::on_get_body()
+{
+    std::vector<UTFString> result;
+
+    /**
+     * Get the "on_get_body()" function, and see if it exists.
+     */
+    lua_getglobal( m_lua, "on_get_body" );
+    if(!lua_isfunction(m_lua,-1))
+        return( result );
+
+
+    /**
+     * Call the function
+     */
+    lua_pcall(m_lua, 0, 1, 0 ) ;
+
+    /**
+     * Get the return value.
+     */
+    const char *str = lua_tostring(m_lua,-1);
+    lua_pop(m_lua,1);
+
+    /**
+     * If the string is non-empty then parse.
+     */
+    if ( strlen( str ) )
+    {
+        /**
+         * Split the body into an array, by newlines.
+         */
+        std::stringstream stream(str);
+        std::string line;
+        while (std::getline(stream, line))
+        {
+            result.push_back( line );
+        }
+    }
+
+
+    return( result );
+}
+
+
+/**
  * Invoke the "on_complete" callback, which might be defined by the user.
  */
 std::vector<std::string> CLua::on_complete()

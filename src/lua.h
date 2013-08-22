@@ -29,7 +29,7 @@ extern "C"
 }
 
 #include <vector>
-
+#include "utfstring.h"
 
 
 
@@ -117,6 +117,12 @@ public:
      * Invoke the Lua-defined on_key() callback.
      */
     bool on_key(const char *key );
+
+    /**
+     * Invoke the on_get_body() callback.
+     */
+    std::vector<UTFString> on_get_body();
+
 
     /**
      * Invoke the "on_complete" callback, which might be defined by the user.
