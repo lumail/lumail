@@ -58,6 +58,15 @@ int choose_string(lua_State * L)
             choices.push_back( str );
     }
 
+    /**
+     * If there is only a single choice .. return it.
+     */
+    if ( choices.size() == 1 )
+    {
+        lua_pushstring(L, choice.at(0).c_str() );
+        return 1;
+    }
+
     noecho();
     curs_set(0);
 
