@@ -91,7 +91,7 @@ int file_exists(lua_State *L)
 }
 
 /**
- * Is the given path a directory.
+ * Is the given path a directory?
  */
 int is_directory(lua_State *L)
 {
@@ -135,7 +135,7 @@ int load_directory(lua_State *L)
         return luaL_error(L, "Missing argument to load_directory(..)");
 
     /**
-     * The lua interpreter.
+     * The Lua helper.
      */
     CLua *lua = CLua::Instance();
 
