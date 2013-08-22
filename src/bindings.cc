@@ -120,90 +120,6 @@ void call_message_hook( const char *hook, const char *filename )
 
 
 
-
-/**
- * Clear the screen; but not the prompt.
- */
-int clear(lua_State * L)
-{
-    CScreen::clear_main();
-    return 0;
-}
-
-
-/**
- * Show brief help
- */
-int show_help(lua_State * L)
-{
-    const char *str = lua_tostring(L, -1);
-
-    if (str == NULL)
-        return luaL_error(L, "Missing argument to help(..)");
-
-    for(int i = 0; i < primitive_count; i++ )
-    {
-        const char *name = primitive_list[i].name;
-        const char *help = primitive_list[i].help;
-
-        if ( strcasecmp( name, str ) == 0 )
-        {
-            lua_pushstring(L, help );
-            return( msg(L) );
-        }
-    }
-
-    return 0;
-}
-
-/**
- * Redraw the display.
- */
-int refresh_display(lua_State * L)
-{
-    CScreen::clear_main();
-    refresh();
-    return 0;
-}
-
-
-/**
- * Sleep.
- */
-int sleep(lua_State *L )
-{
-    int delay = lua_tointeger(L, -1);
-    if (delay < 0 )
-        return luaL_error(L, "positive integer expected for sleep(..)");
-
-    sleep( delay );
-    return 0;
-}
-
-
-/**
- * Exit the program.
- */
-int exit(lua_State * L)
-{
-    /**
-     * Close curses.
-     */
-    endwin();
-
-    /**
-     * Shutdown GMime.
-     */
-    g_mime_shutdown();
-
-    CLua *lua = CLua::Instance();
-    lua->execute("on_exit()");
-
-    exit(0);
-    return 0;
-}
-
-
 /**
  * Exit the program, abnormally.
  */
@@ -233,114 +149,6 @@ int abort(lua_State * L)
     return 0;
 }
 
-
-/**
- * Execute a program, resetting curses first.
- */
-int exec(lua_State * L)
-{
-    const char *str = lua_tostring(L, -1);
-    if (str == NULL)
-        return luaL_error(L, "Missing argument to exec(..)");
-
-    CScreen::clear_status();
-
-    /**
-     * Save the current state of the TTY
-     */
-    refresh();
-    def_prog_mode();
-    endwin();
-
-    /* Run the command */
-    int result __attribute__((unused));
-    result = system(str);
-
-
-    /**
-     * Reset + redraw
-     */
-    reset_prog_mode();
-    refresh();
-    return 0;
-}
-
-
-/**
- * Write a message to the status-bar.
- */
-int msg(lua_State * L)
-{
-    char buf[1023] = { '\0' };
-
-    /**
-     * Get the type of argument.
-     */
-    int t = lua_type(L, -1);
-    switch (t)
-    {
-    case LUA_TSTRING:
-        snprintf(buf, sizeof(buf)-1,"%s", lua_tostring(L, -1));
-        break;
-
-    case LUA_TBOOLEAN:
-        snprintf(buf, sizeof(buf)-1,lua_toboolean(L, -1) ? "true" : "false");
-        break;
-
-    case LUA_TNIL:
-        snprintf(buf, sizeof(buf)-1, "nil" );
-        break;
-
-    case LUA_TNUMBER:
-        snprintf(buf, sizeof(buf)-1,"%g", lua_tonumber(L, -1));
-        break;
-    default:
-        snprintf(buf, sizeof(buf)-1,"Cannot print argument of type %s", lua_typename(L, t));
-        break;
-    }
-
-    if (strlen(buf) < 1 )
-        return luaL_error(L, "Missing argument to msg(..)");
-
-    /**
-     * Are we evaluating?
-     */
-    CGlobal *global = CGlobal::Instance();
-    std::string *f  = global->get_variable( "eval_exit" );
-    if ( ( f != NULL ) && ( strcmp( f->c_str(), "true" ) == 0 ) )
-    {
-        def_prog_mode();
-        endwin();
-
-        std::cout << buf << std::endl;
-
-        reset_prog_mode();
-        refresh();
-
-        return 0;
-    }
-
-    CScreen::clear_status();
-    move(CScreen::height() - 1, 0);
-    printw("%s", buf);
-    return 0;
-}
-
-
-/**
- * Stuff input into the input-buffer.
- */
-int stuff(lua_State * L)
-{
-    UTFString str = lua_tostring(L, -1);
-
-    if (str.empty())
-        return luaL_error(L, "Missing argument to stuff(..)");
-
-    CInput::Instance()->add( UTFString( str ) );
-
-    return 0;
-}
 
 /**
  * Alert: Draw a message and await explicit confirmation.
@@ -409,6 +217,141 @@ int alert(lua_State * L)
     timeout(1000);
 
     CScreen::clear_status();
+    return 0;
+}
+
+
+/**
+ * Clear the screen; but not the prompt.
+ */
+int clear(lua_State * L)
+{
+    CScreen::clear_main();
+    return 0;
+}
+
+
+/**
+ * Execute a program, resetting curses first.
+ */
+int exec(lua_State * L)
+{
+    const char *str = lua_tostring(L, -1);
+    if (str == NULL)
+        return luaL_error(L, "Missing argument to exec(..)");
+
+    CScreen::clear_status();
+
+    /**
+     * Save the current state of the TTY
+     */
+    refresh();
+    def_prog_mode();
+    endwin();
+
+    /* Run the command */
+    int result __attribute__((unused));
+    result = system(str);
+
+
+    /**
+     * Reset + redraw
+     */
+    reset_prog_mode();
+    refresh();
+    return 0;
+}
+
+
+/**
+ * Exit the program.
+ */
+int exit(lua_State * L)
+{
+    /**
+     * Close curses.
+     */
+    endwin();
+
+    /**
+     * Shutdown GMime.
+     */
+    g_mime_shutdown();
+
+    CLua *lua = CLua::Instance();
+    lua->execute("on_exit()");
+
+    exit(0);
+    return 0;
+}
+
+
+/**
+ * Return a table of all known variables and their current
+ * settings.
+ */
+int get_variables(lua_State *L )
+{
+    CGlobal *global = CGlobal::Instance();
+    std::unordered_map<std::string,std::string *>  vars = global->get_variables();
+    std::unordered_map<std::string, std::string *>::iterator iter;
+
+    /**
+     * Create the table.
+     */
+    lua_newtable(L);
+
+    int i = 1;
+    for (iter = vars.begin(); iter != vars.end(); ++iter )
+    {
+        std::string name = iter->first;
+        std::string *val = iter->second;
+
+        lua_pushstring(L,name.c_str() );
+
+        if ( val != NULL )
+            lua_pushstring(L,val->c_str());
+        else
+            lua_pushstring(L, "NULL" );
+
+        lua_settable(L,-3);
+        i++;
+    }
+
+    return 1;
+}
+
+
+/**
+ * Log a message to the debug-log.
+ */
+int log_message(lua_State *L)
+{
+#ifdef LUMAIL_DEBUG
+    const char *str = lua_tostring(L, -1);
+    if (str == NULL)
+        return luaL_error(L, "Missing argument to log_message(..)");
+
+    /**
+     * Log the message, and force it to be written immediately
+     * bypassing the buffering.
+     */
+    CDebug::Instance()->debug( str, true );
+
+#endif
+    return 0;
+}
+
+
+/**
+ * Dump the Lua stack to our debug-log.
+ */
+int lua_dump_stack(lua_State *L)
+{
+#ifdef LUMAIL_DEBUG
+    CLua *lua = CLua::Instance();
+    lua->dump_stack();
+#endif
     return 0;
 }
 
@@ -570,7 +513,76 @@ int mime_type(lua_State *L)
 }
 
 
+/**
+ * Write a message to the status-area.
+ */
+int msg(lua_State * L)
+{
+    char buf[1023] = { '\0' };
 
+    /**
+     * Get the type of argument.
+     */
+    int t = lua_type(L, -1);
+    switch (t)
+    {
+    case LUA_TSTRING:
+        snprintf(buf, sizeof(buf)-1,"%s", lua_tostring(L, -1));
+        break;
+
+    case LUA_TBOOLEAN:
+        snprintf(buf, sizeof(buf)-1,lua_toboolean(L, -1) ? "true" : "false");
+        break;
+
+    case LUA_TNIL:
+        snprintf(buf, sizeof(buf)-1, "nil" );
+        break;
+
+    case LUA_TNUMBER:
+        snprintf(buf, sizeof(buf)-1,"%g", lua_tonumber(L, -1));
+        break;
+    default:
+        snprintf(buf, sizeof(buf)-1,"Cannot print argument of type %s", lua_typename(L, t));
+        break;
+    }
+
+    if (strlen(buf) < 1 )
+        return luaL_error(L, "Missing argument to msg(..)");
+
+    /**
+     * Are we evaluating?
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::string *f  = global->get_variable( "eval_exit" );
+    if ( ( f != NULL ) && ( strcmp( f->c_str(), "true" ) == 0 ) )
+    {
+        def_prog_mode();
+        endwin();
+
+        std::cout << buf << std::endl;
+
+        reset_prog_mode();
+        refresh();
+
+        return 0;
+    }
+
+    CScreen::clear_status();
+    move(CScreen::height() - 1, 0);
+    printw("%s", buf);
+    return 0;
+}
+
+
+/**
+ * Redraw the display.
+ */
+int refresh_display(lua_State * L)
+{
+    CScreen::clear_main();
+    refresh();
+    return 0;
+}
 
 
 /**
@@ -592,70 +604,58 @@ int screen_height(lua_State * L)
     return 1;
 }
 
+
 /**
- * Return a table of all known variables and their current
- * settings.
+ * Show brief help
  */
-int get_variables(lua_State *L )
+int show_help(lua_State * L)
 {
-    CGlobal *global = CGlobal::Instance();
-    std::unordered_map<std::string,std::string *>  vars = global->get_variables();
-    std::unordered_map<std::string, std::string *>::iterator iter;
+    const char *str = lua_tostring(L, -1);
 
-    /**
-     * Create the table.
-     */
-    lua_newtable(L);
+    if (str == NULL)
+        return luaL_error(L, "Missing argument to help(..)");
 
-    int i = 1;
-    for (iter = vars.begin(); iter != vars.end(); ++iter )
+    for(int i = 0; i < primitive_count; i++ )
     {
-        std::string name = iter->first;
-        std::string *val = iter->second;
+        const char *name = primitive_list[i].name;
+        const char *help = primitive_list[i].help;
 
-        lua_pushstring(L,name.c_str() );
-
-        if ( val != NULL )
-            lua_pushstring(L,val->c_str());
-        else
-            lua_pushstring(L, "NULL" );
-
-        lua_settable(L,-3);
-        i++;
+        if ( strcasecmp( name, str ) == 0 )
+        {
+            lua_pushstring(L, help );
+            return( msg(L) );
+        }
     }
 
-    return 1;
-}
-
-/**
- * Dump the Lua stack to our debug-log.
- */
-int lua_dump_stack(lua_State *L)
-{
-#ifdef LUMAIL_DEBUG
-    CLua *lua = CLua::Instance();
-    lua->dump_stack();
-#endif
     return 0;
 }
 
+
 /**
- * Log a message to the debug-log.
+ * Sleep.
  */
-int log_message(lua_State *L)
+int sleep(lua_State *L )
 {
-#ifdef LUMAIL_DEBUG
-    const char *str = lua_tostring(L, -1);
-    if (str == NULL)
-        return luaL_error(L, "Missing argument to log_message(..)");
+    int delay = lua_tointeger(L, -1);
+    if (delay < 0 )
+        return luaL_error(L, "positive integer expected for sleep(..)");
 
-    /**
-     * Log the message, and force it to be written immediately
-     * bypassing the buffering.
-     */
-    CDebug::Instance()->debug( str, true );
-
-#endif
+    sleep( delay );
     return 0;
 }
 
+
+/**
+ * Stuff input into the input-buffer.
+ */
+int stuff(lua_State * L)
+{
+    UTFString str = lua_tostring(L, -1);
+
+    if (str.empty())
+        return luaL_error(L, "Missing argument to stuff(..)");
+
+    CInput::Instance()->add( UTFString( str ) );
+
+    return 0;
+}
