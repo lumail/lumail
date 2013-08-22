@@ -1,5 +1,5 @@
 /**
- * bindings-message.cc - Bindings for all message-related Lua primitives.
+ * bindings_message.cc - Bindings for all message-related Lua primitives.
  *
  * This file is part of lumail: http://lumail.org/
  *
