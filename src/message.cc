@@ -1817,8 +1817,10 @@ bool CMessage::get_body_part( int offset, char **data, size_t *length )
                 len = g_mime_data_wrapper_write_to_stream( c, memstream );
                 guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
 
-                assert(b);
-                assert(len);
+                /**
+                 * The memory we get from the stream must be valid.
+                 */
+                assert(b != NULL);
 
                 /**
                  * Allocate memory and fill it out.
