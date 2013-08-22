@@ -359,6 +359,77 @@ int compose(lua_State * L)
     return 0;
 }
 
+
+/**
+ * Count messages in the selected folder(s).
+ */
+int count_messages(lua_State * L)
+{
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
+
+    lua_pushinteger(L, messages->size() );
+    return 1;
+}
+
+
+/**
+ * Get the currently highlighted message-path.
+ */
+int current_message(lua_State * L)
+{
+    /**
+     * Get the currently selected message.
+     */
+    CMessage *msg = get_message_for_operation( NULL );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+    /**
+     * If that succeeded store the path.
+     */
+    std::string source = msg->path();
+    if ( !source.empty() )
+    {
+        lua_pushstring(L, source.c_str());
+        return(1);
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+
+/**
+ * Count the lines in the current message.
+ */
+int count_lines(lua_State * L)
+{
+    /**
+     * Get the currently selected message.
+     */
+    CMessage *msg = get_message_for_operation( NULL );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+    /**
+     * If that succeeded get the body.
+     */
+    std::vector<UTFString> body = msg->body();
+    lua_pushinteger(L, body.size() );
+    return 1;
+}
+
+
 /**
  * Delete a message.
  */
@@ -1169,3 +1240,17 @@ int send_email(lua_State *L)
 }
 
 
+/**
+ * Offset within the message we're displaying.
+ */
+int message_offset(lua_State * L)
+{
+    /**
+     * How many lines we've scrolled down the message.
+     */
+    CGlobal *global = CGlobal::Instance();
+    int offset = global->get_message_offset();
+
+    lua_pushinteger(L, offset);
+    return (1);
+}

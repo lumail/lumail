@@ -152,7 +152,7 @@ struct CLuaMapping primitive_list[] =
     {"send_email", "Send an email, via Lua.", (lua_CFunction) send_email },
 
 /**
- * Maildirs
+ * Maildir-related functions, defined in bindings_maildirs.cc
  */
     {"count_maildirs", "Count the visible Maildirs.", (lua_CFunction) count_maildirs },
     {"current_maildir", "Return the path to the current Maildir.", (lua_CFunction) current_maildir },
