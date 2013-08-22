@@ -1723,5 +1723,110 @@ std::vector<std::string> CMessage::body_mime_parts()
 {
     std::vector<std::string> results;
 
+    /**
+     * Open the message, if we've not done so.
+     */
+    message_parse();
+
+
+    /**
+     * Create an iterator to walk over the MIME-parts of the message.
+     */
+    GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
+
+    /**
+     * Iterate over the message.
+     */
+    do
+    {
+        GMimeObject *part  = g_mime_part_iter_get_current (iter);
+
+        if ( ( GMIME_IS_OBJECT( part ) ) && ( GMIME_IS_PART(part) ) )
+        {
+            /**
+             * Get the content-type
+             */
+            GMimeContentType *content_type = g_mime_object_get_content_type (part);
+            gchar *type = g_mime_content_type_to_string ( content_type );
+
+            /**
+             * Store it.
+             */
+            results.push_back( type );
+        }
+    }
+    while (g_mime_part_iter_next (iter));
+
+    /**
+     * Cleanup.
+     */
+    g_mime_part_iter_free (iter);
+    close_message();
+
     return( results );
+}
+
+
+std::string CMessage::get_body_part( int offset )
+{
+    /**
+     * Ensure the message has been read.
+     */
+    message_parse();
+
+    /**
+     * The return value.
+     */
+    std::string result;
+
+    /**
+     * Create an iterator
+     */
+    GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
+
+    /**
+     * The current object number.
+     */
+    int count = 1;
+
+    /**
+     * Iterate over the message.
+     */
+    do
+    {
+        GMimeObject *part  = g_mime_part_iter_get_current (iter);
+
+        if ( ( GMIME_IS_OBJECT( part ) ) && ( GMIME_IS_PART(part) ) )
+        {
+            if ( count == offset )
+            {
+
+                /**
+                 * Get the content, and setup a memory-stream to read it.
+                 */
+                GMimeDataWrapper *c    = g_mime_part_get_content_object( GMIME_PART(part) );
+                GMimeStream *memstream = g_mime_stream_mem_new();
+
+                /**
+                 * Get the size + data.
+                 */
+                gint64 len;
+                len = g_mime_data_wrapper_write_to_stream( c, memstream );
+                guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
+
+                result = std::string((const char *)b, len );
+            }
+
+            count += 1;
+        }
+    }
+    while (g_mime_part_iter_next (iter));
+
+    /**
+     * Cleanup.
+     */
+    g_mime_part_iter_free (iter);
+    close_message();
+
+    return( result );
 }

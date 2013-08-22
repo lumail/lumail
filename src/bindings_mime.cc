@@ -230,6 +230,50 @@ int count_body_parts(lua_State *L)
 
 
 /**
+ * Return the single body-part from the message.
+ */
+int get_body_part(lua_State *L)
+{
+    /**
+     * Get the path to save to.
+     */
+    int offset       = lua_tointeger(L,-1);
+
+    CMessage *msg = get_message_for_operation(NULL);
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+    else
+    {
+        /**
+         * Count the MIME-parts
+         */
+        std::vector<std::string> parts = msg->body_mime_parts();
+        int count                      = parts.size();
+
+        /**
+         * Out of range: return false.
+         */
+        if ( ( offset < 1 ) || ( offset > count ) )
+        {
+            lua_pushboolean(L,0);
+            return 1;
+        }
+
+        /**
+         * Save the message.
+         */
+        std::string result  = msg->get_body_part(offset);
+        lua_pushstring(L, result.c_str() );
+        return 1;
+    }
+}
+
+
+/**
  * Return a table of the body-parts this message possesses.
  */
 int get_body_parts(lua_State *L)

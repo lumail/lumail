@@ -111,6 +111,7 @@ int send_email(lua_State *L);
 int attachments(lua_State *L);
 int count_attachments(lua_State *L);
 int count_body_parts(lua_State *L);
+int get_body_part(lua_State *L);
 int get_body_parts(lua_State *L);
 int has_body_part(lua_State *L);
 int save_attachment(lua_State *L);

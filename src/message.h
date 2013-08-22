@@ -170,6 +170,11 @@ public:
      */
     std::vector<std::string> body_mime_parts();
 
+    /**
+     * Get the given MIME-part.
+     */
+    std::string get_body_part( int offset );
+
 private:
 
     /**
