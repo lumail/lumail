@@ -130,7 +130,7 @@ struct CLuaMapping primitive_list[] =
     {"scroll_index_up", "Scroll the message list up.", (lua_CFunction) scroll_index_up },
 
 /**
- * Message-Related functions: defined in src/bindings-message.cc
+ * Message-Related functions: defined in src/bindings_message.cc
  */
     {"body", "Retrieve the body of the current message.", (lua_CFunction) body },
     {"compose", "Compose a new outgoing email.", (lua_CFunction) compose },

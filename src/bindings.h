@@ -88,7 +88,7 @@ int scroll_index_to(lua_State * L);
 int scroll_index_up(lua_State * L);
 
 /**
- * bindings-message.cc:
+ * bindings_message.cc:
  */
 int body(lua_State * L);
 int compose(lua_State * L);
