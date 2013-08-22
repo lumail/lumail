@@ -123,7 +123,6 @@ public:
      */
     std::vector<UTFString> on_get_body();
 
-
     /**
      * Invoke the "on_complete" callback, which might be defined by the user.
      */

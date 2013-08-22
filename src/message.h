@@ -67,7 +67,7 @@ public:
     void path( std::string new_path );
 
     /**
-     * Format the message for display in the header - via the lua format string.
+     * Format the message for display in the header - via the Lua format string.
      */
     UTFString format( std::string fmt = "");
 
@@ -131,12 +131,10 @@ public:
      */
     std::vector<UTFString> body();
 
-
     /**
      * Get the text/plain part of the message, via GMime.
      */
     UTFString get_body();
-
 
     /**
      * Get the names of attachments to this message.
@@ -186,7 +184,6 @@ private:
      * The file-descriptor for this message.
      */
     int m_fd;
-
 
     /**
      * Parse the message with gmime.
