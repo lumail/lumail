@@ -1820,19 +1820,21 @@ bool CMessage::get_body_part( int offset, char **data, size_t *length )
                 /**
                  * The memory we get from the stream must be valid.
                  */
-                assert(b != NULL);
+                if ( b != NULL )
+                {
 
-                /**
-                 * Allocate memory and fill it out.
-                 */
-                *data = (char*)malloc( len + 1 );
-                memcpy( *data, b, len );
-                *length = (size_t)len;
-
+                    /**
+                     * Allocate memory and fill it out.
+                     */
+                    *data = (char*)malloc( len + 1 );
+                    memcpy( *data, b, len );
+                    *length = (size_t)len;
+                }
                 g_mime_stream_close(memstream);
                 g_object_unref(memstream);
 
-                ret = true;
+                if ( b != NULL )
+                    ret = true;
             }
 
             count += 1;

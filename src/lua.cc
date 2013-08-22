@@ -477,7 +477,7 @@ std::vector<UTFString> CLua::on_get_body()
     /**
      * If the string is non-empty then parse.
      */
-    if ( strlen( str ) )
+    if ( str != NULL && strlen( str ) )
     {
         /**
          * Split the body into an array, by newlines.
