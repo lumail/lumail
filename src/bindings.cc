@@ -413,23 +413,6 @@ int alert(lua_State * L)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * Get the MIME-type of a file, based upon suffix.
  *
@@ -643,10 +626,6 @@ int get_variables(lua_State *L )
 
     return 1;
 }
-
-
-
-
 
 /**
  * Dump the Lua stack to our debug-log.
