@@ -63,7 +63,7 @@ int choose_string(lua_State * L)
      */
     if ( choices.size() == 1 )
     {
-        lua_pushstring(L, choice.at(0).c_str() );
+        lua_pushstring(L, choices.at(0).c_str() );
         return 1;
     }
 
