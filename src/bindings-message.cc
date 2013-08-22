@@ -359,73 +359,6 @@ int compose(lua_State * L)
     return 0;
 }
 
-
-
-/**
- * Get a header from the current/specified message.
- */
-int header(lua_State * L)
-{
-    /**
-     * Get the path (optional), and the header (required)
-     */
-    const char *header = lua_tostring(L, 1);
-    const char *path   = lua_tostring(L, 2);
-    if ( header == NULL )
-        return luaL_error(L, "Missing header" );
-
-    /**
-     * Get the message
-     */
-    CMessage *msg = get_message_for_operation( path );
-    if ( msg == NULL )
-    {
-        CLua *lua = CLua::Instance();
-        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
-        return( 0 );
-    }
-
-    /**
-     * Get the header.
-     */
-    std::string value = msg->header( header );
-    lua_pushstring(L, value.c_str() );
-
-
-    if ( path != NULL )
-        delete( msg );
-
-    return( 1 );
-}
-
-
-/**
- * Mark the message as new.
- */
-int mark_unread(lua_State * L)
-{
-    /**
-     * Get the path (optional).
-     */
-    const char *str = lua_tostring(L, -1);
-
-    CMessage *msg = get_message_for_operation( str );
-    if ( msg == NULL )
-    {
-        CLua *lua = CLua::Instance();
-        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
-        return( 0 );
-    }
-    else
-        msg->mark_unread();
-
-    if ( str != NULL )
-        delete( msg );
-
-    return( 0 );
-}
-
-
 /**
  * Delete a message.
  */
@@ -477,22 +410,22 @@ int delete_message( lua_State *L )
 
 
 /**
- * Save the current message to a new location.
+ * Get a header from the current/specified message.
  */
-int save_message( lua_State *L )
+int header(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
-
-    if (str == NULL)
-        return luaL_error(L, "Missing argument to save(..)");
-
-    if ( !CFile::is_directory( str ) )
-        return luaL_error(L, "The specified destination is not a Maildir" );
+    /**
+     * Get the path (optional), and the header (required)
+     */
+    const char *header = lua_tostring(L, 1);
+    const char *path   = lua_tostring(L, 2);
+    if ( header == NULL )
+        return luaL_error(L, "Missing header" );
 
     /**
      * Get the message
      */
-    CMessage *msg = get_message_for_operation( NULL );
+    CMessage *msg = get_message_for_operation( path );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -501,82 +434,16 @@ int save_message( lua_State *L )
     }
 
     /**
-     * Got a message ?
+     * Get the header.
      */
-    std::string source = msg->path();
-
-    /**
-     * The new path.
-     */
-    std::string dest = CMaildir::message_in( str, ( msg->is_new() ) );
-
-    /**
-     * Copy from source to destination.
-     */
-    CFile::copy( source, dest );
-
-    /**
-     * Remove source.
-     */
-    CFile::delete_file( source.c_str() );
-
-    /**
-     * Update messages
-     */
-    CGlobal *global = CGlobal::Instance();
-    global->update_messages();
-    global->set_message_offset(0);
-
-    /**
-     * We're done.
-     */
-    return 0;
-}
-
-/**
- * Scroll the message down.
- */
-int scroll_message_down(lua_State *L)
-{
-    int step = lua_tonumber(L, -1);
-
-    CGlobal *global = CGlobal::Instance();
-    int cur = global->get_message_offset();
-    cur += step;
-
-    global->set_message_offset(cur);
-    return (0);
-}
+    std::string value = msg->header( header );
+    lua_pushstring(L, value.c_str() );
 
 
-/**
- * Scroll the message to the given offset.
- */
-int scroll_message_to(lua_State *L)
-{
-    int offset = lua_tonumber(L, -1);
+    if ( path != NULL )
+        delete( msg );
 
-    CGlobal *global = CGlobal::Instance();
-    global->set_message_offset(offset);
-    return (0);
-}
-
-/**
- * Scroll the message up.
- */
-int scroll_message_up(lua_State *L)
-{
-    int step = lua_tonumber(L, -1);
-
-    CGlobal *global = CGlobal::Instance();
-    int cur = global->get_message_offset();
-    cur -= step;
-
-    if ( cur < 0 )
-        cur = 0;
-
-    global->set_message_offset(cur);
-    return (0);
+    return( 1 );
 }
 
 
@@ -641,6 +508,32 @@ int mark_read(lua_State * L)
     return( 0 );
 }
 
+
+/**
+ * Mark the message as new.
+ */
+int mark_unread(lua_State * L)
+{
+    /**
+     * Get the path (optional).
+     */
+    const char *str = lua_tostring(L, -1);
+
+    CMessage *msg = get_message_for_operation( str );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+    else
+        msg->mark_unread();
+
+    if ( str != NULL )
+        delete( msg );
+
+    return( 0 );
+}
 
 
 /**
@@ -959,6 +852,111 @@ int reply(lua_State * L)
      * Reset + redraw
      */
     return( 0 );
+}
+
+
+/**
+ * Save the current message to a new location.
+ */
+int save_message( lua_State *L )
+{
+    const char *str = lua_tostring(L, -1);
+
+    if (str == NULL)
+        return luaL_error(L, "Missing argument to save(..)");
+
+    if ( !CFile::is_directory( str ) )
+        return luaL_error(L, "The specified destination is not a Maildir" );
+
+    /**
+     * Get the message
+     */
+    CMessage *msg = get_message_for_operation( NULL );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+    /**
+     * Got a message ?
+     */
+    std::string source = msg->path();
+
+    /**
+     * The new path.
+     */
+    std::string dest = CMaildir::message_in( str, ( msg->is_new() ) );
+
+    /**
+     * Copy from source to destination.
+     */
+    CFile::copy( source, dest );
+
+    /**
+     * Remove source.
+     */
+    CFile::delete_file( source.c_str() );
+
+    /**
+     * Update messages
+     */
+    CGlobal *global = CGlobal::Instance();
+    global->update_messages();
+    global->set_message_offset(0);
+
+    /**
+     * We're done.
+     */
+    return 0;
+}
+
+
+/**
+ * Scroll the message down.
+ */
+int scroll_message_down(lua_State *L)
+{
+    int step = lua_tonumber(L, -1);
+
+    CGlobal *global = CGlobal::Instance();
+    int cur = global->get_message_offset();
+    cur += step;
+
+    global->set_message_offset(cur);
+    return (0);
+}
+
+
+/**
+ * Scroll the message to the given offset.
+ */
+int scroll_message_to(lua_State *L)
+{
+    int offset = lua_tonumber(L, -1);
+
+    CGlobal *global = CGlobal::Instance();
+    global->set_message_offset(offset);
+    return (0);
+}
+
+/**
+ * Scroll the message up.
+ */
+int scroll_message_up(lua_State *L)
+{
+    int step = lua_tonumber(L, -1);
+
+    CGlobal *global = CGlobal::Instance();
+    int cur = global->get_message_offset();
+    cur -= step;
+
+    if ( cur < 0 )
+        cur = 0;
+
+    global->set_message_offset(cur);
+    return (0);
 }
 
 
