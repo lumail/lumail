@@ -1,5 +1,5 @@
 /**
- * bindings-message.cc - Bindings for all message-related Lua primitives.
+ * bindings-maildir.cc - Bindings for all maildir-related Lua primitives.
  *
  * This file is part of lumail: http://lumail.org/
  *
