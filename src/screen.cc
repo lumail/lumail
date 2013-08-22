@@ -631,7 +631,15 @@ void CScreen::drawMessage()
     /**
      * Now draw the body.
      */
-    std::vector<UTFString> body = cur->body();
+    std::vector<UTFString> body;
+
+    /**
+     * The body might come from on_get_body.
+     */
+    body = lua->on_get_body();
+    if ( body.empty() )
+        body = cur->body();
+
 
     int textspace = (int)(CScreen::height() - headers.size() - attachments.size() - 1 );
     if (textspace < 2)
