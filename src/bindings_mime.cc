@@ -53,40 +53,38 @@ int attachments(lua_State *L)
         lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
         return( 0 );
     }
-    else
+
+    /**
+     * Count the attachments.
+     */
+    std::vector<std::string> attachments = msg->attachments();
+    std::vector<std::string>::iterator it;
+
+
+    /**
+     * create a new table.
+     */
+    lua_newtable(L);
+
+    /**
+     * Lua indexes start at one.
+     */
+    int i = 1;
+
+    /**
+     * For each attachment, add it to the table.
+     */
+    for (it = attachments.begin(); it != attachments.end(); ++it)
     {
-        /**
-         * Count the attachments.
-         */
-        std::vector<std::string> attachments = msg->attachments();
-        std::vector<std::string>::iterator it;
+        std::string name = (*it);
 
 
-        /**
-         * create a new table.
-         */
-        lua_newtable(L);
-
-        /**
-         * Lua indexes start at one.
-         */
-        int i = 1;
-
-
-        /**
-         * For each attachment, add it to the table.
-         */
-        for (it = attachments.begin(); it != attachments.end(); ++it)
-        {
-            std::string name = (*it);
-
-
-            lua_pushnumber(L,i);
-            lua_pushstring(L,name.c_str());
-            lua_settable(L,-3);
-            i++;
-        }
+        lua_pushnumber(L,i);
+        lua_pushstring(L,name.c_str());
+        lua_settable(L,-3);
+        i++;
     }
+
 
     if ( str != NULL )
         delete( msg );
@@ -114,20 +112,18 @@ int count_attachments(lua_State *L)
         lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
         return( 0 );
     }
-    else
-    {
-        /**
-         * Count the attachments.
-         */
-        std::vector<std::string> attachments = msg->attachments();
-        int count = attachments.size();
 
-        /**
-         * Setup the return values.
-         */
-        lua_pushinteger(L, count );
-        ret = 1;
-    }
+    /**
+     * Count the attachments.
+     */
+    std::vector<std::string> attachments = msg->attachments();
+    int count = attachments.size();
+
+    /**
+     * Setup the return values.
+     */
+    lua_pushinteger(L, count );
+    ret = 1;
 
     if ( str != NULL )
         delete( msg );
@@ -156,29 +152,26 @@ int save_attachment(lua_State *L)
         lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
         return( 0 );
     }
-    else
+
+    /**
+     * Get the attachments.
+     */
+    std::vector<std::string> attachments = msg->attachments();
+    int count                            = attachments.size();
+
+    /**
+     * Out of range: return false.
+     */
+    if ( ( offset < 1 ) || ( offset > count ) )
     {
-        /**
-         * Count the attachments.
-         */
-        std::vector<std::string> attachments = msg->attachments();
-        int count                            = attachments.size();
-
-        /**
-         * Out of range: return false.
-         */
-        if ( ( offset < 1 ) || ( offset > count ) )
-        {
-            lua_pushboolean(L,0);
-            return 1;
-        }
-
-        /**
-         * Save the message.
-         */
-        ret = msg->save_attachment( offset, path );
+        lua_pushboolean(L,0);
+        return 1;
     }
 
+    /**
+     * Save the message.
+     */
+    ret = msg->save_attachment( offset, path );
 
     if ( ret )
         lua_pushboolean(L, 1 );
@@ -207,20 +200,18 @@ int count_body_parts(lua_State *L)
         lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
         return( 0 );
     }
-    else
-    {
-        /**
-         * Get the parts, and store their count.
-         */
-        std::vector<std::string> parts = msg->body_mime_parts();
-        int count = parts.size();
 
-        /**
-         * Setup the return values.
-         */
-        lua_pushinteger(L, count );
-        ret = 1;
-    }
+    /**
+     * Get the parts, and store their count.
+     */
+    std::vector<std::string> parts = msg->body_mime_parts();
+    int count = parts.size();
+
+    /**
+     * Setup the return values.
+     */
+    lua_pushinteger(L, count );
+    ret = 1;
 
     if ( str != NULL )
         delete( msg );
@@ -246,41 +237,39 @@ int get_body_part(lua_State *L)
         lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
         return( 0 );
     }
+
+    /**
+     * Get the MIME-parts
+     */
+    std::vector<std::string> parts = msg->body_mime_parts();
+    int count                      = parts.size();
+
+    /**
+     * Out of range: return false.
+     */
+    if ( ( offset < 1 ) || ( offset > count ) )
+    {
+        lua_pushboolean(L,0);
+        return 1;
+    }
+
+    /**
+     * Where we'll store the size/data.
+     */
+    char *result = NULL;
+    size_t len = 0;
+
+    if ( msg->get_body_part(offset, &result, &len ) )
+    {
+        lua_pushlstring(L, result, len);
+        free(result);
+
+        return 1;
+    }
     else
     {
-        /**
-         * Count the MIME-parts
-         */
-        std::vector<std::string> parts = msg->body_mime_parts();
-        int count                      = parts.size();
-
-        /**
-         * Out of range: return false.
-         */
-        if ( ( offset < 1 ) || ( offset > count ) )
-        {
-            lua_pushboolean(L,0);
-            return 1;
-        }
-
-        /**
-         * Save the message.
-         */
-        char *result = NULL;
-        size_t len = 0;
-
-        if ( msg->get_body_part(offset, &result, &len ) )
-        {
-            lua_pushlstring(L, result, len);
-            free(result);
-
-            return 1;
-        }
-        else
-        {
-            lua_pushnil( L );
-            return 1;
-        }
+        lua_pushnil( L );
+        return 1;
     }
 }
 
@@ -302,37 +291,34 @@ int get_body_parts(lua_State *L)
         lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
         return( 0 );
     }
-    else
+
+    /**
+     * Get the parts, and prepare to iterate over them.
+     */
+    std::vector<std::string> parts = msg->body_mime_parts();
+    std::vector<std::string>::iterator it;
+
+    /**
+     * create a new table.
+     */
+    lua_newtable(L);
+
+    /**
+     * Lua indexes start at one.
+     */
+    int i = 1;
+
+    /**
+     * For each attachment, add it to the table.
+     */
+    for (it = parts.begin(); it != parts.end(); ++it)
     {
-        /**
-         * Get the parts, and prepare to iterate over them.
-         */
-        std::vector<std::string> parts = msg->body_mime_parts();
-        std::vector<std::string>::iterator it;
+        std::string name = (*it);
 
-        /**
-         * create a new table.
-         */
-        lua_newtable(L);
-
-        /**
-         * Lua indexes start at one.
-         */
-        int i = 1;
-
-
-        /**
-         * For each attachment, add it to the table.
-         */
-        for (it = parts.begin(); it != parts.end(); ++it)
-        {
-            std::string name = (*it);
-
-            lua_pushnumber(L,i);
-            lua_pushstring(L,name.c_str());
-            lua_settable(L,-3);
-            i++;
-        }
+        lua_pushnumber(L,i);
+        lua_pushstring(L,name.c_str());
+        lua_settable(L,-3);
+        i++;
     }
 
     if ( str != NULL )
@@ -368,7 +354,7 @@ int has_body_part(lua_State *L)
     std::vector<std::string>::iterator it;
 
     /**
-     * Did we find at least one, part?
+     * Did we find at least one, part that has the specified type?
      */
     for (it = parts.begin(); it != parts.end(); ++it)
     {
