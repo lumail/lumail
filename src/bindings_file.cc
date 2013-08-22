@@ -1,5 +1,5 @@
 /**
- * bindings_prompts.cc - Bindings for prompting Lua primitives.
+ * bindings_file.cc - Bindings for file-related Lua primitives.
  *
  * This file is part of lumail: http://lumail.org/
  *
@@ -72,8 +72,9 @@ int executable(lua_State *L)
 
     return 1;
 }
+
 /**
- * File/Utility handlers. Useful for writing portable configuration files.
+ * Does the given file exist?
  */
 int file_exists(lua_State *L)
 {
