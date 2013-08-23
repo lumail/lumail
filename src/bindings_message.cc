@@ -390,6 +390,7 @@ int count_messages(lua_State * L)
 {
     CGlobal *global = CGlobal::Instance();
     std::vector<CMessage *> *messages = global->get_messages();
+    assert(messages!=NULL);
 
     lua_pushinteger(L, messages->size() );
     return 1;
@@ -1029,6 +1030,8 @@ int scroll_message_down(lua_State *L)
 int scroll_message_to(lua_State *L)
 {
     int offset = lua_tonumber(L, -1);
+    if ( offset < 0 )
+        offset = 0;
 
     CGlobal *global = CGlobal::Instance();
     global->set_message_offset(offset);
@@ -1273,6 +1276,7 @@ int message_offset(lua_State * L)
      */
     CGlobal *global = CGlobal::Instance();
     int offset = global->get_message_offset();
+    assert(offset >= 0);
 
     lua_pushinteger(L, offset);
     return (1);

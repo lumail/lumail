@@ -36,6 +36,8 @@ int index_offset(lua_State *L)
     CGlobal *global = CGlobal::Instance();
     int offset = global->get_selected_message();
 
+    assert(offset >= 0 );
+
     lua_pushinteger(L, offset);
     return (1);
 }
@@ -47,6 +49,9 @@ int index_offset(lua_State *L)
 int jump_index_to(lua_State * L)
 {
     int offset = lua_tonumber(L, -1);
+
+    if ( offset < 0 )
+        offset = 0;
 
     CGlobal *global = CGlobal::Instance();
     global->set_selected_message(offset);
@@ -163,6 +168,9 @@ int scroll_index_up(lua_State * L)
     CGlobal *global = CGlobal::Instance();
     int cur = global->get_selected_message();
     cur -= step;
+
+    if ( cur < 0 )
+        cur = 0;
 
     global->set_selected_message(cur);
 

@@ -47,6 +47,7 @@ int count_maildirs(lua_State *L)
     CGlobal *global = CGlobal::Instance();
     std::vector<CMaildir *> folders = global->get_folders();
 
+
     /**
      * Store the count.
      */
@@ -71,6 +72,7 @@ int current_maildir(lua_State * L)
      */
     int selected = global->get_selected_folder();
     CMaildir *x = display[selected];
+    assert(x != NULL);
 
     /**
      * Store the path.
@@ -113,6 +115,9 @@ int current_maildirs(lua_State *L)
 int jump_maildir_to(lua_State * L)
 {
     int offset = lua_tonumber(L, -1);
+    if ( offset < 0 )
+        offset = 0;
+
     CGlobal *global = CGlobal::Instance();
     global->set_selected_folder(offset);
 
@@ -127,6 +132,7 @@ int maildir_offset(lua_State *L)
 {
     CGlobal *global = CGlobal::Instance();
     int offset = global->get_selected_folder();
+    assert(offset >=0);
 
     lua_pushinteger(L, offset);
     return (1);
@@ -276,6 +282,9 @@ int scroll_maildir_up(lua_State * L)
     CGlobal *global = CGlobal::Instance();
     int cur = global->get_selected_folder();
     cur -= step;
+
+    if ( cur < 0 )
+        cur = 0;
 
     global->set_selected_folder(cur);
 
