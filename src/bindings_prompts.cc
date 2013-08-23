@@ -1,5 +1,5 @@
 /**
- * bindings_prompts.cc - Bindings for prompting Lua primitives.
+ * bindings_prompts.cc - Bindings for Lua prompting primitives.
  *
  * This file is part of lumail: http://lumail.org/
  *
@@ -66,6 +66,8 @@ int choose_string(lua_State * L)
         lua_pushstring(L, choices.at(0).c_str() );
         return 1;
     }
+
+    assert(choices.size()>1);
 
     noecho();
     curs_set(0);
