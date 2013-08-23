@@ -111,6 +111,32 @@ void CScreen::drawMaildir()
         unread_colour = DEFAULT_UNREAD_COLOUR;
 
     /**
+     * get the higlighting mode for the current column
+     */
+    std::string *highlight = global->get_variable( "maildir_highlight_mode");
+    int highlight_mode = A_STANDOUT;
+    if ( highlight != NULL )
+    {
+        if (*highlight == "underline")
+            highlight_mode = A_UNDERLINE;
+
+        else if (*highlight == "standout")
+            highlight_mode = A_STANDOUT;
+
+        else if (*highlight == "reverse")
+            highlight_mode = A_REVERSE;
+
+        else if (*highlight == "blink")
+            highlight_mode = A_BLINK;
+
+        else if (*highlight == "dim")
+            highlight_mode = A_DIM;
+
+        else if (*highlight == "bold")
+            highlight_mode = A_BOLD;
+    }
+
+    /**
      * The number of items we've found, vs. the size of the screen.
      */
     int count = display.size();
@@ -227,7 +253,7 @@ void CScreen::drawMaildir()
         }
 
         if (row == rowToHighlight)
-            attron(A_STANDOUT);
+            attron(highlight_mode);
 
         /**
          * The item we'll draw for this row.
@@ -342,6 +368,32 @@ void CScreen::drawIndex()
         unread_colour = DEFAULT_UNREAD_COLOUR;
 
     /**
+     * get the higlighting mode for the current column
+     */
+    std::string *highlight = global->get_variable( "index_highlight_mode");
+    int highlight_mode = A_STANDOUT;
+    if ( highlight != NULL )
+    {
+        if (*highlight == "underline")
+            highlight_mode = A_UNDERLINE;
+
+        else if (*highlight == "standout")
+            highlight_mode = A_STANDOUT;
+
+        else if (*highlight == "reverse")
+            highlight_mode = A_REVERSE;
+
+        else if (*highlight == "blink")
+            highlight_mode = A_BLINK;
+
+        else if (*highlight == "dim")
+            highlight_mode = A_DIM;
+
+        else if (*highlight == "bold")
+            highlight_mode = A_BOLD;
+    }
+
+    /**
      * The number of items we've found, vs. the size of the screen.
      */
     int count = messages->size();
@@ -422,7 +474,7 @@ void CScreen::drawIndex()
             cur = messages->at(mailIndex);
 
         if (row == rowToHighlight)
-            attron(A_UNDERLINE | A_STANDOUT);
+            attron(highlight_mode);
 
         /**
          * Is this message new/unread?

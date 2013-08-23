@@ -112,13 +112,15 @@ struct CLuaMapping primitive_list[] =
     {"get_variables", "Retrieve all known-variables and their values.", (lua_CFunction) get_variables },
 
 /**
- * Colour getters/setters.  Defined in src/variables.cc
+ * Colour & highlight getters/setters.  Defined in src/variables.cc
  */
     {"attachment_colour", "Get/Set the colour to use for drawing attachments.", (lua_CFunction) attachment_colour },
     {"body_colour", "Get/Set the colour to use for drawing message-bodies.", (lua_CFunction) body_colour },
     {"header_colour", "Get/Set the colour to use for drawing message-headers.", (lua_CFunction) header_colour },
     {"unread_maildir_colour", "Get/Set the colour to use for drawing Maildirs which contain unread messages.", (lua_CFunction) unread_maildir_colour },
     {"unread_message_colour", "Get/Set the colour to use for drawing unread messages.", (lua_CFunction) unread_message_colour },
+    {"maildir_highlight_mode", "Get/Set maildir highlight mode.", (lua_CFunction) maildir_highlight_mode },
+    {"index_highlight_mode", "Get/Set index highlight mode.", (lua_CFunction) index_highlight_mode },
 
 /**
  * Index functions: defined in src/bindings_index.cc
