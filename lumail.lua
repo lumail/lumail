@@ -191,12 +191,15 @@ index_format( "[$FLAGS] $DAY/$MONTH/$YEAR $FROM - $SUBJECT" )
 headers = { "$TO", "$FROM", "$DATE", "$SUBJECT" }
 
 --
--- chose the highlight mode for the selected column in maildir and index mode.
--- supported are underline,standout,reverse,blink,dim,bold. Default
--- for maildir/index is standout
+-- Choose the highlight mode for the selected column in maildir and index mode.
+-- Valid options are:
 --
--- This might be useful if you use lumail inside a terminal multiplexer
--- like tmux.
+--   underline,standout,reverse,blink,dim,bold.
+--
+-- The default value for both is 'standout'.
+--
+-- These settings might be useful if you use lumail inside a terminal
+-- multiplexer such as tmux.
 --
 maildir_highlight_mode('standout')
 index_highlight_mode('standout')
@@ -392,9 +395,13 @@ end
 function on_complete()
 
    --
-   -- Add the colours we support for the various display functions.
+   -- Add the colours we support for the various display functions,
+   -- as well as the highlight options.
    --
-   ret = { "blue", "cyan", "green", "magenta", "red", "white", "yellow" }
+   ret = {
+      "blue", "cyan", "green", "magenta", "red", "white", "yellow",
+      "blink", "bold", "dim", "reverse", "standout", "underline"
+   }
 
    --
    -- Add in all user-defined functions.
