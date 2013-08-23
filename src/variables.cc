@@ -131,11 +131,17 @@ int unread_maildir_colour(lua_State *L)
     return( get_set_string_variable( L, "unread_maildir_colour" ) );
 }
 
+/**
+ * Attribute for the maildir highlighter.
+ */
 int maildir_highlight_mode(lua_State *L)
 {
     return get_set_string_variable( L , "maildir_highlight_mode");
 }
 
+/**
+ * Attribute for the index highlighter.
+ */
 int index_highlight_mode(lua_State *L)
 {
     return get_set_string_variable( L , "index_highlight_mode");
