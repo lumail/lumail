@@ -132,11 +132,6 @@ public:
     std::vector<UTFString> body();
 
     /**
-     * Get the text/plain part of the message, via GMime.
-     */
-    UTFString get_body();
-
-    /**
      * Get the names of attachments to this message.
      */
     std::vector<std::string> attachments();
@@ -212,6 +207,10 @@ private:
      */
     void message_parse();
 
+    /**
+     * Get the text/plain part of the message, via GMime.
+     */
+    UTFString get_body();
 
     /**
      * The file we represent.
