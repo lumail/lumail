@@ -59,13 +59,36 @@ int body(lua_State * L)
         return( 0 );
     }
 
-    std::string body = msg->get_body();
+    /**
+     * Get the body, via the on_get_body() call back.
+     *
+     * If that fails then get the body via parsing and filtering.
+     */
+    std::vector<UTFString> body;
+    CLua *lua = CLua::Instance();
+    body = lua->on_get_body();
 
     if ( body.empty() )
-        lua_pushstring(L, "");
-    else
-        lua_pushstring(L, body.c_str());
+        body = msg->body();
 
+
+    if ( body.empty() )
+        lua_pushnil(L);
+    else
+    {
+        /**
+         * Convert the vector of arrays into a string.
+         */
+        UTFString res;
+        std::vector<UTFString>::iterator it;
+        for( it = body.begin(); it != body.end(); ++it )
+        {
+            res += (*it);
+            res += "\n";
+        }
+
+        lua_pushstring(L, res.c_str());
+    }
 
     if ( str != NULL )
         delete( msg );
