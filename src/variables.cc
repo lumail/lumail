@@ -86,7 +86,7 @@ int get_set_string_variable( lua_State *L, const char * name )
 
 
 /**
- ** Colour getters/setters.
+ ** Colour & highlight getters/setters.
  **/
 
 
@@ -131,7 +131,15 @@ int unread_maildir_colour(lua_State *L)
     return( get_set_string_variable( L, "unread_maildir_colour" ) );
 }
 
+int maildir_highlight_mode(lua_State *L)
+{
+    return get_set_string_variable( L , "maildir_highlight_mode");
+}
 
+int index_highlight_mode(lua_State *L)
+{
+    return get_set_string_variable( L , "index_highlight_mode");
+}
 
 
 /**
