@@ -66,18 +66,20 @@ CGlobal::CGlobal()
     /**
      * Defaults as set in our variable hash-map.
      */
-    set_variable( "completion_chars",new std::string("'\"( ,") );
-    set_variable( "editor",          new std::string("/usr/bin/vim") );
-    set_variable( "global_mode",     new std::string("maildir"));
-    set_variable( "history_file",    new std::string( "" ) );
-    set_variable( "index_format",    new std::string( "[$FLAGS] $FROM - $SUBJECT" ) );
-    set_variable( "index_limit",     new std::string("all") );
-    set_variable( "maildir_format",  new std::string( "$CHECK - $PATH" ) );
-    set_variable( "maildir_limit",   new std::string("all") );
-    set_variable( "display_filter",  new std::string("") );
-    set_variable( "mail_filter",     new std::string("") );
-    set_variable( "sendmail_path",   new std::string( "/usr/lib/sendmail -t" ) );
-    set_variable( "sort",            new std::string( "date-asc" ) );
+    set_variable( "completion_chars",       new std::string("'\"( ,") );
+    set_variable( "display_filter",         new std::string("") );
+    set_variable( "editor",                 new std::string("/usr/bin/vim") );
+    set_variable( "global_mode",            new std::string("maildir"));
+    set_variable( "history_file",           new std::string( "" ) );
+    set_variable( "index_format",           new std::string( "[$FLAGS] $FROM - $SUBJECT" ) );
+    set_variable( "index_highlight_mode",   new std::string( "standout" ) );
+    set_variable( "index_limit",            new std::string("all") );
+    set_variable( "mail_filter",            new std::string("") );
+    set_variable( "maildir_format",         new std::string( "$CHECK - $PATH" ) );
+    set_variable( "maildir_highlight_mode", new std::string( "standout" ) );
+    set_variable( "maildir_limit",          new std::string("all") );
+    set_variable( "sendmail_path",          new std::string( "/usr/lib/sendmail -t" ) );
+    set_variable( "sort",                   new std::string( "date-asc" ) );
 
     /**
      * Default colours.
