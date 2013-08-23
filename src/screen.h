@@ -114,6 +114,11 @@ private:
     void drawMessage();
 
     /**
+     * Lookup the curses attribute for the given string.
+     */
+    int lookup_highlight_attribute( std::string *name );
+
+    /**
      * Colour-maps.
      */
     std::unordered_map<std::string, int> m_colours;

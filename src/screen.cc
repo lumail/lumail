@@ -114,27 +114,8 @@ void CScreen::drawMaildir()
      * get the higlighting mode for the current column
      */
     std::string *highlight = global->get_variable( "maildir_highlight_mode");
-    int highlight_mode = A_STANDOUT;
-    if ( highlight != NULL )
-    {
-        if (*highlight == "underline")
-            highlight_mode = A_UNDERLINE;
+    int highlight_mode     = lookup_highlight_attribute( highlight );
 
-        else if (*highlight == "standout")
-            highlight_mode = A_STANDOUT;
-
-        else if (*highlight == "reverse")
-            highlight_mode = A_REVERSE;
-
-        else if (*highlight == "blink")
-            highlight_mode = A_BLINK;
-
-        else if (*highlight == "dim")
-            highlight_mode = A_DIM;
-
-        else if (*highlight == "bold")
-            highlight_mode = A_BOLD;
-    }
 
     /**
      * The number of items we've found, vs. the size of the screen.
@@ -371,27 +352,7 @@ void CScreen::drawIndex()
      * get the higlighting mode for the current column
      */
     std::string *highlight = global->get_variable( "index_highlight_mode");
-    int highlight_mode = A_STANDOUT;
-    if ( highlight != NULL )
-    {
-        if (*highlight == "underline")
-            highlight_mode = A_UNDERLINE;
-
-        else if (*highlight == "standout")
-            highlight_mode = A_STANDOUT;
-
-        else if (*highlight == "reverse")
-            highlight_mode = A_REVERSE;
-
-        else if (*highlight == "blink")
-            highlight_mode = A_BLINK;
-
-        else if (*highlight == "dim")
-            highlight_mode = A_DIM;
-
-        else if (*highlight == "bold")
-            highlight_mode = A_BOLD;
-    }
+    int highlight_mode = lookup_highlight_attribute( highlight );
 
     /**
      * The number of items we've found, vs. the size of the screen.
@@ -1473,4 +1434,38 @@ UTFString CScreen::get_line()
     history->add( buffer );
 
     return( buffer );
+}
+
+
+/**
+ * Lookup the curses attribute for the given string.
+ */
+int CScreen::lookup_highlight_attribute( std::string *name )
+{
+    assert(name != NULL);
+    assert(!name->empty());
+
+    if (strcmp(name->c_str(), "underline" ) == 0)
+        return A_UNDERLINE;
+
+    if (strcmp(name->c_str(), "standout" ) == 0)
+        return A_STANDOUT;
+
+    if (strcmp(name->c_str(), "reverse" ) == 0)
+        return A_REVERSE;
+
+    if (strcmp(name->c_str(), "blink" ) == 0)
+        return A_BLINK;
+
+    if (strcmp(name->c_str(), "dim" ) == 0)
+        return A_DIM;
+
+    if (strcmp(name->c_str(), "bold" ) == 0)
+        return A_BOLD;
+
+
+    /**
+     * Default.
+     */
+    return( A_STANDOUT );
 }
