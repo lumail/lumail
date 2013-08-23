@@ -39,10 +39,10 @@ int get_set_string_variable( lua_State *L, const char * name );
 int attachment_colour(lua_State *L);
 int body_colour(lua_State *L);
 int header_colour(lua_State *L);
+int index_highlight_mode(lua_State *L);
+int maildir_highlight_mode(lua_State *L);
 int unread_maildir_colour(lua_State *L);
 int unread_message_colour(lua_State *L);
-int maildir_highlight_mode(lua_State *L);
-int index_highlight_mode(lua_State *L);
 
 /**
  * General getters/setters.
