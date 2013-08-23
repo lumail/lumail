@@ -423,6 +423,8 @@ void CMessage::remove_flag( char c )
  */
 bool CMessage::matches_filter( std::string *filter )
 {
+    assert(filter != NULL);
+
     if ( strcmp( filter->c_str(), "all" ) == 0 )
         return true;
 
@@ -1040,6 +1042,8 @@ UTFString CMessage::get_body()
      * Create an iterator to walk over the MIME-parts of the message.
      */
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
+    assert(iter != NULL);
+
     const char *content = NULL;
 
     /**
@@ -1316,6 +1320,8 @@ std::vector<std::string> CMessage::attachments()
      * Create an iterator
      */
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
+    assert(iter != NULL);
+
 
     /**
      * Iterate over the message.
@@ -1367,6 +1373,7 @@ bool CMessage::save_attachment( int offset, std::string output_path )
      * Create an iterator
      */
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
+    assert(iter != NULL);
 
     /**
      * The current object number.
@@ -1733,6 +1740,7 @@ std::vector<std::string> CMessage::body_mime_parts()
      * Create an iterator to walk over the MIME-parts of the message.
      */
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
+    assert(iter!=NULL);
 
     /**
      * Iterate over the message.
@@ -1786,6 +1794,7 @@ bool CMessage::get_body_part( int offset, char **data, size_t *length )
      * Create an iterator
      */
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
+    assert(iter != NULL);
 
     /**
      * The current object number.
