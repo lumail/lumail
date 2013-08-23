@@ -103,7 +103,6 @@ int count_attachments(lua_State *L)
      * Get the path (optional).
      */
     const char *str = lua_tostring(L, -1);
-    int ret = 0;
 
     CMessage *msg = get_message_for_operation( str );
     if ( msg == NULL )
@@ -123,12 +122,11 @@ int count_attachments(lua_State *L)
      * Setup the return values.
      */
     lua_pushinteger(L, count );
-    ret = 1;
 
     if ( str != NULL )
         delete( msg );
 
-    return( ret );
+    return( 1 );
 
 }
 
@@ -143,7 +141,6 @@ int save_attachment(lua_State *L)
      */
     int offset       = lua_tointeger(L,-2);
     const char *path = lua_tostring(L, -1);
-    bool ret;
 
     CMessage *msg = get_message_for_operation(NULL);
     if ( msg == NULL )
@@ -171,12 +168,18 @@ int save_attachment(lua_State *L)
     /**
      * Save the message.
      */
-    ret = msg->save_attachment( offset, path );
+    bool ret = msg->save_attachment( offset, path );
+
 
     if ( ret )
+    {
+        assert(CFile::exists( path));
         lua_pushboolean(L, 1 );
+    }
     else
+    {
         lua_pushboolean(L, 0 );
+    }
     return( 1 );
 
 }
@@ -191,7 +194,6 @@ int count_body_parts(lua_State *L)
      * Get the path (optional).
      */
     const char *str = lua_tostring(L, -1);
-    int ret = 0;
 
     CMessage *msg = get_message_for_operation( str );
     if ( msg == NULL )
@@ -211,12 +213,11 @@ int count_body_parts(lua_State *L)
      * Setup the return values.
      */
     lua_pushinteger(L, count );
-    ret = 1;
 
     if ( str != NULL )
         delete( msg );
 
-    return( ret );
+    return( 1 );
 }
 
 
