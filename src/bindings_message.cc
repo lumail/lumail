@@ -587,7 +587,20 @@ int reply(lua_State * L)
      */
     std::string subject = mssg->header("Subject");
     std::string to      = mssg->header("From");
-    std::string ref     = mssg->header( "Message-ID" );
+    std::string ref     = mssg->header("Message-ID");
+
+    /**
+     * Transform the subject.
+     */
+    lua_getglobal(L, "reply_transform_subject" );
+    if (lua_isfunction(L, -1))
+    {
+        lua_pushstring(L, subject.c_str() );
+        if (! lua_pcall(L, 1, 1, 0) )
+        {
+            subject = lua_tostring(L,-1);
+        }
+    }
 
 
     CGlobal *global   = CGlobal::Instance();

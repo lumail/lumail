@@ -878,6 +878,30 @@ function get_signature( from, to, subject )
 end
 
 
+--
+-- If the function "reply_transform_subject" is defined it will
+-- be invoked when a message is replied to.
+--
+-- The intention is that you return an updated subject.
+--
+function reply_transform_subject( sub )
+
+   if ( string.len( sub ) < 1 ) then
+      return "No subject"
+   end
+   --
+   -- Remove (repeated) "Re:" from the start of string.
+   --
+   while( string.find(sub, "^Re:" ) ) do
+      sub = string.gsub( sub, "^[rR][eE]:[ \t]+", "" );
+   end
+
+   -- Add prefix
+   return "Re: " .. sub
+end
+
+
+
 
 --
 -- Now setup keymaps for the different modes.
