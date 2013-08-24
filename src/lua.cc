@@ -696,3 +696,27 @@ void CLua::dump_stack()
 
 }
 
+
+/**
+ * Read a single line of text, via the Lua prompt function.
+ */
+UTFString CLua::get_input( UTFString prompt_txt, UTFString default_answer )
+{
+    lua_pushstring(m_lua, prompt_txt.c_str() );
+    int ret = prompt(m_lua);
+    if ( ret != 1 )
+    {
+        return( default_answer );
+    }
+
+    const char *result = lua_tostring(m_lua,-1);
+    if ( ( result == NULL ) || ( strlen( result ) < 1 ) )
+    {
+        return( default_answer );
+    }
+    else
+    {
+        return( result );
+    }
+
+}

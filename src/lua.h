@@ -148,6 +148,10 @@ public:
      */
     void dump_stack();
 
+    /**
+     * Read a single line of text, via the Lua prompt function.
+     */
+    UTFString get_input( UTFString prompt_txt, UTFString default_answer = "" );
 
 protected:
 
