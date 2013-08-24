@@ -26,6 +26,7 @@
 
 
 #include "bindings.h"
+#include "debug.h"
 #include "file.h"
 #include "global.h"
 #include "lang.h"
@@ -40,9 +41,95 @@
 int unused __attribute__((unused));
 
 
+
+
 /**
- * Utility method.
+ **
+ ** Implementations of utility methods that are helpful and are
+ ** used solely in this file / implementation-unit.
+ **
+ **/
+
+
+
+
+/**
+ * Call a hook, with the given path.
  *
+ * For example "on_edit_message", "on_send_message", or "on_message_aborted".
+ */
+void call_message_hook( const char *hook, const char *filename )
+{
+    CLua *lua = CLua::Instance();
+    std::string cmd = std::string( hook ) + "(\"" + std::string(filename) + "\");";
+
+    DEBUG_LOG( cmd );
+
+    lua->execute( cmd );
+}
+
+
+/**
+ * Create an email on-disk, in a temporary file.
+ */
+std::string populate_email_on_disk( std::vector<std::string> headers, std::string body, std::string sig )
+{
+    /**
+     * Get our temporary directory.
+     */
+    CGlobal *global  = CGlobal::Instance();
+    std::string *tmp = global->get_variable( "tmp" );
+
+    /**
+     * Generate a temporary filename.
+     */
+    char filename[256] = { '\0' };
+    snprintf( filename, sizeof(filename)-1, "%s/lumail.XXXXXX", tmp->c_str() );
+
+    /**
+     * 1. Open the temporary file.
+     */
+    int fd = mkstemp(filename);
+
+    if (fd == -1)
+        return "";
+
+
+    /*
+     * 2. write out each header.
+     */
+    std::vector<std::string>::iterator it;
+    for( it = headers.begin(); it != headers.end(); ++it )
+    {
+        std::string header = (*it);
+
+        unused=write(fd, header.c_str(), header.size() );
+        unused=write(fd, "\n", 1 );
+    }
+
+
+    /*
+     * 3. write out body.
+     */
+    unused=write(fd, "\n", 1 );
+    unused=write(fd, body.c_str(), body.size() );
+
+    /*
+     * 4. write out sig.
+     */
+    if ( ! sig.empty() )
+    {
+        unused=write(fd, "\n", 1 );
+        unused=write(fd, sig.c_str(), sig.size() );
+    }
+
+    close(fd);
+    return( filename );
+
+}
+
+
+/**
  * Send the mail in the given file, and archive it.
  */
 bool send_mail_and_archive( std::string filename )
@@ -96,6 +183,15 @@ bool send_mail_and_archive( std::string filename )
 }
 
 
+
+
+
+
+
+/**
+ ** Implementation of the primitives.
+ **
+ **/
 
 
 /**
@@ -232,7 +328,6 @@ int compose(lua_State * L)
      * Attachments associated with this mail.
      */
     std::vector<std::string> attachments;
-
 
     /**
      * Prompt for confirmation.
@@ -575,6 +670,23 @@ int mark_unread(lua_State * L)
         delete( msg );
 
     return( 0 );
+}
+
+
+/**
+ * Offset within the message we're displaying.
+ */
+int message_offset(lua_State * L)
+{
+    /**
+     * How many lines we've scrolled down the message.
+     */
+    CGlobal *global = CGlobal::Instance();
+    int offset = global->get_message_offset();
+    assert(offset >= 0);
+
+    lua_pushinteger(L, offset);
+    return (1);
 }
 
 
@@ -1058,84 +1170,6 @@ int send_email(lua_State *L)
     send_mail_and_archive( filename );
 
     return 0;
-}
-
-
-/**
- * Offset within the message we're displaying.
- */
-int message_offset(lua_State * L)
-{
-    /**
-     * How many lines we've scrolled down the message.
-     */
-    CGlobal *global = CGlobal::Instance();
-    int offset = global->get_message_offset();
-    assert(offset >= 0);
-
-    lua_pushinteger(L, offset);
-    return (1);
-}
-
-
-/**
- * Write out an email on-disk.  Stub.
- * TODO
- */
-std::string populate_email_on_disk( std::vector<std::string> headers, std::string body, std::string sig )
-{
-    /**
-     * Get our temporary directory.
-     */
-    CGlobal *global  = CGlobal::Instance();
-    std::string *tmp = global->get_variable( "tmp" );
-
-    /**
-     * Generate a temporary filename.
-     */
-    char filename[256] = { '\0' };
-    snprintf( filename, sizeof(filename)-1, "%s/lumail.XXXXXX", tmp->c_str() );
-
-    /**
-     * 1. Open the temporary file.
-     */
-    int fd = mkstemp(filename);
-
-    if (fd == -1)
-        return "";
-
-
-    /*
-     * 2. write out each header.
-     */
-    std::vector<std::string>::iterator it;
-    for( it = headers.begin(); it != headers.end(); ++it )
-    {
-        std::string header = (*it);
-
-        unused=write(fd, header.c_str(), header.size() );
-        unused=write(fd, "\n", 1 );
-    }
-
-
-    /*
-     * 3. write out body.
-     */
-    unused=write(fd, "\n", 1 );
-    unused=write(fd, body.c_str(), body.size() );
-
-    /*
-     * 4. write out sig.
-     */
-    if ( ! sig.empty() )
-    {
-        unused=write(fd, "\n", 1 );
-        unused=write(fd, sig.c_str(), sig.size() );
-    }
-
-    close(fd);
-    return( filename );
-
 }
 
 

@@ -103,20 +103,6 @@ CMessage *get_message_for_operation( const char *path )
 
 
 
-/**
- * Call a hook, with the given path.
- *
- * For example "on_edit_message", "on_send_message", or "on_message_aborted".
- */
-void call_message_hook( const char *hook, const char *filename )
-{
-    CLua *lua = CLua::Instance();
-    std::string cmd = std::string( hook ) + "(\"" + std::string(filename) + "\");";
-
-    DEBUG_LOG( cmd );
-
-    lua->execute( cmd );
-}
 
 
 
