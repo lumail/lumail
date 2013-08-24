@@ -190,8 +190,8 @@ std::string CFile::basename( std::string path )
 
     if ( offset != std::string::npos )
         return( path.substr( offset + 1 ) );
-    return
-        path;
+    else
+        return( path );
 }
 
 
@@ -227,7 +227,7 @@ void CFile::copy( std::string src, std::string dst )
 
 
 /**
- * Edit a file.
+ * Edit a file, using the users preferred editor.
  */
 int CFile::edit( std::string filename )
 {

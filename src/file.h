@@ -58,6 +58,7 @@ public:
      */
     static std::vector<std::string> files_in_directory(std::string path);
 
+
     /**
      * Delete a file.
      */
@@ -77,9 +78,10 @@ public:
 
 
     /**
-     * Edit a file.
+     * Edit a file, using the users preferred editor.
      */
     static int edit( std::string filename );
+
 
     /**
      * Move a file.
