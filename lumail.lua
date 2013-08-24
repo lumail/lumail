@@ -879,7 +879,7 @@ end
 
 
 --
--- If the function "reply_transform_subject" is defined it will
+-- If the function "on_reply_transform_subject()" is defined it will
 -- be invoked when a message is replied to.
 --
 -- The intention is that you return an updated subject.
