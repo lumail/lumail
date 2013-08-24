@@ -40,6 +40,63 @@
 int unused __attribute__((unused));
 
 
+/**
+ * Utility method.
+ *
+ * Send the mail in the given file, and archive it.
+ */
+bool send_mail_and_archive( std::string filename )
+{
+    /**
+     * Get the sendmail binary to use.
+     */
+    CGlobal *global       = CGlobal::Instance();
+    std::string *sendmail = global->get_variable("sendmail_path");
+    assert(sendmail != NULL );
+
+    /**
+     * Send the mail.
+     */
+    CFile::file_to_pipe( filename, *sendmail );
+
+    /**
+     * Get a filename in the sent-mail folder.
+     */
+    std::string *sent_path = global->get_variable("sent_mail");
+    if ( sent_path != NULL )
+    {
+        std::string archive = CMaildir::message_in( *sent_path, false );
+        if ( archive.empty() )
+        {
+            CFile::delete_file( filename );
+
+            /**
+             * TODO:
+             *
+             * lua_pushstring(L, "error finding save path");
+             * return( msg(L ) );
+             */
+            return false;
+        }
+
+
+
+        /**
+         * If we got a filename then copy the mail there.
+         */
+        assert( ! CFile::exists( archive ) );
+        CFile::copy( filename, archive );
+    }
+
+    /**
+     * Cleanup.
+     */
+    CFile::delete_file( filename );
+    return true;
+}
+
+
+
 
 /**
  * Get the body of the message, as displayed.
@@ -267,32 +324,8 @@ int compose(lua_State * L)
     /**
      * Send the mail.
      */
-    std::string *sendmail = global->get_variable("sendmail_path");
-    CFile::file_to_pipe( filename, *sendmail );
+    send_mail_and_archive( filename );
 
-    /**
-     * Get a filename in the sent-mail path.
-     */
-    std::string *sent_path = global->get_variable("sent_mail");
-    if ( sent_path != NULL )
-    {
-        std::string archive = CMaildir::message_in( *sent_path, false );
-        if ( archive.empty() )
-        {
-            CFile::delete_file( filename );
-
-            lua_pushstring(L, "error finding save path");
-            return( msg(L ) );
-        }
-
-
-        /**
-         * If we got a filename then copy the mail there.
-         */
-        CFile::copy( filename, archive );
-    }
-
-    CFile::delete_file( filename );
     return 0;
 }
 
@@ -780,33 +813,7 @@ int reply(lua_State * L)
     /**
      * Send the mail.
      */
-    std::string *sendmail  = global->get_variable("sendmail_path");
-    CFile::file_to_pipe( filename, *sendmail );
-
-    /**
-     * Get a filename in the sent-mail path.
-     */
-    std::string *sent_path = global->get_variable("sent_mail");
-    if ( sent_path != NULL )
-    {
-        std::string archive = CMaildir::message_in( *sent_path, false );
-        if ( archive.empty() )
-        {
-            CFile::delete_file( filename );
-
-            lua_pushstring(L, "error finding save path");
-            return( msg(L ) );
-        }
-
-
-        /**
-         * If we got a filename then copy the mail there.
-         */
-        CFile::copy( filename, archive );
-    }
-
-
-    CFile::delete_file( filename );
+    send_mail_and_archive( filename );
 
     /**
      * Now we're all cleaned up mark the original message
@@ -935,11 +942,6 @@ int scroll_message_up(lua_State *L)
 int send_email(lua_State *L)
 {
     /**
-     * Get our temporary directory.
-     */
-    CGlobal *global  = CGlobal::Instance();
-
-    /**
      * Get the values.
      */
     lua_pushstring(L, "to" );
@@ -1026,17 +1028,6 @@ int send_email(lua_State *L)
     std::string filename = populate_email_on_disk(  headers, body,  sig );
 
     /**
-     * Call the on_send_message hook, with the path to the message.
-     */
-    call_message_hook( "on_send_message", filename.c_str() );
-
-
-    /**
-     * OK now we're going to send the mail.  Get some settings.
-     */
-    std::string *sendmail  = global->get_variable("sendmail_path");
-
-    /**
      **
      **
      *
@@ -1055,35 +1046,16 @@ int send_email(lua_State *L)
      */
     CMessage::add_attachments_to_mail( filename.c_str(), filenames );
 
+    /**
+     * Call the on_send_message hook, with the path to the message.
+     */
+    call_message_hook( "on_send_message", filename.c_str() );
 
 
     /**
-     * Send the mail.
+     * Send the damn email.
      */
-    CFile::file_to_pipe( filename, *sendmail );
-
-    /**
-     * Get a filename in the sentmail path.
-     */
-    std::string *sent_path = global->get_variable("sent_mail");
-    if ( sent_path != NULL )
-    {
-        /**
-         * If we got a filename then copy the mail there.
-         */
-        std::string archive = CMaildir::message_in( *sent_path, true );
-        if ( archive.empty() )
-        {
-            CFile::delete_file( filename );
-            lua_pushstring(L, "error finding save path");
-            return( msg(L ) );
-        }
-
-        CFile::copy( filename, archive );
-    }
-
-
-    CFile::delete_file( filename );
+    send_mail_and_archive( filename );
 
     return 0;
 }
@@ -1165,3 +1137,5 @@ std::string populate_email_on_disk( std::vector<std::string> headers, std::strin
     return( filename );
 
 }
+
+
