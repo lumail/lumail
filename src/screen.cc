@@ -234,7 +234,7 @@ void CScreen::drawMaildir()
         }
 
         if (row == rowToHighlight)
-            attron(highlight_mode);
+            attrset(highlight_mode);
 
         /**
          * The item we'll draw for this row.
@@ -258,19 +258,17 @@ void CScreen::drawMaildir()
         if ( unread )
         {
             if ( row == rowToHighlight )
-                attrset( COLOR_PAIR(m_colours[unread_colour]) | A_REVERSE );
+                attron( COLOR_PAIR(m_colours[unread_colour]) );
             else
-                attrset( COLOR_PAIR(m_colours[unread_colour]) );
+                attron( COLOR_PAIR(m_colours[unread_colour]) );
         }
         printw("%s", display.c_str());
-
-        attrset( COLOR_PAIR(m_colours["white"]));
 
         /**
          * Remove the inverse.
          */
         if (row == rowToHighlight)
-            attroff(A_STANDOUT);
+            attrset(A_NORMAL);
     }
 }
 
@@ -435,7 +433,7 @@ void CScreen::drawIndex()
             cur = messages->at(mailIndex);
 
         if (row == rowToHighlight)
-            attron(highlight_mode);
+            attrset(highlight_mode);
 
         /**
          * Is this message new/unread?
@@ -447,9 +445,9 @@ void CScreen::drawIndex()
         if (unread)
         {
             if ( row == rowToHighlight )
-                attrset( COLOR_PAIR(m_colours[unread_colour]) | A_REVERSE );
+                attron( COLOR_PAIR(m_colours[unread_colour]) );
             else
-                attrset( COLOR_PAIR(m_colours[unread_colour]) );
+                attron( COLOR_PAIR(m_colours[unread_colour]) );
         }
 
         std::string path = "";
@@ -478,7 +476,7 @@ void CScreen::drawIndex()
          * Remove the inverse.
          */
         if (row == 0)
-            attroff(A_REVERSE);
+            attron(A_NORMAL);
     }
 }
 
@@ -1445,27 +1443,28 @@ int CScreen::lookup_highlight_attribute( std::string *name )
     assert(name != NULL);
     assert(!name->empty());
 
-    if (strcmp(name->c_str(), "underline" ) == 0)
-        return A_UNDERLINE;
+    int result = 0;
 
-    if (strcmp(name->c_str(), "standout" ) == 0)
-        return A_STANDOUT;
+    if (strstr(name->c_str(), "underline" ) != NULL )
+        result |= A_UNDERLINE;
 
-    if (strcmp(name->c_str(), "reverse" ) == 0)
-        return A_REVERSE;
+    if (strstr(name->c_str(), "standout" ) != NULL )
+        result |= A_STANDOUT;
 
-    if (strcmp(name->c_str(), "blink" ) == 0)
-        return A_BLINK;
+    if (strstr(name->c_str(), "reverse" ) != NULL )
+        result |= A_REVERSE;
 
-    if (strcmp(name->c_str(), "dim" ) == 0)
-        return A_DIM;
+    if (strstr(name->c_str(), "blink" ) != NULL )
+        result |= A_BLINK;
 
-    if (strcmp(name->c_str(), "bold" ) == 0)
-        return A_BOLD;
+    if (strstr(name->c_str(), "dim" ) != NULL )
+        result |= A_DIM;
 
+    if (strstr(name->c_str(), "bold" ) != NULL )
+        result |= A_BOLD;
 
-    /**
-     * Default.
-     */
-    return( A_STANDOUT );
+    if ( result != 0 )
+        return( result );
+    else
+        return( A_STANDOUT );
 }
