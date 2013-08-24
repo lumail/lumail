@@ -258,17 +258,16 @@ void CScreen::drawMaildir()
         if ( unread )
         {
             if ( row == rowToHighlight )
-                attron( COLOR_PAIR(m_colours[unread_colour]) );
+                attron( highlight_mode | COLOR_PAIR(m_colours[unread_colour]) );
             else
                 attron( COLOR_PAIR(m_colours[unread_colour]) );
         }
         printw("%s", display.c_str());
 
         /**
-         * Remove the inverse.
+         * Reset the colours.
          */
-        if (row == rowToHighlight)
-            attrset(A_NORMAL);
+        attrset(A_NORMAL);
     }
 }
 
@@ -445,7 +444,7 @@ void CScreen::drawIndex()
         if (unread)
         {
             if ( row == rowToHighlight )
-                attron( COLOR_PAIR(m_colours[unread_colour]) );
+                attron( highlight_mode | COLOR_PAIR(m_colours[unread_colour]) );
             else
                 attron( COLOR_PAIR(m_colours[unread_colour]) );
         }
@@ -475,8 +474,7 @@ void CScreen::drawIndex()
         /**
          * Remove the inverse.
          */
-        if (row == 0)
-            attron(A_NORMAL);
+        attrset(A_NORMAL);
     }
 }
 
