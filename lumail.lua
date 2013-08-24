@@ -884,7 +884,7 @@ end
 --
 -- The intention is that you return an updated subject.
 --
-function reply_transform_subject( sub )
+function on_reply_transform_subject( sub )
 
    if ( string.len( sub ) < 1 ) then
       return "No subject"

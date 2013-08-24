@@ -592,7 +592,7 @@ int reply(lua_State * L)
     /**
      * Transform the subject.
      */
-    lua_getglobal(L, "reply_transform_subject" );
+    lua_getglobal(L, "on_reply_transform_subject" );
     if (lua_isfunction(L, -1))
     {
         lua_pushstring(L, subject.c_str() );
