@@ -179,30 +179,9 @@ int compose(lua_State * L)
     std::string filename = populate_email_on_disk(  headers, "",  sig );
 
     /**
-     * Save the current state of the TTY
+     * Edit the message on-disk.
      */
-    refresh();
-    def_prog_mode();
-    endwin();
-
-    /**
-     * Get the editor.
-     */
-    std::string cmd = get_editor();
-
-    /**
-     * Run the editor.
-     */
-    cmd += " ";
-    cmd += filename;
-    unused = system(cmd.c_str());
-
-    /**
-     * Reset + redraw
-     */
-    reset_prog_mode();
-    refresh();
-
+    CFile::edit( filename );
 
     /**
      * Call the on_edit_message hook, with the path to the message.
@@ -688,25 +667,11 @@ int reply(lua_State * L)
      */
     std::string filename = populate_email_on_disk(  headers, bbody, sig );
 
-
     /**
-     * Save the current state of the TTY
+     * Edit the message on-disk.
      */
-    refresh();
-    def_prog_mode();
-    endwin();
+    CFile::edit( filename );
 
-    /**
-     * Get the editor.
-     */
-    std::string cmd = get_editor();
-
-    /**
-     * Run the editor.
-     */
-    cmd += " ";
-    cmd += filename;
-    unused = system(cmd.c_str());
 
     /**
      * Reset the screen.

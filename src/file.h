@@ -77,6 +77,11 @@ public:
 
 
     /**
+     * Edit a file.
+     */
+    static int edit( std::string filename );
+
+    /**
      * Move a file.
      */
     static bool move( std::string src, std::string dest );

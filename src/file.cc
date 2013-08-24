@@ -27,11 +27,13 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <cursesw.h>
 
 
 #include "debug.h"
 #include "file.h"
 #include "maildir.h"
+#include "variables.h"
 
 #ifndef FILE_READ_BUFFER
 # define FILE_READ_BUFFER 16384
@@ -221,6 +223,41 @@ void CFile::copy( std::string src, std::string dst )
     odst.close();
 
     assert( CFile::exists( dst ) );
+}
+
+
+/**
+ * Edit a file.
+ */
+int CFile::edit( std::string filename )
+{
+    /**
+     * Save the current state of the TTY
+     */
+    refresh();
+    def_prog_mode();
+    endwin();
+
+    /**
+     * Get the editor.
+     */
+    std::string cmd = get_editor();
+    assert( !cmd.empty() );
+
+    /**
+     * Run the editor.
+     */
+    cmd += " ";
+    cmd += filename;
+    int ret = system(cmd.c_str());
+
+    /**
+     * Reset + redraw
+     */
+    reset_prog_mode();
+    refresh();
+
+    return( ret );
 }
 
 
