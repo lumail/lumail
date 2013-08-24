@@ -103,46 +103,28 @@ int body(lua_State * L)
 int compose(lua_State * L)
 {
     /**
+     * Get the lua instance.
+     */
+    CLua *lua = CLua::Instance();
+
+    /**
      * Prompt for the recipient
      */
-    lua_pushstring(L, "To: " );
-    int ret = prompt( L);
-    if ( ret != 1 )
-    {
-        lua_pushstring(L, "Error receiving recipient." );
-        return( msg(L ) );
-    }
-
-    const char *recipient = lua_tostring(L,-1);
-    if ( strlen(recipient) < 1 )
+    UTFString recipient = lua->get_input( "To: ");
+    if ( recipient.empty() )
     {
         lua_pushstring(L, "Empty recipient, aborting." );
         return( msg(L ) );
     }
 
     /**
-     * Prompt for subject.
+     * Prompt for the subject.
      */
-    lua_pushstring(L, "Subject: " );
-    ret = prompt( L);
-    if ( ret != 1 )
-    {
-        lua_pushstring(L, "Error receiving subject" );
-        return( msg(L ) );
-    }
+    UTFString subject = lua->get_input( "Subject: ", "No subject" );
 
     /**
-     * Get the subject.
+     * Get the sender address.
      */
-    const char *subject         = lua_tostring(L,-1);
-    const char *default_subject = "No subject";
-
-    /**
-     * If empty, use the default.
-     */
-    if ( strlen(subject) < 1 )
-        subject = default_subject;
-
     CGlobal *global   = CGlobal::Instance();
     std::string *from = global->get_variable( "from" );
 
@@ -155,8 +137,8 @@ int compose(lua_State * L)
     if (lua_isfunction(L, -1))
     {
         lua_pushstring(L, from->c_str() );
-        lua_pushstring(L, recipient );
-        lua_pushstring(L, subject );
+        lua_pushstring(L, recipient.c_str() );
+        lua_pushstring(L, subject.c_str() );
         if (! lua_pcall(L, 3, 1, 0) )
         {
             sig = lua_tostring(L,-1);
@@ -209,7 +191,7 @@ int compose(lua_State * L)
         lua_pushstring(L,"Send mail: (y)es, (n)o, or (a)dd an attachment?" );
         lua_pushstring(L,"anyANY");
 
-        ret = prompt_chars(L);
+        int ret = prompt_chars(L);
         if ( ret != 1 )
         {
             lua_pushstring(L, "Error receiving confirmation." );
@@ -242,16 +224,14 @@ int compose(lua_State * L)
             /**
              * Add attachment.
              */
-            lua_pushstring(L,"Path to attachment?" );
-            ret = prompt( L);
-            if ( ret != 1 )
+            UTFString path = lua->get_input("Path to attachment: " );
+            if ( path.empty() )
             {
                 CFile::delete_file( filename );
                 lua_pushstring(L, "Error receiving attachment." );
                 return( msg(L ) );
             }
-            const char * path = lua_tostring(L, -1);
-            if ( path != NULL )
+            else
             {
                 attachments.push_back( path );
             }
@@ -287,7 +267,7 @@ int compose(lua_State * L)
     /**
      * Send the mail.
      */
-    std::string *sendmail  = global->get_variable("sendmail_path");
+    std::string *sendmail = global->get_variable("sendmail_path");
     CFile::file_to_pipe( filename, *sendmail );
 
     /**
