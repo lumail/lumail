@@ -1,3 +1,25 @@
+lumail (0.20) stable; urgency=low
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+    #114 - Added new primitive on_get_body() for displaying
+           arbitrary body contents:
+           http://lumail.org/lua/on_get_body.html
+    #125 - Broke implementation of bindings into per-role files.
+    #126 - Documented usage of msmtp:
+           http://lumail.org/faq/technical/#faq_msmtp
+    #127 - The body() primitive honours display_filter() and on_get_body()
+  * Two new helpers: index_highlight_mode(), maildir_highlight_mode() for
+    controlling how the the highlighting works:
+     http://lumail.org/lua/index_highlight_mode.html
+     http://lumail.org/lua/maildir_highlight_mode.html
+  * When "--eval" and "--exit" are both in use the msg() primitive
+    is reworked to write to STDOUT, to avoid losing information.
+  * Updated the handling of header value caching to work correctly.
+
+ -- Steve Kemp <steve@steve.org.uk>  Sat, 24 Aug 2013 11:11:11 +0000
+
 lumail (0.19) stable; urgency=low
 
   * New release, fixing several bugs.
