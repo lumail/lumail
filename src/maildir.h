@@ -55,7 +55,7 @@ public:
     /**
      * The total number of messages for this maildir.
      */
-    int all_messages();
+    int total_messages();
 
     /**
      * The friendly name of the maildir.

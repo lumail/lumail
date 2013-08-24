@@ -166,7 +166,7 @@ int CMaildir::unread_messages()
 /**
  * The total number of messages for this maildir.
  */
-int CMaildir::all_messages()
+int CMaildir::total_messages()
 {
     update_cache();
     return( m_total );
@@ -278,13 +278,13 @@ std::string CMaildir::format( bool selected, std::string fmt )
             }
             if ( strcmp(std_name[i] , "$TOTAL" ) == 0 )
             {
-                int total = all_messages();
+                int total = total_messages();
                 convert << std::setfill('0') << std::setw(4) << total;
                 result.insert(offset, convert.str());
             }
             if ( strcmp(std_name[i] , "$READ" ) == 0 )
             {
-                int read = all_messages() - unread_messages();;
+                int read = total_messages() - unread_messages();;
                 convert << std::setfill('0') << std::setw(4) << read;
                 result.insert(offset, convert.str());
             }
