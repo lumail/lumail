@@ -145,22 +145,6 @@ int compose(lua_State * L)
 
     CGlobal *global   = CGlobal::Instance();
     std::string *from = global->get_variable( "from" );
-    std::string *tmp  = global->get_variable( "tmp" );
-
-
-    /**
-     * Generate a temporary file for the message body.
-     */
-    char filename[256] = { '\0' };
-    snprintf( filename, sizeof(filename)-1, "%s/mytemp.XXXXXX", tmp->c_str() );
-
-    /**
-     * Open the temporary file.
-     */
-    int fd = mkstemp(filename);
-
-    if (fd == -1)
-        return luaL_error(L, "Failed to create a temporary file.");
 
     /**
      * .signature handling.
@@ -179,49 +163,20 @@ int compose(lua_State * L)
         }
     }
 
-    /**
-     * To
-     */
-    unused=write(fd, "To: ", strlen( "To: "));
-    unused=write(fd, recipient, strlen( recipient ));
-    unused=write(fd, "\n", 1 );
+
 
     /**
-     * Subject.
+     * Store the headers.
      */
-    unused=write(fd, "Subject: ", strlen( "Subject: " ) );
-    unused=write(fd, subject, strlen( subject ) );
-    unused=write(fd, "\n", 1 );
+    std::vector<std::string> headers;
+    headers.push_back( "To: " + std::string(recipient) );
+    headers.push_back( "From: " + *from );
+    headers.push_back( "Subject: " + std::string(subject) );
 
     /**
-     * From
+     * Build up the email.
      */
-    unused=write(fd, "From: " , strlen( "From: " ) );
-    unused=write(fd, from->c_str(), strlen( from->c_str() ) );
-    unused=write(fd, "\n", 1 );
-
-    /**
-     * Space
-     */
-    unused=write(fd, "\n", 1 );
-
-    /**
-     * Body:  User will fill out.
-     */
-
-    /**
-     * .sig
-     */
-    if ( sig.empty() )
-    {
-        unused=write(fd, "\n-- \n", strlen("\n-- \n" ) );
-    }
-    else
-    {
-        unused=write(fd, sig.c_str(), sig.size() );
-    }
-
-    close(fd);
+    std::string filename = populate_email_on_disk(  headers, "",  sig );
 
     /**
      * Save the current state of the TTY
@@ -252,7 +207,7 @@ int compose(lua_State * L)
     /**
      * Call the on_edit_message hook, with the path to the message.
      */
-    call_message_hook( "on_edit_message", filename );
+    call_message_hook( "on_edit_message", filename.c_str() );
 
 
     /**
@@ -296,7 +251,7 @@ int compose(lua_State * L)
              * Call the on_message_aborted hook, with the path to the
              * message.
              */
-            call_message_hook( "on_message_aborted", filename );
+            call_message_hook( "on_message_aborted", filename.c_str() );
 
             cont = false;
             CFile::delete_file( filename );
@@ -347,7 +302,7 @@ int compose(lua_State * L)
     /**
      * Call the on_send_message hook, with the path to the message.
      */
-    call_message_hook( "on_send_message", filename );
+    call_message_hook( "on_send_message", filename.c_str() );
 
 
     /**
@@ -658,11 +613,6 @@ int reply(lua_State * L)
 
     CGlobal *global   = CGlobal::Instance();
     std::string *from = global->get_variable( "from" );
-    std::string *tmp  = global->get_variable( "tmp" );
-
-
-    char filename[256] = { '\0' };
-    snprintf( filename, sizeof(filename)-1, "%s/lumail.reply.XXXXXX", tmp->c_str() );
 
 
     /**
@@ -684,35 +634,13 @@ int reply(lua_State * L)
 
 
     /**
-     * Open the temporary file.
+     * The headers.
      */
-    int fd = mkstemp(filename);
+    std::vector<std::string> headers;
+    headers.push_back( "To: " + to);
+    headers.push_back( "From: " + *from);
+    headers.push_back( "Subject: " + subject);
 
-    if (fd == -1)
-    {
-        return luaL_error(L, "Failed to create a temporary file.");
-    }
-
-    /**
-     * To
-     */
-    unused=write(fd, "To: ", strlen( "To: "));
-    unused=write(fd, to.c_str(), strlen( to.c_str() ));
-    unused=write(fd, "\n", 1 );
-
-    /**
-     * Subject.
-     */
-    unused=write(fd, "Subject: ", strlen( "Subject: " ) );
-    unused=write(fd, subject.c_str(), strlen( subject.c_str() ) );
-    unused=write(fd, "\n", 1 );
-
-    /**
-     * From
-     */
-    unused=write(fd, "From: " , strlen( "From: " ) );
-    unused=write(fd, from->c_str(), strlen( from->c_str() ) );
-    unused=write(fd, "\n", 1 );
 
     /**
      * If we have a message-id add that to the references.
@@ -739,41 +667,27 @@ int reply(lua_State * L)
          */
         if ( !ref.empty() )
         {
-            unused=write(fd, "References: " , strlen( "References: " ) );
-            unused=write(fd, ref.c_str(), strlen( ref.c_str() ) );
-            unused=write(fd, "\n", 1 );
+            headers.push_back( "References: " + ref );
         }
     }
-
-    /**
-     * Space
-     */
-    unused=write(fd, "\n", 1 );
 
     /**
      * Body
      */
     std::vector<UTFString> body = mssg->body();
+    std::string bbody ;
+
     int lines =(int)body.size();
     for( int i = 0; i < lines; i++ )
     {
-        unused=write(fd, "> ", 2 );
-        unused=write(fd, body[i].c_str(), strlen(body[i].c_str() ));
-        unused=write(fd, "\n", 1 );
+        bbody += "> " + body[i] + "\n";
     }
 
     /**
-     * Write the signature.
+     * Write it out.
      */
-    if ( sig.empty() )
-    {
-        unused=write(fd, "\n-- \n", strlen("\n-- \n" ) );
-    }
-    else
-    {
-        unused=write(fd, sig.c_str(), sig.size() );
-    }
-    close(fd);
+    std::string filename = populate_email_on_disk(  headers, bbody, sig );
+
 
     /**
      * Save the current state of the TTY
@@ -804,7 +718,7 @@ int reply(lua_State * L)
     /**
      * Call the on_edit_message hook, with the path to the message.
      */
-    call_message_hook( "on_edit_message", filename );
+    call_message_hook( "on_edit_message", filename.c_str() );
 
     /**
      * Attachments associated with this mail.
@@ -849,7 +763,7 @@ int reply(lua_State * L)
              * Call the on_message_aborted hook, with the path to the
              * message.
              */
-            call_message_hook( "on_message_aborted", filename );
+            call_message_hook( "on_message_aborted", filename.c_str() );
 
             cont = false;
             CFile::delete_file( filename );
@@ -902,7 +816,7 @@ int reply(lua_State * L)
     /**
      * Call the on_send_message hook, with the path to the message.
      */
-    call_message_hook( "on_send_message", filename );
+    call_message_hook( "on_send_message", filename.c_str() );
 
 
     /**
@@ -1066,7 +980,6 @@ int send_email(lua_State *L)
      * Get our temporary directory.
      */
     CGlobal *global  = CGlobal::Instance();
-    std::string *tmp = global->get_variable( "tmp" );
 
     /**
      * Get the values.
@@ -1124,20 +1037,6 @@ int send_email(lua_State *L)
 
 
     /**
-     * Generate a temporary filename.
-     */
-    char filename[256] = { '\0' };
-    snprintf( filename, sizeof(filename)-1, "%s/send.mail.XXXXXX", tmp->c_str() );
-
-    /**
-     * Open the temporary file.
-     */
-    int fd = mkstemp(filename);
-
-    if (fd == -1)
-        return luaL_error(L, "Failed to create a temporary file.");
-
-    /**
      * .signature handling.
      */
     std::string sig = "";
@@ -1154,58 +1053,24 @@ int send_email(lua_State *L)
         }
     }
 
-    /**
-     * To
-     */
-    unused=write(fd, "To: ", strlen( "To: "));
-    unused=write(fd, to, strlen( to ));
-    unused=write(fd, "\n", 1 );
 
     /**
-     * Subject.
+     * Store the headers.
      */
-    unused=write(fd, "Subject: ", strlen( "Subject: " ) );
-    unused=write(fd, subject, strlen( subject ) );
-    unused=write(fd, "\n", 1 );
+    std::vector<std::string> headers;
+    headers.push_back( "To: " + std::string(to) );
+    headers.push_back( "From: " + std::string(from) );
+    headers.push_back( "Subject: " + std::string(subject) );
 
     /**
-     * From
+     * Build up the email.
      */
-    unused=write(fd, "From: " , strlen( "From: " ) );
-    unused=write(fd, from, strlen( from ) );
-    unused=write(fd, "\n", 1 );
-
-    /**
-     * Space
-     */
-    unused=write(fd, "\n", 1 );
-
-    /**
-     * Body.
-     */
-    unused=write(fd, body, strlen( body ) );
-
-    /**
-     * .sig
-     */
-    if ( sig.empty() )
-    {
-        unused=write(fd, "\n\n-- \n", strlen("\n\n-- \n" ) );
-    }
-    else
-    {
-        unused=write(fd, "\n", 1 );
-        unused=write(fd, "\n", 1 );
-        unused=write(fd, sig.c_str(), sig.size() );
-    }
-
-    close(fd);
-
+    std::string filename = populate_email_on_disk(  headers, body,  sig );
 
     /**
      * Call the on_send_message hook, with the path to the message.
      */
-    call_message_hook( "on_send_message", filename );
+    call_message_hook( "on_send_message", filename.c_str() );
 
 
     /**
@@ -1230,7 +1095,7 @@ int send_email(lua_State *L)
      **
      **
      */
-    CMessage::add_attachments_to_mail( filename, filenames );
+    CMessage::add_attachments_to_mail( filename.c_str(), filenames );
 
 
 
@@ -1280,4 +1145,65 @@ int message_offset(lua_State * L)
 
     lua_pushinteger(L, offset);
     return (1);
+}
+
+
+/**
+ * Write out an email on-disk.  Stub.
+ * TODO
+ */
+std::string populate_email_on_disk( std::vector<std::string> headers, std::string body, std::string sig )
+{
+    /**
+     * Get our temporary directory.
+     */
+    CGlobal *global  = CGlobal::Instance();
+    std::string *tmp = global->get_variable( "tmp" );
+
+    /**
+     * Generate a temporary filename.
+     */
+    char filename[256] = { '\0' };
+    snprintf( filename, sizeof(filename)-1, "%s/lumail.XXXXXX", tmp->c_str() );
+
+    /**
+     * 1. Open the temporary file.
+     */
+    int fd = mkstemp(filename);
+
+    if (fd == -1)
+        return "";
+
+
+    /*
+     * 2. write out each header.
+     */
+    std::vector<std::string>::iterator it;
+    for( it = headers.begin(); it != headers.end(); ++it )
+    {
+        std::string header = (*it);
+
+        unused=write(fd, header.c_str(), header.size() );
+        unused=write(fd, "\n", 1 );
+    }
+
+
+    /*
+     * 3. write out body.
+     */
+    unused=write(fd, "\n", 1 );
+    unused=write(fd, body.c_str(), body.size() );
+
+    /*
+     * 4. write out sig.
+     */
+    if ( ! sig.empty() )
+    {
+        unused=write(fd, "\n", 1 );
+        unused=write(fd, sig.c_str(), sig.size() );
+    }
+
+    close(fd);
+    return( filename );
+
 }

@@ -50,6 +50,12 @@ CMessage *get_message_for_operation( const char *path );
 void call_message_hook(const char *hook, const char *filename );
 
 
+/**
+ * Create a file on-disk which will contain the given "email".
+ */
+std::string populate_email_on_disk( std::vector<std::string> headers, std::string body, std::string sig );
+
+
 
 /**
  **

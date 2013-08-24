@@ -1544,7 +1544,7 @@ void CMessage::close_message()
 /**
  * Update a basic email, on-disk, to include the named attachments.
  */
-void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> attachments )
+void CMessage::add_attachments_to_mail(std::string filename, std::vector<std::string> attachments )
 {
     /**
      * When this code is called we have a file, on-disk, which contains something like:
@@ -1581,7 +1581,7 @@ void CMessage::add_attachments_to_mail(char *filename, std::vector<std::string> 
 
 
 
-    if ((fd = open ( filename, O_RDONLY, 0)) == -1)
+    if ((fd = open ( filename.c_str(), O_RDONLY, 0)) == -1)
     {
         DEBUG_LOG( "CMessage::add_attachments_to_mail - Failed to open filename for reading" );
         return;

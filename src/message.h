@@ -156,7 +156,7 @@ public:
     /**
      * Update a basic email, on-disk, to include the named attachments.
      */
-    static void add_attachments_to_mail(char *filename, std::vector<std::string> attachments );
+    static void add_attachments_to_mail(std::string filename, std::vector<std::string> attachments );
 
     /**
      * Return the MIME-types of body-parts.
