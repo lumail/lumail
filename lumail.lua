@@ -893,7 +893,7 @@ function on_reply_transform_subject( sub )
    -- Remove (repeated) "Re:" from the start of string.
    --
    while( string.find(sub, "^Re:" ) ) do
-      sub = string.gsub( sub, "^[rR][eE]:[ \t]+", "" );
+      sub = string.gsub( sub, "^[rR][eE]:[ \t]+", "" )
    end
 
    -- Add prefix
