@@ -16,6 +16,8 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
+#define _XOPEN_SOURCE_EXTENDED 1
+
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
