@@ -271,6 +271,12 @@ int compose(lua_State * L)
     }
 
     /**
+     * Optional CC
+     */
+    UTFString cc = lua->get_input( "Cc: ");
+
+
+    /**
      * Prompt for the subject.
      */
     UTFString subject = lua->get_input( "Subject: ", "No subject" );
@@ -304,9 +310,11 @@ int compose(lua_State * L)
      * Store the headers.
      */
     std::vector<std::string> headers;
-    headers.push_back( "To: " + std::string(recipient) );
+    headers.push_back( "To: " + recipient );
+    if ( ! cc.empty() )
+        headers.push_back( "CC: " + cc );
     headers.push_back( "From: " + *from );
-    headers.push_back( "Subject: " + std::string(subject) );
+    headers.push_back( "Subject: " + subject );
 
     /**
      * Build up the email.
