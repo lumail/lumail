@@ -1,5 +1,5 @@
 /**
- * bindings.cc - Bindings for all functions callable from Lua.
+ * bindings.cc - Bindings for all basic Lua primitives.
  *
  * This file is part of lumail: http://lumail.org/
  *
