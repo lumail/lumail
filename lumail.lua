@@ -190,19 +190,21 @@ index_format( "[$FLAGS] $DAY/$MONTH/$YEAR $FROM - $SUBJECT" )
 --
 headers = { "$TO", "$FROM", "$DATE", "$SUBJECT" }
 
+
 --
 -- Choose the highlight mode for the selected column in maildir and index mode.
 -- Valid options are:
 --
 --   underline,standout,reverse,blink,dim,bold.
 --
--- The default value for both is 'standout'.
+-- These settings might be useful if you run inside a terminal multiplexer such as tmux.
 --
--- These settings might be useful if you use lumail inside a terminal
--- multiplexer such as tmux.
+-- NOTE: You can use multiple values here:
 --
-maildir_highlight_mode('standout')
-index_highlight_mode('standout')
+index_highlight_mode('bold standout')
+maildir_highlight_mode('bold standout')
+
+
 
 --
 -- When viewing the contents of a message it is possible to pipe
