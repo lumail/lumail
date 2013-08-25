@@ -1445,22 +1445,22 @@ int CScreen::lookup_highlight_attribute( std::string *name )
 
     int result = 0;
 
-    if (strstr(name->c_str(), "underline" ) != NULL )
+    if (name->find("underline") != std::string::npos)
         result |= A_UNDERLINE;
 
-    if (strstr(name->c_str(), "standout" ) != NULL )
+    if (name->find("standout") != std::string::npos)
         result |= A_STANDOUT;
 
-    if (strstr(name->c_str(), "reverse" ) != NULL )
+    if (name->find("reverse") != std::string::npos)
         result |= A_REVERSE;
 
-    if (strstr(name->c_str(), "blink" ) != NULL )
+    if (name->find("blink") != std::string::npos)
         result |= A_BLINK;
 
-    if (strstr(name->c_str(), "dim" ) != NULL )
+    if (name->find("dim") != std::string::npos)
         result |= A_DIM;
 
-    if (strstr(name->c_str(), "bold" ) != NULL )
+    if (name->find("bold") != std::string::npos)
         result |= A_BOLD;
 
     if ( result != 0 )
