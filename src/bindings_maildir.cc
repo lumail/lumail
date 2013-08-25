@@ -26,6 +26,7 @@
 
 
 #include "bindings.h"
+#include "debug.h"
 #include "file.h"
 #include "global.h"
 #include "lang.h"
