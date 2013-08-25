@@ -132,60 +132,6 @@ int count_attachments(lua_State *L)
 
 
 /**
- * Save the specified attachment.
- */
-int save_attachment(lua_State *L)
-{
-    /**
-     * Get the path to save to.
-     */
-    int offset       = lua_tointeger(L,-2);
-    const char *path = lua_tostring(L, -1);
-
-    CMessage *msg = get_message_for_operation(NULL);
-    if ( msg == NULL )
-    {
-        CLua *lua = CLua::Instance();
-        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
-        return( 0 );
-    }
-
-    /**
-     * Get the attachments.
-     */
-    std::vector<std::string> attachments = msg->attachments();
-    int count                            = attachments.size();
-
-    /**
-     * Out of range: return false.
-     */
-    if ( ( offset < 1 ) || ( offset > count ) )
-    {
-        lua_pushboolean(L,0);
-        return 1;
-    }
-
-    /**
-     * Save the message.
-     */
-    bool ret = msg->save_attachment( offset, path );
-
-
-    if ( ret )
-    {
-        assert(CFile::exists( path));
-        lua_pushboolean(L, 1 );
-    }
-    else
-    {
-        lua_pushboolean(L, 0 );
-    }
-    return( 1 );
-
-}
-
-
-/**
  * Count the MIME-parts in this message.
  */
 int count_body_parts(lua_State *L)
@@ -375,4 +321,57 @@ int has_body_part(lua_State *L)
     return( 1 );
 }
 
+
+/**
+ * Save the specified attachment.
+ */
+int save_attachment(lua_State *L)
+{
+    /**
+     * Get the path to save to.
+     */
+    int offset       = lua_tointeger(L,-2);
+    const char *path = lua_tostring(L, -1);
+
+    CMessage *msg = get_message_for_operation(NULL);
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+    /**
+     * Get the attachments.
+     */
+    std::vector<std::string> attachments = msg->attachments();
+    int count                            = attachments.size();
+
+    /**
+     * Out of range: return false.
+     */
+    if ( ( offset < 1 ) || ( offset > count ) )
+    {
+        lua_pushboolean(L,0);
+        return 1;
+    }
+
+    /**
+     * Save the message.
+     */
+    bool ret = msg->save_attachment( offset, path );
+
+
+    if ( ret )
+    {
+        assert(CFile::exists( path));
+        lua_pushboolean(L, 1 );
+    }
+    else
+    {
+        lua_pushboolean(L, 0 );
+    }
+    return( 1 );
+
+}
 
