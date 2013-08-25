@@ -1005,6 +1005,7 @@ keymap['index']['/'] = 'search_next()'
 keymap['index']['Space'] = 'view_message()'
 keymap['index']['Enter'] = 'view_message()'
 keymap['index']['r'] = 'reply()'
+keymap['index']['f'] = 'forward()'
 keymap['index']['d'] = 'delete()'
 
 --
@@ -1051,8 +1052,9 @@ keymap['message']['K'] = 'message_up()'
 keymap['message']['w'] = 'toggle_wrap_lines()'
 
 -- Actions
-keymap['message']['r'] = 'reply()'
 keymap['message']['d'] = 'delete()'
+keymap['message']['f'] = 'forward()'
+keymap['message']['r'] = 'reply()'
 
 
 
