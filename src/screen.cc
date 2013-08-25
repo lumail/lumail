@@ -77,11 +77,11 @@ void CScreen::refresh_display()
     assert( s != NULL );
 
 
-    if (strcmp(s->c_str(), "maildir") == 0)
+    if ( *s == "maildir" )
         drawMaildir();
-    else if (strcmp(s->c_str(), "index") == 0)
+    else if ( *s == "index" )
         drawIndex();
-    else if (strcmp(s->c_str(), "message") == 0)
+    else if ( *s == "message" )
         drawMessage();
     else
     {
@@ -309,7 +309,7 @@ void CScreen::drawIndex()
         move(2, 2);
 
         if ( ( filter != NULL ) &&
-             ( strcmp( filter->c_str(), "all" ) != 0 ) )
+             ( *filter == "all" ) )
             printw( NO_MESSAGES_MATCHING_FILTER, filter->c_str() );
         else
             printw( NO_MESSAGES_IN_FOLDERS );
