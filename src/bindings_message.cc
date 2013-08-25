@@ -555,6 +555,223 @@ int delete_message( lua_State *L )
 
 
 /**
+ * Forward an existing mail.
+ */
+int forward(lua_State * L)
+{
+    /**
+     * Get the message we're forwarding.
+     */
+    CMessage *mssg = get_message_for_operation( NULL );
+    if ( mssg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+
+    /**
+     * Prompt for the recipient
+     */
+    CLua *lua = CLua::Instance();
+    UTFString recipient = lua->get_input( "To: ");
+    if ( recipient.empty() )
+    {
+        lua_pushstring(L, "Empty recipient, aborting." );
+        return( msg(L ) );
+    }
+
+
+    /**
+     * Get the subject, and sender, etc.
+     */
+    std::string to      = mssg->header("To");
+    std::string sender  = mssg->header("From");
+    std::string sub     = mssg->header("Subject");
+    std::string date    = mssg->header("Date");
+
+
+    CGlobal *global   = CGlobal::Instance();
+    std::string *from = global->get_variable( "from" );
+
+
+    /**
+     * The headers of the outgoing message we'll send.
+     */
+    std::vector<std::string> headers;
+    headers.push_back( "To: " + recipient);
+    headers.push_back( "From: " + *from);
+    headers.push_back( "Subject: Fwd:" + sub);
+
+
+    /**
+     * Body of the message we're forwarding.
+     */
+    std::vector<UTFString> body = mssg->body();
+    std::string bbody;
+
+    /*
+     * We'll send a message of the form:
+     *
+     *  Forwarded message ..
+     *
+     *  To: $to
+     *  From: $from
+     *  Date: $date:
+     *  Subject: $sub
+     *
+     *  $body
+     *
+     */
+    bbody += "\nForwarded message ..\n\n";
+    bbody += "To: " + to + "\n";
+    bbody += "From: " + sender + "\n";
+    bbody += "Date: " + date + "\n";
+    bbody += "Subject: " + sub + "\n";
+    bbody += "\n";
+
+    int lines =(int)body.size();
+    for( int i = 0; i < lines; i++ )
+    {
+        bbody += body[i] + "\n";
+    }
+
+    /**
+     * Write it out.
+     */
+    std::string filename = populate_email_on_disk(  headers, bbody, "" );
+
+    /**
+     * Edit the message on-disk.
+     */
+    CFile::edit( filename );
+
+
+    /**
+     * Reset the screen.
+     */
+    reset_prog_mode();
+    refresh();
+
+
+    /**
+     * Call the on_edit_message hook, with the path to the message.
+     */
+    call_message_hook( "on_edit_message", filename.c_str() );
+
+    /**
+     * Attachments associated with this mail.
+     */
+    std::vector<std::string> attachments;
+
+
+    /**
+     * Prompt for confirmation.
+     */
+    bool cont = true;
+    int ret;
+
+
+    while( cont )
+    {
+        /**
+         * Use prompt_chars() to get the input
+         */
+        lua_pushstring(L,"Send mail: (y)es, (n)o, or (a)dd an attachment?" );
+        lua_pushstring(L,"anyANY");
+
+        ret = prompt_chars(L);
+        if ( ret != 1 )
+        {
+            lua_pushstring(L, "Error receiving confirmation." );
+            return( msg(L ) );
+        }
+
+        const char * response = lua_tostring(L, -1);
+
+
+        if (  ( response[0] == 'y' ) ||
+              ( response[0] == 'Y' ) )
+        {
+            cont = false;
+        }
+        if ( ( response[0] == 'n' ) ||
+             ( response[0] == 'N' ) )
+        {
+            /**
+             * Call the on_message_aborted hook, with the path to the
+             * message.
+             */
+            call_message_hook( "on_message_aborted", filename.c_str() );
+
+            cont = false;
+            CFile::delete_file( filename );
+
+            return 0;
+        }
+        if ( ( response[0] == 'a' ) ||
+             ( response[0] == 'A' ) )
+        {
+            /**
+             * Add attachment.
+             */
+            lua_pushstring(L,"Path to attachment?" );
+            ret = prompt( L);
+            if ( ret != 1 )
+            {
+                CFile::delete_file( filename );
+                lua_pushstring(L, "Error receiving attachment." );
+                return( msg(L ) );
+            }
+            const char * path = lua_tostring(L, -1);
+            if ( path != NULL )
+            {
+                attachments.push_back( path );
+            }
+        }
+    }
+
+
+    /**
+     **
+     **
+     *
+     * At this point we have a filename containing the text of the
+     * email with all the appropriate headers.
+     *
+     * We also have a vector of filenames which need to be attached
+     * to the outgoing mail.
+     *
+     * We want to combine these two things into something that we
+     * can send.
+     *
+     **
+     **
+     **
+     */
+    CMessage::add_attachments_to_mail( filename, attachments );
+
+
+    /**
+     * Call the on_send_message hook, with the path to the message.
+     */
+    call_message_hook( "on_send_message", filename.c_str() );
+
+
+    /**
+     * Send the mail.
+     */
+    send_mail_and_archive( filename );
+
+    /**
+     * Reset + redraw
+     */
+    return( 0 );
+}
+
+
+/**
  * Get a header from the current/specified message.
  */
 int header(lua_State * L)

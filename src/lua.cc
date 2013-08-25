@@ -140,6 +140,7 @@ struct CLuaMapping primitive_list[] =
     {"count_messages", "Count the messages in the currently selected Maildir(s).", (lua_CFunction) count_messages },
     {"current_message", "Retrieve the path to the current message.", (lua_CFunction) current_message },
     {"delete", "Delete the current message.", (lua_CFunction) delete_message },
+    {"forward", "Forward the current message to a new recipient.", (lua_CFunction) forward },
     {"header", "Retrieve the value of the given header from the current message.", (lua_CFunction) header },
     {"is_new", "Is the current message new/unread?", (lua_CFunction) is_new },
     {"mark_read", "Mark the current message as old/read.", (lua_CFunction) mark_read },

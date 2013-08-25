@@ -87,6 +87,7 @@ int scroll_index_up(lua_State * L);
 int body(lua_State * L);
 int compose(lua_State * L);
 int delete_message( lua_State *L );
+int forward(lua_State * L);
 int header(lua_State * L);
 int is_new(lua_State * L);
 int mark_read(lua_State * L);
