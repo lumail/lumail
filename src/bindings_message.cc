@@ -393,21 +393,7 @@ int compose(lua_State * L)
     }
 
     /**
-     **
-     **
-     *
-     * At this point we have a filename containing the text of the
-     * email with all the appropriate headers.
-     *
-     * We also have a vector of filenames which need to be attached
-     * to the outgoing mail.
-     *
-     * We want to combine these two things into something that we
-     * can send.
-     *
-     **
-     **
-     **
+     * Add attachments.  If there are none we just make the message MIME-nice.
      */
     CMessage::add_attachments_to_mail( filename, attachments );
 
@@ -728,21 +714,7 @@ int forward(lua_State * L)
 
 
     /**
-     **
-     **
-     *
-     * At this point we have a filename containing the text of the
-     * email with all the appropriate headers.
-     *
-     * We also have a vector of filenames which need to be attached
-     * to the outgoing mail.
-     *
-     * We want to combine these two things into something that we
-     * can send.
-     *
-     **
-     **
-     **
+     * Add attachments.  If there are none we just make the message MIME-nice.
      */
     CMessage::add_attachments_to_mail( filename, attachments );
 
@@ -1336,21 +1308,7 @@ int send_email(lua_State *L)
     std::string filename = populate_email_on_disk(  headers, body,  sig );
 
     /**
-     **
-     **
-     *
-     * At this point we have a filename containing the text of the
-     * email with all the appropriate headers.
-     *
-     * We also have a vector of filenames which need to be attached
-     * to the outgoing mail.
-     *
-     * We want to combine these two things into something that we
-     * can send.
-     *
-     **
-     **
-     **
+     * Add attachments.  If there are none we just make the message MIME-nice.
      */
     CMessage::add_attachments_to_mail( filename.c_str(), filenames );
 
@@ -1358,7 +1316,6 @@ int send_email(lua_State *L)
      * Call the on_send_message hook, with the path to the message.
      */
     call_message_hook( "on_send_message", filename.c_str() );
-
 
     /**
      * Send the damn email.
