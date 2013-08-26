@@ -142,7 +142,16 @@ bool send_mail_and_archive( std::string filename )
      */
     CGlobal *global       = CGlobal::Instance();
     std::string *sendmail = global->get_variable("sendmail_path");
-    assert(sendmail != NULL );
+
+    if ( (sendmail == NULL ) ||
+         (sendmail->empty() ) )
+    {
+        std::string error = "alert(\"You haven't defined a sendmail binary to use!\", 30 );" ;
+        CLua *lua = CLua::Instance();
+        lua->execute( error );
+        return false;
+    }
+
 
     /**
      * Send the mail.
@@ -153,22 +162,17 @@ bool send_mail_and_archive( std::string filename )
      * Get a filename in the sent-mail folder.
      */
     std::string *sent_path = global->get_variable("sent_mail");
-    if ( sent_path != NULL )
+    if ( ( sent_path != NULL ) && ( ! sent_path->empty() ) )
     {
         std::string archive = CMaildir::message_in( *sent_path, false );
         if ( archive.empty() )
         {
             CFile::delete_file( filename );
-
-            /**
-             * TODO:
-             *
-             * lua_pushstring(L, "error finding save path");
-             * return( msg(L ) );
-             */
+            std::string error = "alert(\"Error finding file in sent-mail.\", 30 );" ;
+            CLua *lua = CLua::Instance();
+            lua->execute( error );
             return false;
         }
-
 
 
         /**
