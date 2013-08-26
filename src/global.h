@@ -116,12 +116,26 @@ public:
      */
     void set_selected_folder(int offset)
     {
+        /**
+         * If we have selected folders.
+         */
         int count = get_folders().size();
-        m_cur_folder = offset;
+        if ( count > 0 )
+        {
+            /**
+             * Then we'll store it.
+             */
+            m_cur_folder = offset;
 
-        if (m_cur_folder >= count)
-            m_cur_folder = count-1;
-        else if (m_cur_folder < 0)
+            /**
+             * But mind it is bound.
+             */
+            if (m_cur_folder >= count)
+                m_cur_folder = count-1;
+            else if (m_cur_folder < 0)
+                m_cur_folder = 0;
+        }
+        else
             m_cur_folder = 0;
     }
 
@@ -137,12 +151,19 @@ public:
     {
         int count = get_messages()->size();
 
-        m_cur_message = offset;
+        if ( count > 0 )
+        {
+            m_cur_message = offset;
 
-        if (m_cur_message>=count)
-            m_cur_message = count-1;
-        if (m_cur_message<0)
-            m_cur_message=0;
+            if (m_cur_message>=count)
+                m_cur_message = count-1;
+            if (m_cur_message<0)
+                m_cur_message=0;
+        }
+        else
+        {
+            m_cur_message = 0;
+        }
     }
 
 
