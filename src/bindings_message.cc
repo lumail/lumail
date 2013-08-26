@@ -111,8 +111,11 @@ std::string populate_email_on_disk( std::vector<std::string> headers, std::strin
     /*
      * 3. write out body.
      */
-    unused=write(fd, "\n", 1 );
-    unused=write(fd, body.c_str(), body.size() );
+    if ( ! body.empty() )
+    {
+        unused=write(fd, "\n", 1 );
+        unused=write(fd, body.c_str(), body.size() );
+    }
 
     /*
      * 4. write out sig.
