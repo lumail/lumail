@@ -153,6 +153,11 @@ public:
      */
     UTFString get_input( UTFString prompt_txt, UTFString default_answer = "" );
 
+    /**
+     * Call the "get_signature" hook.
+     */
+    UTFString get_signature( UTFString from, UTFString to, UTFString subject );
+
 protected:
 
     /**

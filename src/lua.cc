@@ -721,3 +721,25 @@ UTFString CLua::get_input( UTFString prompt_txt, UTFString default_answer )
     }
 
 }
+
+
+/**
+ * Call the "get_signature" hook.
+ */
+UTFString CLua::get_signature( UTFString from, UTFString to, UTFString subject )
+{
+
+    lua_getglobal(m_lua, "get_signature" );
+    if (lua_isfunction(m_lua, -1))
+    {
+        lua_pushstring(m_lua, from.c_str() );
+        lua_pushstring(m_lua, to.c_str() );
+        lua_pushstring(m_lua, subject.c_str() );
+        if (! lua_pcall(m_lua, 3, 1, 0) )
+        {
+            const char *sig = lua_tostring(m_lua,-1);
+            return( sig );
+        }
+    }
+    return( "" );
+}

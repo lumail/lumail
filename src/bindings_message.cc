@@ -277,6 +277,7 @@ int compose(lua_State * L)
         return( msg(L ) );
     }
 
+
     /**
      * Optional CC
      */
@@ -297,21 +298,7 @@ int compose(lua_State * L)
     /**
      * .signature handling.
      */
-    std::string sig = "";
-
-    lua_getglobal(L, "get_signature" );
-    if (lua_isfunction(L, -1))
-    {
-        lua_pushstring(L, from->c_str() );
-        lua_pushstring(L, recipient.c_str() );
-        lua_pushstring(L, subject.c_str() );
-        if (! lua_pcall(L, 3, 1, 0) )
-        {
-            sig = lua_tostring(L,-1);
-        }
-    }
-
-
+    std::string sig = lua->get_signature( *from, recipient, subject );
 
     /**
      * Store the headers.
@@ -967,19 +954,8 @@ int reply(lua_State * L)
     /**
      * .signature handling.
      */
-    std::string sig = "";
-
-    lua_getglobal(L, "get_signature" );
-    if (lua_isfunction(L, -1))
-    {
-        lua_pushstring(L, from->c_str() );
-        lua_pushstring(L, to.c_str() );
-        lua_pushstring(L, subject.c_str() );
-        if (! lua_pcall(L, 3, 1, 0) )
-        {
-            sig = lua_tostring(L,-1);
-        }
-    }
+    CLua *lua = CLua::Instance();
+    std::string sig = lua->get_signature( *from, to, subject );
 
 
     /**
@@ -1343,20 +1319,8 @@ int send_email(lua_State *L)
     /**
      * .signature handling.
      */
-    std::string sig = "";
-
-    lua_getglobal(L, "get_signature" );
-    if (lua_isfunction(L, -1))
-    {
-        lua_pushstring(L, from );
-        lua_pushstring(L, to );
-        lua_pushstring(L, subject );
-        if (! lua_pcall(L, 3, 1, 0) )
-        {
-            sig = lua_tostring(L,-1);
-        }
-    }
-
+    CLua *lua = CLua::Instance();
+    std::string sig = lua->get_signature( from, to, subject );
 
     /**
      * Store the headers.
