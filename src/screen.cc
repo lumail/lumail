@@ -77,11 +77,11 @@ void CScreen::refresh_display()
     assert( s != NULL );
 
 
-    if (strcmp(s->c_str(), "maildir") == 0)
+    if ( *s == "maildir" )
         drawMaildir();
-    else if (strcmp(s->c_str(), "index") == 0)
+    else if ( *s == "index" )
         drawIndex();
-    else if (strcmp(s->c_str(), "message") == 0)
+    else if ( *s == "message" )
         drawMessage();
     else
     {
@@ -309,7 +309,7 @@ void CScreen::drawIndex()
         move(2, 2);
 
         if ( ( filter != NULL ) &&
-             ( strcmp( filter->c_str(), "all" ) != 0 ) )
+             ( *filter == "all" ) )
             printw( NO_MESSAGES_MATCHING_FILTER, filter->c_str() );
         else
             printw( NO_MESSAGES_IN_FOLDERS );
@@ -317,11 +317,8 @@ void CScreen::drawIndex()
         int height = CScreen::height();
         int row = 4;
 
-        std::vector<std::string>::iterator it;
-        for (it = folders.begin(); it != folders.end(); ++it)
+        for (std::string folder: folders)
         {
-            std::string folder = *it;
-
             /**
              * Avoid drawing into the status area.
              */
@@ -567,8 +564,7 @@ void CScreen::drawMessage()
     /**
      * For each header.
      */
-    std::vector<std::string>::iterator it;
-    for (it = headers.begin(); it != headers.end(); ++it)
+    for (std::string header : headers)
     {
         move( row, 0 );
 
@@ -576,7 +572,7 @@ void CScreen::drawMessage()
          * The header-name, in useful format - i.e. without the '$' prefix
          * and in lower-case.
          */
-        UTFString name = (*it);
+        UTFString name = header;
         name = name.substr(1).lowercase();
 
         /**
@@ -591,7 +587,7 @@ void CScreen::drawMessage()
         /**
          * Get the header-value, via the formatter.
          */
-        UTFString value = cur->format( *it );
+        UTFString value = cur->format( header );
 
         /**
          * Truncate to avoid long-wraps.
@@ -622,9 +618,8 @@ void CScreen::drawMessage()
      */
     std::vector<std::string> attachments = cur->attachments();
     int acount = 1;
-    for (it = attachments.begin(); it != attachments.end(); ++it)
+    for (std::string path : attachments)
     {
-        std::string path = (*it);
         move( row, 0 );
 
         /**
@@ -884,11 +879,10 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
      */
     size_t max = 0;
 
-    std::vector<std::string>::iterator it;
-    for (it = choices.begin(); it != choices.end(); ++it)
+    for (std::string choice : choices)
     {
-        if ( (*it).size() > max )
-            max = (*it).size();
+        if ( choice.size() > max )
+            max = choice.size();
     }
 
     /**
@@ -931,8 +925,7 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
         int x = 0;
         int y = 2;
 
-        std::vector<std::string>::iterator it;
-        for (it = choices.begin(); it != choices.end(); ++it)
+        for (std::string choice : choices)
         {
 
             /**
@@ -947,7 +940,7 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
             else
                 wattroff(childwin,A_UNDERLINE | A_STANDOUT);
 
-            mvwaddstr(childwin, y, x,  (*it).c_str() );
+            mvwaddstr(childwin, y, x,  choice.c_str() );
             count += 1;
         }
         wrefresh(childwin);
@@ -1038,22 +1031,20 @@ std::vector<std::string> CScreen::get_completions( std::string token )
     std::vector<std::string> f = lua->on_complete();
     if ( f.size() > 0 )
     {
-        std::vector<std::string>::iterator it;
-
-        for (it = f.begin(); it != f.end(); ++it)
+        for (std::string val : f)
         {
             if ( ignore_case )
             {
-                if( strcasestr( (*it).c_str(), token.c_str() ) != 0 )
+                if( strcasestr( val.c_str(), token.c_str() ) != 0 )
                 {
-                    results.push_back( (*it) );
+                    results.push_back( val );
                 }
             }
             else
             {
-                if( strstr( (*it).c_str(), token.c_str() ) != 0 )
+                if ( val == token )
                 {
-                    results.push_back( (*it) );
+                    results.push_back( val );
                 }
             }
         }
@@ -1445,22 +1436,22 @@ int CScreen::lookup_highlight_attribute( std::string *name )
 
     int result = 0;
 
-    if (strstr(name->c_str(), "underline" ) != NULL )
+    if (name->find("underline") != std::string::npos)
         result |= A_UNDERLINE;
 
-    if (strstr(name->c_str(), "standout" ) != NULL )
+    if (name->find("standout") != std::string::npos)
         result |= A_STANDOUT;
 
-    if (strstr(name->c_str(), "reverse" ) != NULL )
+    if (name->find("reverse") != std::string::npos)
         result |= A_REVERSE;
 
-    if (strstr(name->c_str(), "blink" ) != NULL )
+    if (name->find("blink") != std::string::npos)
         result |= A_BLINK;
 
-    if (strstr(name->c_str(), "dim" ) != NULL )
+    if (name->find("dim") != std::string::npos)
         result |= A_DIM;
 
-    if (strstr(name->c_str(), "bold" ) != NULL )
+    if (name->find("bold") != std::string::npos)
         result |= A_BOLD;
 
     if ( result != 0 )
