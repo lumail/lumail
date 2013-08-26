@@ -902,6 +902,7 @@ int reply(lua_State * L)
      * Get the subject, and sender, etc.
      */
     std::string subject = mssg->header("Subject");
+    std::string cc      = mssg->header("Cc");
     std::string ref     = mssg->header("Message-ID");
 
     /**
@@ -941,6 +942,8 @@ int reply(lua_State * L)
      */
     std::vector<std::string> headers;
     headers.push_back( "To: " + to);
+    if ( !cc.empty() )
+        headers.push_back( "Cc: " + cc);
     headers.push_back( "From: " + *from);
     headers.push_back( "Subject: " + subject);
 
