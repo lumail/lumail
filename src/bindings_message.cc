@@ -827,8 +827,8 @@ int mark_read(lua_State * L)
         lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
         return( 0 );
     }
-    else
-        msg->mark_read();
+
+    msg->mark_read();
 
     if ( str != NULL )
         delete( msg );
@@ -854,8 +854,8 @@ int mark_unread(lua_State * L)
         lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
         return( 0 );
     }
-    else
-        msg->mark_unread();
+
+    msg->mark_unread();
 
     if ( str != NULL )
         delete( msg );
