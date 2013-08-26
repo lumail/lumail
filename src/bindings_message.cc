@@ -902,8 +902,14 @@ int reply(lua_State * L)
      * Get the subject, and sender, etc.
      */
     std::string subject = mssg->header("Subject");
-    std::string to      = mssg->header("From");
     std::string ref     = mssg->header("Message-ID");
+
+    /**
+     * Do we reply to the sender, or a different place?
+     */
+    std::string to = mssg->header("Reply-To");
+    if ( to.empty() )
+        to = mssg->header("From");
 
     /**
      * Transform the subject.
