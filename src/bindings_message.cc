@@ -331,8 +331,68 @@ int body(lua_State * L)
  */
 int bounce(lua_State * L)
 {
-    lua_pushstring(L, "Not implemented, yet." );
-    return( msg(L ) );
+    /**
+     * Get the message we're replying to.
+     */
+    CMessage *mssg = get_message_for_operation( NULL );
+    if ( mssg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+
+    /**
+     * Get the lua instance.
+     */
+    CLua *lua = CLua::Instance();
+
+    /**
+     * Prompt for the recipient
+     */
+    UTFString recipient = lua->get_input( "Bounce to: ");
+    if ( recipient.empty() )
+    {
+        lua_pushstring(L, "Empty recipient, aborting." );
+        return( msg(L ) );
+    }
+
+    /**
+     * TODO: prompt for confirmation.
+     */
+
+
+    /**
+     * Bounce the message, from this path.
+     */
+    std::string path = mssg->path();
+
+    /**
+     * Get the command to execute.
+     */
+    CGlobal *global       = CGlobal::Instance();
+    std::string *sendmail = global->get_variable("bounce_path");
+
+    if ( (sendmail == NULL ) ||
+         (sendmail->empty() ) )
+    {
+        std::string error = "alert(\"You haven't defined a 'bounce_path' binary to use!\", 30 );" ;
+        lua->execute( error );
+        return 0;
+    }
+
+
+    std::string cmd = *sendmail;
+    cmd += " ";
+    cmd += recipient;
+
+    /**
+     * Send it.
+     */
+    CFile::file_to_pipe( path, cmd );
+
+    return 0;
 }
 
 
