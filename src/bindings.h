@@ -85,6 +85,7 @@ int scroll_index_up(lua_State * L);
  * bindings_message.cc:
  */
 int body(lua_State * L);
+int bounce(lua_State * L);
 int compose(lua_State * L);
 int delete_message( lua_State *L );
 int forward(lua_State * L);

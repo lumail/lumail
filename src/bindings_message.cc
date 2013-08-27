@@ -326,6 +326,16 @@ int body(lua_State * L)
 
 
 /**
+ * Resend a message to a new recipient.
+ */
+int bounce(lua_State * L)
+{
+    lua_pushstring(L, "Not implemented, yet." );
+    return( msg(L ) );
+}
+
+
+/**
  * Compose a new mail.
  */
 int compose(lua_State * L)
