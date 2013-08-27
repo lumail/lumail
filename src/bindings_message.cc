@@ -203,9 +203,64 @@ bool send_mail_and_archive( std::string filename )
 }
 
 
+/**
+ * Should we send the mail?
+ *
+ * Return "true" if so.  Return false if the user said no, and either way
+ * allow attachments to be added.
+ */
+bool should_send( lua_State * L, std::vector<std::string> *attachments )
+{
+    while( true )
+    {
+        /**
+         * Use prompt_chars() to get the input
+         */
+        lua_pushstring(L,"Send mail: (y)es, (n)o, or (a)dd an attachment?" );
+        lua_pushstring(L,"anyANY");
 
+        int ret = prompt_chars(L);
+        if ( ret != 1 )
+        {
+            lua_pushstring(L, "Error receiving confirmation." );
+            msg(L );
+            return false;
+        }
 
+        const char * response = lua_tostring(L, -1);
 
+        if (  ( response[0] == 'y' ) ||
+              ( response[0] == 'Y' ) )
+        {
+            return true;
+        }
+        if ( ( response[0] == 'n' ) ||
+             ( response[0] == 'N' ) )
+        {
+            return false;
+        }
+        if ( ( response[0] == 'a' ) ||
+             ( response[0] == 'A' ) )
+        {
+            /**
+             * Add attachment.
+             */
+            lua_pushstring(L,"Path to attachment?" );
+            ret = prompt( L);
+            if ( ret != 1 )
+            {
+                lua_pushstring(L, "Error receiving attachment." );
+                msg(L );
+                return false;
+            }
+            const char * path = lua_tostring(L, -1);
+            if ( path != NULL )
+            {
+                attachments->push_back( path );
+            }
+        }
+    }
+}
 
 
 /**
@@ -344,65 +399,16 @@ int compose(lua_State * L)
      */
     std::vector<std::string> attachments;
 
+
     /**
      * Prompt for confirmation.
      */
-    bool cont = true;
-
-
-    while( cont )
+    bool send = should_send(L, &attachments );
+    if ( ! send )
     {
-        /**
-         * Use prompt_chars() to get the input
-         */
-        lua_pushstring(L,"Send mail: (y)es, (n)o, or (a)dd an attachment?" );
-        lua_pushstring(L,"anyANY");
-
-        int ret = prompt_chars(L);
-        if ( ret != 1 )
-        {
-            lua_pushstring(L, "Error receiving confirmation." );
-            return( msg(L ) );
-        }
-        const char * response = lua_tostring(L, -1);
-
-
-        if (  ( response[0] == 'y' ) ||
-              ( response[0] == 'Y' ) )
-        {
-            cont = false;
-        }
-        if ( ( response[0] == 'n' ) ||
-             ( response[0] == 'N' ) )
-        {
-            /**
-             * Call the on_message_aborted hook, with the path to the
-             * message.
-             */
-            call_message_hook( "on_message_aborted", filename.c_str() );
-
-            cont = false;
-            CFile::delete_file( filename );
-            return 0;
-        }
-        if (  ( response[0] == 'a' ) ||
-              ( response[0] == 'A' ) )
-        {
-            /**
-             * Add attachment.
-             */
-            UTFString path = lua->get_input("Path to attachment: " );
-            if ( path.empty() )
-            {
-                CFile::delete_file( filename );
-                lua_pushstring(L, "Error receiving attachment." );
-                return( msg(L ) );
-            }
-            else
-            {
-                attachments.push_back( path );
-            }
-        }
+        call_message_hook( "on_message_aborted", filename.c_str() );
+        CFile::delete_file( filename );
+        return 0;
     }
 
     /**
@@ -655,69 +661,13 @@ int forward(lua_State * L)
     /**
      * Prompt for confirmation.
      */
-    bool cont = true;
-    int ret;
-
-
-    while( cont )
+    bool send = should_send(L, &attachments );
+    if ( ! send )
     {
-        /**
-         * Use prompt_chars() to get the input
-         */
-        lua_pushstring(L,"Send mail: (y)es, (n)o, or (a)dd an attachment?" );
-        lua_pushstring(L,"anyANY");
-
-        ret = prompt_chars(L);
-        if ( ret != 1 )
-        {
-            lua_pushstring(L, "Error receiving confirmation." );
-            return( msg(L ) );
-        }
-
-        const char * response = lua_tostring(L, -1);
-
-
-        if (  ( response[0] == 'y' ) ||
-              ( response[0] == 'Y' ) )
-        {
-            cont = false;
-        }
-        if ( ( response[0] == 'n' ) ||
-             ( response[0] == 'N' ) )
-        {
-            /**
-             * Call the on_message_aborted hook, with the path to the
-             * message.
-             */
-            call_message_hook( "on_message_aborted", filename.c_str() );
-
-            cont = false;
-            CFile::delete_file( filename );
-
-            return 0;
-        }
-        if ( ( response[0] == 'a' ) ||
-             ( response[0] == 'A' ) )
-        {
-            /**
-             * Add attachment.
-             */
-            lua_pushstring(L,"Path to attachment?" );
-            ret = prompt( L);
-            if ( ret != 1 )
-            {
-                CFile::delete_file( filename );
-                lua_pushstring(L, "Error receiving attachment." );
-                return( msg(L ) );
-            }
-            const char * path = lua_tostring(L, -1);
-            if ( path != NULL )
-            {
-                attachments.push_back( path );
-            }
-        }
+        call_message_hook( "on_message_aborted", filename.c_str() );
+        CFile::delete_file( filename );
+        return 0;
     }
-
 
     /**
      * Add attachments.  If there are none we just make the message MIME-nice.
@@ -933,7 +883,7 @@ int reply(lua_State * L)
      * .signature handling.
      */
     CLua     *lua = CLua::Instance();
-    UTFString sig = lua->get_signature( from, to, subject );
+    UTFString sig = lua->get_signature( *from, to, subject );
 
 
     /**
@@ -1020,67 +970,12 @@ int reply(lua_State * L)
     /**
      * Prompt for confirmation.
      */
-    bool cont = true;
-    int ret;
-
-
-    while( cont )
+    bool send = should_send(L, &attachments );
+    if ( ! send )
     {
-        /**
-         * Use prompt_chars() to get the input
-         */
-        lua_pushstring(L,"Send mail: (y)es, (n)o, or (a)dd an attachment?" );
-        lua_pushstring(L,"anyANY");
-
-        ret = prompt_chars(L);
-        if ( ret != 1 )
-        {
-            lua_pushstring(L, "Error receiving confirmation." );
-            return( msg(L ) );
-        }
-
-        const char * response = lua_tostring(L, -1);
-
-
-        if (  ( response[0] == 'y' ) ||
-              ( response[0] == 'Y' ) )
-        {
-            cont = false;
-        }
-        if ( ( response[0] == 'n' ) ||
-             ( response[0] == 'N' ) )
-        {
-            /**
-             * Call the on_message_aborted hook, with the path to the
-             * message.
-             */
-            call_message_hook( "on_message_aborted", filename.c_str() );
-
-            cont = false;
-            CFile::delete_file( filename );
-
-            return 0;
-        }
-        if ( ( response[0] == 'a' ) ||
-             ( response[0] == 'A' ) )
-        {
-            /**
-             * Add attachment.
-             */
-            lua_pushstring(L,"Path to attachment?" );
-            ret = prompt( L);
-            if ( ret != 1 )
-            {
-                CFile::delete_file( filename );
-                lua_pushstring(L, "Error receiving attachment." );
-                return( msg(L ) );
-            }
-            const char * path = lua_tostring(L, -1);
-            if ( path != NULL )
-            {
-                attachments.push_back( path );
-            }
-        }
+        call_message_hook( "on_message_aborted", filename.c_str() );
+        CFile::delete_file( filename );
+        return 0;
     }
 
     /**
