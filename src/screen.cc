@@ -898,14 +898,18 @@ std::string CScreen::choose_string( std::vector<std::string> choices )
     /**
      * How many columns to draw?
      */
-    if ( max < size_t( width ) )
-        cols = 1;
-    if ( max < size_t( width / 2 ) )
-        cols = 2;
-    if ( max < size_t( width / 3 ) )
-        cols = 3;
-    if ( max < size_t( width / 4 ) )
-        cols = 4;
+    for( int i = 1; i < 12; i++ )
+    {
+        if ( max < ( size_t( width ) / i) )
+             cols = i;
+    }
+
+    /**
+     * We'll be careful to not draw more columns than we have items.
+     */
+    if ( cols > choices.size() )
+        cols = choices.size();
+
 
     int selected  = 0;
     bool done     = false;
