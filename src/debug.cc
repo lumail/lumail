@@ -46,7 +46,7 @@ CDebug::CDebug()
     /**
      * Get the user's home-directory for the logfile.
      */
-    std::string home = getenv( "HOME" );
+    UTFString home = getenv( "HOME" );
     if ( !home.empty() )
     {
         home += "/lumail.log";
@@ -58,7 +58,7 @@ CDebug::CDebug()
 /**
  * Set the path to the file we're logging to.
  */
-void CDebug::set_logfile( std::string path )
+void CDebug::set_logfile( UTFString path )
 {
     m_logfile = path;
 }
@@ -66,7 +66,7 @@ void CDebug::set_logfile( std::string path )
 /**
  * Get the current date/time-stamp.
  */
-std::string CDebug::timestamp()
+UTFString CDebug::timestamp()
 {
     time_t     now = time(0);
     struct tm  tstruct;
@@ -84,7 +84,7 @@ std::string CDebug::timestamp()
  *
  * NOTE: The string might be buffered and not hit the disk immediately.
  */
-void CDebug::debug( std::string line, bool force)
+void CDebug::debug( UTFString line, bool force)
 {
 #ifdef LUMAIL_DEBUG
 
@@ -117,7 +117,7 @@ void CDebug::debug( std::string line, bool force)
     /**
      * Write all pending log entries.
      */
-    std::vector<std::string>::iterator it;
+    std::vector<UTFString>::iterator it;
     for (it = m_pending.begin(); it != m_pending.end(); ++it)
     {
         fs << (*it) << "\n";
@@ -127,6 +127,7 @@ void CDebug::debug( std::string line, bool force)
      * Our pending set is now empty.
      */
     m_pending.clear();
+    assert(m_pending.size() == 0 );
 
     /**
      * Cleanup.

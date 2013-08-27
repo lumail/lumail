@@ -21,7 +21,8 @@
 
 #include <cassert>
 #include <vector>
-#include <string>
+
+#include "utfstring.h"
 
 
 /**
@@ -67,14 +68,14 @@ class CDebug
   /**
    * Set the path to the file we're logging to.
    */
-  void set_logfile( std::string path );
+  void set_logfile( UTFString path );
 
   /**
    * Add a new string to the log.
    *
    * NOTE: The string might be buffered and not hit the disk immediately.
    */
-  void debug( std::string line, bool force = false );
+  void debug( UTFString line, bool force = false );
 
  protected:
 
@@ -91,7 +92,7 @@ class CDebug
   /**
    * Get the current date/time-stamp.
    */
-  std::string timestamp();
+  UTFString timestamp();
 
   /**
    * The single instance of this class.
@@ -101,12 +102,12 @@ class CDebug
   /**
    * The filename we log to.
    */
-  std::string m_logfile;
+  UTFString m_logfile;
 
   /**
    * Temporary storage for buffered strings.
    */
-  std::vector<std::string> m_pending;
+  std::vector<UTFString> m_pending;
 
 };
 
