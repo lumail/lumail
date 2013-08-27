@@ -111,13 +111,12 @@ void CHistory::clear()
 /**
  * Set the file.
  */
-void CHistory::set_file( const char *filename)
+void CHistory::set_file( UTFString filename)
 {
     /**
      * Clear the current history.
      */
     m_history.clear();
-    assert( m_history.size() == 0 );
 
     /**
      * Save the filename

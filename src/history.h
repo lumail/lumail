@@ -51,7 +51,7 @@ public:
     /**
      * Add a new string to the history.
      */
-    void add( UTFString entry);
+    void add(UTFString entry);
 
     /**
      * Clear the history.
@@ -61,7 +61,7 @@ public:
     /**
      * Set the file to write history from.
      */
-    void set_file( const char *path );
+    void set_file( UTFString path );
 
 protected:
 
@@ -79,7 +79,6 @@ private:
      */
     static CHistory *pinstance;
 
-
     /**
      * List of history items.
      */
@@ -88,7 +87,7 @@ private:
     /**
      * The file to write to, may be unset.
      */
-    std::string m_filename;
+    UTFString m_filename;
 
 };
 
