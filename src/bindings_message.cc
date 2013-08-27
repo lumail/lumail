@@ -359,8 +359,38 @@ int bounce(lua_State * L)
     }
 
     /**
-     * TODO: prompt for confirmation.
+     * Prompt for confirmation.
      */
+    bool cont = true;
+
+    while( cont )
+    {
+        std::string prompt = "Bounce mail to <" + recipient + "> (y)es, (n)o?";
+
+        lua_pushstring(L, prompt.c_str() );
+        lua_pushstring(L,"nyNY");
+
+        int ret = prompt_chars(L);
+        if ( ret != 1 )
+        {
+            lua_pushstring(L, "Error receiving confirmation." );
+            msg(L );
+            return false;
+        }
+
+        const char * response = lua_tostring(L, -1);
+
+        if (  ( response[0] == 'y' ) ||
+              ( response[0] == 'Y' ) )
+        {
+            cont = false;
+        }
+        if ( ( response[0] == 'n' ) ||
+             ( response[0] == 'N' ) )
+        {
+            return 0;
+        }
+    }
 
 
     /**
