@@ -154,6 +154,12 @@ bool send_mail_and_archive( std::string filename )
 
 
     /**
+     * Call the on_send_message hook, with the path to the message.
+     */
+    call_message_hook( "on_send_message", filename.c_str() );
+
+
+    /**
      * Send the mail.
      */
     CFile::file_to_pipe( filename, *sendmail );
@@ -181,6 +187,13 @@ bool send_mail_and_archive( std::string filename )
         assert( ! CFile::exists( archive ) );
         CFile::copy( filename, archive );
     }
+
+
+    /**
+     * Call the on_sent_message hook, with the path to the message.
+     */
+    call_message_hook( "on_sent_message", filename.c_str() );
+
 
     /**
      * Cleanup.
@@ -396,13 +409,6 @@ int compose(lua_State * L)
      * Add attachments.  If there are none we just make the message MIME-nice.
      */
     CMessage::add_attachments_to_mail( filename, attachments );
-
-
-    /**
-     * Call the on_send_message hook, with the path to the message.
-     */
-    call_message_hook( "on_send_message", filename.c_str() );
-
 
     /**
      * Send the mail.
@@ -717,13 +723,6 @@ int forward(lua_State * L)
      * Add attachments.  If there are none we just make the message MIME-nice.
      */
     CMessage::add_attachments_to_mail( filename, attachments );
-
-
-    /**
-     * Call the on_send_message hook, with the path to the message.
-     */
-    call_message_hook( "on_send_message", filename.c_str() );
-
 
     /**
      * Send the mail.
@@ -1084,32 +1083,10 @@ int reply(lua_State * L)
         }
     }
 
-
     /**
-     **
-     **
-     *
-     * At this point we have a filename containing the text of the
-     * email with all the appropriate headers.
-     *
-     * We also have a vector of filenames which need to be attached
-     * to the outgoing mail.
-     *
-     * We want to combine these two things into something that we
-     * can send.
-     *
-     **
-     **
-     **
+     * Add attachments.  If there are none we just make the message MIME-nice.
      */
     CMessage::add_attachments_to_mail( filename, attachments );
-
-
-    /**
-     * Call the on_send_message hook, with the path to the message.
-     */
-    call_message_hook( "on_send_message", filename.c_str() );
-
 
     /**
      * Send the mail.
@@ -1320,11 +1297,6 @@ int send_email(lua_State *L)
      * Add attachments.  If there are none we just make the message MIME-nice.
      */
     CMessage::add_attachments_to_mail( filename.c_str(), filenames );
-
-    /**
-     * Call the on_send_message hook, with the path to the message.
-     */
-    call_message_hook( "on_send_message", filename.c_str() );
 
     /**
      * Send the damn email.
