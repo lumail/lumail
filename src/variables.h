@@ -47,6 +47,7 @@ int unread_message_colour(lua_State *L);
 /**
  * General getters/setters.
  */
+int bounce_path(lua_State *L);
 int completion_chars(lua_State *L);
 int display_filter(lua_State * L);
 int editor(lua_State * L);

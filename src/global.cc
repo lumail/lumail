@@ -79,6 +79,7 @@ CGlobal::CGlobal()
     set_variable( "maildir_highlight_mode", new std::string( "standout" ) );
     set_variable( "maildir_limit",          new std::string("all") );
     set_variable( "sendmail_path",          new std::string( "/usr/lib/sendmail -t" ) );
+    set_variable( "bounce_path",            new std::string( "/usr/lib/sendmail" ) );
     set_variable( "sort",                   new std::string( "date-asc" ) );
 
     /**

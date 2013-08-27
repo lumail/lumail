@@ -98,6 +98,7 @@ struct CLuaMapping primitive_list[] =
 /**
  * Get/Set variables: defined in src/variables.cc
  */
+    {"bounce_path", "Get/set the binary to send bounces with.", (lua_CFunction) bounce_path },
     {"completion_chars", "Get/set the characters to tokenize on for completion.", (lua_CFunction) completion_chars },
     {"editor", "Query or update the editor to use.", (lua_CFunction) editor },
     {"from", "Query or update the from-address for outgoing mails.", (lua_CFunction) from },

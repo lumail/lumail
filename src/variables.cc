@@ -152,6 +152,13 @@ int index_highlight_mode(lua_State *L)
  ** General getters/setters.
  **/
 
+/**
+ * Get/set the command to send a bounce-message.
+ */
+int bounce_path(lua_State *L)
+{
+    return( get_set_string_variable( L, "bounce_path" ) );
+}
 
 
 /**
