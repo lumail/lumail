@@ -32,17 +32,6 @@ class CScreen
 public:
 
     /**
-     * The segment of the screen the highlighted row is within.
-     */
-    enum vectorPosition
-    {
-        TOP,
-        MIDDLE,
-        BOTTOM,
-        NONE
-    };
-
-    /**
      * Constructor.  NOP.
      */
     CScreen();
@@ -105,6 +94,17 @@ public:
     static UTFString get_line();
 
 private:
+
+    /**
+     * The segment of the screen the highlighted row is within.
+     */
+    enum vectorPosition
+    {
+        TOP,
+        MIDDLE,
+        BOTTOM,
+        NONE
+    };
 
     /**
      * Per-mode drawing primitives.
