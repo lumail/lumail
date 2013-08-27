@@ -80,11 +80,23 @@ extern int primitive_count;
  * This is used to invoke Lua functions/methods from the rest of the code,
  * and to lookup keybindings, etc.
  *
+ * We've defined functions here which are C++ equivilents to the Lua primitives
+ * this is helpful to consolidate code, even though the C++ versions aren't
+ * really necessary.
+ *
+ * (For example we could invoke the "get_signature" method by messing with the
+ * Lua_State object and pushing/popping the stack directly but having a C++-visible
+ * function avoids that, and is neater.)
+ *
  */
 class CLua
 {
 
 public:
+
+/**
+ ** Object methods.
+ **/
 
     /**
      * Get access to this singleton instance.
@@ -108,25 +120,6 @@ public:
      */
     char *get_nested_table( std::string table, std::string key, std::string subkey );
 
-    /**
-     * Execute a function from the global keymap.
-     */
-    bool on_keypress(const char *keypress );
-
-    /**
-     * Invoke the Lua-defined on_key() callback.
-     */
-    bool on_key(const char *key );
-
-    /**
-     * Invoke the on_get_body() callback.
-     */
-    std::vector<UTFString> on_get_body();
-
-    /**
-     * Invoke the "on_complete" callback, which might be defined by the user.
-     */
-    std::vector<std::string> on_complete();
 
     /**
      * Convert a Lua table to an array of strings.
@@ -138,13 +131,13 @@ public:
      */
     bool get_bool( std::string name, bool default_value = false );
 
-    /**
-     * Get the MIME-type of a given file.  Using the suffix-only.
-     */
-    std::string get_mime_type( std::string filename );
+
+/**
+ ** Helper methods.
+ **/
 
     /**
-     * Dump the Lua stack contents - only in debug-builds.
+     * Dump the Lua stack contents, in a debug-build.
      */
     void dump_stack();
 
@@ -154,9 +147,35 @@ public:
     UTFString get_input( UTFString prompt_txt, UTFString default_answer = "" );
 
     /**
+     * Get the MIME-type of a given file.  Using the suffix-only.
+     */
+    std::string get_mime_type( std::string filename );
+
+    /**
      * Call the "get_signature" hook.
      */
     UTFString get_signature( UTFString from, UTFString to, UTFString subject );
+
+    /**
+     * Invoke the "on_complete" callback, which might be defined by the user.
+     */
+    std::vector<std::string> on_complete();
+
+    /**
+     * Invoke the on_get_body() callback.
+     */
+    std::vector<UTFString> on_get_body();
+
+    /**
+     * Invoke the Lua-defined on_key() callback.
+     */
+    bool on_key(const char *key );
+
+    /**
+     * Execute a function from the global keymap.
+     */
+    bool on_keypress(const char *keypress );
+
 
 protected:
 

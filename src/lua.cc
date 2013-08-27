@@ -31,6 +31,9 @@
 #include "lua.h"
 #include "version.h"
 
+/**
+ ** TODO: Reorder code to match the order in the header.
+ **/
 
 /**
  * Instance-handle.
@@ -47,7 +50,7 @@ CLua *CLua::pinstance = NULL;
  * can access it from elsewhere.
  *
  * (Specifically we want to make the function-names available to
- * our TAB-completion code.
+ * our TAB-completion code.)
  *
  */
 struct CLuaMapping primitive_list[] =
