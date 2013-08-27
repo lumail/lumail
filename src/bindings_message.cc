@@ -311,7 +311,7 @@ int compose(lua_State * L)
     /**
      * .signature handling.
      */
-    std::string sig = lua->get_signature( *from, recipient, subject );
+    UTFString sig = lua->get_signature( *from, recipient, subject );
 
     /**
      * Store the headers.
@@ -932,8 +932,8 @@ int reply(lua_State * L)
     /**
      * .signature handling.
      */
-    CLua *lua = CLua::Instance();
-    std::string sig = lua->get_signature( *from, to, subject );
+    CLua     *lua = CLua::Instance();
+    UTFString sig = lua->get_signature( from, to, subject );
 
 
     /**
@@ -1277,8 +1277,8 @@ int send_email(lua_State *L)
     /**
      * .signature handling.
      */
-    CLua *lua = CLua::Instance();
-    std::string sig = lua->get_signature( from, to, subject );
+    CLua     *lua = CLua::Instance();
+    UTFString sig = lua->get_signature( from, to, subject );
 
     /**
      * Store the headers.
