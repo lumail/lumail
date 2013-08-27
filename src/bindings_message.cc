@@ -253,11 +253,12 @@ bool should_send( lua_State * L, std::vector<std::string> *attachments )
                 msg(L );
                 return false;
             }
+
             const char * path = lua_tostring(L, -1);
+
             if ( path != NULL )
-            {
-                attachments->push_back( path );
-            }
+                if ( CFile::exists( path ) )
+                    attachments->push_back( path );
         }
     }
 }
