@@ -147,6 +147,7 @@ struct CLuaMapping primitive_list[] =
     {"delete", "Delete the current message.", (lua_CFunction) delete_message },
     {"forward", "Forward the current message to a new recipient.", (lua_CFunction) forward },
     {"header", "Retrieve the value of the given header from the current message.", (lua_CFunction) header },
+    {"headers", "Retrieve all headers from the current message.", (lua_CFunction) headers },
     {"is_new", "Is the current message new/unread?", (lua_CFunction) is_new },
     {"mark_read", "Mark the current message as old/read.", (lua_CFunction) mark_read },
     {"mark_unread", "Mark the current message as unread.", (lua_CFunction) mark_unread },

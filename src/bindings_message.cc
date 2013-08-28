@@ -821,6 +821,42 @@ int header(lua_State * L)
 }
 
 
+
+/**
+ * Get all headers from the current/specified message.
+ */
+int headers(lua_State * L)
+{
+    /**
+     * Get the path (optional).
+     */
+    const char *path   = lua_tostring(L, 1);
+
+    /**
+     * Get the message
+     */
+    CMessage *msg = get_message_for_operation( path );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+    /**
+     * Get the headers, and store them..
+     */
+
+    /**
+     * TODO
+     */
+
+    if ( path != NULL )
+        delete( msg );
+
+    return( 1 );
+}
+
 /**
  * Is the named/current message new?
  */
