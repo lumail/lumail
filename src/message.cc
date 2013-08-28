@@ -24,6 +24,7 @@
 #include <fcntl.h>
 #include <string>
 #include <unistd.h>
+#include <unordered_map>
 #include <pcrecpp.h>
 
 
@@ -32,7 +33,7 @@
 #include "global.h"
 #include "lua.h"
 #include "message.h"
-
+#include "utfstring.h"
 
 
 /**
@@ -773,6 +774,50 @@ UTFString CMessage::header( std::string name )
     return( result );
 }
 
+
+/**
+ * Retrieve all headers, and their values, from the message.
+ */
+std::unordered_map<std::string, std::string> CMessage::headers()
+{
+    std::unordered_map<std::string, std::string> result;
+
+    const char                     *name;
+    const char                     *value;
+
+    /**
+     * Parse the message.
+     */
+    message_parse();
+
+    /**
+     * Prepare to iterate.
+     */
+    GMimeHeaderList *ls   = GMIME_OBJECT (m_message)->headers;
+    GMimeHeaderIter *iter = g_mime_header_iter_new ();
+
+    if (g_mime_header_list_get_iter (ls, iter))
+    {
+        while (g_mime_header_iter_is_valid (iter))
+        {
+            /**
+             * Get the name + value.
+             */
+            name = g_mime_header_iter_get_name (iter);
+            value = g_mime_header_iter_get_value (iter);
+
+            DEBUG_LOG( "CMessage::headers()  " + std::string( name ) + std::string("->") + std::string(value)  );
+
+            result[name] = value;
+
+            if (!g_mime_header_iter_next (iter))
+                break;
+        }
+    }
+    g_mime_header_iter_free (iter);
+
+    return( result );
+}
 
 
 /**

@@ -268,6 +268,58 @@ bool should_send( lua_State * L, std::vector<std::string> *attachments )
 
 
 /**
+ * Get all headers from the current/specified message.
+ */
+int all_headers(lua_State * L)
+{
+    /**
+     * Get the path (optional).
+     */
+    const char *path   = lua_tostring(L, 1);
+
+    /**
+     * Get the message
+     */
+    CMessage *msg = get_message_for_operation( path );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+    /**
+     * Get the headers.
+     */
+    std::unordered_map<std::string, std::string> headers = msg->headers();
+    /**
+     * Create the table.
+     */
+    lua_newtable(L);
+
+    for ( auto it = headers.begin(); it != headers.end(); ++it )
+    {
+        std::string name = it->first;
+        std::string valu = it->second;
+
+        lua_pushstring(L,name.c_str() );
+
+        if ( ! valu.empty() )
+            lua_pushstring(L,valu.c_str());
+        else
+            lua_pushstring(L, "[EMPTY]" );
+
+        lua_settable(L,-3);
+    }
+
+
+    if ( path != NULL )
+        delete( msg );
+
+    return(1);
+}
+
+/**
  * Get the body of the message, as displayed.
  */
 int body(lua_State * L)
@@ -822,40 +874,6 @@ int header(lua_State * L)
 
 
 
-/**
- * Get all headers from the current/specified message.
- */
-int headers(lua_State * L)
-{
-    /**
-     * Get the path (optional).
-     */
-    const char *path   = lua_tostring(L, 1);
-
-    /**
-     * Get the message
-     */
-    CMessage *msg = get_message_for_operation( path );
-    if ( msg == NULL )
-    {
-        CLua *lua = CLua::Instance();
-        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
-        return( 0 );
-    }
-
-    /**
-     * Get the headers, and store them..
-     */
-
-    /**
-     * TODO
-     */
-
-    if ( path != NULL )
-        delete( msg );
-
-    return( 1 );
-}
 
 /**
  * Is the named/current message new?

@@ -25,7 +25,9 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <gmime/gmime.h>
+
 #include "utfstring.h"
+#include <unordered_map>
 
 
 /**
@@ -120,6 +122,11 @@ public:
      * Retrieve the value of a given header from the message.
      */
     UTFString header( std::string name);
+
+    /**
+     * Retrieve all headers, and their values, from the message.
+     */
+    std::unordered_map<std::string, std::string> headers();
 
     /**
      * Get the date of the message.
