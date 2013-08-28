@@ -110,11 +110,8 @@ int main( int argc, char *argv[] )
     attachments.push_back( "/etc/passwd" );
     attachments.push_back( "/etc/fstab" );
 
-    std::vector<std::string>::iterator it;
-    for (it = attachments.begin(); it != attachments.end(); ++it)
+    for (std:: string name : attachments)
     {
-        std::string name = (*it);
-
         if ((fd = open (name.c_str(), O_RDONLY)) == -1)
             return -1;
 

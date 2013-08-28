@@ -113,7 +113,6 @@ int selected_folders(lua_State * L)
 {
     CGlobal *global = CGlobal::Instance();
     std::vector<std::string> selected = global->get_selected_folders();
-    std::vector<std::string>::iterator it;
 
     /**
      * Create the table.
@@ -121,10 +120,10 @@ int selected_folders(lua_State * L)
     lua_newtable(L);
 
     int i = 1;
-    for (it = selected.begin(); it != selected.end(); ++it)
+    for (std::string folder : selected)
     {
         lua_pushnumber(L,i);
-        lua_pushstring(L,(*it).c_str());
+        lua_pushstring(L,folder.c_str());
         lua_settable(L,-3);
         i++;
     }

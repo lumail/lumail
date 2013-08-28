@@ -85,14 +85,13 @@ time_t CMaildir::last_modified()
     /**
      * See which was the most recently modified.
      */
-    std::vector<std::string>::iterator it;
-    for( it = dirs.begin(); it != dirs.end(); it ++ )
+    for (std::string dir : dirs)
     {
         /**
          * If we can stat() the dir and it is more recent
          * than the current value - update it.
          */
-        if ( ! stat((*it).c_str(),&st_buf) )
+        if ( ! stat(dir.c_str(),&st_buf) )
             if ( st_buf.st_mtime > last )
                 last = st_buf.st_mtime;
     }
@@ -372,12 +371,8 @@ std::vector<CMessage *> CMaildir::getMessages()
     /**
      * For each directory.
      */
-    std::vector<std::string>::iterator it;
-    for (it = dirs.begin(); it != dirs.end(); ++it)
+    for (std::string path : dirs)
     {
-
-        std::string path = *it;
-
         dp = opendir(path.c_str());
         if (dp)
         {
@@ -486,10 +481,9 @@ bool CMaildir::is_maildir(std::string path)
     dirs.push_back(path + "/tmp");
     dirs.push_back(path + "/new");
 
-    std::vector<std::string>::iterator it;
-    for (it = dirs.begin(); it != dirs.end(); ++it)
+    for (std::string dir : dirs)
     {
-        if (!CFile::is_directory(*it))
+        if (!CFile::is_directory(dir))
             return false;
     }
     return true;
@@ -526,10 +520,9 @@ bool CMaildir::create(std::string path)
         dirs.push_back(path + "/new");
         dirs.push_back(path + "/tmp");
 
-        std::vector<std::string>::iterator it;
-        for( it = dirs.begin(); it != dirs.end(); it ++ )
+        for( std::string dir : dirs )
         {
-            if (mkdir( (*it).c_str(), 0775) != 0 )
+            if (mkdir( dir.c_str(), 0775) != 0 )
                 return false;
         }
         return true;

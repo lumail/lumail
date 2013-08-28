@@ -58,8 +58,6 @@ int attachments(lua_State *L)
      * Count the attachments.
      */
     std::vector<std::string> attachments = msg->attachments();
-    std::vector<std::string>::iterator it;
-
 
     /**
      * create a new table.
@@ -74,11 +72,8 @@ int attachments(lua_State *L)
     /**
      * For each attachment, add it to the table.
      */
-    for (it = attachments.begin(); it != attachments.end(); ++it)
+    for (std::string name : attachments)
     {
-        std::string name = (*it);
-
-
         lua_pushnumber(L,i);
         lua_pushstring(L,name.c_str());
         lua_settable(L,-3);
@@ -243,7 +238,6 @@ int get_body_parts(lua_State *L)
      * Get the parts, and prepare to iterate over them.
      */
     std::vector<std::string> parts = msg->body_mime_parts();
-    std::vector<std::string>::iterator it;
 
     /**
      * create a new table.
@@ -258,10 +252,8 @@ int get_body_parts(lua_State *L)
     /**
      * For each attachment, add it to the table.
      */
-    for (it = parts.begin(); it != parts.end(); ++it)
+    for (std::string name : parts)
     {
-        std::string name = (*it);
-
         lua_pushnumber(L,i);
         lua_pushstring(L,name.c_str());
         lua_settable(L,-3);
@@ -298,15 +290,12 @@ int has_body_part(lua_State *L)
      * Get the parts, and prepare to iterate over them.
      */
     std::vector<std::string> parts = msg->body_mime_parts();
-    std::vector<std::string>::iterator it;
 
     /**
      * Did we find at least one, part that has the specified type?
      */
-    for (it = parts.begin(); it != parts.end(); ++it)
+    for (std::string ct : parts)
     {
-        std::string ct = (*it);
-
         if ( strcmp( ct.c_str(), type ) == 0 )
         {
             /**

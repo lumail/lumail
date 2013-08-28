@@ -117,10 +117,9 @@ void CDebug::debug( UTFString line, bool force)
     /**
      * Write all pending log entries.
      */
-    std::vector<UTFString>::iterator it;
-    for (it = m_pending.begin(); it != m_pending.end(); ++it)
+    for (UTFString logentry : m_pending)
     {
-        fs << (*it) << "\n";
+        fs << logentry << "\n";
     }
 
     /**

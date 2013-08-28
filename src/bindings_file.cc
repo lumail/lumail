@@ -143,13 +143,10 @@ int load_directory(lua_State *L)
      * Get the files in the directory.
      */
     std::vector<std::string> files = CFile::files_in_directory( path );
-    std::vector<std::string>::iterator it;
     int count = 0;
 
-    for (it = files.begin(); it != files.end(); ++it)
+    for (std::string file : files)
     {
-        std::string file = (*it);
-
         /**
          * If the file ends in .lua then load it.
          */

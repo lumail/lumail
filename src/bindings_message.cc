@@ -98,11 +98,8 @@ std::string populate_email_on_disk( std::vector<std::string> headers, std::strin
     /*
      * 2. write out each header.
      */
-    std::vector<std::string>::iterator it;
-    for( it = headers.begin(); it != headers.end(); ++it )
+    for (std::string header : headers)
     {
-        std::string header = (*it);
-
         unused=write(fd, header.c_str(), header.size() );
         unused=write(fd, "\n", 1 );
     }
@@ -309,10 +306,9 @@ int body(lua_State * L)
          * Convert the vector of arrays into a string.
          */
         UTFString res;
-        std::vector<UTFString>::iterator it;
-        for( it = body.begin(); it != body.end(); ++it )
+        for (UTFString bodyelement : body)
         {
-            res += (*it);
+            res += bodyelement;
             res += "\n";
         }
 

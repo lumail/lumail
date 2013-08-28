@@ -92,12 +92,9 @@ bool CLumail::load_init_files( std::vector<std::string> extra )
     if ( CFile::is_directory( "/etc/lumail.d/" ) )
     {
         std::vector<std::string> files = CFile::files_in_directory( "/etc/lumail.d" );
-        std::vector<std::string>::iterator it;
 
-        for (it = files.begin(); it != files.end(); ++it)
+        for (std::string file : files)
         {
-            std::string file = (*it);
-
             /**
              * If the file ends in .lua then load it.
              */
@@ -132,10 +129,8 @@ bool CLumail::load_init_files( std::vector<std::string> extra )
     /**
      * If we have any init files specified then load it up too.
      */
-    std::vector<std::string>::iterator it;
-    for (it = extra.begin(); it != extra.end(); ++it)
+    for (std::string path : extra)
     {
-        std::string path = (*it);
         if (CFile::exists( path ))
         {
             if ( m_lua->load_file(path.c_str()) )

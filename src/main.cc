@@ -196,9 +196,8 @@ int main(int argc, char *argv[])
         /**
          * Load each string specified on the command line.
          */
-        std::vector<std::string>::iterator it;
-        for (it = eval.begin(); it != eval.end(); ++it)
-            lua->execute( (*it) );
+        for (std::string statement : eval)
+            lua->execute( statement );
 
         /**
          * If we're to exit afterwards, do so.

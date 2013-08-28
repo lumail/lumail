@@ -380,10 +380,9 @@ std::vector<std::string> CFile::get_all_maildirs(std::string prefix)
                             closedir(sdp);
                             std::vector<std::string> sub_maildirs;
                             sub_maildirs = CFile::get_all_maildirs(subdir_path);
-                            std::vector<std::string>::iterator it;
-                            for (it = sub_maildirs.begin(); it != sub_maildirs.end(); ++it)
+                            for (std::string sub_maildir: sub_maildirs)
                             {
-                                result.push_back(*it);
+                                result.push_back(sub_maildir);
                             }
                         }
                     }

@@ -846,18 +846,15 @@ std::string CMessage::date(TDate fmt)
             /**
              * For each format.
              */
-            std::vector<std::string>::iterator it;
-            for (it = fmts.begin(); it != fmts.end(); ++it)
+            for (std::string fmt : fmts)
             {
                 if ( rc )
                     break;
 
-                const char* fmt = (*it).c_str();
-
                 t.tm_sec=0;
                 t.tm_min=0;
                 t.tm_hour=0;
-                rc = strptime(date.c_str(), fmt, &t);
+                rc = strptime(date.c_str(), fmt.c_str(), &t);
             }
 
             if ( current_loc != NULL )
@@ -1625,11 +1622,8 @@ void CMessage::add_attachments_to_mail(std::string filename, std::vector<std::st
      */
     g_mime_message_set_mime_part (message,(GMimeObject*) multipart);
 
-    std::vector<std::string>::iterator it;
-    for (it = attachments.begin(); it != attachments.end(); ++it)
+    for (std::string name : attachments)
     {
-        std::string name = (*it);
-
         if ((fd = open (name.c_str(), O_RDONLY)) == -1)
         {
             DEBUG_LOG( "CMessage::add_attachments_to_mail - Failed to open attachment" );
