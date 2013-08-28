@@ -386,8 +386,7 @@ void CGlobal::update_maildirs()
     CLua *lua = CLua::Instance();
     std::vector<std::string> ignored = lua->table_to_array( "ignored_folders" );
 
-    std::vector < std::string >::iterator it;
-    for (it = folders.begin(); it != folders.end(); ++it)
+    for (std::string path : folders)
     {
         bool ignore = false;
 
@@ -397,20 +396,13 @@ void CGlobal::update_maildirs()
         if ( ignored.size() > 0 )
         {
             /**
-             * The path of the maildir we're adding.
-             */
-            std::string path = *it;
-
-            /**
              *  Iterate over all ignored paths.
              */
-            std::vector < std::string >::iterator igit;
-            for (igit = ignored.begin(); igit != ignored.end(); ++igit)
+            for (std::string reg : ignored)
             {
                 /**
                  * Ignore empty strings.
                  */
-                std::string reg = *igit;
                 if ( reg.size() < 1 )
                     break ;
 
@@ -427,7 +419,7 @@ void CGlobal::update_maildirs()
          * Not ignoring anything.  Add the folder.
          */
         if ( ! ignore )
-            m_maildirs->push_back(new CMaildir((*it)));
+            m_maildirs->push_back(new CMaildir(path));
     }
 
     /**
@@ -474,14 +466,13 @@ void CGlobal::update_messages()
     /**
      * For each selected maildir read the messages.
      */
-    std::vector<std::string>::iterator it;
-    for (it = folders.begin(); it != folders.end(); ++it)
+    for (std::string folder : folders)
     {
 
         /**
          * get the messages from this folder.
          */
-        CMaildir tmp = CMaildir(*it);
+        CMaildir tmp = CMaildir(folder);
         std::vector<CMessage *> contents = tmp.getMessages();
 
         /**
