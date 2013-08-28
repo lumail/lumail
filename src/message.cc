@@ -778,9 +778,9 @@ UTFString CMessage::header( std::string name )
 /**
  * Retrieve all headers, and their values, from the message.
  */
-std::unordered_map<std::string, std::string> CMessage::headers()
+std::unordered_map<std::string, UTFString> CMessage::headers()
 {
-    std::unordered_map<std::string, std::string> result;
+    std::unordered_map<std::string, UTFString> result;
 
     const char                     *name;
     const char                     *value;

@@ -126,7 +126,7 @@ public:
     /**
      * Retrieve all headers, and their values, from the message.
      */
-    std::unordered_map<std::string, std::string> headers();
+    std::unordered_map<std::string, UTFString> headers();
 
     /**
      * Get the date of the message.

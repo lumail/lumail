@@ -291,7 +291,7 @@ int all_headers(lua_State * L)
     /**
      * Get the headers.
      */
-    std::unordered_map<std::string, std::string> headers = msg->headers();
+    std::unordered_map<std::string, UTFString> headers = msg->headers();
     /**
      * Create the table.
      */
@@ -300,12 +300,12 @@ int all_headers(lua_State * L)
     for ( auto it = headers.begin(); it != headers.end(); ++it )
     {
         std::string name = it->first;
-        std::string valu = it->second;
+        UTFString value  = it->second;
 
         lua_pushstring(L,name.c_str() );
 
-        if ( ! valu.empty() )
-            lua_pushstring(L,valu.c_str());
+        if ( ! value.empty() )
+            lua_pushstring(L,value.c_str());
         else
             lua_pushstring(L, "[EMPTY]" );
 
