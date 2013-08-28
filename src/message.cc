@@ -1814,36 +1814,96 @@ bool CMessage::get_body_part( int offset, char **data, size_t *length )
             {
 
                 /**
-                 * Get the content, and setup a memory-stream to read it.
+                 * Get the content-type
                  */
-                GMimeDataWrapper *c    = g_mime_part_get_content_object( GMIME_PART(part) );
-                GMimeStream *memstream = g_mime_stream_mem_new();
+                GMimeContentType *content_type = g_mime_object_get_content_type (part);
 
                 /**
-                 * Get the size + data.
+                 * If the content-type is NULL then text/plain is implied.
                  */
-                gint64 len;
-                len = g_mime_data_wrapper_write_to_stream( c, memstream );
-                guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
-
-                /**
-                 * The memory we get from the stream must be valid.
-                 */
-                if ( b != NULL )
+                if ( ( content_type == NULL ) ||
+                     ( g_mime_content_type_is_type (content_type, "text", "plain") ) )
                 {
 
                     /**
-                     * Allocate memory and fill it out.
+                     * We'll use iconv to convert the content to UTF-8 if that is
+                     * not already the correct set.
                      */
-                    *data = (char*)malloc( len + 1 );
-                    memcpy( *data, b, len );
-                    *length = (size_t)len;
-                }
-                g_mime_stream_close(memstream);
-                g_object_unref(memstream);
+                    const char *charset;
+                    char *converted;
+                    gint64 len;
 
-                if ( b != NULL )
-                    ret = true;
+                    /**
+                     * Get the content, and setup a memory-stream to read it.
+                     */
+                    GMimeDataWrapper *c    = g_mime_part_get_content_object( GMIME_PART(part) );
+                    GMimeStream *memstream = g_mime_stream_mem_new();
+
+                    /**
+                     * Get the size + data.
+                     */
+                    len       = g_mime_data_wrapper_write_to_stream( c, memstream );
+                    guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
+
+                    /**
+                     * If we have a character set, and it isn't UTF-8 ...
+                     */
+                    if ( (charset = g_mime_content_type_get_parameter(content_type, "charset")) != NULL &&
+                         (strcasecmp(charset, "utf-8") != 0))
+                    {
+
+                        /**
+                         * Convert it.
+                         */
+                        iconv_t cv;
+
+                        cv = g_mime_iconv_open ("UTF-8", charset);
+                        converted = g_mime_iconv_strndup(cv, (const char *) b, len );
+                        if (converted != NULL)
+                        {
+                            /**
+                             * If that succeeded update our return value with it.
+                             */
+                            *data = (char*)malloc( len + 1 );
+                            memcpy( *data, b, len );
+                            *length = (size_t)len;
+                            ret = true;
+                            g_free(converted);
+                        }
+                        else
+                        {
+                            /**
+                             * The conversion failed; but if we have data return
+                             * it regardless.
+                             */
+                            if ( b != NULL )
+                            {
+                                *data = (char*)malloc( len + 1 );
+                                memcpy( *data, b, len );
+                                *length = (size_t)len;
+                                ret = true;
+                            }
+                        }
+                        g_mime_iconv_close(cv);
+                    }
+                    else
+                    {
+                        /**
+                         * No character set found, or it is already UTF-8.
+                         *
+                         * Save the result.
+                         */
+                        if ( b != NULL )
+                        {
+                            *data = (char*)malloc( len + 1 );
+                            memcpy( *data, b, len );
+                            *length = (size_t)len;
+                            ret = true;
+                        }
+                    }
+                    g_mime_stream_close(memstream);
+                    g_object_unref(memstream);
+                }
             }
 
             count += 1;
