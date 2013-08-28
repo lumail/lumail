@@ -1040,8 +1040,10 @@ keymap['maildir']['Enter'] = 'open_folder()'
 -- Scroll up/down in the current message.
 keymap['message']['j'] = 'scroll_message_down(1)'
 keymap['message']['KEY_DOWN'] = 'scroll_message_down(1)'
+keymap['message']['KEY_NPAGE'] = 'scroll_message_down(10)'
 keymap['message']['k'] = 'scroll_message_up(1)'
 keymap['message']['KEY_UP'] = 'scroll_message_up(1)'
+keymap['message']['KEY_PPAGE'] = 'scroll_message_up(10)'
 keymap['message']['Space'] = 'scroll_message_down(10)'
 
 --
