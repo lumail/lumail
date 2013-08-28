@@ -1131,17 +1131,3 @@ end
 keymap['global']['p'] = "toggle_maildir_names()"
 
 
-
-function foo()
-
-   ff = io.open( "/tmp/headers.log", "a")
-
-   table = all_headers()
-
-   for header,value in pairs( table ) do
-      ff:write( header .. ":" .. value .. "\n" )
-   end
-
-   ff:close()
-
-end
