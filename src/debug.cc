@@ -119,7 +119,7 @@ void CDebug::debug( UTFString line, bool force)
      */
     for (UTFString logentry : m_pending)
     {
-        fs << logentry << "\n";
+        fs << logentry.c_str() << "\n";
     }
 
     /**
