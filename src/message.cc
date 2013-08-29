@@ -806,15 +806,32 @@ std::unordered_map<std::string, UTFString> CMessage::headers()
             name = g_mime_header_iter_get_name (iter);
             value = g_mime_header_iter_get_value (iter);
 
-            DEBUG_LOG( "CMessage::headers()  " + std::string( name ) + std::string("->") + std::string(value)  );
+            /**
+             * Decode the value.
+             */
+            char *decoded = g_mime_utils_header_decode_text ( value );
 
-            result[name] = value;
+            /**
+             * Store the result.
+             */
+            result[name] = decoded;
+
+
+            /**
+             * Logging is good.
+             */
+            DEBUG_LOG( "CMessage::headers()  " + std::string( name ) + std::string("->") + std::string(decoded)  );
 
             if (!g_mime_header_iter_next (iter))
                 break;
         }
     }
     g_mime_header_iter_free (iter);
+
+    /**
+     * Close the message.
+     */
+    close_message();
 
     return( result );
 }
