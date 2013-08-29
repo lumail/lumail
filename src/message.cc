@@ -782,8 +782,8 @@ std::unordered_map<std::string, UTFString> CMessage::headers()
 {
     std::unordered_map<std::string, UTFString> result;
 
-    const char                     *name;
-    const char                     *value;
+    const char *name;
+    const char *value;
 
     /**
      * Parse the message.
@@ -807,6 +807,12 @@ std::unordered_map<std::string, UTFString> CMessage::headers()
             value = g_mime_header_iter_get_value (iter);
 
             /**
+             * Downcase the name.
+             */
+            std::string nm(name);
+            std::transform(nm.begin(), nm.end(), nm.begin(), tolower);
+
+            /**
              * Decode the value.
              */
             char *decoded = g_mime_utils_header_decode_text ( value );
@@ -814,7 +820,7 @@ std::unordered_map<std::string, UTFString> CMessage::headers()
             /**
              * Store the result.
              */
-            result[name] = decoded;
+            result[nm] = decoded;
 
 
             /**
