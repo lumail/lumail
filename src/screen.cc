@@ -687,6 +687,7 @@ void CScreen::drawMessage()
         int len = line.length();
         int slen = 0;
         std::string subline = line.substr(0, width);
+
         for(;;)
         {
             move( row_idx + ( headers.size() + attachments.size() + 1 ), 0 );
@@ -699,14 +700,25 @@ void CScreen::drawMessage()
 
             slen += subline.length();
 
-            /** Should we stop displaying this line ? */
+            /**
+             * Should we stop displaying this line ?
+             */
             if (row_idx > (textspace-2) || !wrap || len == slen)
                 break;
 
-            subline = line.substr(slen, width);
+            /**
+             * Make sure we don't overstep our bounds by trying to draw past
+             * the line-buffer.
+             */
+            if ( slen > (int)line.size() )
+                break;
+
+            subline = line.substr(slen, width );
         }
 
-        /** No screen space left */
+        /**
+         * No screen space left
+         */
         if (row_idx > (textspace-2))
              break;
     }
