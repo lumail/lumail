@@ -59,6 +59,8 @@ Upon a Debian GNU/Linux system you may install all required packages with:
 Although we might become more complex in the future the code currently builds
 via a simple `Makefile`, and running `make` with no arguments should be sufficient.
 
+**NOTE**: For Fedora distributions you will need to run: `make LVER=lua`.
+
 Once compiled the client may be executed directly, but you will need to supply
 a valid (Lua) configuration file:
 
