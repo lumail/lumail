@@ -1,3 +1,30 @@
+lumail (0.21) stable; urgency=low
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+    #128 - New primitive forward()
+           http://lumail.org/lua/forward.html
+    #129 - New primitive bounce() using `bounce_path`.
+           http://lumail.org/lua/bounce.html
+           http://lumail.org/lua/bounce_path.html
+    #130 - compose() now prompts for Cc.
+    #131 - Code consolidation, relating to outgoing email sending.
+    #137 - get_body_part() returns UTF-8 now.
+  * Compilation fixups for OpenBSD.
+  * The reply() function honours any `Reply-To:` header now.
+  * The reply() function preserves any Cc: header now.
+  * Correctly bound selected messages/maildirs.
+  * The `choose_string()` primitive will now use up to 12 columns.
+  * New hook `on_sent_message` called just after sending mail:
+    http://lumail.org/lua/on_sent_message.html
+  * New primitive `all_headers()` returns a table of all header names
+    and values:
+    http://lumail.org/lua/all_headers.html
+  * BUGFIX: Don't crash on wrapping lines with unfortunate lengths.
+
+ -- Steve Kemp <steve@steve.org.uk>  Tue, 3 Sep 2013 19:19:19 +0000
+
 lumail (0.20) stable; urgency=low
 
   * New release, fixing several bugs.
