@@ -1,3 +1,4 @@
 lumail           bin/
+lumail-debug     bin/
 lumail.lua       etc/
 
