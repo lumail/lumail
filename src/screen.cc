@@ -1331,7 +1331,7 @@ UTFString CScreen::get_line()
                 buffer.erase(pos,1);
             }
         }
-        else if (c == '\t' )  /* TAB-completion */
+        else if ( (c == '\t' ) && ( ! buffer.empty() ) ) /* TAB-completion */
         {
             /**
              * We're going to find the token to complete against
@@ -1418,6 +1418,10 @@ UTFString CScreen::get_line()
                     }
                 }
             }
+        }
+        else if ( (c == '\t' ) && (  buffer.empty() ) ) /* TAB-completion on empty buffer */
+        {
+            beep();
         }
         else if ( !isKeyCode && g_unichar_isprint(c) )
         {
