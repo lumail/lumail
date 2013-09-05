@@ -386,14 +386,26 @@ std::vector<CMessage *> CMaildir::getMessages()
                 if ( (de->d_type != DT_DIR)
                    || ( de->d_type == DT_UNKNOWN && !CFile::is_directory (std::string(path + de->d_name))))
                 {
-                    CMessage *t = new CMessage(std::string(path + de->d_name));
-                    result.push_back(t);
+
+                    if ( de->d_name[0] != '.' )
+                    {
+                        CMessage *t = new CMessage(std::string(path + de->d_name));
+                        result.push_back(t);
 
 #ifdef LUMAIL_DEBUG
-                    std::string dm = "CMessage::getMessages() - found ";
-                    dm += path + de->d_name;
-                    DEBUG_LOG( dm );
+                        std::string dm = "CMessage::getMessages() - found ";
+                        dm += path + de->d_name;
+                        DEBUG_LOG( dm );
 #endif
+                    }
+                    else
+                    {
+#ifdef LUMAIL_DEBUG
+                        std::string dm = "CMessage::getMessages() - ignoring dotfile ";
+                        dm += path + de->d_name;
+                        DEBUG_LOG( dm );
+#endif
+                    }
                 }
             }
             closedir(dp);
