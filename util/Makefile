@@ -18,5 +18,5 @@ dump-parts: dump-parts.c Makefile
 
 
 add-attachments-to-simple-mail: add-attachments-to-simple-mail.c Makefile
-	 g++ -ggdb add-attachments-to-simple-mail.c -o add-attachments-to-simple-mail $(shell pkg-config --libs  gmime-2.6) $(shell pkg-config --cflags gmime-2.6)
+	 g++ -std=gnu++0x -ggdb add-attachments-to-simple-mail.c -o add-attachments-to-simple-mail $(shell pkg-config --libs  gmime-2.6) $(shell pkg-config --cflags gmime-2.6)
 
