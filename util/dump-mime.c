@@ -11,6 +11,23 @@
 
 
 
+void dump_header( GMimeMessage *message, const char *header )
+{
+    const char *value = g_mime_object_get_header ((GMimeObject *) message, header );
+
+    if ( value )
+    {
+        char *decoded = g_mime_utils_header_decode_text ( value );
+        std::cout << "Header - " << header << ": " << decoded << std::endl;
+        g_free (decoded);
+    }
+    else
+    {
+        std::cout << "Failed to get header: " << header << std::endl;
+    }
+
+}
+
 /**
  * Dump the first text/plain part of a MIME-encoded message.
  *
@@ -36,17 +53,16 @@ void dump_mail( char *filename )
     m_message = g_mime_parser_construct_message (parser);
     g_object_unref (parser);
 
+
+    std::cout << "Filename: " << filename << std::endl;
+
     /**
      * Dump some headers.
      */
-    const char *to = g_mime_object_get_header ((GMimeObject *) m_message, "to" );
-    const char *from = g_mime_object_get_header ((GMimeObject *) m_message, "from" );
-    const char *subject = g_mime_object_get_header ((GMimeObject *) m_message, "subject" );
+    dump_header( m_message, "To" );
+    dump_header( m_message, "From" );
+    dump_header( m_message, "Subject" );
 
-    std::cout << "Filename: " << filename << std::endl;
-    std::cout << "To: " << to << std::endl;
-    std::cout << "From: " << from << std::endl;
-    std::cout << "Subject: " << subject << std::endl;
 
     /**
      * Create an iterator
