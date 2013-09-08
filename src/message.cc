@@ -1227,6 +1227,7 @@ UTFString CMessage::get_body()
      */
     if ( result.empty() )
     {
+        DEBUG_LOG( "CMessage::get_body() - FAILED" );
 
         bool in_header = true;
 
@@ -1252,6 +1253,10 @@ UTFString CMessage::get_body()
             }
             input.close();
         }
+    }
+    else
+    {
+        DEBUG_LOG( "CMessage::get_body() - SUCCEEDED With GMime/iconv/etc" );
     }
 
     /**
