@@ -1,3 +1,30 @@
+lumail (0.22) stable; urgency=low
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+    #143 - TAB-completion on an empty string no longer causes segfault.
+    #144 - Ignore dotfiles when reading Maildir contents.
+    #145 - Install lumail-debug by default.
+    #147 - Build our utilities with -std=gnu++0x.
+    #148 - Correctly output UTF8 for "simple" email bodies.
+    #149 - Find the value of `sendmail_path()` after calling `on_sent_message()`
+           This allows users, especially using mssmtp, to update it on-demand.
+    #150 - Correctly process short-versions of the command line flags
+           '--exit' + '--debug' as per the man-page.
+
+ -- Steve Kemp <steve@steve.org.uk>  Mon, 9 Sep 2013 12:33:21 +0000
+
+lumail (0.21-1) stable; urgency=low
+
+  * Point-Release.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+  * #143 - TAB-completion on an empty string no longer causes segfault.
+  * Install lumail-debug by default too.
+
+ -- Steve Kemp <steve@steve.org.uk>  Fri, 6 Sep 2013 22:33:44 +0000
+
 lumail (0.21) stable; urgency=low
 
   * New release, fixing several bugs.
