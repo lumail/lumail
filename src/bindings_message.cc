@@ -135,7 +135,15 @@ std::string populate_email_on_disk( std::vector<std::string> headers, std::strin
 bool send_mail_and_archive( std::string filename )
 {
     /**
+     * Call the on_send_message hook, with the path to the message.
+     */
+    call_message_hook( "on_send_message", filename.c_str() );
+
+    /**
      * Get the sendmail binary to use.
+     *
+     * NOTE: We have to do this after the hook has run, as it might
+     * have updated/set the value.
      */
     CGlobal *global       = CGlobal::Instance();
     std::string *sendmail = global->get_variable("sendmail_path");
@@ -148,12 +156,6 @@ bool send_mail_and_archive( std::string filename )
         lua->execute( error );
         return false;
     }
-
-
-    /**
-     * Call the on_send_message hook, with the path to the message.
-     */
-    call_message_hook( "on_send_message", filename.c_str() );
 
 
     /**
