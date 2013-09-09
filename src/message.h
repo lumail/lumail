@@ -183,6 +183,11 @@ private:
     GMimeMessage *m_message;
 
     /**
+     * Helper for decoding a body.
+     */
+    UTFString mime_part_to_text( GMimeObject *obj );
+
+    /**
      * The file-descriptor for this message.
      */
     int m_fd;
