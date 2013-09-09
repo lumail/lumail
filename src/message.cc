@@ -1128,6 +1128,11 @@ UTFString CMessage::get_body()
             GMimeContentType *content_type = g_mime_object_get_content_type (part);
 
             /**
+             * LOGGING.
+             */
+            DEBUG_LOG( "CMessage::get_body() - " + UTFString(content_type->type) + " " + UTFString(content_type->subtype) );
+
+            /**
              * If the content-type is NULL then text/plain is implied.
              *
              * If the content-type is text/plain AND we don't yet have any content
@@ -1229,30 +1234,45 @@ UTFString CMessage::get_body()
     {
         DEBUG_LOG( "CMessage::get_body() - FAILED" );
 
-        bool in_header = true;
+        GMimeObject *x= g_mime_message_get_body( m_message );
 
-        std::ifstream input ( path() );
-        if ( input.is_open() )
+        GMimeContentType *content_type = g_mime_object_get_content_type (x);
+
+        const char *charset;
+        char *converted;
+        gint64 len;
+        GMimeDataWrapper *c = g_mime_part_get_content_object( GMIME_PART(x) );
+        GMimeStream *memstream = g_mime_stream_mem_new();
+
+        len = g_mime_data_wrapper_write_to_stream( c, memstream );
+        guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
+
+        if ( (charset =  g_mime_content_type_get_parameter(content_type, "charset")) != NULL &&  (strcasecmp(charset, "utf-8") != 0))
         {
-            while( input.good() )
+            iconv_t cv;
+
+            cv = g_mime_iconv_open ("UTF-8", charset);
+            converted = g_mime_iconv_strndup(cv, (const char *) b, len );
+            if (converted != NULL)
             {
-                std::string line;
-                getline( input, line );
-
-                if ( in_header )
-                {
-                    if ( line.length() <= 0 )
-                        in_header = false;
-                }
-                else
-                {
-                    result += line;
-                    result += "\n";
-                }
-
+                result = (const char*)converted;
+                g_free(converted);
             }
-            input.close();
+            else
+            {
+                if ( b != NULL )
+                    result = std::string((const char *)b, len);
+            }
+            g_mime_iconv_close(cv);
         }
+        else
+        {
+            if ( b != NULL )
+                result = std::string((const char *)b, len);
+        }
+        g_mime_stream_close(memstream);
+        g_object_unref(memstream);
+
     }
     else
     {
