@@ -1165,14 +1165,13 @@ UTFString CMessage::get_body()
      */
     if ( result.empty() )
     {
-        DEBUG_LOG( "CMessage::get_body() - FAILED" );
+        DEBUG_LOG( "CMessage::get_body() - Fell back to g_mime_message_get_body()" );
 
+        /**
+         * This function is depreciated ..
+         */
         GMimeObject *x = g_mime_message_get_body( m_message );
-        assert( x );
-
-
         result = mime_part_to_text( x );
-
     }
     else
     {
