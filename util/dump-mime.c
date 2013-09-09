@@ -11,6 +11,10 @@
 
 
 
+
+/**
+ * Dump the given header from our message, taking care of RFC 2047 decoding.
+ */
 void dump_header( GMimeMessage *message, const char *header )
 {
     const char *value = g_mime_object_get_header ((GMimeObject *) message, header );
@@ -28,6 +32,69 @@ void dump_header( GMimeMessage *message, const char *header )
 
 }
 
+
+/**
+ * Get the body of a GMimeObject part.
+ */
+std::string mime_part_to_text( GMimeObject *obj)
+{
+
+    GMimeContentType *content_type = g_mime_object_get_content_type (obj);
+
+    std::string result;
+    const char *charset;
+    gint64 len;
+
+    /**
+     * Get the content, and create a new stream.
+     */
+    GMimeDataWrapper *c = g_mime_part_get_content_object( GMIME_PART(obj) );
+    GMimeStream *memstream = g_mime_stream_mem_new();
+
+    /**
+     * Write the content to the memory-stream.
+     */
+    len = g_mime_data_wrapper_write_to_stream( c, memstream );
+    guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
+
+    /**
+     * If there is a content-type, and it isn't UTF-8 ...
+     */
+    if ( (charset =  g_mime_content_type_get_parameter(content_type, "charset")) != NULL &&  (strcasecmp(charset, "utf-8") != 0))
+    {
+        /**
+         * We'll convert it.
+         */
+        iconv_t cv;
+
+        cv = g_mime_iconv_open ("UTF-8", charset);
+        char *converted = g_mime_iconv_strndup(cv, (const char *) b, len );
+        if (converted != NULL)
+        {
+            result = (const char*)converted;
+            g_free(converted);
+        }
+        else
+        {
+            if ( b != NULL )
+                result = std::string((const char *)b, len);
+        }
+        g_mime_iconv_close(cv);
+    }
+    else
+    {
+        /**
+         * No content type, or content-type is already correct.
+         */
+        if ( b != NULL )
+            result = std::string((const char *)b, len);
+    }
+    g_mime_stream_close(memstream);
+    g_object_unref(memstream);
+    return( result );
+}
+
+
 /**
  * Dump the first text/plain part of a MIME-encoded message.
  *
@@ -35,11 +102,10 @@ void dump_header( GMimeMessage *message, const char *header )
  */
 void dump_mail( char *filename )
 {
-    std::string result;
-
     GMimeMessage *m_message;
     GMimeParser *parser;
     GMimeStream *stream;
+    std::string result;
     int fd;
 
     if ((fd = open( filename, O_RDONLY, 0)) == -1)
@@ -91,49 +157,13 @@ void dump_mail( char *filename )
             if ( ( ( content_type == NULL ) || ( g_mime_content_type_is_type (content_type, "text", "plain")  ) ) &&
                 ( content == NULL ) )
             {
-
-                const char *charset;
-                char *converted;
-                gint64 len;
-                GMimeDataWrapper *c = g_mime_part_get_content_object( GMIME_PART(part) );
-                GMimeStream *memstream = g_mime_stream_mem_new();
-
-                len = g_mime_data_wrapper_write_to_stream( c, memstream );
-                guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
-
-                if ( (charset =  g_mime_content_type_get_parameter(content_type, "charset")) != NULL &&  (strcasecmp(charset, "utf-8") != 0))
-                {
-                    iconv_t cv;
-
-                    cv = g_mime_iconv_open ("UTF-8", charset);
-                    converted = g_mime_iconv_strndup(cv, (const char *) b, len );
-                    if (converted != NULL)
-                    {
-                        result = (const char*)converted;
-                        g_free(converted);
-                    }
-                    else
-                    {
-                        if ( b != NULL )
-                            result = std::string((const char *)b, len);
-                    }
-                    g_mime_iconv_close(cv);
-                }
-                else
-                {
-                    if ( b != NULL )
-                        result = std::string((const char *)b, len);
-                }
-                g_mime_stream_close(memstream);
-                g_object_unref(memstream);
+                result = mime_part_to_text( part );
             }
         }
     }
     while (g_mime_part_iter_next (iter));
 
     g_mime_part_iter_free (iter);
-    g_object_unref(m_message);
-
 
 
     /**
@@ -142,35 +172,16 @@ void dump_mail( char *filename )
      */
     if ( result.empty() )
     {
-        bool in_header = true;
-
-        std::ifstream input ( filename );
-        if ( input.is_open() )
-        {
-            while( input.good() )
-            {
-                std::string line;
-                getline( input, line );
-
-                if ( in_header )
-                {
-                    if ( line.length() <= 0 )
-                        in_header = false;
-                }
-                else
-                {
-                    result += line;
-                    result += "\n";
-                }
-
-            }
-            input.close();
-        }
+        GMimeObject *x = g_mime_message_get_body( m_message );
+        result = mime_part_to_text( x );
     }
+
+    g_object_unref(m_message);
 
     /**
      * Show the result.
      */
+    std::cout << "Message Body:\n\n";
     std::cout << result << std::endl;
 }
 
