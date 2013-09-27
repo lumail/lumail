@@ -98,9 +98,33 @@ std::string populate_email_on_disk( std::vector<std::string> headers, std::strin
     /*
      * 2. write out each header.
      */
+    bool date = false;
+
     for (std::string header : headers)
     {
+        if ( header == "date" )
+            date = true;
+
         unused=write(fd, header.c_str(), header.size() );
+        unused=write(fd, "\n", 1 );
+    }
+
+    /*
+     * If we didn't get a date - we won't - then add one.
+     */
+    if ( ! date )
+    {
+        time_t  now = time(0);
+        struct tm  tstruct;
+        char   buf[80];
+        tstruct = *localtime(&now);
+
+        /**
+         * TODO: Make configurable.
+         */
+        strftime(buf, sizeof(buf), "Date: %a, %d %b %Y %H:%M:%S %z", &tstruct);
+
+        unused = write(fd,buf, strlen(buf) );
         unused=write(fd, "\n", 1 );
     }
 
