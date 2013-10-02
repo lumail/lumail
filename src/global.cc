@@ -341,6 +341,8 @@ std::vector<CMessage *>* CGlobal::get_messages()
  */
 void CGlobal::update_maildirs()
 {
+    DEBUG_LOG( "CGlobal::update_maildir" );
+
     /**
      * If we have items already then free each of them.
      */
@@ -435,6 +437,10 @@ void CGlobal::update_maildirs()
  */
 void CGlobal::update_messages()
 {
+
+    DEBUG_LOG( "CGlobal::update_messages" );
+
+
     /**
      * If we have items already then free each of them.
      */
@@ -484,12 +490,13 @@ void CGlobal::update_messages()
             if ( (*mit)->matches_filter( filter ) )
                 m_messages->push_back(*mit) ;
         }
+
+        /*
+         * Sort?
+         */
+        std::sort(m_messages->begin(), m_messages->end(), sort_messages);
     }
 
-    /*
-     * Sort?
-     */
-    std::sort(m_messages->begin(), m_messages->end(), sort_messages);
 
 }
 
