@@ -120,6 +120,9 @@ public:
 
     /**
      * Retrieve the value of a given header from the message.
+     *
+     * NOTE: All headers are converted to lower-case prior to lookup.
+     *
      */
     UTFString header( std::string name);
 
@@ -211,6 +214,13 @@ private:
      * Cache of the mtime of the file.
      */
     time_t m_time_cache;
+
+    /**
+     * Cached map of header names + values.
+     *
+     * e.g. Date: foo, Subject: bar, To: xxx, From: foo.
+     */
+    std::unordered_map<std::string, UTFString> m_header_values;
 
     /**
      * Parse the message, if that hasn't been done.

@@ -574,6 +574,7 @@ bool CMessage::mark_read()
         add_flag( 'S' );
         return true;
     }
+
 }
 
 
@@ -704,75 +705,32 @@ UTFString CMessage::format( std::string fmt )
 
 /**
  * Retrieve the value of a given header from the message.
+ *
+ * NOTE: All headers are converted to lower-case prior to lookup.
+ *
  */
 UTFString CMessage::header( std::string name )
 {
     /**
-     * If we have a cached value, use it.
+     * If we don't have the set of header:value pairs from the
+     * message then open the message for parsing and read them all.
      */
-    static std::unordered_map<std::string, UTFString> cache;
-
-    std::string cache_key = path() + name;
-    UTFString cached_val  = cache[cache_key];
-    if ( !cached_val.empty() )
+    if ( m_header_values.empty() )
     {
-#ifdef LUMAIL_DEBUG
-        std::string dm = "CMessage::header - returning cached value for header - ";
-        dm += name ;
-        DEBUG_LOG( dm );
-#endif
-        return( cached_val );
+        DEBUG_LOG( "CMessage::header(" + name + ") - Triggering CMessage::headers()" );
+        headers();
     }
 
-
     /**
-     * Ensure the message has been read.
+     * Lookup the cached values.
      */
-    message_parse();
+    std::string nm(name);
+    std::transform(nm.begin(), nm.end(), nm.begin(), tolower);
 
-    /**
-     * The result.
-     */
-    UTFString result;
+    return( m_header_values[nm] );
 
-    /**
-     * Get the header.
-     */
-    const char *str = g_mime_object_get_header ((GMimeObject *) m_message, name.c_str() );
-
-    /**
-     * If that succeeded, decode it.
-     */
-    if ( str != NULL )
-    {
-        char *decoded = g_mime_utils_header_decode_text ( str );
-
-#ifdef LUMAIL_DEBUG
-        std::string dm = "CMessage::header('";
-        dm += name ;
-        dm += "' -> '";
-        dm +=  (( str != NULL ) ? str : "NULL" );
-        dm += "') -> '";
-        dm +=  (( decoded != NULL ) ? decoded : "NULL" );
-        dm += "'" ;
-        DEBUG_LOG( dm );
-#endif
-
-
-        result = decoded;
-
-        g_free (decoded);
-    }
-
-    close_message();
-
-    /**
-     * Save in cache.
-     */
-    cache[cache_key] =result;
-
-    return( result );
 }
+
 
 
 /**
@@ -780,66 +738,73 @@ UTFString CMessage::header( std::string name )
  */
 std::unordered_map<std::string, UTFString> CMessage::headers()
 {
-    std::unordered_map<std::string, UTFString> result;
-
-    const char *name;
-    const char *value;
-
     /**
-     * Parse the message.
+     * If the headers are empty then read them.
      */
-    message_parse();
-
-    /**
-     * Prepare to iterate.
-     */
-    GMimeHeaderList *ls   = GMIME_OBJECT (m_message)->headers;
-    GMimeHeaderIter *iter = g_mime_header_iter_new ();
-
-    if (g_mime_header_list_get_iter (ls, iter))
+    if ( m_header_values.empty() )
     {
-        while (g_mime_header_iter_is_valid (iter))
+        DEBUG_LOG( "CMessage::headers() - Reading from message:" + path() );
+
+        const char *name;
+        const char *value;
+
+        /**
+         * Parse the message.
+         */
+        message_parse();
+
+        /**
+         * Prepare to iterate.
+         */
+        GMimeHeaderList *ls   = GMIME_OBJECT (m_message)->headers;
+        GMimeHeaderIter *iter = g_mime_header_iter_new ();
+
+        if (g_mime_header_list_get_iter (ls, iter))
         {
-            /**
-             * Get the name + value.
-             */
-            name = g_mime_header_iter_get_name (iter);
-            value = g_mime_header_iter_get_value (iter);
+            while (g_mime_header_iter_is_valid (iter))
+            {
+                /**
+                 * Get the name + value.
+                 */
+                name = g_mime_header_iter_get_name (iter);
+                value = g_mime_header_iter_get_value (iter);
 
-            /**
-             * Downcase the name.
-             */
-            std::string nm(name);
-            std::transform(nm.begin(), nm.end(), nm.begin(), tolower);
+                /**
+                 * Downcase the name.
+                 */
+                std::string nm(name);
+                std::transform(nm.begin(), nm.end(), nm.begin(), tolower);
 
-            /**
-             * Decode the value.
-             */
-            char *decoded = g_mime_utils_header_decode_text ( value );
+                /**
+                 * Decode the value.
+                 */
+                char *decoded = g_mime_utils_header_decode_text ( value );
 
-            /**
-             * Store the result.
-             */
-            result[nm] = decoded;
+                /**
+                 * Store the result.
+                 */
+                m_header_values[nm] = decoded;
 
-
-            /**
-             * Logging is good.
-             */
-            DEBUG_LOG( "CMessage::headers()  " + std::string( name ) + std::string("->") + std::string(decoded)  );
-
-            if (!g_mime_header_iter_next (iter))
-                break;
+                if (!g_mime_header_iter_next (iter))
+                    break;
+            }
         }
+        g_mime_header_iter_free (iter);
+
+        /**
+         * Close the message.
+         */
+        close_message();
     }
-    g_mime_header_iter_free (iter);
+    else
+    {
+        DEBUG_LOG( "CMessage::headers() - Cached values maintained: " + path() );
+    }
 
     /**
-     * Close the message.
+     * Return the results.
      */
-    close_message();
-
-    return( result );
+    return( m_header_values );
 }
 
 
@@ -1481,6 +1446,8 @@ bool CMessage::on_read_message()
  */
 void CMessage::open_message( const char *filename )
 {
+    DEBUG_LOG( "open_message(" + std::string(filename) + ");" );
+
     GMimeParser *parser;
     GMimeStream *stream;
     m_fd = open( filename, O_RDONLY, 0);
