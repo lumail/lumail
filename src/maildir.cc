@@ -121,6 +121,8 @@ void CMaildir::update_cache()
          ( m_total != -1 ) )
         return;
 
+    DEBUG_LOG( "CMaildir::update_cache(" + path() + ")");
+
     m_modified = last_mod;
 
 
