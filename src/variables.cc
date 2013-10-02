@@ -285,6 +285,8 @@ int index_limit(lua_State * L)
      */
     if ( str != NULL )
     {
+        DEBUG_LOG( "index_limit(" + std::string(str) + ") triggering CGlobal::update_messages" );
+
         CGlobal *global = CGlobal::Instance();
         global->update_messages();
         global->set_message_offset(0);
@@ -329,6 +331,8 @@ int maildir_limit(lua_State * L)
      */
     if ( str != NULL )
     {
+        DEBUG_LOG( "maildir_limit(" + std::string(str) + ") triggering CGlobal::update_maildirs" );
+
         CGlobal *global = CGlobal::Instance();
         global->update_maildirs();
 
@@ -401,6 +405,7 @@ int sort(lua_State * L)
      */
     if ( str != NULL )
     {
+        DEBUG_LOG( "sort(" + std::string(str) + ") triggering CGlobal::update_messages" );
         CGlobal *global = CGlobal::Instance();
         global->update_messages();
 
