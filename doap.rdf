@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	xmlns="http://usefulinc.com/ns/doap#">
+
+	<name>lumail</name>
+	<homepage rdf:resource="http://lumail.org/" />
+        <download-page rdf:resource="http://lumail.org/download/"/>
+	<created>2013-05-01</created>
+
+	<shortdesc xml:lang="en">
+	  The Lumail console email client.
+	</shortdesc>
+
+	<description xml:lang="en">
+          Lumail is a modern console-based email client, written in C++ with
+         fully integrated scripting supported by Lua.
+	</description>
+
+        <doap:programming-language>C++</doap:programming-language>
+
+	<maintainer>
+          <foaf:Person>
+            <foaf:name>Steve Kemp</foaf:name>
+            <mbox rdf:resource="mailto:steve@steve.org.uk" />
+            <rdfs:homepage rdf:resource="http://steve.org.uk" />
+          </foaf:Person>
+        </maintainer>
+
+	<license rdf:resource="http://spdx.org/licenses/GPL-2.0+" />
+
+        <bug-database rdf:resource="http://github.com/skx/lumail/issues"/>
+
+	<repository>
+		<GitRepository>
+			<location rdf:resource="https://github.com/skx/lumail.git"/>
+			<browse rdf:resource="https://github.com/skx/lumail/"/>
+		</GitRepository>
+	</repository>
+
+</Project>
