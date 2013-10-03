@@ -5,7 +5,7 @@
 	xmlns="http://usefulinc.com/ns/doap#">
 
 	<name>lumail</name>
-        <doap:shortname>lumail</doap:shortname>
+    <shortname>lumail</shortname>
 	<homepage rdf:resource="http://lumail.org/" />
         <download-page rdf:resource="http://lumail.org/download/"/>
 	<created>2013-05-01</created>
