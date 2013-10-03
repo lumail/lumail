@@ -5,6 +5,7 @@
 	xmlns="http://usefulinc.com/ns/doap#">
 
 	<name>lumail</name>
+        <doap:shortname>lumail</doap:shortname>
 	<homepage rdf:resource="http://lumail.org/" />
         <download-page rdf:resource="http://lumail.org/download/"/>
 	<created>2013-05-01</created>
@@ -31,6 +32,7 @@
 	<license rdf:resource="http://spdx.org/licenses/GPL-2.0+" />
 
         <bug-database rdf:resource="http://github.com/skx/lumail/issues"/>
+        <doap:screenshots rdf:resource="http://lumail.org/screenshots/"/>
 
 	<repository>
 		<GitRepository>
