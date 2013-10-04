@@ -42,7 +42,7 @@ CC=g++
 LINKER=$(CC) -o
 LVER=lua5.1
 CPPFLAGS+=-std=gnu++0x -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) -I/usr/include/ncursesw/
-LDLIBS+=$(shell pkg-config --libs ${LVER}) -lncursesw -lpcrecpp -pg
+LDLIBS+=$(shell pkg-config --libs ${LVER}) -lncursesw -lpcrecpp
 
 #
 #  GMime is used for MIME handling.
