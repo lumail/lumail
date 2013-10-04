@@ -74,14 +74,19 @@ public:
     UTFString format( std::string fmt = "");
 
     /**
-     * Get the flags for this message.
+     * Retrieve the current flags for this message.
      */
-    std::string flags();
+    std::string get_flags();
+
+    /**
+     * Set the flags for this message.
+     */
+    void set_flags( std::string new_flags );
 
     /**
      * Add a flag to a message.
      */
-    void add_flag( char c );
+    bool add_flag( char c );
 
     /**
      * Does this message possess the given flag?
@@ -91,7 +96,7 @@ public:
     /**
      * Remove a flag from a message.
      */
-    void remove_flag( char c );
+    bool remove_flag( char c );
 
     /**
      * Does this message match the given filter?

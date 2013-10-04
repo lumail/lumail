@@ -199,11 +199,9 @@ void CMessage::path( std::string new_path )
 
 
 /**
- * Get the flags for this message.
- *
- * NOTE: This doesn't parse the message, it just reads the filename.
+ * Retrieve the current flags for this message.
  */
-std::string CMessage::flags()
+std::string CMessage::get_flags()
 {
     std::string flags = "";
     std::string pth   = path();
@@ -214,7 +212,6 @@ std::string CMessage::flags()
     size_t offset = pth.find(":2,");
     if (offset != std::string::npos)
         flags = pth.substr(offset + 3);
-
 
     /**
      * Sleazy Hack.
@@ -232,105 +229,66 @@ std::string CMessage::flags()
     return flags;
 }
 
+/**
+ * Set the flags for this message.
+ */
+void CMessage::set_flags( std::string new_flags )
+{
+    /**
+     * Sort the flags.
+     */
+    std::string flags = new_flags;
+    std::sort( flags.begin(), flags.end());
+    flags.erase(std::unique(flags.begin(), flags.end()), flags.end());
+
+    /**
+     * Get the current ending position.
+     */
+    std::string cur_path = path();
+
+    size_t offset = std::string::npos;
+
+    if ( ( offset =  cur_path.find(":2,") ) != std::string::npos )
+    {
+        std::string dest = cur_path.substr(0, offset);
+        dest += ":2,";
+        dest += flags;
+
+        DEBUG_LOG( "XXX " + cur_path + " to " + dest );
+        assert( strcmp( cur_path.c_str(), dest.c_str() ) != 0 ) ;
+        CFile::move( cur_path, dest );
+        path( dest );
+        close_message();
+    }
+    else
+    {
+        DEBUG_LOG( "XXXX  - FIALED TO FIND FLAGS IN " + cur_path );
+    }
+}
+
 
 /**
  * Add a flag to a message.
  *
- * NOTE: This only updates the path to the file, it doesn't change the state.
- * however we close the message just in case because we might have an open
- * file-handle to the previous name.
-
+ * Return true if the flag was added, false if already present.
  */
-void CMessage::add_flag( char c )
+bool CMessage::add_flag( char c )
 {
-    close_message();
+    std::string flags = get_flags();
+
+    size_t offset = std::string::npos;
 
     /**
-     * Flags are upper-case.
+     * If the flag was missing, add it.
      */
-    c = toupper(c);
-
-    /**
-     * If the flag is already present, return.
-     */
-    if ( has_flag( c ) )
-        return;
-
-    /**
-     * Get the path and ensure it is present.
-     */
-    std::string orig = path();
-    std::string p( orig );
-
-    if (p.empty())
-        return;
-
-    /**
-     * Get the current flags.
-     */
-    size_t offset;
-
-    std::string flags;
-
-    if ( ( offset =  p.find(":2,") ) != std::string::npos )
+    if ( ( offset = flags.find( c ) ) == std::string::npos )
     {
-        flags = p.substr( offset+3  /* strlen( ":2," ) */ );
-        p     = p.substr(0, offset);
+        flags += c;
+        set_flags( flags );
+        return true;
     }
-
-#ifdef LUMAIL_DEBUG
-    std::string dm = "CMessage::add_flag(\"";
-    dm += "Path:";
-    dm += p;
-    dm += " ->( p:" + p;
-    dm += " f:" + flags;
-    dm += ");";
-    DEBUG_LOG( dm );
-#endif
-
-
-    /**
-     * Given an input path like:
-     *
-     * /home/skx/Maildir/.247blinds.co.uk/cur/1239736741.19771_.skx:2,RS
-     *
-     * We now have:
-     *
-     * p     = /home/skx/Maildir/.247blinds.co.uk/cur/1239736741.19771_.skx
-     *
-     * flags = RS
-     */
-
-    /**
-     * Add the flag to the component.
-     */
-    flags += c;
-
-    /**
-     * Sleazy Hack.
-     */
-    if ( p.find( "/new/" ) != std::string::npos )
-        flags += "N";
-
-    /**
-     * Sort the flags, and remove duplicate entries.
-     */
-    std::sort( flags.begin(), flags.end());
-    flags.erase(std::unique(flags.begin(), flags.end()), flags.end());
-
-
-    /**
-     * Now rename to : $path:2,$flags
-     */
-    std::string dst = p + ":2," + flags;
-
-    CFile::move( orig, dst );
-
-
-    /**
-     * Update the path.
-     */
-    path( dst );
+    else
+        return false;
 }
 
 
@@ -344,7 +302,7 @@ bool CMessage::has_flag( char c )
      */
     c = toupper(c);
 
-    if ( flags().find( c ) != std::string::npos)
+    if ( get_flags().find( c ) != std::string::npos)
         return true;
     else
         return false;
@@ -353,69 +311,30 @@ bool CMessage::has_flag( char c )
 /**
  * Remove a flag from a message.
  *
- * NOTE: This only updates the path to the file, it doesn't change the state.
- * however we close the message just in case because we might have an open
- * file-handle to the previous name.
+ * Return true if the flag was removed, false if it wasn't present.
  */
-void CMessage::remove_flag( char c )
+bool CMessage::remove_flag( char c )
 {
-    close_message();
-
-    /**
-     * Flags are upper-case.
-     */
     c = toupper(c);
+
+    std::string current = get_flags();
 
     /**
      * If the flag is not present, return.
      */
-    if ( flags().find( c ) == std::string::npos)
-        return;
-
-    /**
-     * Get the path and ensure it is present.
-     */
-    std::string p = path();
-
-    if (p.empty())
-        return;
-
-    /**
-     * Find the flags.
-     */
-    size_t offset     = p.find(":2,");
-    std::string base  = p;
-    std::string flags = "";
-
-    /**
-     * If we found flags then add the new one.
-     */
-    if (offset != std::string::npos)
-    {
-        flags = p.substr(offset);
-        base  = p.substr(0,offset);
-    }
-    else
-    {
-        flags = ":2,";
-    }
+    if ( current.find( c ) == std::string::npos)
+        return false;
 
     /**
      * Remove the flag.
      */
     std::string::size_type k = 0;
-    while((k=flags.find(c,k))!=flags.npos)
-        flags.erase(k, 1);
+    while((k=current.find(c,k))!=current.npos)
+        current.erase(k, 1);
 
-    /**
-     * Move the file.
-     */
-    CFile::move( p, base + flags );
+    set_flags( current );
 
-    /**
-     * Update the path.
-     */
-    path( base + flags );
+    return true;
 }
 
 
@@ -656,7 +575,7 @@ UTFString CMessage::format( std::string fmt )
                 /**
                  * Ensure the flags are suitably padded.
                  */
-                body = flags();
+                body = get_flags();
 
                 while( body.size() < 4 )
                     body += " ";
