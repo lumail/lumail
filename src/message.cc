@@ -245,24 +245,30 @@ void CMessage::set_flags( std::string new_flags )
      * Get the current ending position.
      */
     std::string cur_path = path();
+    std::string dst_path = cur_path;
 
     size_t offset = std::string::npos;
 
     if ( ( offset =  cur_path.find(":2,") ) != std::string::npos )
     {
-        std::string dest = cur_path.substr(0, offset);
-        dest += ":2,";
-        dest += flags;
-
-        DEBUG_LOG( "XXX " + cur_path + " to " + dest );
-        assert( strcmp( cur_path.c_str(), dest.c_str() ) != 0 ) ;
-        CFile::move( cur_path, dest );
-        path( dest );
-        close_message();
+        dst_path = cur_path.substr(0, offset);
+        dst_path += ":2,";
+        dst_path += flags;
     }
     else
     {
-        DEBUG_LOG( "XXXX  - FIALED TO FIND FLAGS IN " + cur_path );
+        dst_path = cur_path;
+        dst_path += ":2,";
+        dst_path += flags;
+    }
+
+
+    DEBUG_LOG( "CMessage::set_flags()" + cur_path + " to " + dst_path );
+    if ( cur_path != dst_path )
+    {
+        CFile::move( cur_path, dst_path );
+        path( dst_path );
+        close_message();
     }
 }
 
