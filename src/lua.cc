@@ -100,21 +100,21 @@ struct CLuaMapping primitive_list[] =
  */
     {"bounce_path", "Get/set the binary to send bounces with.", (lua_CFunction) bounce_path },
     {"completion_chars", "Get/set the characters to tokenize on for completion.", (lua_CFunction) completion_chars },
+    {"display_filter", "Query or update the filter to apply to messages being viewed.", (lua_CFunction) display_filter },
     {"editor", "Query or update the editor to use.", (lua_CFunction) editor },
     {"from", "Query or update the from-address for outgoing mails.", (lua_CFunction) from },
+    {"get_variables", "Retrieve all known-variables and their values.", (lua_CFunction) get_variables },
     {"global_mode", "Query or update the global-mode.", (lua_CFunction) global_mode },
+    {"hostname", "Retrieve the hostname of the current system..", (lua_CFunction) hostname },
     {"index_format", "Query or update the index-format string.", (lua_CFunction) index_format },
     {"index_limit", "Query or update the index-limit string.", (lua_CFunction) index_limit },
+    {"mail_filter", "Query or update the filter to apply to messages being processed.", (lua_CFunction) mail_filter },
     {"maildir_format", "Query or update the maildir-format string.", (lua_CFunction) maildir_format },
     {"maildir_limit", "Query or update the maildir-limit string.", (lua_CFunction) maildir_limit },
     {"maildir_prefix", "Query or update the root of the Maildir hierarchy.", (lua_CFunction) maildir_prefix },
-    {"display_filter", "Query or update the filter to apply to messages being viewed.", (lua_CFunction) display_filter },
-    {"mail_filter", "Query or update the filter to apply to messages being processed.", (lua_CFunction) mail_filter },
     {"sendmail_path", "Query or update the sendmail-path, used for sending mails.", (lua_CFunction) sendmail_path },
     {"sent_mail", "Query or update the Maildir location to send outgoing mails to.", (lua_CFunction) sent_mail },
     {"sort", "Query or update the sorting string for index-mode.", (lua_CFunction) sort },
-    {"get_variables", "Retrieve all known-variables and their values.", (lua_CFunction) get_variables },
-    {"hostname", "Retrieve the hostname of the current system..", (lua_CFunction) hostname },
 
 /**
  * Colour & highlight getters/setters.  Defined in src/variables.cc
