@@ -13,3 +13,4 @@ util/dump-mime
 util/dump-parts
 obj.debug
 obj.release
+gmon.out

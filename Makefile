@@ -93,7 +93,7 @@ release: clean style
 clean:
 	test -d $(RELEASE_OBJDIR)  && rm -rf $(RELEASE_OBJDIR) || true
 	test -d $(DEBUG_OBJDIR)    && rm -rf $(DEBUG_OBJDIR)   || true
-	rm -f lumail lumail-debug core                         || true
+	rm -f gmon.out lumail lumail-debug core                || true
 	@cd util && make clean                                 || true
 
 #
@@ -114,7 +114,7 @@ lumail: $(RELEASE_OBJECTS)
 #  The debug-build.
 #
 lumail-debug: $(DEBUG_OBJECTS)
-	$(LINKER) $@ $(LFLAGS) -rdynamic -ggdb $(DEBUG_OBJECTS) $(LDLIBS) $(GMIME_LIBS) $(GLIBMM_LIBS)
+	$(LINKER) $@ $(LFLAGS) -rdynamic -ggdb -pg $(DEBUG_OBJECTS) $(LDLIBS) $(GMIME_LIBS) $(GLIBMM_LIBS)
 
 
 #
@@ -122,7 +122,7 @@ lumail-debug: $(DEBUG_OBJECTS)
 #
 $(RELEASE_OBJECTS): $(RELEASE_OBJDIR)/%.o : $(SRCDIR)/%.cc
 	@mkdir $(RELEASE_OBJDIR) 2>/dev/null || true
-	$(CC) $(CPPFLAGS) $(GMIME_INC) $(GLIBMM_INC) -O2 -c $< -o $@
+	$(CC)  $(CPPFLAGS) $(GMIME_INC) $(GLIBMM_INC) -O2 -c $< -o $@
 
 #
 #  Build the objects for the debug build.
@@ -131,5 +131,5 @@ $(RELEASE_OBJECTS): $(RELEASE_OBJDIR)/%.o : $(SRCDIR)/%.cc
 #
 $(DEBUG_OBJECTS): $(DEBUG_OBJDIR)/%.o : $(SRCDIR)/%.cc
 	@mkdir $(DEBUG_OBJDIR) 2>/dev/null || true
-	$(CC) -ggdb -DLUMAIL_DEBUG=1 $(CPPFLAGS) $(GMIME_INC) $(GLIBMM_INC) -c $< -o $@
+	$(CC) -ggdb -DLUMAIL_DEBUG=1 $(CPPFLAGS) $(GMIME_INC) $(GLIBMM_INC) -O2 -c $< -o $@
 
