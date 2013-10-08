@@ -342,6 +342,7 @@ int hostname(lua_State *L)
         lua_pushstring(L,res );
     }
 
+    DEBUG_LOG( "hostname() -> " + std::string( lua_tostring(L,-1)) );
     return 1;
 }
 
