@@ -27,6 +27,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <netdb.h>
+#include <unistd.h>
 
 
 #include "bindings.h"
@@ -302,6 +304,42 @@ int get_variables(lua_State *L )
 
         lua_settable(L,-3);
         i++;
+    }
+
+    return 1;
+}
+
+
+/**
+ * Return the hostname to Lua.
+ */
+int hostname(lua_State *L)
+{
+    /**
+     * Get the short version.
+     */
+    char res[1024];
+    res[sizeof(res)-1] = '\0';
+    gethostname(res, sizeof(res)-1);
+
+    /**
+     * Attempt to get the full vrsion.
+     */
+    struct hostent *hstnm;
+    hstnm = gethostbyname (res);
+    if (hstnm)
+    {
+        /**
+         * Success.
+         */
+        lua_pushstring(L,hstnm->h_name);
+    }
+    else
+    {
+        /**
+         * Failure: Return the short-version.
+         */
+        lua_pushstring(L,res );
     }
 
     return 1;

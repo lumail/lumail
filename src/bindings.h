@@ -140,6 +140,7 @@ int current_message(lua_State * L);
 int exec(lua_State * L);
 int exit(lua_State * L);
 int get_variables(lua_State *L );
+int hostname(lua_State *L );
 int jump_maildir_to(lua_State * L);
 int log_message(lua_State *L);
 int lua_dump_stack(lua_State *L);

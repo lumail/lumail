@@ -114,6 +114,7 @@ struct CLuaMapping primitive_list[] =
     {"sent_mail", "Query or update the Maildir location to send outgoing mails to.", (lua_CFunction) sent_mail },
     {"sort", "Query or update the sorting string for index-mode.", (lua_CFunction) sort },
     {"get_variables", "Retrieve all known-variables and their values.", (lua_CFunction) get_variables },
+    {"hostname", "Retrieve the hostname of the current system..", (lua_CFunction) hostname },
 
 /**
  * Colour & highlight getters/setters.  Defined in src/variables.cc
