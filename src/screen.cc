@@ -152,6 +152,11 @@ void CScreen::drawMaildir()
     if (selected < middle || count<height-2)
     {
         rowToHighlight = selected;
+
+        if ( selected >= count )
+            rowToHighlight = selected = 0;
+
+
         topBottomOrMiddle = TOP;
         /**
          * if height is uneven we have to switch to the BOTTOM case on row earlier
@@ -356,6 +361,12 @@ void CScreen::drawIndex()
     int count = messages->size();
     int height = CScreen::height();
     int selected = global->get_selected_message();
+
+    /**
+     * Ensure we highlight the correct line.
+     */
+    if ( selected >= count )
+        selected = 0;
 
     /**
      *  correct for the status bar and that counting starts at 1
