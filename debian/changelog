@@ -1,3 +1,15 @@
+lumail (0.23) stable; urgency=low
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+    #140 - Several minor speedups in flag-handling, etc.
+    #152 - Create & populate a Date: header in outgoing mails.
+  * New primitive: hostname()
+           http://lumail.org/lua/hostname.html
+
+ -- Steve Kemp <steve@steve.org.uk>  Sun, 13 Sep 2013 12:00:21 +0000
+
 lumail (0.22) stable; urgency=low
 
   * New release, fixing several bugs.
