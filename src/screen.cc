@@ -438,7 +438,7 @@ void CScreen::drawIndex()
             mailIndex = row + selected - middle;
         }
 
-        if (mailIndex < count)
+        if ( (mailIndex < count) && ( mailIndex < (int)messages->size()) )
             cur = messages->at(mailIndex);
 
         if (row == rowToHighlight)
