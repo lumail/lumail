@@ -309,13 +309,10 @@ std::vector<CMaildir *> CGlobal::get_folders()
     /**
      * Filter the folders to those we can display
      */
-    std::vector<CMaildir *>::iterator it;
-    for (it = m_maildirs->begin(); it != m_maildirs->end(); ++it)
+    for (CMaildir *maildir : (*m_maildirs))
     {
-        CMaildir *x = (*it);
-
-        if ( x->matches_filter( filter ) )
-            display.push_back(x);
+        if ( maildir->matches_filter( filter ) )
+            display.push_back(maildir);
     }
 
     /**
@@ -351,10 +348,9 @@ void CGlobal::update_maildirs()
         /**
          * Delete
          */
-        std::vector<CMaildir *>::iterator it;
-        for (it = m_maildirs->begin(); it != m_maildirs->end(); ++it)
+        for (CMaildir *maildir : (*m_maildirs))
         {
-            delete( *it );
+            delete( maildir );
         }
         delete( m_maildirs );
         m_maildirs = NULL;
@@ -446,10 +442,9 @@ void CGlobal::update_messages()
      */
     if ( m_messages != NULL )
     {
-        std::vector<CMessage *>::iterator it;
-        for (it = m_messages->begin(); it != m_messages->end(); ++it)
+        for (CMessage *message : (*m_messages) )
         {
-            delete( *it );
+            delete( message );
         }
         delete( m_messages );
         m_messages = NULL;
@@ -474,7 +469,6 @@ void CGlobal::update_messages()
      */
     for (std::string folder : folders)
     {
-
         /**
          * get the messages from this folder.
          */
@@ -484,14 +478,13 @@ void CGlobal::update_messages()
         /**
          * Append to the list of messages combined.
          */
-        std::vector<CMessage *>::iterator mit;
-        for (mit = contents.begin(); mit != contents.end(); ++mit)
+        for (CMessage *content: contents)
         {
-            if ( (*mit)->matches_filter( filter ) )
-                m_messages->push_back(*mit) ;
+            if ( content->matches_filter( filter ) )
+                m_messages->push_back(content) ;
         }
 
-        /*
+        /**
          * Sort?
          */
         std::sort(m_messages->begin(), m_messages->end(), sort_messages);

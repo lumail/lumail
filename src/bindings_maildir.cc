@@ -90,7 +90,6 @@ int current_maildirs(lua_State *L)
 {
     CGlobal *global = CGlobal::Instance();
     std::vector<CMaildir *> display = global->get_folders();
-    std::vector<CMaildir *>::iterator it;
 
     /**
      * Create the table.
@@ -98,10 +97,10 @@ int current_maildirs(lua_State *L)
     lua_newtable(L);
 
     int i = 1;
-    for (it = display.begin(); it != display.end(); ++it)
+    for (CMaildir * folder : display)
     {
         lua_pushnumber(L,i);
-        lua_pushstring(L,(*it)->path().c_str());
+        lua_pushstring(L,folder->path().c_str());
         lua_settable(L,-3);
         i++;
     }
@@ -153,7 +152,6 @@ int maildirs_matching(lua_State *L)
      */
     CGlobal *global = CGlobal::Instance();
     std::vector<CMaildir *> folders = global->get_folders();
-    std::vector<CMaildir *>::iterator it;
 
     /**
      * create a new table.
@@ -174,15 +172,12 @@ int maildirs_matching(lua_State *L)
     /**
      * For each maildir - add it to the table if it matches.
      */
-    for (it = folders.begin(); it != folders.end(); ++it)
+    for (CMaildir * folder : folders)
     {
-        CMaildir *f = (*it);
-
-
-        if ( f->matches_filter( filter ) )
+        if ( folder->matches_filter( filter ) )
         {
             lua_pushnumber(L,i);
-            lua_pushstring(L,(*it)->path().c_str());
+            lua_pushstring(L,folder->path().c_str());
             lua_settable(L,-3);
             i++;
         }

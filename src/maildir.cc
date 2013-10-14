@@ -130,7 +130,6 @@ void CMaildir::update_cache()
      * Get all messages, and update the total
      */
     std::vector<CMessage *> all = getMessages();
-    std::vector<CMessage *>::iterator it;
     m_total = all.size();
 
 
@@ -138,18 +137,19 @@ void CMaildir::update_cache()
      * Now update the unread count.
      */
     m_unread = 0;
-    for (it = all.begin(); it != all.end(); ++it)
+    for (CMessage * message : all)
     {
-        if ( (*it)->is_new() )
-            m_unread += 1;
+        if ( message->is_new() )
+            m_unread++;
+
     }
 
     /**
      * Now cleanup.
      */
-    for (it = all.begin(); it != all.end(); ++it)
+    for (CMessage * message : all)
     {
-        delete( *it );
+        delete(message);
     }
 }
 
