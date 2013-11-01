@@ -1677,6 +1677,11 @@ bool CMessage::get_body_part( int offset, char **data, size_t *length )
     bool ret = false;
 
     /**
+     * Content length
+     */
+    gint64 len;
+
+    /**
      * Create an iterator
      */
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
@@ -1717,7 +1722,6 @@ bool CMessage::get_body_part( int offset, char **data, size_t *length )
                      */
                     const char *charset;
                     char *converted;
-                    gint64 len;
 
                     /**
                      * Get the content, and setup a memory-stream to read it.
@@ -1787,6 +1791,30 @@ bool CMessage::get_body_part( int offset, char **data, size_t *length )
                             ret = true;
                         }
                     }
+                    g_mime_stream_close(memstream);
+                    g_object_unref(memstream);
+                }
+                else
+                {
+                    /** 
+                     * Here the content is not text/plain, return it as is 
+                     *
+                     * Get the content, and setup a memory-stream to read it.
+                     */
+                    GMimeDataWrapper *c    = g_mime_part_get_content_object( GMIME_PART(part) );
+                    GMimeStream *memstream = g_mime_stream_mem_new();
+
+                    /**
+                     * Get the size + data.
+                     */
+                    len       = g_mime_data_wrapper_write_to_stream( c, memstream );
+                    guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
+
+                    *data = (char*)malloc( len + 1 );
+                    memcpy( *data, b, len );
+                    *length = (size_t)len;
+                    ret = true;
+
                     g_mime_stream_close(memstream);
                     g_object_unref(memstream);
                 }
