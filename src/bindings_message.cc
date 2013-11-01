@@ -117,12 +117,29 @@ std::string populate_email_on_disk( std::vector<std::string> headers, std::strin
         time_t  now = time(0);
         struct tm  tstruct;
         char   buf[80];
+        char *current_loc = NULL;
+
         tstruct = *localtime(&now);
+
+        current_loc = setlocale(LC_TIME, NULL);
+
+        if (current_loc != NULL)
+        {
+            current_loc = strdup(current_loc);
+            setlocale(LC_TIME, "C");
+        }
 
         /**
          * TODO: Make configurable.
          */
         strftime(buf, sizeof(buf), "Date: %a, %d %b %Y %H:%M:%S %z", &tstruct);
+
+
+        if ( current_loc != NULL )
+        {
+            setlocale(LC_TIME, current_loc);
+            free(current_loc);
+        }
 
         unused = write(fd,buf, strlen(buf) );
         unused=write(fd, "\n", 1 );
