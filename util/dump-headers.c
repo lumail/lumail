@@ -19,7 +19,6 @@ void dump_headers( char *filename )
     GMimeMessage *m_message;
     GMimeParser *parser;
     GMimeStream *stream;
-    std::string result;
     int fd;
 
     if ((fd = open( filename, O_RDONLY, 0)) == -1)
@@ -45,7 +44,7 @@ void dump_headers( char *filename )
     GMimeHeaderList *ls   = GMIME_OBJECT (m_message)->headers;
     GMimeHeaderIter *iter = g_mime_header_iter_new ();
 
-    if (g_mime_header_list_get_iter (ls, iter))
+    if (g_mime_header_list_get_iter (ls, iter) && g_mime_header_iter_first (iter))
     {
         while (g_mime_header_iter_is_valid (iter))
         {
