@@ -214,7 +214,12 @@ int alert(lua_State * L)
  */
 int clear(lua_State * L)
 {
+    /**
+     * Ensure we refresh the display after clearing the screen.
+     */
     CScreen::clear_main();
+    refresh();
+
     return 0;
 }
 

@@ -882,10 +882,6 @@ void CScreen::clear_main()
     for(int i = 0; i < ( height - 1 ); i++ )
         mvprintw( i, 0, "%s", blank.c_str() );
 
-    /**
-     * Ensure we refresh the display.
-     */
-    refresh();
 }
 
 
