@@ -1,13 +1,16 @@
 
 
 
-all: add-attachments-to-simple-mail  dump-mime dump-parts
+all: add-attachments-to-simple-mail dump-headers dump-mime dump-parts
 
 
 clean:
 	rm add-attachments-to-simple-mail dump-mime dump-parts || true
 	rm input.txt message.out || true
 
+
+dump-headers: dump-headers.c Makefile
+	 g++ -ggdb -rdynamic dump-headers.c -o dump-headers $(shell pkg-config --libs  gmime-2.6) $(shell pkg-config --cflags gmime-2.6)
 
 dump-mime: dump-mime.c Makefile
 	 g++ -ggdb -rdynamic dump-mime.c -o dump-mime $(shell pkg-config --libs  gmime-2.6) $(shell pkg-config --cflags gmime-2.6)
