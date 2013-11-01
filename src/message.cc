@@ -1485,8 +1485,16 @@ void CMessage::add_attachments_to_mail(std::string filename, std::vector<std::st
      * Create a new multipart message.
      */
     multipart = g_mime_multipart_new();
-    GMimeContentType *type = g_mime_content_type_new ("multipart", "mixed");
-    g_mime_object_set_content_type (GMIME_OBJECT (multipart), type);
+    GMimeContentType *type;
+
+    /**
+     * Handle the mime-type.
+     */
+    if ( attachments.size() > 0 )
+    {
+        type = g_mime_content_type_new ("multipart", "mixed");
+        g_mime_object_set_content_type (GMIME_OBJECT (multipart), type);
+    }
 
 
     GMimeContentType *new_type;
