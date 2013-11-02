@@ -40,6 +40,19 @@
 
 int unused __attribute__((unused));
 
+/**
+ * The possible actions after composing a message:
+ *
+ * 1. Edit the message (again).
+ *
+ * 2. Abort the sending.
+ *
+ * 3. Send the mail.
+ *
+ */
+enum send_t { EDIT, ABORT, SEND };
+
+
 
 
 
@@ -246,38 +259,47 @@ bool send_mail_and_archive( std::string filename )
 /**
  * Should we send the mail?
  *
- * Return "true" if so.  Return false if the user said no, and either way
- * allow attachments to be added.
+ * Return one of three values here:
+ *
+ *  SEND  -> Send the mail.
+ *  EDIT  -> Re-edit the mail.
+ *  ABORT -> Abort the sending.
+ *
  */
-bool should_send( lua_State * L, std::vector<std::string> *attachments )
+send_t should_send( lua_State * L, std::vector<std::string> *attachments )
 {
     while( true )
     {
         /**
          * Use prompt_chars() to get the input
          */
-        lua_pushstring(L,"Send mail: (y)es, (n)o, or (a)dd an attachment?" );
-        lua_pushstring(L,"anyANY");
+        lua_pushstring(L,"Send mail: (y)es, (n)o, re(e)edit, or (a)dd an attachment?" );
+        lua_pushstring(L,"eanyEANY");
 
         int ret = prompt_chars(L);
         if ( ret != 1 )
         {
             lua_pushstring(L, "Error receiving confirmation." );
             msg(L );
-            return false;
+            return SEND;
         }
 
         const char * response = lua_tostring(L, -1);
 
+        if (  ( response[0] == 'e' ) ||
+              ( response[0] == 'E' ) )
+        {
+            return EDIT;
+        }
         if (  ( response[0] == 'y' ) ||
               ( response[0] == 'Y' ) )
         {
-            return true;
+            return SEND;
         }
         if ( ( response[0] == 'n' ) ||
              ( response[0] == 'N' ) )
         {
-            return false;
+            return ABORT;
         }
         if ( ( response[0] == 'a' ) ||
              ( response[0] == 'A' ) )
@@ -291,7 +313,7 @@ bool should_send( lua_State * L, std::vector<std::string> *attachments )
             {
                 lua_pushstring(L, "Error receiving attachment." );
                 msg(L );
-                return false;
+                return ABORT;
             }
 
             const char * path = lua_tostring(L, -1);
@@ -576,42 +598,57 @@ int compose(lua_State * L)
     std::string filename = populate_email_on_disk(  headers, "",  sig );
 
     /**
-     * Edit the message on-disk.
+     * Loop with the actions menu.
      */
-    CFile::edit( filename );
-
-    /**
-     * Call the on_edit_message hook, with the path to the message.
-     */
-    call_message_hook( "on_edit_message", filename.c_str() );
-
-
-    /**
-     * Attachments associated with this mail.
-     */
-    std::vector<std::string> attachments;
-
-
-    /**
-     * Prompt for confirmation.
-     */
-    bool send = should_send(L, &attachments );
-    if ( ! send )
+    while( true )
     {
-        call_message_hook( "on_message_aborted", filename.c_str() );
-        CFile::delete_file( filename );
-        return 0;
+        /**
+         * Edit the message on-disk.
+         */
+        CFile::edit( filename );
+
+        /**
+         * Call the on_edit_message hook, with the path to the message.
+         */
+        call_message_hook( "on_edit_message", filename.c_str() );
+
+        /**
+         * Attachments associated with this mail.
+         */
+        std::vector<std::string> attachments;
+
+
+        /**
+         * Prompt for confirmation.
+         */
+        send_t result = should_send(L, &attachments );
+
+        if ( result == ABORT )
+        {
+            call_message_hook( "on_message_aborted", filename.c_str() );
+            CFile::delete_file( filename );
+            return 0;
+        }
+
+        if ( result == SEND )
+        {
+            /**
+             * Add attachments.
+             * If there are none we just make the message MIME-nice.
+             */
+            CMessage::add_attachments_to_mail( filename, attachments );
+
+            /**
+             * Send the mail.
+             */
+            send_mail_and_archive( filename );
+            return 0;
+        }
+
+        /**
+         * result == EDIT is implied here - so we re-loop.
+         */
     }
-
-    /**
-     * Add attachments.  If there are none we just make the message MIME-nice.
-     */
-    CMessage::add_attachments_to_mail( filename, attachments );
-
-    /**
-     * Send the mail.
-     */
-    send_mail_and_archive( filename );
 
     return 0;
 }
@@ -827,53 +864,60 @@ int forward(lua_State * L)
     std::string filename = populate_email_on_disk(  headers, bbody, "" );
 
     /**
-     * Edit the message on-disk.
+     * Loop with the actions menu.
      */
-    CFile::edit( filename );
-
-
-    /**
-     * Reset the screen.
-     */
-    reset_prog_mode();
-    refresh();
-
-
-    /**
-     * Call the on_edit_message hook, with the path to the message.
-     */
-    call_message_hook( "on_edit_message", filename.c_str() );
-
-    /**
-     * Attachments associated with this mail.
-     */
-    std::vector<std::string> attachments;
-
-
-    /**
-     * Prompt for confirmation.
-     */
-    bool send = should_send(L, &attachments );
-    if ( ! send )
+    while( true )
     {
-        call_message_hook( "on_message_aborted", filename.c_str() );
-        CFile::delete_file( filename );
-        return 0;
+
+        /**
+         * Edit the message on-disk.
+         */
+        CFile::edit( filename );
+
+        /**
+         * Call the on_edit_message hook, with the path to the message.
+         */
+        call_message_hook( "on_edit_message", filename.c_str() );
+
+        /**
+         * Attachments associated with this mail.
+         */
+        std::vector<std::string> attachments;
+
+
+        /**
+         * Prompt for confirmation.
+         */
+        send_t result = should_send(L, &attachments );
+
+        if ( result == ABORT )
+        {
+            call_message_hook( "on_message_aborted", filename.c_str() );
+            CFile::delete_file( filename );
+            return 0;
+        }
+
+        if ( result == SEND )
+        {
+            /**
+             * Add attachments.
+             * If there are none we just make the message MIME-nice.
+             */
+            CMessage::add_attachments_to_mail( filename, attachments );
+
+            /**
+             * Send the mail.
+             */
+            send_mail_and_archive( filename );
+
+            return( 0 );
+        }
+
+        /**
+         * Result == EDIT is implied here.
+         */
     }
 
-    /**
-     * Add attachments.  If there are none we just make the message MIME-nice.
-     */
-    CMessage::add_attachments_to_mail( filename, attachments );
-
-    /**
-     * Send the mail.
-     */
-    send_mail_and_archive( filename );
-
-    /**
-     * Reset + redraw
-     */
     return( 0 );
 }
 
@@ -1138,59 +1182,62 @@ int reply(lua_State * L)
     std::string filename = populate_email_on_disk(  headers, bbody, sig );
 
     /**
-     * Edit the message on-disk.
+     * Loop with the actions menu.
      */
-    CFile::edit( filename );
-
-
-    /**
-     * Reset the screen.
-     */
-    reset_prog_mode();
-    refresh();
-
-
-    /**
-     * Call the on_edit_message hook, with the path to the message.
-     */
-    call_message_hook( "on_edit_message", filename.c_str() );
-
-    /**
-     * Attachments associated with this mail.
-     */
-    std::vector<std::string> attachments;
-
-
-    /**
-     * Prompt for confirmation.
-     */
-    bool send = should_send(L, &attachments );
-    if ( ! send )
+    while( true )
     {
-        call_message_hook( "on_message_aborted", filename.c_str() );
-        CFile::delete_file( filename );
-        return 0;
+        /**
+         * Edit the message on-disk.
+         */
+        CFile::edit( filename );
+
+        /**
+         * Call the on_edit_message hook, with the path to the message.
+         */
+        call_message_hook( "on_edit_message", filename.c_str() );
+
+        /**
+         * Attachments associated with this mail.
+         */
+        std::vector<std::string> attachments;
+
+        send_t result = should_send(L, &attachments );
+        if ( result == ABORT )
+        {
+            call_message_hook( "on_message_aborted", filename.c_str() );
+            CFile::delete_file( filename );
+            return 0;
+        }
+
+        if ( result == SEND )
+        {
+            /**
+             * Add attachments.
+             * If there are none we just make the message MIME-nice.
+             */
+            CMessage::add_attachments_to_mail( filename, attachments );
+
+            /**
+             * Send the mail.
+             */
+            send_mail_and_archive( filename );
+
+            /**
+             * Now we're all cleaned up mark the original message
+             * as being replied to.
+             */
+            mssg->add_flag( 'R' );
+
+            return 0;
+        }
+
+        /**
+         * result == EDIT is implied here.
+         */
     }
 
     /**
-     * Add attachments.  If there are none we just make the message MIME-nice.
-     */
-    CMessage::add_attachments_to_mail( filename, attachments );
-
-    /**
-     * Send the mail.
-     */
-    send_mail_and_archive( filename );
-
-    /**
-     * Now we're all cleaned up mark the original message
-     * as being replied to.
-     */
-    mssg->add_flag( 'R' );
-
-
-    /**
-     * Reset + redraw
+     * All done.
      */
     return( 0 );
 }
