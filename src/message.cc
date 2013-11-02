@@ -1754,9 +1754,10 @@ bool CMessage::get_body_part( int offset, char **data, size_t *length )
                             /**
                              * If that succeeded update our return value with it.
                              */
-                            *data = (char*)malloc( len + 1 );
-                            memcpy( *data, b, len );
-                            *length = (size_t)len;
+                            size_t conv_len = strlen(converted);
+                            *data = (char*)malloc( conv_len + 1 );
+                            memcpy( *data, converted, conv_len + 1 );
+                            *length = (size_t)conv_len;
                             ret = true;
                             g_free(converted);
                         }
