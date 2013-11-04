@@ -710,6 +710,8 @@ std::unordered_map<std::string, UTFString> CMessage::headers()
                  */
                 m_header_values[nm] = decoded;
 
+                g_free(decoded);
+
                 if (!g_mime_header_iter_next (iter))
                     break;
             }
@@ -1647,6 +1649,8 @@ std::vector<std::string> CMessage::body_mime_parts()
              * Store it.
              */
             results.push_back( type );
+
+            g_free(type);
         }
     }
     while (g_mime_part_iter_next (iter));

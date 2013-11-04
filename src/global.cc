@@ -482,6 +482,8 @@ void CGlobal::update_messages()
         {
             if ( content->matches_filter( filter ) )
                 m_messages->push_back(content) ;
+            else
+                delete content;
         }
 
         /**
