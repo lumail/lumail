@@ -257,8 +257,8 @@ void CScreen::drawMaildir()
         /**
          * Overwrite the full length.
          */
-        while ((int)display.size() < (CScreen::width() - 3))
-            display += UTFString(" ");
+        if ((int)display.size() < (CScreen::width() - 3))
+            display += UTFString((CScreen::width() - 3)-(int)display.size(),' ');
 
         move(row, 2);
 
@@ -467,8 +467,8 @@ void CScreen::drawIndex()
         /**
          * Pad.
          */
-        while ((int)buf.size() < (CScreen::width() - 3))
-            buf += UTFString(" ");
+        if ((int)buf.size() < (CScreen::width() - 3))
+            buf += UTFString((CScreen::width() - 3)-(int)buf.size(),' ');
 
         /**
          * Truncate.
