@@ -196,6 +196,11 @@ private:
     UTFString mime_part_to_text( GMimeObject *obj );
 
     /**
+     * Is the message parsed correctly ?
+     */
+    bool is_valid();
+
+    /**
      * The file-descriptor for this message.
      */
     int m_fd;
@@ -229,10 +234,11 @@ private:
 
     /**
      * Parse the message, if that hasn't been done.
+     * Returns false if parsing failed.
      *
      * NOTE:  This calls the Lua-defined "msg_filter" if that is set.
      */
-    void message_parse();
+    bool message_parse();
 
     /**
      * Get the text/plain part of the message, via GMime.

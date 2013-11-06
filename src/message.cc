@@ -74,20 +74,27 @@ CMessage::~CMessage()
 
 }
 
+/**
+ * If the message was parsed correctly, m_message should not be NULL.
+ */
+bool CMessage::is_valid()
+{
+    return ( m_message != NULL );
+}
+
 
 /**
  * Parse the message.
  *
  * This will use the Lua-defined `mail_filter` if it is defined.
  */
-void CMessage::message_parse()
+bool CMessage::message_parse()
 {
     /**
      * If we've already parsed the message then we're good.
      */
-    if ( m_message != NULL )
-        return;
-
+    if ( is_valid() )
+        return true;
 
     /**
      * See if we're filtering the body.
@@ -157,7 +164,7 @@ void CMessage::message_parse()
          */
         close(fd);
         CFile::delete_file( filename );
-        return;
+        return is_valid();
 
     }
 
@@ -166,6 +173,8 @@ void CMessage::message_parse()
      * so parse the literal message.
      */
     open_message( path().c_str() );
+
+    return is_valid();
 }
 
 
@@ -674,9 +683,10 @@ std::unordered_map<std::string, UTFString> CMessage::headers()
         const char *value;
 
         /**
-         * Parse the message.
+         * Parse the message and return if invalid.
          */
-        message_parse();
+        if ( !message_parse() )
+            return m_header_values;
 
         /**
          * Prepare to iterate.
@@ -983,17 +993,17 @@ time_t CMessage::get_date_field()
 UTFString CMessage::get_body()
 {
     /**
-     * Parse the message, if not yet done.
-     */
-    if ( m_message == NULL )
-        message_parse();
-
-    /**
      * The body we'll return back to the caller.  May be empty if there
      * is no text/plain part in the message.
      */
     UTFString result;
 
+    /**
+     * Parse the message, if not yet done.
+     * Return empty string if parsing failed.
+     */
+    if ( !message_parse() )
+        return result;
 
     /**
      * Create an iterator to walk over the MIME-parts of the message.
@@ -1088,7 +1098,8 @@ std::vector<UTFString> CMessage::body()
     /**
      * Ensure the message has been read.
      */
-    message_parse();
+    if ( !message_parse() )
+        return result;
 
 
     /**
@@ -1195,7 +1206,8 @@ std::vector<std::string> CMessage::attachments()
     /**
      * Ensure the message has been read.
      */
-    message_parse();
+    if ( !message_parse() )
+        return paths;
 
     /**
      * Create an iterator
@@ -1241,14 +1253,15 @@ bool CMessage::save_attachment( int offset, std::string output_path )
 {
 
     /**
-     * Ensure the message has been read.
-     */
-    message_parse();
-
-    /**
      * Did we succeed?
      */
     bool ret = false;
+
+    /**
+     * Ensure the message has been read.
+     */
+    if ( !message_parse() )
+        return ret;
 
     /**
      * Create an iterator
@@ -1400,6 +1413,13 @@ void CMessage::open_message( const char *filename )
     g_object_unref (stream);
 
     m_message = g_mime_parser_construct_message (parser);
+
+    if ( m_message == NULL )
+    {
+        DEBUG_LOG( "g_mime_parser_construct_message failed in open_message(" 
+                   + std::string(filename) + ")" );
+    }
+
     g_object_unref (parser);
 }
 
@@ -1621,7 +1641,8 @@ std::vector<std::string> CMessage::body_mime_parts()
     /**
      * Open the message, if we've not done so.
      */
-    message_parse();
+    if ( !message_parse() )
+        return results;
 
 
     /**
@@ -1671,14 +1692,16 @@ std::vector<std::string> CMessage::body_mime_parts()
 bool CMessage::get_body_part( int offset, char **data, size_t *length )
 {
     /**
-     * Ensure the message has been read.
-     */
-    message_parse();
-
-    /**
      * The return value.
      */
     bool ret = false;
+
+    /**
+     * Ensure the message has been read.
+     */
+    if ( !message_parse() )
+        return ret;
+
 
     /**
      * Content length
