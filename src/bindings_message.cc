@@ -1161,6 +1161,7 @@ int reply(lua_State * L)
         if ( !ref.empty() )
         {
             headers.push_back( "References: " + ref );
+            headers.push_back( "In-Reply-To: " + ref );
         }
     }
 
