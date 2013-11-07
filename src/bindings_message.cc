@@ -82,6 +82,17 @@ void call_message_hook( const char *hook, const char *filename )
 }
 
 
+
+/**
+ * Generate and return a suitable message-id.
+ */
+std::string get_message_id()
+{
+    std::string result( "TODO<https://github.com/skx/lumail/issues/166>" );
+    return( result );
+}
+
+
 /**
  * Create an email on-disk, in a temporary file.
  */
@@ -591,6 +602,7 @@ int compose(lua_State * L)
         headers.push_back( "CC: " + cc );
     headers.push_back( "From: " + *from );
     headers.push_back( "Subject: " + subject );
+    headers.push_back( "Message-ID: " + get_message_id() );
 
     /**
      * Build up the email.
@@ -824,6 +836,7 @@ int forward(lua_State * L)
     headers.push_back( "To: " + recipient);
     headers.push_back( "From: " + *from);
     headers.push_back( "Subject: Fwd:" + sub);
+    headers.push_back( "Message-ID: " + get_message_id() );
 
 
     /**
@@ -1133,7 +1146,7 @@ int reply(lua_State * L)
         headers.push_back( "Cc: " + cc);
     headers.push_back( "From: " + *from);
     headers.push_back( "Subject: " + subject);
-
+    headers.push_back( "Message-ID: " + get_message_id() );
 
     /**
      * If we have a message-id add that to the references.
@@ -1424,6 +1437,7 @@ int send_email(lua_State *L)
     headers.push_back( "To: " + std::string(to) );
     headers.push_back( "From: " + std::string(from) );
     headers.push_back( "Subject: " + std::string(subject) );
+    headers.push_back( "Message-ID: " + get_message_id() );
 
     /**
      * Build up the email.
