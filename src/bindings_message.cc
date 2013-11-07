@@ -88,8 +88,23 @@ void call_message_hook( const char *hook, const char *filename )
  */
 std::string get_message_id()
 {
-    std::string result( "TODO<https://github.com/skx/lumail/issues/166>" );
-    return( result );
+    char *message_id = NULL;
+    char domainname[257] = { '\0' };
+
+    /**
+     * Get the domain name - if that fails fallback to example.
+     */
+    if (getdomainname(domainname,sizeof(domainname)-1))
+        strcpy(domainname,"example.org");
+
+    /**
+     * Generate a new ID one.
+     */
+    message_id = g_mime_utils_generate_message_id(domainname);
+    std::string result( message_id );
+    g_free(message_id);
+
+    return( "<"+ result +">" );
 }
 
 
