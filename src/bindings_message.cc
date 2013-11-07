@@ -86,21 +86,19 @@ void call_message_hook( const char *hook, const char *filename )
 /**
  * Generate and return a suitable message-id.
  */
-std::string get_message_id()
+std::string get_message_id(lua_State *L)
 {
-    char *message_id = NULL;
-    char domainname[257] = { '\0' };
+    char *name = (char *)"example.org";
 
-    /**
-     * Get the domain name - if that fails fallback to example.
-     */
-    if (getdomainname(domainname,sizeof(domainname)-1))
-        strcpy(domainname,"example.org");
+    if ( hostname(L) == 1 )
+    {
+        name = (char *)lua_tostring(L,-1);
+    }
 
     /**
      * Generate a new ID one.
      */
-    message_id = g_mime_utils_generate_message_id(domainname);
+    char *message_id = g_mime_utils_generate_message_id(name);
     std::string result( message_id );
     g_free(message_id);
 
@@ -617,7 +615,7 @@ int compose(lua_State * L)
         headers.push_back( "CC: " + cc );
     headers.push_back( "From: " + *from );
     headers.push_back( "Subject: " + subject );
-    headers.push_back( "Message-ID: " + get_message_id() );
+    headers.push_back( "Message-ID: " + get_message_id(L) );
 
     /**
      * Build up the email.
@@ -851,7 +849,7 @@ int forward(lua_State * L)
     headers.push_back( "To: " + recipient);
     headers.push_back( "From: " + *from);
     headers.push_back( "Subject: Fwd:" + sub);
-    headers.push_back( "Message-ID: " + get_message_id() );
+    headers.push_back( "Message-ID: " + get_message_id(L) );
 
 
     /**
@@ -1161,7 +1159,7 @@ int reply(lua_State * L)
         headers.push_back( "Cc: " + cc);
     headers.push_back( "From: " + *from);
     headers.push_back( "Subject: " + subject);
-    headers.push_back( "Message-ID: " + get_message_id() );
+    headers.push_back( "Message-ID: " + get_message_id(L) );
 
     /**
      * If we have a message-id add that to the references.
@@ -1452,7 +1450,7 @@ int send_email(lua_State *L)
     headers.push_back( "To: " + std::string(to) );
     headers.push_back( "From: " + std::string(from) );
     headers.push_back( "Subject: " + std::string(subject) );
-    headers.push_back( "Message-ID: " + get_message_id() );
+    headers.push_back( "Message-ID: " + get_message_id(L) );
 
     /**
      * Build up the email.
