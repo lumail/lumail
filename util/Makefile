@@ -5,7 +5,7 @@ all: add-attachments-to-simple-mail dump-headers dump-mime dump-parts
 
 
 clean:
-	rm add-attachments-to-simple-mail dump-mime dump-parts || true
+	rm add-attachments-to-simple-mail dump-headers dump-mime dump-parts || true
 	rm input.txt message.out || true
 
 
