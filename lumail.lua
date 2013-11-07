@@ -945,9 +945,9 @@ keymap['global']['*']        = 'jump_to_end()'
 keymap['global']['KEY_END']  = 'jump_to_end()'
 keymap['global']['KEY_HOME'] = 'jump_to_start()'
 -- Refresh display
-keymap['global']['^R'] = 'refresh_display()'
-keymap['global']['^L'] = 'refresh_display()'
-keymap['global']['KEY_RESIZE'] = 'refresh_display()'
+keymap['global']['^R'] = 'clear()'
+keymap['global']['^L'] = 'clear()'
+keymap['global']['KEY_RESIZE'] = 'clear()'
 
 
 --

@@ -149,7 +149,6 @@ int maildirs_matching(lua_State *L);
 int message_offset(lua_State * L);
 int mime_type(lua_State *L);
 int msg(lua_State * L);
-int refresh_display(lua_State * L);
 int screen_height(lua_State * L);
 int screen_width(lua_State * L);
 int scroll_maildir_down(lua_State * L);

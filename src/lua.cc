@@ -70,7 +70,6 @@ struct CLuaMapping primitive_list[] =
     {"log_message", "Add a message to the debug-log.", (lua_CFunction) log_message },
     {"mime_type", "Get the MIME-type for a file.", (lua_CFunction) mime_type },
     {"msg", "Write a message to the status-area.", (lua_CFunction) msg },
-    {"refresh_display", "Refresh the display.", (lua_CFunction) refresh_display },
     {"screen_height", "Return the height of the screen in rows.", (lua_CFunction) screen_height },
     {"screen_width", "Return the width of the screen in columns.", (lua_CFunction) screen_width },
     {"sleep", "Pause execution for the given number of seconds.", (lua_CFunction) sleep },

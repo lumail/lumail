@@ -604,16 +604,6 @@ int msg(lua_State * L)
 }
 
 
-/**
- * Redraw the display.
- */
-int refresh_display(lua_State * L)
-{
-    CScreen::clear_main();
-    refresh();
-    return 0;
-}
-
 
 /**
  * Get the screen width.
