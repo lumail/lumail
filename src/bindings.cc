@@ -321,32 +321,48 @@ int get_variables(lua_State *L )
 int hostname(lua_State *L)
 {
     /**
-     * Get the short version.
+     * If the environmental varaible HOSTNAME
+     * is set, use that.
      */
-    char res[1024];
-    res[sizeof(res)-1] = '\0';
-    gethostname(res, sizeof(res)-1);
-
-    /**
-     * Attempt to get the full vrsion.
-     */
-    struct hostent *hstnm;
-    hstnm = gethostbyname (res);
-    if (hstnm)
+    const char *env = getenv( "HOSTNAME" );
+    if ( env != NULL )
     {
-        /**
-         * Success.
-         */
-        lua_pushstring(L,hstnm->h_name);
+        lua_pushstring(L,env);
     }
     else
     {
         /**
-         * Failure: Return the short-version.
+         * Use the networking functions to proceed.
          */
-        lua_pushstring(L,res );
-    }
 
+
+        /**
+         * Get the short version.
+         */
+        char res[1024];
+        res[sizeof(res)-1] = '\0';
+        gethostname(res, sizeof(res)-1);
+
+        /**
+         * Attempt to get the full vrsion.
+         */
+        struct hostent *hstnm;
+        hstnm = gethostbyname (res);
+        if (hstnm)
+        {
+            /**
+             * Success.
+             */
+            lua_pushstring(L,hstnm->h_name);
+        }
+        else
+        {
+            /**
+             * Failure: Return the short-version.
+             */
+            lua_pushstring(L,res );
+        }
+    }
     DEBUG_LOG( "hostname() -> " + std::string( lua_tostring(L,-1)) );
     return 1;
 }
