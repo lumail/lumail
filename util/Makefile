@@ -1,7 +1,7 @@
 
 
 
-all: add-attachments-to-simple-mail dump-headers dump-mime dump-parts
+all: add-attachments-to-simple-mail dump-headers dump-mime dump-parts parse-fmt
 
 
 clean:
@@ -17,6 +17,9 @@ dump-mime: dump-mime.c Makefile
 
 dump-parts: dump-parts.c Makefile
 	 g++ -ggdb -rdynamic dump-parts.c -o dump-parts $(shell pkg-config --libs  gmime-2.6) $(shell pkg-config --cflags gmime-2.6)
+
+parse-fmt: parse-fmt.cc Makefile
+	 g++ -std=gnu++0x -ggdb -rdynamic parse-fmt.cc -o parse-fmt $(shell pkg-config --libs  gmime-2.6) $(shell pkg-config --cflags gmime-2.6) -lpcrecpp
 
 
 
