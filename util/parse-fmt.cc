@@ -26,7 +26,7 @@ std::string get_field(const std::string spec, const std::string fieldname)
         /** skip "field:" */
         fldend = fldpos + fld_len;
 
-        while ( fldend < spec.length() && isdigit(spec[fldend++]) );
+        while ( fldend < spec.length() && isalnum(spec[fldend++]) );
         if (fldend != spec.length() ) fldend--;
 
         res = spec.substr(fldpos+fld_len, fldend-fldpos-fld_len);
