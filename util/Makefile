@@ -5,7 +5,7 @@ all: add-attachments-to-simple-mail dump-headers dump-mime dump-parts parse-fmt
 
 
 clean:
-	rm add-attachments-to-simple-mail dump-headers dump-mime dump-parts || true
+	rm add-attachments-to-simple-mail dump-headers dump-mime dump-parts parse-fmt || true
 	rm input.txt message.out || true
 
 
