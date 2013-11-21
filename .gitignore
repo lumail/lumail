@@ -12,6 +12,7 @@ util/add-attachments-to-simple-mail
 util/dump-headers
 util/dump-mime
 util/dump-parts
+util/parse-fmt
 obj.debug
 obj.release
 gmon.out
