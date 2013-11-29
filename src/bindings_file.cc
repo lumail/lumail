@@ -56,6 +56,66 @@ int create_maildir(lua_State *L)
     return 1;
 }
 
+
+/**
+ * Delete an existing maildir.
+ */
+int delete_maildir(lua_State *L)
+{
+    const char *path = lua_tostring(L, -1);
+    if (path == NULL)
+        return luaL_error(L, "Missing argument to delete_maildir(..)");
+
+    /**
+     * Ensure that the path specified is a maildir - return
+     * false for failure if it is not.
+     */
+    if ( ! CMaildir::is_maildir( path ) )
+    {
+        lua_pushboolean(L,0);
+        return 1;
+    }
+
+    /**
+     * We're going to need to delete the directories beneath the
+     * maildir.
+     *
+     * NOTE: The order is important here.
+     */
+    std::vector<std::string> dirs;
+    dirs.push_back(std::string(path) + "/cur");
+    dirs.push_back(std::string(path) + "/new");
+    dirs.push_back(std::string(path) + "/tmp");
+    dirs.push_back(path);
+
+    /**
+     * Delete each directory.
+     */
+    int ret = 1;
+
+    for( std::string dir : dirs )
+    {
+        /**
+         * If we've had no error .. continue to delete.
+         */
+        if ( ret == 1 )
+        {
+            if (rmdir( dir.c_str()) != 0 )
+                ret = 0;
+        }
+    }
+
+    /**
+     * Refresh our maildir list.
+     */
+    CGlobal *global = CGlobal::Instance();
+    global->update_maildirs();
+
+
+    lua_pushboolean(L,ret);
+    return 1;
+}
+
 /**
  * Is the given path an executable?
  */
