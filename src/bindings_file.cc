@@ -101,7 +101,16 @@ int delete_maildir(lua_State *L)
         if ( ret == 1 )
         {
             if (rmdir( dir.c_str()) != 0 )
+            {
                 ret = 0;
+
+#ifdef LUMAIL_DEBUG
+    std::string dm = "delete_maildir(";
+    dm += dir;
+    dm += ") -> failed;";
+    DEBUG_LOG( dm );
+#endif
+            }
         }
     }
 
