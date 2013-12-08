@@ -105,10 +105,6 @@ std::string expand_var(std::string input , std::unordered_map<std::string,std::s
         std::cout << "DEBUG : $" <<  var << "='" << value << "'\n";
         std::cout << "DEBUG : min=" <<  min << " max=" << max << "\n";
 
-        /* Length logic :
-        * -1 means "Use string length"
-        */
-
         if (color != "")
             result += color;
 
@@ -116,6 +112,9 @@ std::string expand_var(std::string input , std::unordered_map<std::string,std::s
         if (max > 0 && min > max)
             min = max;
 
+        /* Length logic :
+        * -1 means "Use string length"
+        */
         std::string fitstr;
         if (min > 0 and value.length() < min )
         {
