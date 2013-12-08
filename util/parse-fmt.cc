@@ -40,6 +40,24 @@ std::string get_field(const std::string spec, const std::string fieldname)
 
     return res;
 }
+
+int get_width(const std::string spec, const std::string fieldname)
+{
+    
+    std::string t;
+    int val = -1;
+
+    t = get_field(spec, fieldname);
+    if ( t != "")
+    {
+        if (t.back() == '%')
+            val = atoi(t.c_str())*scr_width/100;
+        else
+            val = atoi(t.c_str());
+    }
+    return val;
+}
+
 /**
  * Expand a string such as '$SUBJECT{min:10 max:20 color:red} - Moi"
  * into something suitable.
@@ -74,26 +92,12 @@ std::string expand_var(std::string input , std::unordered_map<std::string,std::s
         result += beg;
         input.erase(0, beg.length()+match_len);
 
-        std::string t;
-        t = get_field(spec, "min");
-        if ( t != "")
-        {
-            if (t.back() == '%')
-                min = atoi(t.c_str())*scr_width/100;
-            else
-                min = atoi(t.c_str());
-        }
+        min = get_width(spec, "min");
+        max = get_width(spec, "max");
 
-        t = get_field(spec, "max");
-        if ( t != "")
-            max = atoi(t.c_str());
-
-        t = get_field(spec, "color");
-
-        if ( t != "" )
-            color = m_colours[t];
-        else
-            color = "";
+        color = get_field(spec, "color");
+        if ( color != "" )
+            color = m_colours[color];
 
         std::string value = headers[var];
 
