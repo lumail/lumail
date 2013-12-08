@@ -41,6 +41,9 @@ std::string get_field(const std::string spec, const std::string fieldname)
     return res;
 }
 
+/**
+ * Parse a width spec, relative to screen width if needed
+ */
 int get_width(const std::string spec, const std::string fieldname)
 {
     
@@ -55,6 +58,7 @@ int get_width(const std::string spec, const std::string fieldname)
         else
             val = atoi(t.c_str());
     }
+
     return val;
 }
 
