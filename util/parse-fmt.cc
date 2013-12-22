@@ -16,7 +16,12 @@
 std::unordered_map<std::string, std::string> m_colours;
 int scr_width;
 
-std::string get_field(const std::string spec, const std::string fieldname)
+/**
+ * Get value from specification.
+ * For example :
+ * get_spec("color:red min:10", "min") will return "10"
+ */
+std::string get_spec(const std::string spec, const std::string fieldname)
 {
     const int fld_len = fieldname.length()+1;
     int fldpos;
@@ -50,7 +55,7 @@ int get_width(const std::string spec, const std::string fieldname)
     std::string t;
     int val = -1;
 
-    t = get_field(spec, fieldname);
+    t = get_spec(spec, fieldname);
     if ( t != "")
     {
         if (t.back() == '%')
@@ -99,7 +104,7 @@ std::string expand_var(std::string input , std::unordered_map<std::string,std::s
         min = get_width(spec, "min");
         max = get_width(spec, "max");
 
-        color = get_field(spec, "color");
+        color = get_spec(spec, "color");
         if ( color != "" )
             color = m_colours[color];
 
