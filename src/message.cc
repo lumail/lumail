@@ -1011,6 +1011,8 @@ UTFString CMessage::get_body()
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
     assert(iter != NULL);
 
+    GMimeObject *last = NULL;
+
     /**
      * Iterate over the message.
      */
@@ -1233,7 +1235,6 @@ std::vector<std::string> CMessage::attachments()
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
     assert(iter != NULL);
 
-    GMimeObject *last = NULL;
 
     /**
      * Iterate over the message.
