@@ -39,6 +39,10 @@ void dump_header( GMimeMessage *message, const char *header )
 std::string mime_part_to_text( GMimeObject *obj)
 {
 
+    if ( ! GMIME_IS_PART(obj ) )
+        return "";
+
+
     GMimeContentType *content_type = g_mime_object_get_content_type (obj);
 
     std::string result;
@@ -136,6 +140,8 @@ void dump_mail( char *filename )
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
     const char *content = NULL;
 
+    GMimeObject *last = NULL;
+
     /**
      * Iterate over the message.
      */
@@ -159,12 +165,28 @@ void dump_mail( char *filename )
             {
                 result = mime_part_to_text( part );
             }
+
+            /**
+             * If we've found text/html save that away for the last-ditch
+             * attempt.
+             */
+            if (  g_mime_content_type_is_type (content_type, "text", "html") )
+            {
+                last = part ;
+            }
         }
     }
     while (g_mime_part_iter_next (iter));
 
     g_mime_part_iter_free (iter);
 
+    if ( result.empty() )
+    {
+        if ( last )
+        {
+                result = mime_part_to_text( last );
+        }
+    }
 
     /**
      * If the result is empty then we'll just revert to reading the

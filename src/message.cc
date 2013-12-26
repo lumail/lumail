@@ -1045,9 +1045,27 @@ UTFString CMessage::get_body()
             {
                 result = mime_part_to_text( part );
             }
+
+            /**
+             * If we've found text/html save that away for the last-ditch
+             * attempt.
+             */
+            if ( g_mime_content_type_is_type (content_type, "text", "html") )
+            {
+                last = part ;
+            }
         }
     }
     while (g_mime_part_iter_next (iter));
+
+
+    if ( result.empty() )
+    {
+        if ( last )
+        {
+            result = mime_part_to_text( last );
+        }
+    }
 
     /**
      * Cleanup.
@@ -1215,6 +1233,7 @@ std::vector<std::string> CMessage::attachments()
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
     assert(iter != NULL);
 
+    GMimeObject *last = NULL;
 
     /**
      * Iterate over the message.
@@ -1416,7 +1435,7 @@ void CMessage::open_message( const char *filename )
 
     if ( m_message == NULL )
     {
-        DEBUG_LOG( "g_mime_parser_construct_message failed in open_message(" 
+        DEBUG_LOG( "g_mime_parser_construct_message failed in open_message("
                    + std::string(filename) + ")" );
     }
 
@@ -1824,8 +1843,8 @@ bool CMessage::get_body_part( int offset, char **data, size_t *length )
                 }
                 else
                 {
-                    /** 
-                     * Here the content is not text/plain, return it as is 
+                    /**
+                     * Here the content is not text/plain, return it as is
                      *
                      * Get the content, and setup a memory-stream to read it.
                      */
