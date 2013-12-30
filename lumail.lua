@@ -188,7 +188,7 @@ index_format( "[$FLAGS] $DAY/$MONTH/$YEAR $FROM - $SUBJECT" )
 --
 -- (The headers listed are shown in the order they are specified here.)
 --
-headers = { "$TO", "$FROM", "$DATE", "$SUBJECT" }
+headers = { "$TO", "$CC", "$FROM", "$DATE", "$SUBJECT" }
 
 
 --

@@ -557,6 +557,7 @@ void CScreen::drawMessage()
         headers.push_back( "$DATE" );
         headers.push_back( "$FROM" );
         headers.push_back( "$TO" );
+        headers.push_back( "$CC" );
         headers.push_back( "$SUBJECT" );
     }
 
