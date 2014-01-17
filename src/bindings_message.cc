@@ -50,7 +50,7 @@ int unused __attribute__((unused));
  * 3. Send the mail.
  *
  */
-enum send_t { EDIT, ABORT, SEND };
+enum send_t { EDIT, ABORT, SEND, RETRY };
 
 
 
@@ -288,6 +288,7 @@ bool send_mail_and_archive( std::string filename )
  *  SEND  -> Send the mail.
  *  EDIT  -> Re-edit the mail.
  *  ABORT -> Abort the sending.
+ *  RETRY -> Re-ask the question.
  *
  */
 send_t should_send( lua_State * L, std::vector<std::string> *attachments )
@@ -343,8 +344,23 @@ send_t should_send( lua_State * L, std::vector<std::string> *attachments )
             const char * path = lua_tostring(L, -1);
 
             if ( path != NULL )
+            {
                 if ( CFile::exists( path ) )
+                {
                     attachments->push_back( path );
+                }
+                else
+                {
+                    /**
+                     * Show a message.
+                     */
+                    std::string error = "alert(\"The specified attachment wasn't found\", 30 );" ;
+                    CLua *lua = CLua::Instance();
+                    lua->execute( error );
+                    return RETRY;
+                }
+            }
+
         }
     }
 }
@@ -646,6 +662,7 @@ int compose(lua_State * L)
         /**
          * Prompt for confirmation.
          */
+    retry:
         send_t result = should_send(L, &attachments );
 
         if ( result == ABORT )
@@ -669,6 +686,9 @@ int compose(lua_State * L)
             send_mail_and_archive( filename );
             return 0;
         }
+
+        if ( result == RETRY )
+            goto retry;
 
         /**
          * result == EDIT is implied here - so we re-loop.
@@ -914,7 +934,11 @@ int forward(lua_State * L)
         /**
          * Prompt for confirmation.
          */
+    retry:
         send_t result = should_send(L, &attachments );
+
+        if ( result == RETRY )
+            goto retry;
 
         if ( result == ABORT )
         {
