@@ -23,7 +23,7 @@ lumail (0.24) stable; urgency=low
   * New primitive: delete_maildir, to remove an *empty* maildir:
     http://lumail.org/lua/delete_maildir.html
 
- -- Steve Kemp <steve@steve.org.uk>  Sat, Jan 2014 11:55:11 +0000
+ -- Steve Kemp <steve@steve.org.uk>  Sat, 18 Jan 2014 11:55:11 +0000
 
 lumail (0.23) stable; urgency=low
 
