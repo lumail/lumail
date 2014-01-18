@@ -1,3 +1,30 @@
+lumail (0.24) stable; urgency=low
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+    #155 - Allow a mail to be re(e)dited prior to sending, for
+           compose(), reply(), & forward().
+    #156 - Can't build 0.23 - identified as old version of G++.
+    #158 - Avoid using multipart messages when writing an email.
+    #159 - Parts handling is broken for messages which are not multipart
+           [Identified as old version of GMime]
+    #163 - lumail segfaults on badly formatted messages.
+    #165 - clear() and refresh_display() do the same thing.
+    #166 - Generate a Message-ID for all outgoing messages.
+         - Also populate In-Reply-To appropriately too.
+    #167 - The hostname() primitive may be overridden
+    #168 - The short-version of the command-line flags work again.
+    #169 - Return text/html part if we failed to find text/plain.
+    #170 - If a non-existant attachment is entered alert the user,
+           and retry.
+
+  * BUGFIX: clear() now forcibly refreshes the screen.
+  * New primitive: delete_maildir, to remove an *empty* maildir:
+    http://lumail.org/lua/delete_maildir.html
+
+ -- Steve Kemp <steve@steve.org.uk>  Sat, Jan 2014 11:55:11 +0000
+
 lumail (0.23) stable; urgency=low
 
   * New release, fixing several bugs.
