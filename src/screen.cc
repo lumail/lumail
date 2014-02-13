@@ -149,7 +149,7 @@ void CScreen::drawMaildir()
     /**
      * default to TOP if our list is shorter then the screen height
      */
-    if (selected < middle || count<height-2)
+    if (selected < middle || count<=height-2)
     {
         rowToHighlight = selected;
 
@@ -378,7 +378,7 @@ void CScreen::drawIndex()
     /**
      * default to TOP if our list is shorter then the screen height
      */
-    if (selected < middle || count<height-2)
+    if (selected < middle || count<=height-2)
     {
         topBottomOrMiddle = TOP;
         rowToHighlight = selected;
