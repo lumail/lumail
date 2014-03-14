@@ -17,6 +17,7 @@
  */
 
 
+#include <string.h>
 #include <fstream>
 
 #include "debug.h"
@@ -69,6 +70,41 @@ UTFString CHistory::at( size_t offset )
     assert( ( offset >= 0 ) && ( offset < m_history.size() ) );
 
     return( m_history.at( offset ) );
+}
+
+
+
+/**
+ * Return the first string which matches the given expression.
+ */
+UTFString CHistory::matching( UTFString input )
+{
+
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CHistory::matching(";
+    dm += input;
+    dm += ");";
+    DEBUG_LOG( dm );
+#endif
+
+    for( int i = size()-1; i >= 0; i-- )
+    {
+        UTFString entry = at( i );
+
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CHistory::matching - discarded(";
+    dm += entry;
+    dm += ");";
+    DEBUG_LOG( dm );
+#endif
+
+        if ( (!entry.empty()) &&
+             (strstr( entry.c_str(), input.c_str() ) != NULL ) )
+        {
+            return( entry );
+        }
+    }
+    return "";
 }
 
 

@@ -49,6 +49,11 @@ public:
     UTFString at( size_t offset );
 
     /**
+     * Return the first string which matches the given expression.
+     */
+    UTFString matching( UTFString input );
+
+    /**
      * Add a new string to the history.
      */
     void add(UTFString entry);
