@@ -1080,6 +1080,12 @@ std::vector<std::string> CScreen::get_completions( std::string token )
     }
 
     /**
+     * Avoid further processing if the token is empty.
+     */
+    if ( token.size() < 1 )
+        return( results );
+
+    /**
      * File/directory completion.
      */
     if ( ( token.size() > 0 ) && ( token.at(0) == '/' ) )
