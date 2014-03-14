@@ -1306,6 +1306,21 @@ UTFString CScreen::get_line()
             if (pos < (int)buffer.size())
                 pos += 1;
         }
+        else if ( c == 18 && ( ! buffer.empty() ) )  /* ctrl-r: history-search */
+        {
+            /**
+             * Read the current buffer, and replace it with the most recent
+             * matching entry from the history.
+             */
+            UTFString tmp = history->matching( buffer );
+            if ( !tmp.empty() )
+            {
+                buffer = tmp;
+                pos = buffer.size();
+            }
+
+
+        }
         else if ( isKeyCode && (  c == KEY_UP ) )
         {
             hoff -= 1;
