@@ -1,5 +1,13 @@
 /**
  * Pass a message to lumail.
+ *
+ * This script is designed as a simple alternative to merely executing
+ * socat:
+ *
+ *     echo "alert('ok');" | socat - UNIX-CLIENT:/tmp/foo.sock
+ *
+ * Steve
+ * --
  */
 
 #include <sys/socket.h>
