@@ -61,7 +61,9 @@ struct CLuaMapping primitive_list[] =
  */
     {"abort", "Exit lumail with an error message.", (lua_CFunction) abort },
     {"alert", "Show an alert which requires confirmation.", (lua_CFunction) alert },
+    {"bind_socket", "Bind a Unix domain socket such that lumail will process input from an external process", (lua_CFunction) bind_socket },
     {"clear", "Clear the screen.", (lua_CFunction) clear },
+    {"close_socket", "Close any open domain socket.", (lua_CFunction) close_socket },
     {"dump_stack", "Dump the Lua-stack for debugging purposes", (lua_CFunction) lua_dump_stack },
     {"exec", "Execute an external command.", (lua_CFunction) exec },
     {"exit", "Exit lumail.", (lua_CFunction) exit },
