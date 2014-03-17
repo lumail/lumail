@@ -27,6 +27,13 @@ SRCDIR         = src
 RELEASE_OBJDIR = obj.release
 DEBUG_OBJDIR   = obj.debug
 
+
+#
+# Features which can be compiled in/out
+#
+FEATURES=-DDOMAIN_SOCKET=1
+
+
 #
 #  Used solely for building a new release tarball.  ("make release").
 #
@@ -122,7 +129,7 @@ lumail-debug: $(DEBUG_OBJECTS)
 #
 $(RELEASE_OBJECTS): $(RELEASE_OBJDIR)/%.o : $(SRCDIR)/%.cc
 	@mkdir $(RELEASE_OBJDIR) 2>/dev/null || true
-	$(CC)  $(CPPFLAGS) $(GMIME_INC) $(GLIBMM_INC) -O2 -c $< -o $@
+	$(CC) $(FEATURES) $(CPPFLAGS) $(GMIME_INC) $(GLIBMM_INC) -O2 -c $< -o $@
 
 #
 #  Build the objects for the debug build.
@@ -131,5 +138,5 @@ $(RELEASE_OBJECTS): $(RELEASE_OBJDIR)/%.o : $(SRCDIR)/%.cc
 #
 $(DEBUG_OBJECTS): $(DEBUG_OBJDIR)/%.o : $(SRCDIR)/%.cc
 	@mkdir $(DEBUG_OBJDIR) 2>/dev/null || true
-	$(CC) -ggdb -DLUMAIL_DEBUG=1 $(CPPFLAGS) $(GMIME_INC) $(GLIBMM_INC) -O2 -c $< -o $@
+	$(CC) $(FEATURES) -ggdb -DLUMAIL_DEBUG=1 $(CPPFLAGS) $(GMIME_INC) $(GLIBMM_INC) -O2 -c $< -o $@
 
