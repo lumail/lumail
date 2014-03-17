@@ -131,7 +131,9 @@ int prompt_maildir(lua_State * L);
  */
 int abort(lua_State * L);
 int alert(lua_State * L);
+int bind_socket(lua_State * L);
 int clear(lua_State * L);
+int close_socket(lua_State * L);
 int count_lines(lua_State * L);
 int count_maildirs(lua_State *L);
 int count_messages(lua_State * L);

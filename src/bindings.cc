@@ -210,6 +210,49 @@ int alert(lua_State * L)
 
 
 /**
+ * Bind a domain-socket to receive input from.
+ */
+int bind_socket(lua_State * L)
+{
+    const char *str = lua_tostring(L, -1);
+    if (str == NULL)
+        return luaL_error(L, "Missing argument to bind_socket(..)");
+
+#ifdef DOMAIN_SOCKET
+    CGlobal *global = CGlobal::Instance();
+    global->setup_domain_socket( str );
+#else
+    lua_pushstring(L,"Domain-socket support is not compiled in!" );
+    return( msg(L) );
+#endif
+
+    return 0;
+}
+
+/**
+ * Close any open domain socket.
+ */
+int close_socket(lua_State * L)
+{
+
+#ifdef DOMAIN_SOCKET
+
+    CGlobal *global = CGlobal::Instance();
+    if ( global->get_domain_socket() != -1 )
+        global->close_domain_socket();
+
+#else
+
+    lua_pushstring(L,"Domain-socket support is not compiled in!" );
+    return( msg(L) );
+
+#endif
+
+    return 0;
+}
+
+
+/**
  * Clear the screen; but not the prompt.
  */
 int clear(lua_State * L)
