@@ -58,6 +58,16 @@ public:
      */
     bool open_folder( std::string path );
 
+   /**
+    * Can the socket be read from?  Timeout after N-milliseconds.
+    */
+    bool can_read(int socket, int n );
+
+    /**
+     * Process input from the domain socket.
+     */
+    void domain_socket_pump(int socket);
+
     /**
      * Draw/Refresh the display and intepret keys.
      */

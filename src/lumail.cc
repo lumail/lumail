@@ -21,10 +21,19 @@
 #include <algorithm>
 #include <curses.h>
 #include <getopt.h>
-
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/un.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <signal.h>
+#include <poll.h>
+#include <string.h>
 
 #include "debug.h"
 #include "file.h"
+#include "global.h"
 #include "input.h"
 #include "lua.h"
 #include "lumail.h"
@@ -180,6 +189,87 @@ bool CLumail::open_folder(std::string folder)
     }
 }
 
+/**
+ * Can the socket be read from?  Timeout after N-milliseconds.
+ */
+bool CLumail::can_read(int socket, int n )
+{
+
+#ifdef DOMAIN_SOCKET
+
+    int r = 0;
+    struct pollfd fds[1];
+
+    fds[0].fd = socket;
+    fds[0].events = POLLIN;
+    do {
+        r = poll(fds, 1, n);
+    } while (r == -1 && errno == EINTR);
+    return (r > 0);
+#else
+    return false;
+#endif
+
+}
+
+
+/**
+ * Process input from the domain socket.
+ */
+void CLumail::domain_socket_pump(int socket_fd)
+{
+#ifdef DOMAIN_SOCKET
+
+    char buf[1024];
+    int rval;
+
+    /**
+     * If we can't read input then return after 50ms.
+     */
+    if ( ! can_read( socket_fd , 50 ) )
+        return;
+
+    /**
+     * Look for a new connection.
+     */
+    int msgsock = accept(socket_fd, 0, 0);
+    if (msgsock == -1)
+    {
+#ifdef LUMAIL_DEBUG
+        DEBUG_LOG( "Error accepting new domain-socket connection" );
+#endif
+        return;
+    }
+
+    /**
+     * Process input.
+     */
+    do {
+        bzero(buf, sizeof(buf));
+        if ((rval = read(msgsock, buf, 1024)) < 0)
+        {
+#ifdef LUMAIL_DEBUG
+        DEBUG_LOG( "Error reading from domain-socket" );
+#endif
+        }
+        else if (rval == 0)
+        {
+#ifdef LUMAIL_DEBUG
+        DEBUG_LOG( "Disconnection from domain-socket" );
+#endif
+        }
+        else
+        {
+#ifdef LUMAIL_DEBUG
+            DEBUG_LOG( "Read from domain-socket:"  + std::string(buf) );
+#endif
+            m_lua->execute(buf);
+        }
+    } while (rval > 0);
+
+#endif
+
+}
 
 /**
  * Draw/Refresh the display and intepret keys.
@@ -191,6 +281,16 @@ void CLumail::run_event_loop()
      */
     while (true)
     {
+
+        /**
+         * Do we have a domain-socket?
+         */
+        CGlobal *global = CGlobal::Instance();
+        int sock = global->get_domain_socket();
+        if ( sock >= 0 )
+                domain_socket_pump( sock );
+
+
         gunichar key;
         int  r = CInput::Instance()->get_wchar(&key);
 
