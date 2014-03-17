@@ -25,6 +25,10 @@
 #include <string.h>
 
 
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+
 #include "debug.h"
 #include "file.h"
 #include "global.h"
@@ -57,6 +61,7 @@ CGlobal::CGlobal()
     /**
      * Defaults.
      */
+    m_domain_socket  = -1;
     m_cur_folder     = 0;
     m_cur_message    = 0;
     m_msg_offset     = 0;
@@ -611,4 +616,73 @@ void CGlobal::set_variable( std::string name, std::string *value )
 std::unordered_map<std::string, std::string *> CGlobal::get_variables()
 {
     return( m_variables );
+}
+
+
+/**
+ * Bind a unix domain socket to the given path.
+ */
+bool CGlobal::setup_domain_socket( std::string path )
+{
+
+#ifdef DOMAIN_SOCKET
+
+    /**
+     * If we already have a socket then close it.
+     */
+    if ( m_domain_socket != -1 )
+    {
+        close_domain_socket();
+    }
+
+
+    struct sockaddr_un addr;
+
+    if ( (m_domain_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+        return false;
+
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    strncpy(addr.sun_path, path.c_str(), sizeof(addr.sun_path)-1);
+
+    unlink(path.c_str());
+
+    if (bind(m_domain_socket, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
+        return false;
+    }
+
+    if (listen(m_domain_socket, 1) == -1) {
+        return false;
+    }
+
+
+    int on = 1;
+    if ( ioctl(m_domain_socket, FIONBIO, (char *)&on) < 0 )
+        return false;
+
+#endif
+
+    return( true );
+}
+
+/**
+ * Return the unix domain socket in use, if any.
+ */
+int CGlobal::get_domain_socket()
+{
+    return( m_domain_socket );
+}
+
+/**
+ * Close the open domain socket.
+ */
+void CGlobal::close_domain_socket()
+{
+
+#ifdef DOMAIN_SOCKET
+    close( m_domain_socket );
+#endif
+
+    m_domain_socket = -1;
+
 }

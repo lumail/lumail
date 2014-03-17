@@ -101,6 +101,20 @@ public:
      */
     bool remove_folder(std::string path);
 
+    /**
+     * Return the unix domain socket in use, if any.
+     */
+    int get_domain_socket();
+
+    /**
+     * Bind a unix domain socket to the given path.
+     */
+    bool setup_domain_socket( std::string path );
+
+    /**
+     * Close the open domain socket.
+     */
+    void close_domain_socket();
 
     /**
      * Get/set the selected folder, i.e. the one with the highlight.
@@ -248,6 +262,10 @@ private:
      */
     std::unordered_map<std::string, std::string *> m_variables;
 
+    /**
+     * The handle to the domain-socket.
+     */
+    int m_domain_socket;
 };
 
 #endif /* _global_h_ */
