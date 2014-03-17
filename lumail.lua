@@ -727,12 +727,21 @@ end
 -- This behaves like the traditional "open folder" function in our favourite
 -- client.  I like to open multiple folders at once, because that's how I roll.
 --
-function open_folder()
+function open_selected_folder()
    clear_selected_folders()
    add_selected_folder()
    index()
 end
 
+
+--
+-- Open the specified folder.
+--
+function open( folder )
+   clear_selected_folders()
+   set_selected_folder(folder)
+   index()
+end
 
 
 --
@@ -1029,7 +1038,7 @@ keymap['message']['N'] = 'jump_to_next_unread()'
 --  "return" will open the selected folder exclusively.
 --
 keymap['maildir']['Space'] = 'toggle_selected_folder()'
-keymap['maildir']['Enter'] = 'open_folder()'
+keymap['maildir']['Enter'] = 'open_selected_folder()'
 
 
 
