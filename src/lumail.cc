@@ -202,9 +202,11 @@ bool CLumail::can_read(int socket, int n )
 
     fds[0].fd = socket;
     fds[0].events = POLLIN;
-    do {
+    do
+    {
         r = poll(fds, 1, n);
-    } while (r == -1 && errno == EINTR);
+    }
+    while (r == -1 && errno == EINTR);
     return (r > 0);
 #else
     return false;
@@ -244,7 +246,8 @@ void CLumail::domain_socket_pump(int socket_fd)
     /**
      * Process input.
      */
-    do {
+    do
+    {
         bzero(buf, sizeof(buf));
         if ((rval = read(msgsock, buf, 1024)) < 0)
         {

@@ -647,11 +647,13 @@ bool CGlobal::setup_domain_socket( std::string path )
 
     unlink(path.c_str());
 
-    if (bind(m_domain_socket, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
+    if (bind(m_domain_socket, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+    {
         return false;
     }
 
-    if (listen(m_domain_socket, 1) == -1) {
+    if (listen(m_domain_socket, 1) == -1)
+    {
         return false;
     }
 
