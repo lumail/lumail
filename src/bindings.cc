@@ -215,8 +215,17 @@ int alert(lua_State * L)
 int bind_socket(lua_State * L)
 {
     const char *str = lua_tostring(L, -1);
+    char default_sock[1024];
+
     if (str == NULL)
-        return luaL_error(L, "Missing argument to bind_socket(..)");
+    {
+        memset( default_sock, '\0', sizeof( default_sock) );
+        snprintf( default_sock, sizeof(default_sock)-1,
+                  "%s/.lumail.sock",
+                  getenv( "HOME" ) );
+
+        str = default_sock;
+    }
 
 #ifdef DOMAIN_SOCKET
     CGlobal *global = CGlobal::Instance();
