@@ -1,5 +1,6 @@
 .depend
 lumail
+lumailctl
 lumail-debug
 TODO.local
 core
