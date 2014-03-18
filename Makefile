@@ -64,9 +64,9 @@ GLIBMM_LIBS=$(shell pkg-config --libs  glibmm-2.4)
 GLIBMM_INC=$(shell pkg-config --cflags glibmm-2.4)
 
 #
-#  Build both targets by default.
+#  Build both targets by default, along with the helper.
 #
-default: lumail lumail-debug
+default: lumail lumail-debug lumailctl
 
 
 #
@@ -100,7 +100,7 @@ release: clean style
 clean:
 	test -d $(RELEASE_OBJDIR)  && rm -rf $(RELEASE_OBJDIR) || true
 	test -d $(DEBUG_OBJDIR)    && rm -rf $(DEBUG_OBJDIR)   || true
-	rm -f gmon.out lumail lumail-debug core                || true
+	rm -f gmon.out lumail lumail-debug lumailctl core      || true
 	@cd util && make clean                                 || true
 
 #
@@ -125,6 +125,13 @@ lumail-debug: $(DEBUG_OBJECTS)
 
 
 #
+# The domain-socket helper
+#
+lumailctl:
+	gcc -Wall util/lumailctl.c -o lumailctl
+
+
+#
 #  Build the objects for the release build.
 #
 $(RELEASE_OBJECTS): $(RELEASE_OBJDIR)/%.o : $(SRCDIR)/%.cc
@@ -139,4 +146,3 @@ $(RELEASE_OBJECTS): $(RELEASE_OBJDIR)/%.o : $(SRCDIR)/%.cc
 $(DEBUG_OBJECTS): $(DEBUG_OBJDIR)/%.o : $(SRCDIR)/%.cc
 	@mkdir $(DEBUG_OBJDIR) 2>/dev/null || true
 	$(CC) $(FEATURES) -ggdb -DLUMAIL_DEBUG=1 $(CPPFLAGS) $(GMIME_INC) $(GLIBMM_INC) -O2 -c $< -o $@
-
