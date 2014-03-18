@@ -21,7 +21,6 @@
 #include <algorithm>
 #include <curses.h>
 #include <getopt.h>
-#include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/un.h>
