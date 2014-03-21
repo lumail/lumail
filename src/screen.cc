@@ -698,7 +698,7 @@ void CScreen::drawMessage()
 
         int len = line.length();
         int slen = 0;
-        std::string subline = line.substr(0, width);
+        UTFString subline = line.substr(0, width);
 
         for(;;)
         {
