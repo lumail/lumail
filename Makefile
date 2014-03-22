@@ -45,6 +45,7 @@ VERSION=$(shell sh -c 'git describe --abbrev=0 --tags | tr -d "release-"')
 #
 #  Basics
 #
+C=gcc
 CC=g++
 LINKER=$(CC) -o
 LVER=lua5.1
@@ -128,7 +129,7 @@ lumail-debug: $(DEBUG_OBJECTS)
 # The domain-socket helper
 #
 lumailctl:
-	gcc -Wall util/lumailctl.c -o lumailctl
+	$(C) -Wall util/lumailctl.c -o lumailctl
 
 
 #
