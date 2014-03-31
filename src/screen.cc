@@ -1148,13 +1148,28 @@ std::vector<std::string> CScreen::get_completions( std::string token )
 
     /**
      * Tilde expansion.
+     *
+     * Here we cover two cases:
+     *
+     *  The token is "~"
+     *  The token is "~/somthing.."
+     *
      */
-    if ( token == "~" )
+    if ( token.at(0) == '~' )
     {
         std::string home = getenv( "HOME" );
+
         if ( !home.empty() )
         {
-            results.push_back( home + "/" );
+            if ( token.size() == 1 )
+            {
+                results.push_back( home + "/" );
+            }
+            else
+            {
+                std::string path = token.substr(1);
+                results.push_back( home + path );
+            }
         }
     }
 
