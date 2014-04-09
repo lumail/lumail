@@ -700,9 +700,42 @@ int show_help(lua_State * L)
 {
     const char *str = lua_tostring(L, -1);
 
+    /**
+     * If there is no argument then we'll show the manual/help-page.
+     */
     if (str == NULL)
-        return luaL_error(L, "Missing argument to help(..)");
+    {
+        if ( CFile::exists( "/usr/share/lumail/lumail.help" ))
+        {
+            lua_pushstring(L, "/usr/share/lumail/lumail.help"  );
+            show_file_contents( L );
+            CLua::Instance()->execute( "global_mode( \"text\" )" );
+            return 0;
+        }
+        else if ( CFile::exists( "/etc/lumail/lumail.help" ))
+        {
+            lua_pushstring(L, "/etc/lumail/lumail.help"  );
+            show_file_contents( L );
+            CLua::Instance()->execute( "global_mode( \"text\" )" );
+            return 0;
+        }
+        else if ( CFile::exists( "./lumail.help" ) )
+        {
+            lua_pushstring(L, "./lumail.help"  );
+            show_file_contents( L );
 
+            CLua::Instance()->execute( "global_mode( \"text\" )" );
+            return 0;
+        }
+        else
+        {
+            return luaL_error(L, "Missing argument to help(..)");
+        }
+    }
+
+    /**
+     * Otherwise look for the correct primitive.
+     */
     for(int i = 0; i < primitive_count; i++ )
     {
         const char *name = primitive_list[i].name;
