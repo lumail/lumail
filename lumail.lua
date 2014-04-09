@@ -623,42 +623,81 @@ end
 
 
 --
--- Navigation functions for maildir-mode
+-- Navigation function:  Scroll "something" down.
 --
-function maildir_down()
-   scroll_maildir_down( 1 )
+function down()
+   m = global_mode()
+
+   if ( string.find( m, "maildir" ) ) then
+      scroll_maildir_down( 1 );
+   elseif (string.find(m, "index" ) ) then
+      scroll_index_down( 1 )
+   elseif (string.find(m, '') ) then
+      scroll_message_down( 1 )
+   else
+      msg( "down() not implemented for mode:" .. m )
+   end
 end
-function maildir_page_down()
-   -- The minus-two is to account for the status-area
-   scroll_maildir_down( screen_height() - 2  )
-end
-function maildir_up()
-   scroll_maildir_up(1)
-end
-function maildir_page_up()
-   -- The minus-two is to account for the status-area
-   scroll_maildir_up( screen_height() -2 )
+
+--
+-- Navigation function:  Scroll "something" up.
+--
+function up()
+   m = global_mode()
+
+   if ( string.find( m, "maildir" ) ) then
+      scroll_maildir_up( 1 );
+   elseif (string.find(m, "index" ) ) then
+      scroll_index_up( 1 )
+   elseif (string.find(m, '') ) then
+      scroll_message_up( 1 )
+   else
+      msg( "up() not implemented for mode:" .. m )
+   end
 end
 
 
+--
+-- Navigation function:  Scroll "something" down a page.
+--
+function page_down()
+   m = global_mode()
+
+   if ( string.find( m, "maildir" ) ) then
+      -- The minus-two is to account for the status-area
+      scroll_maildir_down( screen_height() - 2  )
+   elseif (string.find(m, "index" ) ) then
+      -- The minus-two is to account for the status-area
+      scroll_index_down( screen_height() - 2  )
+   elseif (string.find(m, '') ) then
+      -- The minus-two is to account for the status-area
+      scroll_message_down( screen_height() - 2  )
+   else
+      msg( "page_down() not implemented for mode:" .. m )
+   end
+end
+
 
 --
--- Navigation functions for index-mode
+-- Navigation function:  Scroll "something" up a page.
 --
-function message_down()
-   scroll_index_down( 1 )
+function page_up()
+   m = global_mode()
+
+   if ( string.find( m, "maildir" ) ) then
+      -- The minus-two is to account for the status-area
+      scroll_maildir_up( screen_height() - 2  )
+   elseif (string.find(m, "index" ) ) then
+      -- The minus-two is to account for the status-area
+      scroll_index_up( screen_height() - 2  )
+   elseif (string.find(m, '') ) then
+      -- The minus-two is to account for the status-area
+      scroll_message_up( screen_height() - 2  )
+   else
+      msg( "page_up() not implemented for mode:" .. m )
+   end
 end
-function message_page_down()
-   -- The minus-two is to account for the status-area
-   scroll_index_down( screen_height() - 2 )
-end
-function message_up()
-   scroll_index_up(1)
-end
-function message_page_up()
-   -- The minus-two is to account for the status-area
-   scroll_index_up( screen_height() - 2 )
-end
+
 
 
 --
@@ -988,14 +1027,14 @@ keymap['maildir']['g'] = 'maildir_limit( "(Google.*INBOX|Google.*All Mail)" )'
 --
 -- Scroll up/down & find folders
 --
-keymap['maildir']['j'] = 'maildir_down()'
-keymap['maildir']['KEY_DOWN'] = 'maildir_down()'
-keymap['maildir']['J'] = 'maildir_page_down()'
-keymap['maildir']['KEY_NPAGE'] = 'maildir_page_down()'
-keymap['maildir']['k'] = 'maildir_up()'
-keymap['maildir']['KEY_UP'] = 'maildir_up()'
-keymap['maildir']['K'] = 'maildir_page_up()'
-keymap['maildir']['KEY_PPAGE'] = 'maildir_page_up()'
+keymap['maildir']['j'] = 'down()'
+keymap['maildir']['KEY_DOWN'] = 'down()'
+keymap['maildir']['J'] = 'page_down()'
+keymap['maildir']['KEY_NPAGE'] = 'page_down()'
+keymap['maildir']['k'] = 'up()'
+keymap['maildir']['KEY_UP'] = 'up()'
+keymap['maildir']['K'] = 'page_up()'
+keymap['maildir']['KEY_PPAGE'] = 'page_up()'
 keymap['maildir']['/'] = 'search_next()'
 keymap['maildir']['f'] = 'faves()'
 
@@ -1003,14 +1042,14 @@ keymap['maildir']['f'] = 'faves()'
 --
 -- Scroll up/down the message index
 --
-keymap['index']['j'] = 'message_down()'
-keymap['index']['KEY_DOWN'] = 'message_down()'
-keymap['index']['J'] = 'message_page_down()'
-keymap['index']['KEY_NPAGE'] = 'message_page_down()'
-keymap['index']['k'] = 'message_up()'
-keymap['index']['KEY_UP'] = 'message_up()'
-keymap['index']['K'] = 'message_page_up()'
-keymap['index']['KEY_PPAGE'] = 'message_page_up()'
+keymap['index']['j'] = 'down()'
+keymap['index']['KEY_DOWN'] = 'down()'
+keymap['index']['J'] = 'page_down()'
+keymap['index']['KEY_NPAGE'] = 'page_down()'
+keymap['index']['k'] = 'up()'
+keymap['index']['KEY_UP'] = 'up()'
+keymap['index']['K'] = 'page_up()'
+keymap['index']['KEY_PPAGE'] = 'page_up()'
 keymap['index']['/'] = 'search_next()'
 
 keymap['index']['Space'] = 'view_message()'
@@ -1047,19 +1086,19 @@ keymap['maildir']['Enter'] = 'open_selected_folder()'
 --
 --
 -- Scroll up/down in the current message.
-keymap['message']['j'] = 'scroll_message_down(1)'
-keymap['message']['KEY_DOWN'] = 'scroll_message_down(1)'
-keymap['message']['KEY_NPAGE'] = 'scroll_message_down(10)'
-keymap['message']['k'] = 'scroll_message_up(1)'
-keymap['message']['KEY_UP'] = 'scroll_message_up(1)'
-keymap['message']['KEY_PPAGE'] = 'scroll_message_up(10)'
-keymap['message']['Space'] = 'scroll_message_down(10)'
+keymap['message']['j'] = 'down()'
+keymap['message']['KEY_DOWN'] = 'down()'
+keymap['message']['KEY_NPAGE'] = 'page_down()'
+keymap['message']['k'] = 'up()'
+keymap['message']['KEY_UP'] = 'up()'
+keymap['message']['KEY_PPAGE'] = 'page_up()'
+keymap['message']['Space'] = 'page_down()'
 
 --
 -- scroll to the next/prev message
 --
-keymap['message']['J'] = 'message_down()'
-keymap['message']['K'] = 'message_up()'
+keymap['message']['J'] = 'down()'
+keymap['message']['K'] = 'up()'
 
 -- wrap linese
 keymap['message']['w'] = 'toggle_wrap_lines()'
