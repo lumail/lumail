@@ -1022,6 +1022,8 @@ keymap['text']    = {}
 --
 -- Quit
 keymap['global']['Q'] = "exit()"
+-- Help
+keymap['global']['H'] = "help()"
 -- Compose a new message.
 keymap['global']['c'] = "compose()"
 -- repl-mode
