@@ -510,7 +510,7 @@ end
 do
 
    -- We store the previous global-mode here, when changing the mode.
-   local pmode = '';
+   local pmode = ''
 
    function on_mode_change( old, new )
       -- check if we are switching from maildir to index mode, if so try to jump
@@ -665,7 +665,7 @@ function down()
    m = global_mode()
 
    if ( string.find( m, "maildir" ) ) then
-      scroll_maildir_down( 1 );
+      scroll_maildir_down( 1 )
    elseif (string.find(m, "index" ) ) then
       scroll_index_down( 1 )
    elseif (string.find(m, 'message') ) then
@@ -684,7 +684,7 @@ function up()
    m = global_mode()
 
    if ( string.find( m, "maildir" ) ) then
-      scroll_maildir_up( 1 );
+      scroll_maildir_up( 1 )
    elseif (string.find(m, "index" ) ) then
       scroll_index_up( 1 )
    elseif (string.find(m, 'message') ) then
@@ -1248,6 +1248,6 @@ function x()
            "Kemp",
            "Has",
            "Made this work" }
-   show_text( txt );
-   global_mode( "text");
+   show_text( txt )
+   global_mode( "text")
 end

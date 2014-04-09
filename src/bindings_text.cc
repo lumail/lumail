@@ -110,12 +110,16 @@ int show_text(lua_State *L)
     std::vector<UTFString> buf;
 
 
-    for(int i = 0; i < len; i++) {
+    for(int i = 0; i < len; i++)
+    {
         lua_pushinteger(L, i+1);
         lua_gettable(L, -2);
-        if(lua_isstring(L, -1)) {
+        if(lua_isstring(L, -1))
+        {
             buf.push_back( lua_tostring(L, -1) );
-        } else {
+        }
+        else
+        {
             assert(false);
         }
         lua_pop(L, 1);
