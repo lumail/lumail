@@ -1036,14 +1036,27 @@ keymap['global']['M']   = 'maildir()'
 keymap['global']['I'] = 'index()'
 -- Show the client version
 keymap['global']['v'] = 'show_version()'
+
 -- Jump to end
 keymap['global']['*']        = 'jump_to_end()'
 keymap['global']['KEY_END']  = 'jump_to_end()'
 keymap['global']['KEY_HOME'] = 'jump_to_start()'
+
 -- Refresh display
 keymap['global']['^R'] = 'clear()'
 keymap['global']['^L'] = 'clear()'
 keymap['global']['KEY_RESIZE'] = 'clear()'
+
+-- Scroll up/down
+keymap['global']['j'] = 'down()'
+keymap['global']['KEY_DOWN'] = 'down()'
+keymap['global']['J'] = 'page_down()'
+keymap['global']['KEY_NPAGE'] = 'page_down()'
+
+keymap['global']['k'] = 'up()'
+keymap['global']['KEY_UP'] = 'up()'
+keymap['global']['K'] = 'page_up()'
+keymap['global']['KEY_PPAGE'] = 'page_up()'
 
 
 --
@@ -1073,33 +1086,20 @@ keymap['maildir']['g'] = 'maildir_limit( "(Google.*INBOX|Google.*All Mail)" )'
 
 
 --
--- Scroll up/down & find folders
+-- Find folders
 --
-keymap['maildir']['j'] = 'down()'
-keymap['maildir']['KEY_DOWN'] = 'down()'
-keymap['maildir']['J'] = 'page_down()'
-keymap['maildir']['KEY_NPAGE'] = 'page_down()'
-keymap['maildir']['k'] = 'up()'
-keymap['maildir']['KEY_UP'] = 'up()'
-keymap['maildir']['K'] = 'page_up()'
-keymap['maildir']['KEY_PPAGE'] = 'page_up()'
 keymap['maildir']['/'] = 'search_next()'
 keymap['maildir']['f'] = 'faves()'
 
 
 --
--- Scroll up/down the message index
+-- Search the message index
 --
-keymap['index']['j'] = 'down()'
-keymap['index']['KEY_DOWN'] = 'down()'
-keymap['index']['J'] = 'page_down()'
-keymap['index']['KEY_NPAGE'] = 'page_down()'
-keymap['index']['k'] = 'up()'
-keymap['index']['KEY_UP'] = 'up()'
-keymap['index']['K'] = 'page_up()'
-keymap['index']['KEY_PPAGE'] = 'page_up()'
 keymap['index']['/'] = 'search_next()'
 
+--
+-- Per-message actions
+--
 keymap['index']['Space'] = 'view_message()'
 keymap['index']['Enter'] = 'view_message()'
 keymap['index']['r'] = 'reply()'
@@ -1115,7 +1115,7 @@ keymap['index']['n'] = 'index_limit("new")'
 --
 -- Jump to the next unread mail in index or message mode
 --
-keymap['index']['N'] = 'jump_to_next_unread()'
+keymap['index']['N']   = 'jump_to_next_unread()'
 keymap['message']['N'] = 'jump_to_next_unread()'
 
 --
@@ -1133,20 +1133,6 @@ keymap['maildir']['Enter'] = 'open_selected_folder()'
 -- Message-handling.
 --
 --
--- Scroll up/down in the current message.
-keymap['message']['j'] = 'down()'
-keymap['message']['KEY_DOWN'] = 'down()'
-keymap['message']['KEY_NPAGE'] = 'page_down()'
-keymap['message']['k'] = 'up()'
-keymap['message']['KEY_UP'] = 'up()'
-keymap['message']['KEY_PPAGE'] = 'page_up()'
-keymap['message']['Space'] = 'page_down()'
-
---
--- scroll to the next/prev message
---
-keymap['message']['J'] = 'down()'
-keymap['message']['K'] = 'up()'
 
 -- wrap linese
 keymap['message']['w'] = 'toggle_wrap_lines()'
@@ -1160,16 +1146,7 @@ keymap['message']['r'] = 'reply()'
 --
 -- Text display
 --
-keymap['text']['j']         = 'down()'
-keymap['text']['KEY_DOWN']  = 'down()'
-keymap['text']['J']         = 'page_down()'
-keymap['text']['KEY_NPAGE'] = 'page_down()'
-
-keymap['text']['k']         = 'up()'
-keymap['text']['KEY_UP']    = 'up()'
-keymap['text']['K']         = 'page_up()'
-keymap['text']['KEY_PPAGE'] = 'page_up()'
-keymap['text']['q']         = 'previous_mode()'
+keymap['text']['q'] = 'previous_mode()'
 
 
 ---
