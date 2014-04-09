@@ -195,7 +195,7 @@ public:
 
 
     /**
-     * Get/set the message offset.
+     * Get/set the text offset.
      */
     int get_text_offset()
     {
@@ -203,7 +203,18 @@ public:
     }
     void set_text_offset(int offset)
     {
-        m_text_offset = offset;
+        int count = m_text.size();
+        if ( count > 0 )
+        {
+            m_text_offset = offset;
+
+            if (m_text_offset >= count)
+                m_text_offset = count-1;
+            else if (m_text_offset < 0)
+                m_text_offset = 0;
+        }
+        else
+            m_text_offset = 0;
     }
 
     /**
