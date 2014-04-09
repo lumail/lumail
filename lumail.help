@@ -1,0 +1,37 @@
+Lumail $VERSION Help Manual
+------------------
+
+This document is the help-manual for Lumail.
+
+You may refer to this at any time by bringing up the
+lua-prompt, by pressing ":", and entering "help()"
+
+
+Navigation
+----------
+
+Scroll around this document using the following
+keys:
+
+* Scroll down: j or DOWN-ARROW.
+* Scroll up  : k or UP-ARROW.
+
+To return to your previous position press "q".
+
+
+About Lumail
+------------
+
+This is $RELEASE.
+
+Searching
+---------
+
+TODO
+
+
+Online Help
+------------
+
+TODO
+
