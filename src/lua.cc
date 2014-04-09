@@ -192,7 +192,8 @@ struct CLuaMapping primitive_list[] =
  */
     {"scroll_text_down", "Scroll the static text down", (lua_CFunction) scroll_text_down },
     {"scroll_text_up", "Scroll the static text up", (lua_CFunction) scroll_text_up },
-    {"view_file", "Show a given file", (lua_CFunction) view_file },
+    {"show_file_contents", "Show a given file", (lua_CFunction) show_file_contents },
+    {"show_text", "Show the given array of text lines.", (lua_CFunction) show_text },
 
 /**
  * Attachments & body-parts Defined in src/bindings_mime.cc

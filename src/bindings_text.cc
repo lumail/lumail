@@ -74,10 +74,11 @@ int scroll_text_up(lua_State *L)
     return (0);
 }
 
+
 /**
- * View a given file.
+ * View the contents of the given file.
  */
-int view_file(lua_State *L)
+int show_file_contents(lua_State *L)
 {
     const char *file = lua_tostring(L, -1);
     FILE* f = fopen(file, "r");
@@ -90,6 +91,36 @@ int view_file(lua_State *L)
             buf.push_back( buffer );
     }
     fclose(f);
+
+    CGlobal *global = CGlobal::Instance();
+    global->set_text( buf );
+    return 0;
+}
+
+
+/**
+ * View the specified text.
+ */
+int show_text(lua_State *L)
+{
+
+    luaL_checktype(L, -1, LUA_TTABLE);
+
+    int len = lua_objlen(L, -1);
+    std::vector<UTFString> buf;
+
+
+    for(int i = 0; i < len; i++) {
+        lua_pushinteger(L, i+1);
+        lua_gettable(L, -2);
+        if(lua_isstring(L, -1)) {
+            buf.push_back( lua_tostring(L, -1) );
+        } else {
+            assert(false);
+        }
+        lua_pop(L, 1);
+    }
+
 
     CGlobal *global = CGlobal::Instance();
     global->set_text( buf );
