@@ -244,6 +244,7 @@ function offlineimap()
    return true
 end
 
+
 --
 -- This function is called when the client is launched.
 --
@@ -259,10 +260,10 @@ end
 
 
 --
--- This function is called when a folder is added/removed to the selected set.,
--- or toggled.
+-- This function is called when a folder is added/removed/toggled
+-- within the selected set.
 --
--- It is where you can run per-folder hooks.
+-- This function is a perfect place to run per-folder hooks.
 --
 -- Remember: More than one folder might be selected at any given time.
 --
@@ -279,7 +280,7 @@ function on_folder_selection( folder )
       from( default_email )
    end
 
-   msg( "There are " .. count_messages() .. " messages" )
+   msg( "There are " .. count_messages() .. " messages present." )
 end
 
 
@@ -302,6 +303,9 @@ function jump_to_end()
       jump_index_to( count_messages() - 1 )
 
    else
+      --
+      -- TODO: Fixe this for messages.
+      --
 
       -- Jump to the end of the message.
       scroll_message_to( count_lines() - 2 )
@@ -328,6 +332,9 @@ function jump_to_start()
       jump_index_to( 0 )
 
    else
+      --
+      -- TODO: Fix this for message/text
+      --
 
       -- Jump to the start of the message.
       scroll_message_to( 0 )
@@ -493,17 +500,36 @@ end
 --
 -- This function will be called when the global mode changes
 --
-function on_mode_change( old, new)
-    -- check if we are switching from maildir to index mode, if so try to jump
-    -- the first unread mail or go to the last one
-    if string.find(old,'maildir') and string.find(new,'index') then
-        if (newmail_displayed()) then
+-- Here we define a closure so that the previous mode can be
+-- returned to easily.
+--
+-- (In our case this is so that when viewing a file you can revert
+-- to the previous mode.  See the `display_file` primitive and the
+-- function named 'show_file` later in this file.)
+--
+do
+
+   -- We store the previous global-mode here, when changing the mode.
+   local pmode = '';
+
+   function on_mode_change( old, new )
+      -- check if we are switching from maildir to index mode, if so try to jump
+      -- the first unread mail or go to the last one
+      if string.find(old,'maildir') and string.find(new,'index') then
+         if (newmail_displayed()) then
             jump_to_first_unread()
-        else
+         else
             jump_to_end()
-        end
-    end
+         end
+      end
+      pmode = old
+   end
+
+   function previous_mode()
+      global_mode( pmode )
+   end
 end
+
 
 --
 -- Test if there is currently a new message displayed
@@ -595,6 +621,16 @@ end
 
 
 --
+-- Show a file.
+--
+function show_file( filename )
+   show_file_contents(filename)
+   global_mode( "text" )
+   clear()
+end
+
+
+--
 -- When in maildir-mode show all folders.
 --
 function all_folders()
@@ -676,6 +712,9 @@ function page_down()
    elseif (string.find(m, 'message') ) then
       -- The minus-two is to account for the status-area
       scroll_message_down( screen_height() - 2  )
+   elseif (string.find(m, 'text') ) then
+      -- The minus-two is to account for the status-area
+      scroll_text_down( screen_height() - 2  )
    else
       msg( "page_down() not implemented for mode:" .. m )
    end
@@ -697,6 +736,9 @@ function page_up()
    elseif (string.find(m, 'message') ) then
       -- The minus-two is to account for the status-area
       scroll_message_up( screen_height() - 2  )
+   elseif (string.find(m, 'text') ) then
+      -- The minus-two is to account for the status-area
+      scroll_text_up( screen_height() - 2  )
    else
       msg( "page_up() not implemented for mode:" .. m )
    end
@@ -1116,13 +1158,16 @@ keymap['message']['r'] = 'reply()'
 --
 -- Text display
 --
-keymap['text']['j'] = 'down()'
-keymap['text']['J'] = 'page_up()'
-keymap['text']['KEY_DOWN'] = 'down()'
+keymap['text']['j']         = 'down()'
+keymap['text']['KEY_DOWN']  = 'down()'
+keymap['text']['J']         = 'page_down()'
+keymap['text']['KEY_NPAGE'] = 'page_down()'
 
-keymap['text']['k'] = 'up()'
-keymap['text']['KEY_UP'] = 'up()'
-keymap['text']['K'] = 'page_up()'
+keymap['text']['k']         = 'up()'
+keymap['text']['KEY_UP']    = 'up()'
+keymap['text']['K']         = 'page_up()'
+keymap['text']['KEY_PPAGE'] = 'page_up()'
+keymap['text']['q']         = 'previous_mode()'
 
 
 ---
@@ -1194,3 +1239,15 @@ end
 keymap['global']['p'] = "toggle_maildir_names()"
 
 
+
+--
+--  Test the show_text() primitive.
+--
+function x()
+   txt = { "Steve",
+           "Kemp",
+           "Has",
+           "Made this work" }
+   show_text( txt );
+   global_mode( "text");
+end
