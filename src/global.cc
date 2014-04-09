@@ -65,6 +65,7 @@ CGlobal::CGlobal()
     m_cur_folder     = 0;
     m_cur_message    = 0;
     m_msg_offset     = 0;
+    m_text_offset    = 0;
     m_messages       = NULL;
     m_maildirs       = NULL;
 
@@ -687,4 +688,15 @@ void CGlobal::close_domain_socket()
 
     m_domain_socket = -1;
 
+}
+
+
+void CGlobal::set_text( std::vector<UTFString> text )
+{
+    m_text = text;
+}
+
+std::vector<UTFString> CGlobal::get_text()
+{
+    return( m_text );
 }

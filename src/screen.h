@@ -112,6 +112,7 @@ private:
     void drawMaildir();
     void drawIndex();
     void drawMessage();
+    void drawText();
 
     /**
      * Lookup the curses attribute for the given string.

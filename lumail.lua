@@ -632,8 +632,10 @@ function down()
       scroll_maildir_down( 1 );
    elseif (string.find(m, "index" ) ) then
       scroll_index_down( 1 )
-   elseif (string.find(m, '') ) then
+   elseif (string.find(m, 'message') ) then
       scroll_message_down( 1 )
+   elseif (string.find(m, 'text') ) then
+      scroll_text_down( 1 )
    else
       msg( "down() not implemented for mode:" .. m )
    end
@@ -649,8 +651,10 @@ function up()
       scroll_maildir_up( 1 );
    elseif (string.find(m, "index" ) ) then
       scroll_index_up( 1 )
-   elseif (string.find(m, '') ) then
+   elseif (string.find(m, 'message') ) then
       scroll_message_up( 1 )
+   elseif (string.find(m, 'text') ) then
+      scroll_text_up( 1 )
    else
       msg( "up() not implemented for mode:" .. m )
    end
@@ -669,7 +673,7 @@ function page_down()
    elseif (string.find(m, "index" ) ) then
       -- The minus-two is to account for the status-area
       scroll_index_down( screen_height() - 2  )
-   elseif (string.find(m, '') ) then
+   elseif (string.find(m, 'message') ) then
       -- The minus-two is to account for the status-area
       scroll_message_down( screen_height() - 2  )
    else
@@ -690,7 +694,7 @@ function page_up()
    elseif (string.find(m, "index" ) ) then
       -- The minus-two is to account for the status-area
       scroll_index_up( screen_height() - 2  )
-   elseif (string.find(m, '') ) then
+   elseif (string.find(m, 'message') ) then
       -- The minus-two is to account for the status-area
       scroll_message_up( screen_height() - 2  )
    else
@@ -969,7 +973,7 @@ keymap['global']  = {}
 keymap['index']   = {}
 keymap['message'] = {}
 keymap['maildir'] = {}
-
+keymap['text']    = {}
 
 --
 -- Global Bindings
@@ -1108,6 +1112,17 @@ keymap['message']['d'] = 'delete()'
 keymap['message']['f'] = 'forward()'
 keymap['message']['r'] = 'reply()'
 
+
+--
+-- Text display
+--
+keymap['text']['j'] = 'down()'
+keymap['text']['J'] = 'page_up()'
+keymap['text']['KEY_DOWN'] = 'down()'
+
+keymap['text']['k'] = 'up()'
+keymap['text']['KEY_UP'] = 'up()'
+keymap['text']['K'] = 'page_up()'
 
 
 ---

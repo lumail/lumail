@@ -83,6 +83,8 @@ void CScreen::refresh_display()
         drawIndex();
     else if ( *s == "message" )
         drawMessage();
+    else if ( *s == "text" )
+        drawText();
     else
     {
         move(3, 3);
@@ -741,6 +743,41 @@ void CScreen::drawMessage()
      */
     cur->on_read_message();
 }
+
+
+/**
+ * Draw text which has been set from lua.
+ */
+void CScreen::drawText()
+{
+    CGlobal *global = CGlobal::Instance();
+
+    int offset                  = global->get_text_offset();
+    std::vector<UTFString> text = global->get_text();
+
+
+    if ( offset < (int)text.size() )
+    {
+        int max = CScreen::height();
+
+        for( int i = 0; i< max; i++ )
+        {
+            UTFString line = "";
+            if ( i+offset < (int)text.size() )
+                line = text.at(i+offset);
+
+            move(i, 0);
+            printw(line.c_str());
+
+        }
+    }
+    else
+    {
+        move(3, 3);
+        printw("We're outside our array of text?" );
+    }
+}
+
 
 /**
  * Setup the curses/screen.

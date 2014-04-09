@@ -188,6 +188,13 @@ struct CLuaMapping primitive_list[] =
     {"prompt_yn", "Prompt for a yes/no answer.", (lua_CFunction) prompt_yn },
 
 /**
+ * Text display.  Defined in src/bindings_text.cc
+ */
+    {"scroll_text_down", "Scroll the static text down", (lua_CFunction) scroll_text_down },
+    {"scroll_text_up", "Scroll the static text up", (lua_CFunction) scroll_text_up },
+    {"view_file", "Show a given file", (lua_CFunction) view_file },
+
+/**
  * Attachments & body-parts Defined in src/bindings_mime.cc
  */
     {"attachments", "Retrieve the list of attachments in the current message.", (lua_CFunction) attachments },
@@ -197,7 +204,6 @@ struct CLuaMapping primitive_list[] =
     {"get_body_part", "Retrieve the given body-part from the message.", (lua_CFunction) get_body_part },
     {"has_body_part", "Does the message have a part of the given MIME-type?", (lua_CFunction) has_body_part },
     {"save_attachment", "Save the given attachment to disk, from the current message.", (lua_CFunction) save_attachment },
-
 };
 
 

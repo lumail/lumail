@@ -195,6 +195,25 @@ public:
 
 
     /**
+     * Get/set the message offset.
+     */
+    int get_text_offset()
+    {
+        return m_text_offset;
+    }
+    void set_text_offset(int offset)
+    {
+        m_text_offset = offset;
+    }
+
+    /**
+     * Get/set the text for text-drawing mode.
+     */
+    void set_text( std::vector<UTFString> text );
+    std::vector<UTFString> get_text();
+
+
+    /**
      * Get the value of an arbitrary setting.
      */
     std::string * get_variable( std::string name );
@@ -241,6 +260,10 @@ private:
      */
     int m_msg_offset;
 
+    /**
+     * The line number of the current text we're drawing.
+     */
+    int m_text_offset;
 
     /**
      * Currently selected folders.
@@ -266,6 +289,11 @@ private:
      * The handle to the domain-socket.
      */
     int m_domain_socket;
+
+    /**
+     * The text currently being displayed.
+     */
+    std::vector<UTFString> m_text;
 };
 
 #endif /* _global_h_ */

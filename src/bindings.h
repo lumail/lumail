@@ -125,6 +125,12 @@ int prompt_chars(lua_State *L);
 int prompt_maildir(lua_State * L);
 
 
+/**
+ * bindings_text.cc:
+ */
+int scroll_text_up(lua_State *L);
+int scroll_text_down(lua_State *L);
+int view_file(lua_State *L);
 
 /**
  * bindings.cc

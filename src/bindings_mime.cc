@@ -363,4 +363,3 @@ int save_attachment(lua_State *L)
     return( 1 );
 
 }
-
