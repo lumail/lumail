@@ -1,5 +1,5 @@
-Lumail $VERSION Help Manual
-------------------
+Lumail __UNRELEASED__ Help Manual
+-----------------------
 
 This document is the help-manual for Lumail.
 
@@ -22,7 +22,8 @@ To return to your previous position press "q".
 About Lumail
 ------------
 
-This is $RELEASE.
+This is Lumail v__UNRELEASED__, available from http://lumail.org/
+
 
 Searching
 ---------
@@ -31,7 +32,7 @@ TODO
 
 
 Online Help
-------------
+-----------
 
 TODO
 

@@ -88,6 +88,7 @@ release: clean style
 	rm -rf $(DIST_PREFIX)/$(BASE)-$(VERSION)/.git*
 	rm -rf $(DIST_PREFIX)/$(BASE)-$(VERSION)/.depend || true
 	perl -pi -e "s/__UNRELEASED__/$(VERSION)/g" $(DIST_PREFIX)/$(BASE)-$(VERSION)/src/version.h
+	perl -pi -e "s/__UNRELEASED__/$(VERSION)/g" $(DIST_PREFIX)/$(BASE)-$(VERSION)/lumail.help
 	cd $(DIST_PREFIX) && tar -cvf $(DIST_PREFIX)/$(BASE)-$(VERSION).tar $(BASE)-$(VERSION)/
 	gzip $(DIST_PREFIX)/$(BASE)-$(VERSION).tar
 	mv $(DIST_PREFIX)/$(BASE)-$(VERSION).tar.gz .
