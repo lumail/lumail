@@ -44,7 +44,7 @@
  */
 int scroll_text_down(lua_State *L)
 {
-    int step = lua_tonumber(L, -1) || 1;
+    int step = lua_tonumber(L, -1);
 
     CGlobal *global = CGlobal::Instance();
     int cur = global->get_text_offset();
@@ -60,7 +60,7 @@ int scroll_text_down(lua_State *L)
  */
 int scroll_text_up(lua_State *L)
 {
-    int step = lua_tonumber(L, -1) || 1;
+    int step = lua_tonumber(L, -1);
     CGlobal *global = CGlobal::Instance();
 
 
