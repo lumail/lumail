@@ -203,6 +203,31 @@ int global_mode(lua_State * L)
      */
     const char *new_mode = lua_tostring(L, -1);
 
+    /**
+     * If the new mode is being set we want to make sure
+     * that it is valid.
+     */
+    if ( new_mode != NULL )
+    {
+        bool valid = false;
+
+        if ( strcasestr( new_mode, "maildir" ) != NULL )
+            valid = true;
+        if ( strcasestr( new_mode, "index" ) != NULL )
+            valid = true;
+        if ( strcasestr( new_mode, "text" ) != NULL )
+            valid = true;
+        if ( strcasestr( new_mode, "message" ) != NULL )
+            valid = true;
+
+        if ( valid == false )
+        {
+            lua_pushstring(L, "Invalid mode" );
+            return 1;
+        }
+    }
+
+
     CGlobal *global           = CGlobal::Instance();
     std::string *current_mode = global->get_variable("global_mode");
 
