@@ -3,7 +3,7 @@
  *
  * This file is part of lumail: http://lumail.org/
  *
- * Copyright (c) 2013 by Steve Kemp.  All rights reserved.
+ * Copyright (c) 2013-2014 by Steve Kemp.  All rights reserved.
  *
  **
  *

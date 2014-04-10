@@ -3,7 +3,7 @@ Upstream-Name: lumail
 Source: http://lumail.org/
 
 Files: *
-Copyright: Copyright 2013 Steve Kemp <steve@steve.org.uk>
+Copyright: Copyright 2013-2014 Steve Kemp <steve@steve.org.uk>
 License: GPL-2+
  This program is free software; you can redistribute it
  and/or modify it under the terms of the GNU General Public
