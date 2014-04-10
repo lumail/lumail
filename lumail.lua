@@ -809,22 +809,20 @@ end
 --
 -- Open a folder exclusively.
 --
--- This behaves like the traditional "open folder" function in our favourite
--- client.  I like to open multiple folders at once, because that's how I roll.
+-- If called with no arguments it will open the folder under the
+-- cursor in maildir-mode.
 --
-function open_selected_folder()
+-- If called with the name of a folder it will open that specified
+-- folder.
+--
+function open_folder(folder)
    clear_selected_folders()
-   add_selected_folder()
-   index()
-end
 
-
---
--- Open the specified folder.
---
-function open( folder )
-   clear_selected_folders()
-   set_selected_folder(folder)
+   if ( folder ) then
+      set_selected_folder(folder)
+   else
+      add_selected_folder()
+   end
    index()
 end
 
@@ -1125,7 +1123,7 @@ keymap['message']['N'] = 'jump_to_next_unread()'
 --  "return" will open the selected folder exclusively.
 --
 keymap['maildir']['Space'] = 'toggle_selected_folder()'
-keymap['maildir']['Enter'] = 'open_selected_folder()'
+keymap['maildir']['Enter'] = 'open_folder()'
 
 
 
