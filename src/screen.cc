@@ -745,6 +745,15 @@ void CScreen::drawMessage()
 }
 
 
+std::vector<UTFString> &split(const std::string &s, char delim, std::vector<UTFString> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
 /**
  * Draw text which has been set from lua.
  */
@@ -756,25 +765,100 @@ void CScreen::drawText()
     std::vector<UTFString> text = global->get_text();
 
 
+    /**
+     * Get the (default) colour for the text.
+     */
+    std::string *t_colour = global->get_variable( "text_colour" );
+    std::string text_colour;
+    if ( t_colour != NULL )
+        text_colour = *t_colour;
+    else
+        text_colour = "white";
+
+
+
     if ( offset < (int)text.size() )
     {
         int max = CScreen::height();
 
         for( int i = 0; i< max; i++ )
         {
+            /**
+             * Get the line.
+             */
             UTFString line = "";
             if ( i+offset < (int)text.size() )
                 line = text.at(i+offset);
 
+            /**
+             * Move to the start of the line, and setup the colour.
+             */
             move(i, 0);
+            attron( COLOR_PAIR(m_colours[text_colour]) );
+
+            /**
+             * If the line is of the form ${colour:xxx} then strip
+             * that off, and change the colour
+             */
+            if ( line.length() > 3 )
+            {
+                if ( ( line[0] == '$' ) && ( line[1] == '{' ) )
+                {
+                    size_t offset = line.find_first_of( '}' );
+                    if ( offset != std::string::npos )
+                    {
+                        UTFString code = line.substr(0, offset );
+                        code = code.substr(2);
+
+                        line = line.substr( offset+1 );
+
+                        /**
+                         * OK we've got something that is a code.
+                         *
+                         * This might be:
+                         *
+                         *  colour:red
+                         *  colour:pink bold
+                         *  foo:bar baz
+                         *
+                         */
+                        std::vector<UTFString> elems;
+                        split(code, ' ', elems);
+
+                        for (UTFString token : elems)
+                        {
+                            if ( strcasestr( token.c_str(), "colour:" ) != NULL )
+                            {
+                                UTFString col = token.substr( 7 );
+                                attron( COLOR_PAIR(m_colours[col]) );
+                            }
+                            if ( token == "bold" )
+                            {
+                                attron( A_STANDOUT );
+                            }
+                            if ( token == "underline" )
+                            {
+                                attron( A_UNDERLINE );
+                            }
+                        }
+                    }
+                }
+            }
+            /**
+             * Draw the line.
+             */
             printw(line.c_str());
+            attroff( A_STANDOUT );
+            attroff( A_UNDERLINE );
 
         }
     }
     else
     {
+#ifdef LUMAIL_DEBUG
         move(3, 3);
         printw("We're outside our array of text?" );
+#endif
     }
 }
 
