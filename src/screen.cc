@@ -38,6 +38,7 @@
 #include "message.h"
 #include "screen.h"
 #include "utfstring.h"
+#include "util.h"
 
 
 #ifndef DEFAULT_UNREAD_COLOUR
@@ -745,14 +746,6 @@ void CScreen::drawMessage()
 }
 
 
-std::vector<UTFString> &split(const std::string &s, char delim, std::vector<UTFString> &elems) {
-    std::stringstream ss(s);
-    std::string item;
-    while (std::getline(ss, item, delim)) {
-        elems.push_back(item);
-    }
-    return elems;
-}
 
 /**
  * Draw text which has been set from lua.
@@ -791,14 +784,14 @@ void CScreen::drawText()
                 line = text.at(i+offset);
 
             /**
-             * Move to the start of the line, and setup the colour.
+             * Move to the start of the line, and setup the default colour.
              */
             move(i, 0);
             attron( COLOR_PAIR(m_colours[text_colour]) );
 
             /**
-             * If the line is of the form ${colour:xxx} then strip
-             * that off, and change the colour
+             * If the line is of the form ${XX YY ZZ} then strip
+             * that prefix out of the way, and process it as colour/formatting.
              */
             if ( line.length() > 3 )
             {
@@ -807,24 +800,33 @@ void CScreen::drawText()
                     size_t offset = line.find_first_of( '}' );
                     if ( offset != std::string::npos )
                     {
+                        /**
+                         * Get the code which is the start of the line
+                         * minus the leading "${" and trailing "}".
+                         */
                         UTFString code = line.substr(0, offset );
                         code = code.substr(2);
 
+                        /**
+                         * Now the line is just the text to display.
+                         */
                         line = line.substr( offset+1 );
 
                         /**
-                         * OK we've got something that is a code.
+                         * OK so we now need to process the code.  Given
+                         * the input "${colour:pink bold} .." we'll have
+                         * a code that reads "colour:pink bold"
                          *
-                         * This might be:
-                         *
-                         *  colour:red
-                         *  colour:pink bold
-                         *  foo:bar baz
+                         * We need to split that up on whitespace and
+                         * parse each part, ignoring anything we don't
+                         * understand.
                          *
                          */
-                        std::vector<UTFString> elems;
-                        split(code, ' ', elems);
+                        std::vector<UTFString> elems = split(code, ' ');
 
+                        /**
+                         * Now we've tokenized look for colours/bold/etc.
+                         */
                         for (UTFString token : elems)
                         {
                             if ( strcasestr( token.c_str(), "colour:" ) != NULL )
@@ -832,13 +834,23 @@ void CScreen::drawText()
                                 UTFString col = token.substr( 7 );
                                 attron( COLOR_PAIR(m_colours[col]) );
                             }
-                            if ( token == "bold" )
+                            else if ( token == "bold" )
                             {
                                 attron( A_STANDOUT );
                             }
-                            if ( token == "underline" )
+                            else if ( token == "underline" )
                             {
                                 attron( A_UNDERLINE );
+                            }
+                            else
+                            {
+#ifdef LUMAIL_DEBUG
+                                std::string dm = "Unknown token @ CScreen::drawText(";
+                                dm += token;
+                                dm += ");";
+                                DEBUG_LOG( dm );
+#endif
+
                             }
                         }
                     }
