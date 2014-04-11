@@ -117,7 +117,7 @@ private:
     /**
      * Lookup the curses attribute for the given string.
      */
-    int lookup_highlight_attribute( std::string *name );
+    int lookup_curses_attribute( std::string *name, int default_val = A_STANDOUT );
 
     /**
      * Colour-maps.

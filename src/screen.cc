@@ -119,7 +119,7 @@ void CScreen::drawMaildir()
      * get the higlighting mode for the current column
      */
     std::string *highlight = global->get_variable( "maildir_highlight_mode");
-    int highlight_mode     = lookup_highlight_attribute( highlight );
+    int highlight_mode     = lookup_curses_attribute( highlight );
 
 
     /**
@@ -356,7 +356,7 @@ void CScreen::drawIndex()
      * get the higlighting mode for the current column
      */
     std::string *highlight = global->get_variable( "index_highlight_mode");
-    int highlight_mode = lookup_highlight_attribute( highlight );
+    int highlight_mode = lookup_curses_attribute( highlight );
 
     /**
      * The number of items we've found, vs. the size of the screen.
@@ -834,35 +834,25 @@ void CScreen::drawText()
                                 UTFString col = token.substr( 7 );
                                 attron( COLOR_PAIR(m_colours[col]) );
                             }
-                            else if ( token == "bold" )
-                            {
-                                attron( A_STANDOUT );
-                            }
-                            else if ( token == "underline" )
-                            {
-                                attron( A_UNDERLINE );
-                            }
                             else
                             {
-#ifdef LUMAIL_DEBUG
-                                std::string dm = "Unknown token @ CScreen::drawText(";
-                                dm += token;
-                                dm += ");";
-                                DEBUG_LOG( dm );
-#endif
+                                std::string *x = new std::string( token );
 
+                                int val = lookup_curses_attribute( x, 0 );
+                                if ( val != 0 )
+                                    attron( val );
+
+                                delete( x );
                             }
                         }
                     }
                 }
             }
             /**
-             * Draw the line.
+             * Draw the line of text, and reset attributes.
              */
             printw(line.c_str());
-            attroff( A_STANDOUT );
-            attroff( A_UNDERLINE );
-
+            attrset( 0 );
         }
     }
     else
@@ -1631,7 +1621,7 @@ UTFString CScreen::get_line()
 /**
  * Lookup the curses attribute for the given string.
  */
-int CScreen::lookup_highlight_attribute( std::string *name )
+int CScreen::lookup_curses_attribute( std::string *name, int default_val )
 {
     assert(name != NULL);
     assert(!name->empty());
@@ -1659,5 +1649,5 @@ int CScreen::lookup_highlight_attribute( std::string *name )
     if ( result != 0 )
         return( result );
     else
-        return( A_STANDOUT );
+        return( default_val );
 }
