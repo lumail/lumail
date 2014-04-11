@@ -1216,16 +1216,3 @@ end
 keymap['global']['p'] = "toggle_maildir_names()"
 
 
-
---
---  Test the show_text() primitive.
---
-function x()
-   txt = { "${colour:red}Steve",
-           "${colour:blue}Kemp",
-           "${bold}Has",
-           "${underline}Definitely",
-           "Made this work" }
-   show_text( txt )
-   global_mode( "text")
-end
