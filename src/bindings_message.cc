@@ -686,7 +686,7 @@ int compose(lua_State * L)
             def_prog_mode();
             endwin();
 
-            system( cmd.c_str() );
+            unused = system( cmd.c_str() );
 
             /**
              * Reset + redraw
@@ -980,7 +980,7 @@ int forward(lua_State * L)
             def_prog_mode();
             endwin();
 
-            system( cmd.c_str() );
+            unused = system( cmd.c_str() );
 
             /**
              * Reset + redraw
@@ -1281,6 +1281,9 @@ int reply(lua_State * L)
      */
     while( true )
     {
+
+        int unused __attribute__((unused));
+
         /**
          * Edit the message on-disk.
          */
@@ -1312,7 +1315,7 @@ int reply(lua_State * L)
             def_prog_mode();
             endwin();
 
-            system( cmd.c_str() );
+            unused = system( cmd.c_str() );
 
             /**
              * Reset + redraw
