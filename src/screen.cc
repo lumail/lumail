@@ -462,8 +462,6 @@ void CScreen::drawIndex()
                 attron( COLOR_PAIR(m_colours[unread_colour]) );
         }
 
-        std::string path = "";
-
         if (cur != NULL)
             buf =  cur->format();
 
