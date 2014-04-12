@@ -50,7 +50,7 @@ int unused __attribute__((unused));
  * 3. Send the mail.
  *
  */
-enum send_t { EDIT, ABORT, SEND, RETRY };
+enum send_t { EDIT, ABORT, SEND, VIEW, RETRY };
 
 
 
@@ -287,6 +287,7 @@ bool send_mail_and_archive( std::string filename )
  *
  *  SEND  -> Send the mail.
  *  EDIT  -> Re-edit the mail.
+ *  VIEW  -> View the mail.
  *  ABORT -> Abort the sending.
  *  RETRY -> Re-ask the question.
  *
@@ -298,8 +299,8 @@ send_t should_send( lua_State * L, std::vector<std::string> *attachments )
         /**
          * Use prompt_chars() to get the input
          */
-        lua_pushstring(L,"Send mail: (y)es, (n)o, re(e)edit, or (a)dd an attachment?" );
-        lua_pushstring(L,"eanyEANY");
+        lua_pushstring(L,"Send mail: (y)es, (n)o, re(e)edit, (v)iew, or (a)dd an attachment?" );
+        lua_pushstring(L,"eanvyEANVY");
 
         int ret = prompt_chars(L);
         if ( ret != 1 )
@@ -320,6 +321,11 @@ send_t should_send( lua_State * L, std::vector<std::string> *attachments )
               ( response[0] == 'Y' ) )
         {
             return SEND;
+        }
+        if (  ( response[0] == 'v' ) ||
+              ( response[0] == 'V' ) )
+        {
+            return VIEW;
         }
         if ( ( response[0] == 'n' ) ||
              ( response[0] == 'N' ) )
@@ -672,6 +678,25 @@ int compose(lua_State * L)
             return 0;
         }
 
+        if ( result == VIEW )
+        {
+            std::string cmd = "less " + filename;
+
+            refresh();
+            def_prog_mode();
+            endwin();
+
+            system( cmd.c_str() );
+
+            /**
+             * Reset + redraw
+             */
+            reset_prog_mode();
+            refresh();
+
+            goto retry;
+        }
+
         if ( result == SEND )
         {
             /**
@@ -945,6 +970,25 @@ int forward(lua_State * L)
             call_message_hook( "on_message_aborted", filename.c_str() );
             CFile::delete_file( filename );
             return 0;
+        }
+
+        if ( result == VIEW )
+        {
+            std::string cmd = "less " + filename;
+
+            refresh();
+            def_prog_mode();
+            endwin();
+
+            system( cmd.c_str() );
+
+            /**
+             * Reset + redraw
+             */
+            reset_prog_mode();
+            refresh();
+
+            goto retry;
         }
 
         if ( result == SEND )
@@ -1260,6 +1304,25 @@ int reply(lua_State * L)
             return 0;
         }
 
+        if ( result == VIEW )
+        {
+            std::string cmd = "less " + filename;
+
+            refresh();
+            def_prog_mode();
+            endwin();
+
+            system( cmd.c_str() );
+
+            /**
+             * Reset + redraw
+             */
+            reset_prog_mode();
+            refresh();
+
+            goto retry;
+        }
+
         if ( result == SEND )
         {
             /**
@@ -1282,9 +1345,12 @@ int reply(lua_State * L)
             return 0;
         }
 
+    retry:
+
         /**
          * result == EDIT is implied here.
          */
+        void(0);
     }
 
     /**
