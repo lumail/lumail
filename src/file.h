@@ -100,6 +100,11 @@ public:
      */
     static std::vector<std::string> get_all_maildirs(std::string prefix);
 
+    /**
+     * Allow completion of file/path-names
+     */
+    static std::vector<std::string> complete_filename(std::string path);
+
 };
 
 #endif /* _file_h_ */

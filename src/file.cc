@@ -395,3 +395,74 @@ std::vector<std::string> CFile::get_all_maildirs(std::string prefix)
 
     return result;
 }
+
+
+/**
+ * Allow completion of file/path-names
+ */
+std::vector<std::string> CFile::complete_filename(std::string path)
+{
+    std::vector<std::string> result;
+
+    std::string dir = getcwd(NULL,0);
+    std::string file;
+
+    /**
+     * Get the directory-name.
+     */
+    size_t offset = path.find_last_of( "/" );
+    if ( offset != std::string::npos )
+    {
+        dir =  path.substr(0,offset);
+        file = path.substr(offset+1);
+    }
+    else
+    {
+        file = path;
+    }
+
+    /**
+     * Ensure we have a trailing "/".
+     */
+    if ( ( dir.empty() ) ||
+         ( !dir.empty() && ( dir.rbegin()[0] != '/' ) ) )
+        dir += "/";
+
+
+    /**
+     * Open the directory.
+     */
+    DIR *dp = opendir(dir.c_str());
+    if ( dp != NULL )
+    {
+        while (true)
+        {
+            dirent *de = readdir(dp);
+            if (de == NULL)
+                break;
+
+            /**
+             * Skip dots..
+             */
+            if ( ( strcmp( de->d_name, "." ) != 0 ) &&
+                 ( strcmp( de->d_name, ".." ) != 0 ) &&
+                 ( strncasecmp( file.c_str(), de->d_name, file.size() ) == 0 ) )
+            {
+
+                /**
+                 * If completing a directory add the trailing "/"
+                 * automatically.
+                 */
+                std::string option = dir + de->d_name ;
+                if ( CFile::is_directory( option ) )
+                    option += "/";
+
+                result.push_back( option );
+            }
+        }
+        closedir(dp);
+    }
+
+
+    return( result );
+}
