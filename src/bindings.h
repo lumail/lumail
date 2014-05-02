@@ -56,6 +56,8 @@ CMessage *get_message_for_operation( const char *path );
  * bindings_file.cc:
  */
 int create_maildir(lua_State *L);
+int cd(lua_State *L);
+int cwd(lua_State *L);
 int delete_maildir(lua_State *L);
 int executable(lua_State *L);
 int file_exists(lua_State *L);

@@ -58,6 +58,32 @@ int create_maildir(lua_State *L)
 
 
 /**
+ * Change the current working directory.
+ */
+int cd(lua_State *L)
+{
+    const char *path = lua_tostring(L, -1);
+    if (path == NULL)
+        return luaL_error(L, "Missing argument to cd(..)");
+
+    chdir(path);
+
+    return 0;
+}
+
+
+/**
+ * Return the current working directory.
+ */
+int cwd(lua_State *L)
+{
+    std::string path = getcwd(NULL,0);
+    lua_pushstring(L, path.c_str() );
+    return 1;
+}
+
+
+/**
  * Delete an existing maildir.
  */
 int delete_maildir(lua_State *L)

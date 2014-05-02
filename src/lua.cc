@@ -81,6 +81,8 @@ struct CLuaMapping primitive_list[] =
  * File/Path utilities.  Defined in src/bindings_file.cc
  */
     {"create_maildir", "Create a new maildir.", (lua_CFunction) create_maildir },
+    {"cd", "Change the current working directory", (lua_CFunction) cd },
+    {"cwd", "Return the current working directory", (lua_CFunction) cwd },
     {"delete_maildir", "Delete an empty maildir.", (lua_CFunction) delete_maildir },
     {"executable", "Is the given file executable?", (lua_CFunction) executable },
     {"file_exists", "Does the given file exist?", (lua_CFunction) file_exists },
