@@ -66,7 +66,11 @@ int cd(lua_State *L)
     if (path == NULL)
         return luaL_error(L, "Missing argument to cd(..)");
 
-    chdir(path);
+    /**
+     * We don't care if this succeeds or not.
+     */
+    int unused __attribute__((unused));
+    unused = chdir(path);
 
     return 0;
 }
