@@ -800,6 +800,7 @@ std::string CMessage::date(TDate fmt)
             fmts.push_back( "%m/%d/%y" );
             fmts.push_back( "%d %b %Y" );
             fmts.push_back( "%a %b %d %H:%M:%S %Y" );
+            fmts.push_back( "%d.%m.%Y %H:%M:%S" ); /* Date: 30.04.2014 03:41:22 */
 
             char* rc = NULL;
 
