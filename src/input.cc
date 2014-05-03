@@ -94,5 +94,5 @@ int CInput::get_wchar(gunichar *wch)
     /**
      * Otherwise defer to ncurses.
      */
-    return( get_wch(wch) );
+    return( get_wch( (wint_t *) wch) );
 }
