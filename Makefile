@@ -21,6 +21,17 @@
 
 
 #
+# Features which can be compiled in/out
+#
+FEATURES=-DDOMAIN_SOCKET=1
+
+#
+# We've tested compilation with Lua 5.1 and 5.2.
+#
+LUA_VERSION=5.1
+
+
+#
 #  Source + Object + Binary directories
 #
 SRCDIR         = src
@@ -29,13 +40,10 @@ DEBUG_OBJDIR   = obj.debug
 
 
 #
-# Features which can be compiled in/out
-#
-FEATURES=-DDOMAIN_SOCKET=1
-
-
-#
 #  Used solely for building a new release tarball.  ("make release").
+#
+#  The version comes from the convention that Steve tags the releases
+# with "release-N.N".
 #
 TMP?=/tmp
 BASE=lumail
@@ -48,7 +56,22 @@ VERSION=$(shell sh -c 'git describe --abbrev=0 --tags | tr -d "release-"')
 C=gcc
 CC=g++
 LINKER=$(CC) -o
-LVER=lua5.1
+
+
+#
+# The name of the library we'll link against differs on different
+# systems, which is fun.
+#
+LVER=lua$(LUA_VERSION)
+UNAME := $(shell uname -s)
+ifeq ($(UNAME),DragonFly)
+LVER=lua-$(LUA_VERSION)
+endif
+
+
+#
+# Compilation flags and libraries we use.
+#
 CPPFLAGS+=-std=gnu++0x -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) -I/usr/include/ncursesw/
 LDLIBS+=$(shell pkg-config --libs ${LVER}) -lncursesw -lpcrecpp
 
@@ -104,6 +127,7 @@ clean:
 	test -d $(DEBUG_OBJDIR)    && rm -rf $(DEBUG_OBJDIR)   || true
 	rm -f gmon.out lumail lumail-debug lumailctl core      || true
 	@cd util && make clean                                 || true
+
 
 #
 #  Sources + objects.
