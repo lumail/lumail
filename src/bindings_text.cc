@@ -103,28 +103,32 @@ int show_file_contents(lua_State *L)
  */
 int show_text(lua_State *L)
 {
-
-    luaL_checktype(L, -1, LUA_TTABLE);
-
-    int len = lua_objlen(L, -1);
     std::vector<UTFString> buf;
 
-
-    for(int i = 0; i < len; i++)
+    /**
+     * Ensure we have a table.
+     */
+    if (lua_type(L, -1)!=LUA_TTABLE)
     {
-        lua_pushinteger(L, i+1);
-        lua_gettable(L, -2);
-        if(lua_isstring(L, -1))
-        {
-            buf.push_back( lua_tostring(L, -1) );
-        }
-        else
-        {
-            assert(false);
-        }
         lua_pop(L, 1);
+
+        return 0;
     }
 
+    lua_pushnil(L);
+
+    while (lua_next(L, -2))
+    {
+        const char *d  = lua_tostring(L, -1);
+
+        buf.push_back( d );
+        lua_pop( L , 1);
+    }
+
+    /**
+     * Cleanup the table.
+     */
+    lua_pop(L,1);
 
     CGlobal *global = CGlobal::Instance();
     global->set_text( buf );
