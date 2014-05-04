@@ -121,7 +121,7 @@ public:
     /**
      * Get the message last modified time (cached).
      */
-    const time_t mtime();
+    time_t mtime();
 
     /**
      * Retrieve the value of a given header from the message.

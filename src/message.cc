@@ -443,7 +443,7 @@ bool CMessage::is_new()
 /**
  * Get the message last modified time (cached).
  */
-const time_t CMessage::mtime()
+time_t CMessage::mtime()
 {
     struct stat s;
 

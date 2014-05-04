@@ -135,6 +135,12 @@ void CDebug::debug( UTFString line, bool force)
      */
     fs.close();
 
+#else
+
+    /* Avoid unused-parameter error. */
+    (void)line;
+    (void)force;
+
 #endif
 }
 

@@ -73,7 +73,7 @@ int selected_folders(lua_State * L);
 int clear_selected_folders(lua_State * L);
 int add_selected_folder(lua_State * L);
 int toggle_selected_folder(lua_State * L);
-int set_selected_folder(lua_State * L);;
+int set_selected_folder(lua_State * L);
 
 /**
  * bindings_index.cc:

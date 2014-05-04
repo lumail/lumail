@@ -243,6 +243,8 @@ int bind_socket(lua_State * L)
  */
 int close_socket(lua_State * L)
 {
+    /* Avoid unused-parameter error. */
+    (void)L;
 
 #ifdef DOMAIN_SOCKET
 
@@ -266,6 +268,9 @@ int close_socket(lua_State * L)
  */
 int clear(lua_State * L)
 {
+    /* Avoid unused-parameter error. */
+    (void)L;
+
     /**
      * Ensure we refresh the display after clearing the screen.
      */
@@ -313,6 +318,9 @@ int exec(lua_State * L)
  */
 int exit(lua_State * L)
 {
+    /* Avoid unused-parameter error. */
+    (void)L;
+
     /**
      * Close curses.
      */
@@ -425,6 +433,9 @@ int hostname(lua_State *L)
  */
 int log_message(lua_State *L)
 {
+    /* Avoid unused-parameter error. */
+    (void)L;
+
 #ifdef LUMAIL_DEBUG
     const char *str = lua_tostring(L, -1);
     if (str == NULL)
@@ -446,6 +457,9 @@ int log_message(lua_State *L)
  */
 int lua_dump_stack(lua_State *L)
 {
+    /* Avoid unused-parameter error. */
+    (void)L;
+
 #ifdef LUMAIL_DEBUG
     CLua *lua = CLua::Instance();
     lua->dump_stack();

@@ -65,9 +65,9 @@ int CHistory::size()
 UTFString CHistory::at( size_t offset )
 {
     /**
-     * Ensure the history offset is between 0-size.
+     * Ensure the history offset is correctly bound.
      */
-    assert( ( offset >= 0 ) && ( offset < m_history.size() ) );
+    assert( offset < m_history.size() );
 
     return( m_history.at( offset ) );
 }

@@ -89,6 +89,9 @@ int add_selected_folder(lua_State * L)
  */
 int clear_selected_folders(lua_State * L)
 {
+    /* Avoid unused-parameter error. */
+    (void)L;
+
     CGlobal *global = CGlobal::Instance();
     global->unset_folders();
     global->set_selected_message(0);
