@@ -526,15 +526,15 @@ int mime_type(lua_State *L)
                 std::vector<std::string> data;
                 pcrecpp::RE regex("(.+?)(?:[\\r\\n\\t]+|$)");
 
-                std::ifstream file("/etc/mime.types", std::ios::in);
-                if (file.is_open())
+                std::ifstream types("/etc/mime.types", std::ios::in);
+                if (types.is_open())
                 {
                     std::string line;
                     std::string piece;
 
-                    while (!file.eof())
+                    while (!types.eof())
                     {
-                        getline(file, line);
+                        getline(types, line);
                         pcrecpp::StringPiece input(line.c_str());
                         while (regex.Consume(&input, &piece))
                             data.push_back(piece);
@@ -563,7 +563,7 @@ int mime_type(lua_State *L)
                         }
                         data.clear();
                     }
-                    file.close();
+                    types.close();
                 }
             }
 
