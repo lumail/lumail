@@ -24,6 +24,7 @@
 int main(int argc, char *argv[])
 {
   struct sockaddr_un addr;
+  struct stat sb;
   int fd,rc;
 
   char tmp[1024];
@@ -53,7 +54,6 @@ int main(int argc, char *argv[])
   /**
    * Ensure the socket exists.
    */
-  struct stat sb;
   if ( -1 == stat(soc, &sb) )
   {
       perror( "Socket not found.");
