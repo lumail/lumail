@@ -25,7 +25,8 @@ int main(int argc, char *argv[])
 {
   struct sockaddr_un addr;
   struct stat sb;
-  int fd,rc;
+  int fd;
+  size_t rc;
 
   char tmp[1024];
   char *soc;
@@ -77,7 +78,7 @@ int main(int argc, char *argv[])
       exit(-1);
   }
 
-  if ((rc = write(fd, lua, strlen(lua))) != strlen(lua) )
+  if ((rc = (size_t)write(fd, lua, strlen(lua))) != strlen(lua) )
   {
       if (rc > 0)
       {
