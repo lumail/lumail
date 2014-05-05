@@ -72,8 +72,8 @@ endif
 #
 # Compilation flags and libraries we use.
 #
-CPPFLAGS+=-std=gnu++0x -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) -I/usr/include/ncursesw/
-LDLIBS+=$(shell pkg-config --libs ${LVER}) -lncursesw -lpcrecpp
+CPPFLAGS+=-std=gnu++0x -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw)
+LDLIBS+=$(shell pkg-config --libs ${LVER}) $(shell pkg-config --libs ncursesw) -lpcrecpp
 
 #
 #  GMime is used for MIME handling.
