@@ -43,7 +43,7 @@ Building/Installation
 The application is developed in C++ and has intentionally minimal dependencies:
 
 * lua 5.1 - The scripting language.
-    * lua 5.2 is supported too, but is not the default.
+    * lua 5.2 is also supported, but is not yet the default.
 * libncursesw - The console input/graphics library.
 * libgmime-2.6  - The MIME-library.
 * libglibmm-2.4 - The library we use for UTF-8 aware strings.
@@ -59,7 +59,16 @@ Upon a Debian GNU/Linux system you may install all required packages with:
 Although we might become more complex in the future the code currently builds
 via a simple `Makefile`, and running `make` with no arguments should be sufficient.
 
-**NOTE**: For Fedora distributions you will need to run: `make LVER=lua`.
+When you run `make` two versions of the main lumail binary will be built, one with debugging information present, and one without.  Building both at the same time is useful as it allows more diagnostics to be made if/when bugs are found.
+
+There are two choices you can make when building lumail:
+
+* Whether to enable domain-socket support.
+     * This allows commands to be sent to a running lumail instance, over a unix domain socket.
+     * **NOTE** Even if support is compiled-in there will be no socket by default, instead your configuration file will need to invoke the <a href="http://lumail.org/lua/bind_socket.html">bind_socket()</a> primitive to initiate the listener.
+* Which version of Lua to build against (5.1 or 5.2)
+     * Run "`make LUA_VERSION=5.1`" or "`make LUA_VERSION=5.2`" to choose explicitly.
+     * **NOTE**: For Fedora distributions you will need to run: "`make LUA_VERSION=`".
 
 Once compiled the client may be executed directly, but you will need to supply
 a valid (Lua) configuration file:
@@ -69,7 +78,6 @@ a valid (Lua) configuration file:
 
 Installation should be as simple as copying the supplied configuration file to `/etc/lumail.lua` and copying the binary to `/usr/local/bin`.  If you run `make install` this will be done for you.
 
-**NOTE**: For coding-style please see [CODING-STYLE](CODING-STYLE).
 
 
 Configuration & Lua-Primitives
