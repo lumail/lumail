@@ -65,7 +65,11 @@ LINKER=$(CC) -o
 LVER=lua$(LUA_VERSION)
 UNAME := $(shell uname -s)
 ifeq ($(UNAME),DragonFly)
-LVER=lua-$(LUA_VERSION)
+	LVER=lua-$(LUA_VERSION)
+endif
+ifeq ($(UNAME),Darwin)
+	LVER=lua #(use lua-52)
+	LFLAGS=-std=c++11
 endif
 
 
