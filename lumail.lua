@@ -308,7 +308,7 @@ function jump_to_end()
       --
 
       -- Jump to the end of the message.
-      scroll_message_to( count_lines() - 2 )
+      jump_message_to( count_lines() - 2 )
    end
 end
 
@@ -337,7 +337,7 @@ function jump_to_start()
       --
 
       -- Jump to the start of the message.
-      scroll_message_to( 0 )
+      jump_message_to( 0 )
    end
 end
 
@@ -798,6 +798,8 @@ do
          scroll_maildir_to( x )
       elseif (string.find(m, "index" ) ) then
          scroll_index_to( x )
+      elseif (string.find(m, "message" ) ) then
+         scroll_message_to( x )
       elseif (string.find(m, "text" ) ) then
          scroll_text_to( x )
       else
@@ -1058,6 +1060,9 @@ keymap['global']['KEY_UP'] = 'up()'
 keymap['global']['K'] = 'page_up()'
 keymap['global']['KEY_PPAGE'] = 'page_up()'
 
+-- Search forwards, by regular expression
+keymap['global']['/'] = 'search_next()'
+
 
 --
 -- THIS WORKS :D.
@@ -1088,14 +1093,8 @@ keymap['maildir']['g'] = 'maildir_limit( "(Google.*INBOX|Google.*All Mail)" )'
 --
 -- Find folders
 --
-keymap['maildir']['/'] = 'search_next()'
 keymap['maildir']['f'] = 'faves()'
 
-
---
--- Search the message index
---
-keymap['index']['/'] = 'search_next()'
 
 --
 -- Per-message actions
@@ -1147,7 +1146,6 @@ keymap['message']['r'] = 'reply()'
 -- Text display
 --
 keymap['text']['q'] = 'previous_mode()'
-keymap['text']['/'] = 'search_next()'
 
 
 ---

@@ -1440,7 +1440,7 @@ int scroll_message_down(lua_State *L)
 /**
  * Scroll the message to the given offset.
  */
-int scroll_message_to(lua_State *L)
+int jump_message_to(lua_State *L)
 {
     int offset = lua_tonumber(L, -1);
     if ( offset < 0 )
@@ -1449,6 +1449,14 @@ int scroll_message_to(lua_State *L)
     CGlobal *global = CGlobal::Instance();
     global->set_message_offset(offset);
     return (0);
+}
+
+/**
+ * Scroll the message to the next line matching the given regexp.
+ */
+int scroll_message_to( lua_State *L)
+{
+    return 0;
 }
 
 /**

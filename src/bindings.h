@@ -100,6 +100,7 @@ int mark_unread(lua_State * L);
 int reply(lua_State * L);
 int save_message( lua_State *L );
 int scroll_message_down(lua_State *L);
+int jump_message_to(lua_State *L);
 int scroll_message_to(lua_State *L);
 int scroll_message_up(lua_State *L);
 int send_email(lua_State *L);
