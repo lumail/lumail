@@ -22,6 +22,7 @@
 #include <cursesw.h>
 #include <fstream>
 #include <iostream>
+#include <pcrecpp.h>
 #include <string.h>
 
 
@@ -1456,6 +1457,71 @@ int jump_message_to(lua_State *L)
  */
 int scroll_message_to( lua_State *L)
 {
+    const char *str = lua_tostring(L, -1);
+
+    if (str == NULL)
+        return luaL_error(L, "Missing argument to scroll_message_to(..)");
+
+    CGlobal *global = CGlobal::Instance();
+    std::vector<CMessage *> *messages = global->get_messages();
+
+    int count = messages->size();
+    int selected = global->get_selected_message();
+
+    size_t cur_offset = global->get_message_offset();
+
+    std::vector<UTFString> body;
+
+
+    CMessage *cur = NULL;
+    if (((selected) < count) && count > 0 )
+        cur = messages->at(selected);
+
+    /**
+     * The body might come from on_get_body.
+     */
+    CLua *lua = CLua::Instance();
+    body = lua->on_get_body();
+    if ( body.empty() )
+        body = cur->body();
+
+    /**
+     * OK at this point we have "body" populated with the message
+     * we're going to display.
+     */
+    if ( body.size() < 1 )
+        return 0;
+
+    size_t offset = cur_offset;
+    offset += 1;
+    if ( offset >= body.size() )
+        offset = 0;
+
+    /**
+     * Iterate over the text
+     */
+    while( offset != cur_offset )
+    {
+        UTFString line = "";
+        line = body.at(offset);
+
+        if (pcrecpp::RE(str, pcrecpp::RE_Options().set_caseless(true)).PartialMatch(line.c_str()) )
+        {
+            /**
+             * We found a match.  Jump to it.
+             */
+            global->set_message_offset(offset);
+            return 0;
+        }
+
+        /**
+         * Next line.
+         */
+        offset += 1;
+        if ( offset >= body.size() )
+            offset = 0;
+    }
+
     return 0;
 }
 
