@@ -798,6 +798,8 @@ do
          scroll_maildir_to( x )
       elseif (string.find(m, "index" ) ) then
          scroll_index_to( x )
+      elseif (string.find(m, "text" ) ) then
+         scroll_text_to( x )
       else
          msg( "search_next() not implemented for mode:" .. m )
       end
@@ -1145,6 +1147,7 @@ keymap['message']['r'] = 'reply()'
 -- Text display
 --
 keymap['text']['q'] = 'previous_mode()'
+keymap['text']['/'] = 'search_next()'
 
 
 ---
