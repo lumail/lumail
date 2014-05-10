@@ -1141,6 +1141,11 @@ keymap['message']['d'] = 'delete()'
 keymap['message']['f'] = 'forward()'
 keymap['message']['r'] = 'reply()'
 
+-- Override the navigation of next/previous message
+-- which would otherwise scroll the current message text down/up by a page
+keymap['message']['J'] = 'scroll_index_down(1)'
+keymap['message']['K'] = 'scroll_index_up(1)'
+
 
 --
 -- Text display
