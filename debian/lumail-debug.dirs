@@ -1,2 +1,4 @@
 bin
 etc
+etc/lumail.d
+usr/share/lumail

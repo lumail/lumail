@@ -2,4 +2,4 @@ lumail           bin/
 lumailctl        bin/
 lumail-debug     bin/
 lumail.lua       etc/
-
+lumail.help      usr/share/lumail
