@@ -15,7 +15,9 @@
 --
 --   $ lumail --rcfile ./one.lua --rcfile ./two.lua
 --
--- NOTE: This file will also cause ~/.lumail.d/*.lua to be loaded.
+-- NOTE: This file will also load anything matching the pattern
+-- ~/.lumail.d/*.lua - This is implemented via a call to the "load_directory"
+-- primitive, which is one of the primitives that Lumail supplies.
 --
 ---
 ---
@@ -51,7 +53,7 @@
 prefix = os.getenv( "HOME" ) .. "/Maildir"
 
 --
--- Ensure the directory exists.
+-- Ensure the directory exists, and abort with an error if it doesn't.
 --
 if ( is_directory(prefix) ) then
    maildir_prefix(prefix)
@@ -79,7 +81,7 @@ end
 -- This can be changed in one of the available hooks.
 --
 -- In this configuration file we use the `on_folder_selection()` function
--- to change this on a per-folder basis.
+-- later on to change this on a per-folder basis.
 --
 default_email = "Steve Kemp <steve@steve.org.uk>"
 from( default_email )
@@ -122,7 +124,7 @@ end
 --
 -- When called with no arguments this function will return the current
 -- setting, otherwise it will update it.  This is a common pattern for lumail,
--- each of the functions which can get or set a value works in the same way.
+-- each of the functions which can get/set a value works in the same way.
 --
 -- The maildir limit can be set to three values:
 --
@@ -130,7 +132,7 @@ end
 --    new  -> Show all maildir folders which contain unread messages.
 --   "pat" -> Show all maildir folders which match the regular expression "pat".
 --
--- See "all_folders" , "new_folders", and "livejournal_folders" functions for
+-- See "all_folders", "new_folders", and "livejournal_folders" functions for
 -- example of use.
 --
 maildir_limit( "all" )
@@ -186,7 +188,7 @@ index_format( "[$FLAGS] $DAY/$MONTH/$YEAR $FROM - $SUBJECT" )
 --
 -- The headers we show when displaying a mail.
 --
--- (The headers listed are shown in the order they are specified here.)
+-- (The headers displayed are presented in the order they are specified here.)
 --
 headers = { "$TO", "$CC", "$FROM", "$DATE", "$SUBJECT" }
 
@@ -255,7 +257,7 @@ end
 --    end
 --
 function on_start()
-   msg("lumail v" .. VERSION .. " http://lumail.org/" )
+   show_version()
 end
 
 
@@ -304,7 +306,7 @@ function jump_to_end()
 
    else
       --
-      -- TODO: Fixe this for messages.
+      -- TODO: Fix this for messages.
       --
 
       -- Jump to the end of the message.
@@ -770,7 +772,7 @@ do
    local search_next_prev = ''
 
    --
-   -- Search for the next folder/message which matches the entered pattern.
+   -- Search forwards given the user-specified pattern.
    --
    function search_next()
 
@@ -790,7 +792,7 @@ do
       search_next_prev = x
 
       --
-      --  Get the mode, so we can do the correct kind of searching.
+      --  Get the mode, so we can perform the correct type of search.
       --
       m = global_mode()
 
@@ -1143,9 +1145,9 @@ keymap['message']['r'] = 'reply()'
 
 -- Override the navigation of next/previous message
 -- which would otherwise scroll the current message text down/up by a page
-keymap['message']['J'] = 'scroll_index_down(1)'
-keymap['message']['K'] = 'scroll_index_up(1)'
-
+keymap['message']['J']     = 'scroll_index_down(1)'
+keymap['message']['K']     = 'scroll_index_up(1)'
+keymap['message']['Space'] = "page_down()"
 
 --
 -- Text display
