@@ -20,6 +20,7 @@ lumail's modes:
 
 * Scroll down: j or DOWN-ARROW.
 * Scroll up  : k or UP-ARROW.
+* Search     : /
 
 To exit this document please press "q".
 
@@ -40,38 +41,66 @@ and logic.
 
 The resulting client was lumail; modal, scriptable, and efficient.
 
+
 ${colour:red bold}Configuration Files
 -------------------
 
 When luamil loads it will expect at least one configuration file.
 
-If no configuration files are present then the program will exit.
+If no configuration files are present then the program will regard itself
+as unconfigured, and immediately exit.
 
-Search for:
+The configuration files examined are:
 
-~/.lum...
+  /etc/lumail.lua
+      This system-wide configuration file affecting all users.
+
+  /etc/lumail.d/*.lua
+      Any file matching this pattern is read.
+
+  ~/.lumail/config.lua
+      This is a per-user file for your own configuration.
+
 
 
 ${colour:red bold}Lua Introduction
 --------
 
-TODO
+Lua is a simple scripting language which is simple to learn, you can
+find all the details here:
 
 
-${colour:red bold}Online Help
------------
+Failing that the followiong introduction should suffice:
 
-TODO
+  http://awesome.naquadah.org/wiki/The_briefest_introduction_to_Lua
+
+
+${colour:red bold}Help
+----
+
+Lumail has some help available, in the form of the `help` command.
+
+You may read a one-line description of all primitives by opening the
+Lua prompt (via ":") and entering:
+
+   help( "cd ")
+
+This brief manual itself is always available by entering `help()` at
+the Lua prompt, and significantly more help is available online at the
+official lumail website:
+
+   http://lumail.org/
 
 
 ${colour:red bold}Contributing & Leaving Feedback
 -------------------------------
 
-TODO
+If you have any comments to make you're welcome to email the author,
+or report issues, however minor, in the online bug-tracker:
 
-${colour:red bold}More
-----
-
-TODO
+   http://github.com/skx/lumail/issues
 
 
+Steve
+--
+10/05/2014
