@@ -1,38 +1,77 @@
-Lumail __UNRELEASED__ Help Manual
------------------------
+${colour:red bold}Lumail __UNRELEASED__
+-------------------
 
 This document is the help-manual for Lumail.
 
-You may refer to this at any time by bringing up the
-lua-prompt, by pressing ":", and entering "help()"
+You may refer back to this document, at any time, by entering 'help()' at
+the lua-prompt.
+
+To access the lua-prompt press ':' at any time.  This prompt will allow
+you to enter arbitrary Lua expressions, including those contained within
+the Lua standard library, those provided by lumail itself, and any custom
+function definitions you've added to the initialization files.
 
 
-Navigation
+${colour:red bold}Navigation
 ----------
 
-Scroll around this document using the following
-keys:
+This document may be navigated using the same key-bindings as the rest of
+lumail's modes:
 
 * Scroll down: j or DOWN-ARROW.
 * Scroll up  : k or UP-ARROW.
 
-To return to your previous position press "q".
+To exit this document please press "q".
 
 
-About Lumail
+${colour:red bold}About Lumail
 ------------
 
-This is Lumail v__UNRELEASED__, available from http://lumail.org/
+Lumail is a modern console-based mail client, which is designed to operate
+exclusively upon Maildir hierarchies.  This means there is no support for
+POP3 or IMAP, although such things can be used indirectly via the use
+of helpers such as imapsync.
+
+Lumail was designed based upon the authors experience of using mutt for
+many years.   The idea that a mail client should be configurable is obvious,
+and it seemed that using a real scripting language was preferable to trying
+to develop a minimal configuration language, handling all the special cases
+and logic.
+
+The resulting client was lumail; modal, scriptable, and efficient.
+
+${colour:red bold}Configuration Files
+-------------------
+
+When luamil loads it will expect at least one configuration file.
+
+If no configuration files are present then the program will exit.
+
+Search for:
+
+~/.lum...
 
 
-Searching
----------
+${colour:red bold}Lua Introduction
+--------
 
 TODO
 
 
-Online Help
+${colour:red bold}Online Help
 -----------
 
 TODO
+
+
+${colour:red bold}Contributing & Leaving Feedback
+-------------------------------
+
+TODO
+
+${colour:red bold}More
+----
+
+TODO
+
 
