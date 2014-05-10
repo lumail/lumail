@@ -55,6 +55,60 @@ int scroll_text_down(lua_State *L)
     return (0);
 }
 
+
+/**
+ * Scroll the text to the given pattern.
+ */
+int scroll_text_to( lua_State *L)
+{
+    const char *str = lua_tostring(L, -1);
+
+    if (str == NULL)
+        return luaL_error(L, "Missing argument to scroll_text_to(..)");
+
+    /**
+     * Get the text, and the current offset.
+     */
+    CGlobal *global = CGlobal::Instance();
+    std::vector<UTFString> text = global->get_text();
+    size_t cur_offset              = global->get_text_offset();
+
+    if ( text.size() < 1 )
+        return 0;
+
+    size_t offset = cur_offset;
+    offset += 1;
+    if ( offset >= text.size() )
+        offset = 0;
+
+    /**
+     * Iterate over the text
+     */
+    while( offset != cur_offset )
+    {
+        UTFString line = "";
+        line = text.at(offset);
+
+        if ( strstr(line.c_str(), str ) != 0 )
+        {
+            /**
+             * We found a match.  Jump to it.
+             */
+            global->set_text_offset(offset);
+            return 0;
+        }
+
+        /**
+         * Next line.
+         */
+        offset += 1;
+        if ( offset >= text.size() )
+            offset = 0;
+    }
+
+    return 0;
+}
+
 /**
  * Scroll the text up.
  */
