@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <cursesw.h>
 #include <cstdlib>
+#include <pcrecpp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -71,7 +72,7 @@ int scroll_text_to( lua_State *L)
      */
     CGlobal *global = CGlobal::Instance();
     std::vector<UTFString> text = global->get_text();
-    size_t cur_offset              = global->get_text_offset();
+    size_t cur_offset           = global->get_text_offset();
 
     if ( text.size() < 1 )
         return 0;
@@ -89,7 +90,7 @@ int scroll_text_to( lua_State *L)
         UTFString line = "";
         line = text.at(offset);
 
-        if ( strstr(line.c_str(), str ) != 0 )
+        if (pcrecpp::RE(str, pcrecpp::RE_Options().set_caseless(true)).PartialMatch(line.c_str()) )
         {
             /**
              * We found a match.  Jump to it.
