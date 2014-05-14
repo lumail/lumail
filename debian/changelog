@@ -1,3 +1,38 @@
+lumail (0.25) stable; urgency=low
+
+  * New release, fixing several bugs.
+  * References here are to the Github repository issue tracker:
+    https://github.com/skx/lumail/issues
+    #172 - Allow external input via a Unix domain socket, this must be
+           enabled explicitly:
+           http://lumail.org/lua/bind_socket.html
+         - Added new `lumailctl` binary to send input to the socket.
+    #175 - Displaying message post-compose.
+           This lead to the introduction of a new mode for displaying
+           text, and scrolling around in it.  As used by help().
+    #177 - More flexible TAB completion for file/directories.
+           This takes into account the current working directory.
+    #180 - Updated options parser to avoid segfault on missing argument
+           to --debug/-d.
+
+  * BUGFIX: Avoid crashing when TAB-completing an empty token.
+  * BUGFIX: TAB-completion always expands tildes.
+  * CHANGE: help() shows the manual, if invoked with no argument.
+  * CHANGE: Default keybindings for "up", "down", and "search" ("/"),
+    have been simplified via routines: up(), down() and search_next().
+  * New primitive: show_file_contents() to show the contents of a file:
+    http://lumail.org/lua/show_file_contents.html
+  * New primitive: show_text(), to display an arbitrary array of text
+    from lua: http://lumail.org/lua/show_text.html
+  * New primitive: cd() + cwd(), for working with the current directory.
+    http://lumail.org/lua/cd.html
+    http://lumail.org/lua/cwd.html
+  * BREAKING CHANGE: scroll_message_to renamed to be jump_message_to.
+    scroll_message_to has been repurposed, as the function to search the
+    current message for the next regular expression match.
+
+ -- Steve Kemp <steve@steve.org.uk>  Wed, 14 May 2014 09:00:09 +0000
+
 lumail (0.24) stable; urgency=low
 
   * New release, fixing several bugs.
