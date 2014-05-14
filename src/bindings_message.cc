@@ -1477,6 +1477,9 @@ int scroll_message_to( lua_State *L)
     if (((selected) < count) && count > 0 )
         cur = messages->at(selected);
 
+    if ( cur == NULL )
+        return 0;
+
     /**
      * The body might come from on_get_body.
      */
