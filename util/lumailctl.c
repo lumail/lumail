@@ -1,5 +1,5 @@
 /**
- * Pass a message to lumail.
+ * Pass a message to a Unix domain-socket which has been opened by lumail.
  *
  * This script is designed as a simple alternative to merely executing
  * socat:
@@ -108,23 +108,31 @@ int main(int argc, char *argv[])
       exit(-1);
   }
 
-
+  /**
+   * Open to the socket.
+   */
   if ( (fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
   {
       perror("Error opening the domain-socket");
       exit(-1);
   }
 
+
+  /**
+   * Prepare and open connect to the socket.
+   */
   memset(&addr, 0, sizeof(addr));
   addr.sun_family = AF_UNIX;
   strncpy(addr.sun_path, soc, sizeof(addr.sun_path)-1);
-
   if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1)
   {
       perror("Error connecting to the domain-socket");
       exit(-1);
   }
 
+  /**
+   * Write the data to the socket.
+   */
   if ((rc = (size_t)write(fd, lua, strlen(lua))) != strlen(lua) )
   {
       if (rc > 0)
@@ -132,6 +140,10 @@ int main(int argc, char *argv[])
           fprintf(stderr,"Partial write performed on the domain-socket");
       }
   }
+
+  /**
+   * Cleanup.
+   */
   close( fd );
 
   return 0;
