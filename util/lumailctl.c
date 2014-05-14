@@ -17,7 +17,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <getopt.h>
 
+
+#include "version.h"
 
 /**
  * Entry point.
@@ -32,6 +35,49 @@ int main(int argc, char *argv[])
   char tmp[1024];
   char *soc;
   char *lua;
+  int show_version = 0;
+
+  /**
+   * Minimal command-line processing.
+   */
+  while (1)
+  {
+      static struct option long_options[] =
+          {
+              {"version", no_argument, 0, 'v'},
+              {0, 0, 0, 0}
+          };
+
+      /* getopt_long stores the option index here. */
+      int option_index = 0;
+
+      char c = getopt_long(argc, argv, "v", long_options, &option_index);
+
+      /* Detect the end of the options. */
+      if (c == -1)
+          break;
+
+      switch (c)
+      {
+        case 'v':
+            show_version = 1;
+            break;
+        case '?':
+            /* getopt_long already printed an error message. */
+            exit(1);
+            break;
+        default:
+            fprintf( stderr, "Unknown argument\n" );
+            exit (1);
+      }
+  }
+
+  if ( show_version )
+  {
+      printf("lumailctl version %s\n", LUMAIL_VERSION );
+      exit(1);
+  }
+
 
   if ( argc == 2 )
   {

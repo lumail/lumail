@@ -171,7 +171,7 @@ lumail-debug: $(DEBUG_OBJECTS)
 # The domain-socket helper
 #
 lumailctl:
-	$(C) -Wall util/lumailctl.c -o lumailctl
+	$(C) -Wall -Isrc/ util/lumailctl.c -o lumailctl
 
 
 #
