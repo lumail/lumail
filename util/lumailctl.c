@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-      fprintf(stderr,"Usage: %s [socket/path] 'lua'\n", argv[0]);
+      fprintf(stderr,"Usage: %s [socket/path] 'lua code'\n", argv[0]);
       exit(0);
   }
 
@@ -104,14 +104,14 @@ int main(int argc, char *argv[])
    */
   if ( -1 == stat(soc, &sb) )
   {
-      perror( "Socket not found.");
+      fprintf( stderr, "The domain-socket was not found: %s\n", soc);
       exit(-1);
   }
 
 
   if ( (fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
   {
-      perror("socket error");
+      perror("Error opening the domain-socket");
       exit(-1);
   }
 
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 
   if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1)
   {
-      perror("connect error");
+      perror("Error connecting to the domain-socket");
       exit(-1);
   }
 
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
   {
       if (rc > 0)
       {
-          fprintf(stderr,"partial write");
+          fprintf(stderr,"Partial write performed on the domain-socket");
       }
   }
   close( fd );
