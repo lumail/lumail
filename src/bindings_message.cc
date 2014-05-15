@@ -387,7 +387,10 @@ int all_headers(lua_State * L)
     /**
      * Get the path (optional).
      */
-    const char *path   = lua_tostring(L, 1);
+    const char *path  = NULL;
+
+    if (lua_isstring(L, -1))
+        path = lua_tostring(L, 1);
 
     /**
      * Get the message
@@ -439,7 +442,10 @@ int body(lua_State * L)
     /**
      * Get the path (optional) to the message.
      */
-    const char *str = lua_tostring(L, -1);
+    const char *str  = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
 
     CMessage *msg = get_message_for_operation( str );
     if ( msg == NULL )
@@ -804,7 +810,9 @@ int delete_message( lua_State *L )
     /**
      * Get the path (optional).
      */
-    const char *str = lua_tostring(L, -1);
+    const char *str  = NULL;
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
 
     CMessage *msg = get_message_for_operation( str );
     if ( msg == NULL )
@@ -1025,8 +1033,14 @@ int header(lua_State * L)
     /**
      * Get the path (optional), and the header (required)
      */
-    const char *header = lua_tostring(L, 1);
-    const char *path   = lua_tostring(L, 2);
+    const char *header = NULL;
+    if (lua_isstring(L, -1))
+        header = lua_tostring(L, 1);
+
+    const char *path = NULL;
+    if (lua_isstring(L, -2))
+        path = lua_tostring(L, 2);
+
     if ( header == NULL )
         return luaL_error(L, "Missing header" );
 
@@ -1065,7 +1079,10 @@ int is_new(lua_State * L)
     /**
      * Get the path (optional).
      */
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
+
     int ret = 0;
 
     CMessage *msg = get_message_for_operation( str );
@@ -1100,7 +1117,9 @@ int mark_read(lua_State * L)
     /**
      * Get the path (optional).
      */
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
 
     CMessage *msg = get_message_for_operation( str );
     if ( msg == NULL )
@@ -1127,7 +1146,9 @@ int mark_unread(lua_State * L)
     /**
      * Get the path (optional).
      */
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
 
     CMessage *msg = get_message_for_operation( str );
     if ( msg == NULL )
@@ -1369,7 +1390,9 @@ int reply(lua_State * L)
  */
 int save_message( lua_State *L )
 {
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
 
     if (str == NULL)
         return luaL_error(L, "Missing argument to save(..)");
@@ -1457,7 +1480,9 @@ int jump_message_to(lua_State *L)
  */
 int scroll_message_to( lua_State *L)
 {
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
 
     if (str == NULL)
         return luaL_error(L, "Missing argument to scroll_message_to(..)");
