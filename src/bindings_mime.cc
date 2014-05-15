@@ -44,7 +44,10 @@ int attachments(lua_State *L)
     /**
      * Get the path (optional).
      */
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
 
     CMessage *msg = get_message_for_operation( str );
     if ( msg == NULL )
@@ -97,7 +100,10 @@ int count_attachments(lua_State *L)
     /**
      * Get the path (optional).
      */
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
 
     CMessage *msg = get_message_for_operation( str );
     if ( msg == NULL )
@@ -134,7 +140,10 @@ int count_body_parts(lua_State *L)
     /**
      * Get the path (optional).
      */
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
 
     CMessage *msg = get_message_for_operation( str );
     if ( msg == NULL )
@@ -224,7 +233,9 @@ int get_body_parts(lua_State *L)
     /**
      * Get the path (optional).
      */
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
 
     CMessage *msg = get_message_for_operation( str );
     if ( msg == NULL )
@@ -276,7 +287,9 @@ int has_body_part(lua_State *L)
     /**
      * Get the content-type.
      */
-    const char *type = lua_tostring(L, -1);
+    const char *type = NULL;
+    if (lua_isstring(L, -1))
+        type = lua_tostring(L, 1);
 
     CMessage *msg = get_message_for_operation( NULL );
     if ( msg == NULL )
