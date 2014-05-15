@@ -143,7 +143,11 @@ int maildir_offset(lua_State *L)
  */
 int maildirs_matching(lua_State *L)
 {
-    const char *pattern = lua_tostring(L, -1);
+    const char *pattern = NULL;
+
+    if (lua_isstring(L, -1))
+        pattern = lua_tostring(L, -1);
+
     if (pattern == NULL)
         return luaL_error(L, "Missing argument to maildirs_matching(..)");
 
@@ -215,7 +219,10 @@ int scroll_maildir_down(lua_State * L)
  */
 int scroll_maildir_to(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, -1);
 
     if (str == NULL)
         return luaL_error(L, "Missing argument to scroll_maildir_to(..)");
@@ -293,7 +300,11 @@ int scroll_maildir_up(lua_State * L)
  */
 int select_maildir(lua_State *L)
 {
-    const char *path = lua_tostring(L, -1);
+    const char *path = NULL;
+
+    if (lua_isstring(L, -1))
+        path = lua_tostring(L, -1);
+
     if (path == NULL)
         return luaL_error(L, "Missing argument to select_maildir(..)");
 
