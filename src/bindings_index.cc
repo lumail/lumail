@@ -93,7 +93,10 @@ int scroll_index_down(lua_State * L)
  */
 int scroll_index_to(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, -1);
 
     if (str == NULL)
         return luaL_error(L, "Missing argument to scroll_index_to(..)");
