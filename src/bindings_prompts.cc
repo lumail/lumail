@@ -175,8 +175,13 @@ int prompt_chars(lua_State *L)
     /**
      * Get the prompt string, and response set.
      */
-    UTFString str   = lua_tostring(L, -2);
-    UTFString chars = lua_tostring(L, -1);
+    UTFString str;
+    if (lua_isstring(L, -2))
+        str = lua_tostring(L, -2);
+
+    UTFString chars;
+    if (lua_isstring(L, -1))
+        chars = lua_tostring(L, -1);
 
     /**
      * Ensure both were set.
