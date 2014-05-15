@@ -41,7 +41,11 @@
  */
 int create_maildir(lua_State *L)
 {
-    const char *path = lua_tostring(L, -1);
+    const char *path = NULL;
+
+    if (lua_isstring(L, -1))
+        path = lua_tostring(L, -1);
+
     if (path == NULL)
         return luaL_error(L, "Missing argument to create_maildir(..)");
 
@@ -62,7 +66,10 @@ int create_maildir(lua_State *L)
  */
 int cd(lua_State *L)
 {
-    const char *path = lua_tostring(L, -1);
+    const char *path = NULL;
+    if (lua_isstring(L, -1))
+        path = lua_tostring(L, -1);
+
     if (path == NULL)
         return luaL_error(L, "Missing argument to cd(..)");
 
@@ -92,7 +99,11 @@ int cwd(lua_State *L)
  */
 int delete_maildir(lua_State *L)
 {
-    const char *path = lua_tostring(L, -1);
+    const char *path = NULL;
+
+    if (lua_isstring(L, -1))
+        path = lua_tostring(L, -1);
+
     if (path == NULL)
         return luaL_error(L, "Missing argument to delete_maildir(..)");
 
@@ -160,7 +171,11 @@ int delete_maildir(lua_State *L)
  */
 int executable(lua_State *L)
 {
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, -1);
+
     if (str == NULL)
         return luaL_error(L, "Missing argument to is_directory(..)");
 
@@ -177,7 +192,11 @@ int executable(lua_State *L)
  */
 int file_exists(lua_State *L)
 {
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, -1);
+
     if (str == NULL)
         return luaL_error(L, "Missing argument to file_exists(..)");
 
@@ -194,7 +213,11 @@ int file_exists(lua_State *L)
  */
 int is_directory(lua_State *L)
 {
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, -1);
+
     if (str == NULL)
         return luaL_error(L, "Missing argument to is_directory(..)");
 
@@ -229,7 +252,11 @@ int is_maildir(lua_State *L)
 int load_directory(lua_State *L)
 {
 
-    const char *path = lua_tostring(L, -1);
+    const char *path = NULL;
+
+    if (lua_isstring(L, -1))
+        path = lua_tostring(L, -1);
+
     if (path == NULL)
         return luaL_error(L, "Missing argument to load_directory(..)");
 
