@@ -32,6 +32,7 @@
 
 #include "bindings.h"
 #include "debug.h"
+#include "file.h"
 #include "global.h"
 #include "input.h"
 
@@ -62,7 +63,10 @@ int scroll_text_down(lua_State *L)
  */
 int scroll_text_to( lua_State *L)
 {
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
 
     if (str == NULL)
         return luaL_error(L, "Missing argument to scroll_text_to(..)");
@@ -135,7 +139,24 @@ int scroll_text_up(lua_State *L)
  */
 int show_file_contents(lua_State *L)
 {
-    const char *file = lua_tostring(L, -1);
+    const char *file = NULL;
+
+    if (lua_isstring(L, -1))
+        file = lua_tostring(L, 1);
+
+    /**
+     * Ensure we have a file.
+     */
+    if ( file == NULL )
+        return luaL_error(L, "Missing argument for show_file_contents(..)");
+
+    /**
+     * Ensure the file exists.
+     */
+    if ( ! CFile::exists( file ) )
+        return luaL_error(L, "File not found for show_file_contents(..)");
+
+
     FILE* f = fopen(file, "r");
     std::vector<UTFString> buf;
 
