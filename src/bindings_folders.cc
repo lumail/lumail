@@ -42,7 +42,10 @@ int add_selected_folder(lua_State * L)
     /**
      * get the optional argument.
      */
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, -1);
 
     CGlobal *global = CGlobal::Instance();
     CLua    *lua    = CLua::Instance();
@@ -143,7 +146,10 @@ int set_selected_folder(lua_State * L)
     /**
      * get the optional argument.
      */
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str =lua_tostring(L, -1);
 
     CGlobal *global = CGlobal::Instance();
     global->unset_folders();
@@ -192,7 +198,11 @@ int toggle_selected_folder(lua_State * L)
     /**
      * get the optional argument.
      */
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, -1);
+
     CGlobal *global = CGlobal::Instance();
     std::vector < std::string > sfolders = global->get_selected_folders();
 
