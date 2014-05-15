@@ -214,8 +214,11 @@ int alert(lua_State * L)
  */
 int bind_socket(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
     char default_sock[1024];
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
 
     if (str == NULL)
     {
@@ -286,7 +289,11 @@ int clear(lua_State * L)
  */
 int exec(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
+
     if (str == NULL)
         return luaL_error(L, "Missing argument to exec(..)");
 
@@ -488,7 +495,11 @@ int mime_type(lua_State *L)
     /**
      * Get the file to test.
      */
-    const char *file = lua_tostring(L, -1);
+    const char *file = NULL;
+
+    if (lua_isstring(L, -1))
+        file = lua_tostring(L, 1);
+
     if (file == NULL)
         return luaL_error(L, "Missing argument to mime_type(..)");
 
@@ -712,7 +723,10 @@ int screen_height(lua_State * L)
  */
 int show_help(lua_State * L)
 {
-    const char *str = lua_tostring(L, -1);
+    const char *str = NULL;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
 
     /**
      * If there is no argument then we'll show the manual/help-page.
@@ -785,9 +799,13 @@ int sleep(lua_State *L )
  */
 int stuff(lua_State * L)
 {
-    UTFString str = lua_tostring(L, -1);
+    UTFString str = NULL;
 
-    if (str.empty())
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
+
+
+    if ((str == NULL) || (str.empty())
         return luaL_error(L, "Missing argument to stuff(..)");
 
     CInput::Instance()->add( UTFString( str ) );
