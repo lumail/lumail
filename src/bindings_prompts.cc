@@ -53,7 +53,10 @@ int choose_string(lua_State * L)
 
     for (int i = 1; i <= n; i++)
     {
-        const char *str =  lua_tostring(L, i);
+        const char *str = NULL;
+        if (lua_isstring(L, i))
+            str = lua_tostring(L, i);
+
         if ( str != NULL )
             choices.push_back( str );
     }
@@ -92,10 +95,15 @@ int choose_string(lua_State * L)
  */
 int prompt(lua_State * L)
 {
+
+    const char *str = NULL;
+
     /**
      * Get the prompt string.
      */
-    const char *str = lua_tostring(L, -1);
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, -1);
+
     if (str == NULL)
         return luaL_error(L, "Missing argument to prompt(..)");
 
@@ -131,8 +139,12 @@ int prompt_yn(lua_State * L)
     /**
      * Get the prompt string.
      */
-    UTFString str = lua_tostring(L, -1);
-    if (str == NULL)
+    UTFString str;
+
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, -1);
+
+    if (str.empty())
         str = def_prompt;
 
     /**
