@@ -805,7 +805,7 @@ int stuff(lua_State * L)
         str = lua_tostring(L, 1);
 
 
-    if ((str == NULL) || (str.empty())
+    if ((str == NULL) || (str.empty()) )
         return luaL_error(L, "Missing argument to stuff(..)");
 
     CInput::Instance()->add( UTFString( str ) );
