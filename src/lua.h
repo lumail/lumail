@@ -111,7 +111,7 @@ public:
     /**
      * Evaluate the given string.
      */
-    void execute(std::string lua);
+    void execute(std::string lua, bool show_error = true);
 
     /**
      * Lookup a value in a nested-table.

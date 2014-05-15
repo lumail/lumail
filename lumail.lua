@@ -262,6 +262,28 @@ end
 
 
 --
+-- When there is an error in an invoked Lua function this method
+-- will be called.  This is true regardless of whether the error
+-- came from the lua-prompt, or a function in an initialization file.
+--
+-- Here we display the error to the user, but only in debug-builds.
+--
+-- This is a trade-off, we don't want to spoil the user-experience of
+-- a new user by showing too many errors, and somebody who is suspicious
+-- of their function can remove the debug-check.
+--
+-- NOTE:  DEBUG is a special defined variable, just like VERSION:
+--
+--        http://lumail.org/lua/DEBUG.html
+--
+function on_error( text )
+   if ( DEBUG == true ) then
+      msg( text )
+   end
+end
+
+
+--
 -- This function is called when a folder is added/removed/toggled
 -- within the selected set.
 --
@@ -1222,5 +1244,4 @@ end
 -- Bind to a key.
 --
 keymap['global']['p'] = "toggle_maildir_names()"
-
 

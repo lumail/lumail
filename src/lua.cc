@@ -315,20 +315,50 @@ bool CLua::load_file(std::string filename)
 /**
  * Evaluate the given string.
  */
-void CLua::execute(std::string lua)
+void CLua::execute(std::string lua, bool show_error )
 {
     if ( luaL_dostring(m_lua, lua.c_str()))
     {
+        const char *err = NULL;
+        if ( lua_isstring(m_lua, -1))
+            err = lua_tostring(m_lua,-1);
 
 #ifdef LUMAIL_DEBUG
         std::string dm = "CLua::execute(\"";
         dm += lua;
         dm += "\"); -> ";
 
-        const char *err = lua_tostring(m_lua, -1);
         dm += err;
         DEBUG_LOG( dm );
 #endif
+
+        if ( show_error )
+        {
+            /**
+             * Invoke the lua-callback "on_error".
+             *
+             * NOTE: The error message will be something
+             * horrible such as:
+             *
+             * [string "scroll_index_to( false );"]:1: Missing argument to scroll_index_to(..)
+             *
+             *
+             * We want to escape the quotes to avoid issues.
+             */
+
+            std::string e = "on_error( \"";
+
+            for (unsigned int i = 0; i < strlen( err ); i++ )
+            {
+                if ( err[i] != '"' )
+                    e += err[i];
+                else
+                    e += "\\\"" ;
+            }
+            e += "\");" ;
+            execute( e, false );
+        }
+
     }
 }
 
