@@ -39,7 +39,7 @@ dump-parts: dump-parts.c Makefile
 	 $(CC) $(CCFLAGS) dump-parts.c -o dump-parts $(shell pkg-config --libs  gmime-2.6) $(shell pkg-config --cflags gmime-2.6)
 
 lumailctl: lumailctl.c Makefile
-	 $(C) $(CFLAGS) lumailctl.c -o lumailctl
+	 $(C) $(CFLAGS) -I../src/ lumailctl.c -o lumailctl
 
 parse-fmt: parse-fmt.cc Makefile
 	 $(CC) $(CCFLAGS) parse-fmt.cc -o parse-fmt $(shell pkg-config --libs  gmime-2.6) $(shell pkg-config --cflags gmime-2.6) -lpcrecpp
