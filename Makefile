@@ -100,8 +100,9 @@ default: lumail lumail-debug lumailctl
 #
 #  Install all of our binaries, along with the associated help file
 #
-bindir=${DESTDIR}${PREFIX}/usr/bin/
-sharedir=${DESTDIR}${PREFIX}/usr/share/lumail/
+PREFIX ?= /usr
+bindir=${DESTDIR}${PREFIX}/bin/
+sharedir=${DESTDIR}${PREFIX}/share/lumail/
 install: default
 	mkdir -p $(sharedir) || true
 	mkdir -p $(bindir)   || true
