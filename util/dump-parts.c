@@ -10,7 +10,6 @@
 #include <gmime/gmime.h>
 
 
-
 /**
  * Output a list of the parts included in the current message.
  */
@@ -65,7 +64,20 @@ void dump_mail( char *filename )
             if ( filename )
                 std::cout << "\t[This is an attachment with file-name " << filename << "]" << std::endl;
         }
-        count += 1;
+
+
+        /**
+         * Highlight inline parts - which are not attachments.
+         */
+        GMimeContentDisposition *disp = g_mime_object_get_content_disposition(part);
+        if ( disp != NULL )
+        {
+            const char *str = g_mime_content_disposition_get_disposition (disp);
+            std::cout << "\tNOTE: Content-Disposition: " << str << std::endl;
+
+        }
+
+       count += 1;
     }
     while (g_mime_part_iter_next (iter));
 
