@@ -124,8 +124,7 @@ int abort(lua_State * L)
      */
     g_mime_shutdown();
 
-    const char *str = lua_tostring(L, -1);
-
+    const char *str = luaL_checkstring(L, 1);
     if (str != NULL)
         std::cerr << str << std::endl;
 
@@ -215,10 +214,8 @@ int alert(lua_State * L)
 int bind_socket(lua_State * L)
 {
     char default_sock[1024];
-    const char *str = NULL;
 
-    if (lua_isstring(L, -1))
-        str = lua_tostring(L, 1);
+    const char *str = luaL_checkstring(L, 1);
 
     if (str == NULL)
     {
@@ -289,10 +286,7 @@ int clear(lua_State * L)
  */
 int exec(lua_State * L)
 {
-    const char *str = NULL;
-
-    if (lua_isstring(L, -1))
-        str = lua_tostring(L, 1);
+    const char *str = luaL_checkstring(L, 1);
 
     if (str == NULL)
         return luaL_error(L, "Missing argument to exec(..)");
