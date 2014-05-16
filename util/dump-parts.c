@@ -59,8 +59,11 @@ void dump_mail( char *filename )
              * Get the content-type
              */
             GMimeContentType *content_type = g_mime_object_get_content_type (part);
+            const char *filename = g_mime_object_get_content_disposition_parameter(part, "filename");
             gchar *type = g_mime_content_type_to_string ( content_type );
             std::cout << count << " " << type << std::endl;
+            if ( filename )
+                std::cout << "\t[This is an attachment with file-name " << filename << "]" << std::endl;
         }
         count += 1;
     }
