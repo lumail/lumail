@@ -683,7 +683,8 @@ void CGlobal::close_domain_socket()
 {
 
 #ifdef DOMAIN_SOCKET
-    close( m_domain_socket );
+    if ( m_domain_socket != -1 )
+        close( m_domain_socket );
 #endif
 
     m_domain_socket = -1;
