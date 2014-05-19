@@ -90,7 +90,7 @@ from( default_email )
 --
 -- Specify the outgoing mail binary.
 --
--- Prefer /usr/sbin/sendmail, but use /usr/lib/sendmail if that exists
+-- Prefer /usr/lib/sendmail, but use /usr/sbin/sendmail if that exists
 --
 if ( executable( "/usr/sbin/sendmail" ) ) then
    sendmail_path( "/usr/sbin/sendmail -t" )
