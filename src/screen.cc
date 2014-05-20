@@ -516,6 +516,12 @@ void CScreen::drawMessage()
 
 
     /**
+     * Are we wrapping long-headers, or long bodies?
+     */
+    CLua *lua = CLua::Instance();
+    bool wrap = lua->get_bool("wrap_lines");
+
+    /**
      * Bound the selection.
      */
     if (selected >= count)
@@ -530,6 +536,9 @@ void CScreen::drawMessage()
     }
 
 
+    /**
+     * Get the current message.
+     */
     CMessage *cur = NULL;
     if (((selected) < count) && count > 0 )
         cur = messages->at(selected);
@@ -540,18 +549,15 @@ void CScreen::drawMessage()
         return;
     }
 
-    /**
-     * Now we have a message - display it.
-     */
 
     /**
      * Find the headers we'll print.
      */
-    CLua *lua = CLua::Instance();
     std::vector<std::string> headers = lua->table_to_array( "headers" );
 
     /**
-     * If there are no values then use the defaults.
+     * If there are no values defined in the configuration file
+     * then we'll display the obvious defaults.
      */
     if ( headers.empty() )
     {
@@ -572,6 +578,14 @@ void CScreen::drawMessage()
     else
         header_colour = "white";
 
+
+    /**
+     * The row of the screen we're going to draw upon.
+     *
+     * This is used because we need to keep track of the height, and
+     * the current row to fill in - there might be an arbitrary number
+     * of headers & attachments displayed prior to the body.
+     */
     int row = 0;
 
     /**
@@ -603,17 +617,57 @@ void CScreen::drawMessage()
         UTFString value = cur->format( header );
 
         /**
-         * Truncate to avoid long-wraps.
+         * If we're not wrapping, or if the line will fit then we just draw it.
          */
-        value = value.substr(0, (CScreen::width() - name.size() - 4 ) );
+        if ( !wrap || ( value.size() < (CScreen::width() - name.size() - 4 ) ) )
+        {
+            /**
+             * Truncate to avoid long-wraps.
+             */
+            value = value.substr(0, (CScreen::width() - name.size() - 4 ) );
 
-        /**
-         * Show it.
-         */
-        attrset( COLOR_PAIR(m_colours[header_colour]) );
-        printw( "%s: %s", name.c_str(), value.c_str() );
-        attrset( COLOR_PAIR(m_colours["white"]) );
-        row += 1;
+            /**
+             * Draw the single line.
+             */
+            attrset( COLOR_PAIR(m_colours[header_colour]) );
+            printw( "%s: %s", name.c_str(), value.c_str() );
+            attrset( COLOR_PAIR(m_colours["white"]) );
+            row += 1;
+        }
+        else
+        {
+            /**
+             * OK the line is too long to fit.  So we need to spread
+             * it over multiple lines.
+             *
+             * Start off by building one string.
+             */
+            UTFString line = name + ": " + value;
+
+            /**
+             * Work out how much of it we can display.
+             */
+            size_t slength = CScreen::width()  - 4;
+
+            bool cont = true;
+            while( cont )
+            {
+                move( row, 0 );
+                attrset( COLOR_PAIR(m_colours[header_colour]) );
+                printw( "%s", line.c_str() );
+                attrset( COLOR_PAIR(m_colours["white"]) );
+
+                row += 1;
+                if ( line.size() > slength )
+                {
+                    line = line.substr( slength );
+                }
+                else
+                {
+                    cont = false;
+                }
+            }
+        }
     }
 
     /**
@@ -692,11 +746,6 @@ void CScreen::drawMessage()
      * The screen width.
      */
     size_t width = CScreen::width();
-
-    /**
-     * Are we wrapping bodies?
-     */
-    bool wrap = lua->get_bool("wrap_lines");
 
     /**
      * Draw each line of the body.
