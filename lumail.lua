@@ -773,7 +773,7 @@ end
 --
 -- Should we wrap lines when showing a message?
 --
-function toggle_wrap_lines ()
+function toggle_line_wrapping ()
     if wrap_lines == nil then
         wrap_lines = true
     elseif wrap_lines == true then
@@ -1157,8 +1157,8 @@ keymap['maildir']['Enter'] = 'open_folder()'
 --
 --
 
--- wrap linese
-keymap['message']['w'] = 'toggle_wrap_lines()'
+-- Toggle the wrapping of long lines in headers/message-bodies.
+keymap['message']['w'] = 'toggle_line_wrapping()'
 
 -- Actions
 keymap['message']['d'] = 'delete()'
