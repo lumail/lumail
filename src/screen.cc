@@ -627,7 +627,7 @@ void CScreen::drawMessage()
         attachment_colour = "white";
 
     /**
-     * Draw the attachments.
+     * Draw the attachments: Attachment-counting starts at one.
      */
     std::vector<std::string> attachments = cur->attachments();
     int acount = 1;
@@ -660,6 +660,20 @@ void CScreen::drawMessage()
         body = cur->body();
 
 
+    /**
+     * OK at this point we've drawn:
+     *
+     * 1. The headers
+     * 2. any headers.
+     *
+     * The cursor will be positioned at the last line of text,
+     * and the Y-coordinate for the next line should be
+     *
+     *    row+1
+     *
+     */
+
+
     int textspace = (int)(CScreen::height() - headers.size() - attachments.size() - 1 );
     if (textspace < 2)
         textspace = 2;
@@ -679,6 +693,9 @@ void CScreen::drawMessage()
      */
     size_t width = CScreen::width();
 
+    /**
+     * Are we wrapping bodies?
+     */
     bool wrap = lua->get_bool("wrap_lines");
 
     /**
@@ -703,7 +720,11 @@ void CScreen::drawMessage()
 
         for(;;)
         {
-            move( row_idx + ( headers.size() + attachments.size() + 1 ), 0 );
+            /**
+             * Here "row" counts the rows taken up by the
+             * headers+attachment lists.
+             */
+            move( row_idx + row + 1, 0 );
 
             attrset( COLOR_PAIR(m_colours[body_colour]) );
             printw( "%s", subline.c_str() );
