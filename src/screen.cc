@@ -617,9 +617,9 @@ void CScreen::drawMessage()
         UTFString value = cur->format( header );
 
         /**
-         * If we're not wrapping, or if the line will fit then we just draw it.
+         * If we're not wrapping, or if the line will fit, then we just draw it.
          */
-        if ( !wrap || ( value.size() < (CScreen::width() - name.size() - 4 ) ) )
+        if ( !wrap || ( value.length() < (CScreen::width() - name.size() - 4 ) ) )
         {
             /**
              * Truncate to avoid long-wraps.
@@ -647,7 +647,7 @@ void CScreen::drawMessage()
             /**
              * Work out how much of it we can display.
              */
-            size_t slength = CScreen::width()  - 4;
+            size_t slength = CScreen::width() ;
 
             bool cont = true;
             while( cont )
@@ -658,7 +658,7 @@ void CScreen::drawMessage()
                 attrset( COLOR_PAIR(m_colours["white"]) );
 
                 row += 1;
-                if ( line.size() > slength )
+                if ( line.length() > slength )
                 {
                     line = line.substr( slength );
                 }
