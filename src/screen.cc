@@ -671,35 +671,46 @@ void CScreen::drawMessage()
     }
 
     /**
-     * Get the colour to draw the attachments in.
-     */
-    std::string *a_colour = global->get_variable( "attachment_colour" );
-    std::string attachment_colour;
-    if ( a_colour != NULL )
-        attachment_colour = *a_colour;
-    else
-        attachment_colour = "white";
-
-    /**
-     * Draw the attachments: Attachment-counting starts at one.
+     * Get the number of attachments to show, and decide if we should show
+     * them.
      */
     std::vector<std::string> attachments = cur->attachments();
-    int acount = 1;
-    for (std::string path : attachments)
+    bool show_attachments = lua->get_bool( "show_attachments", true );
+
+
+    if ( attachments.size() > 0 && show_attachments  )
     {
-        move( row, 0 );
+        /**
+         * Get the colour to draw the attachments in.
+         */
+        std::string *a_colour = global->get_variable( "attachment_colour" );
+        std::string attachment_colour;
+        if ( a_colour != NULL )
+            attachment_colour = *a_colour;
+        else
+            attachment_colour = "white";
 
         /**
-         * Change to the right colour, draw the message,
-         * and revert.
+         * Draw the attachments: Attachment-counting starts at one.
          */
-        attrset( COLOR_PAIR(m_colours[attachment_colour]) );
-        printw( "Attachment %d - %s", acount, path.c_str() );
-        attrset( COLOR_PAIR(m_colours["white"]));
+        int acount = 1;
+        for (std::string path : attachments)
+        {
+            move( row, 0 );
 
-        acount += 1;
-        row += 1;
+            /**
+             * Change to the right colour, draw the message,
+             * and revert.
+             */
+            attrset( COLOR_PAIR(m_colours[attachment_colour]) );
+            printw( "Attachment %d - %s", acount, path.c_str() );
+            attrset( COLOR_PAIR(m_colours["white"]));
+
+            acount += 1;
+            row += 1;
+        }
     }
+
 
     /**
      * Now draw the body.

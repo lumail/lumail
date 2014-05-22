@@ -783,6 +783,18 @@ function toggle_line_wrapping ()
     end
 end
 
+--
+-- Should we show attachments when displaying a message?
+--
+function toggle_show_attachments ()
+   if show_attachments == nil then
+        show_attachments = false
+    elseif show_attachments == true then
+        show_attachments = false
+    elseif show_attachments == false then
+        show_attachments = true
+    end
+end
 
 
 
@@ -1159,6 +1171,9 @@ keymap['maildir']['Enter'] = 'open_folder()'
 
 -- Toggle the wrapping of long lines in headers/message-bodies.
 keymap['message']['w'] = 'toggle_line_wrapping()'
+
+-- Toggle the display of attachments in the message-display
+keymap['message']['A'] = 'toggle_show_attachments()'
 
 -- Actions
 keymap['message']['d'] = 'delete()'
