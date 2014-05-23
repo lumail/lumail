@@ -612,9 +612,11 @@ void CScreen::drawMessage()
          */
 
         /**
-         * Get the header-value, via the formatter.
+         * Get the header-value, if it exists.
          */
-        UTFString value = cur->format( header );
+        UTFString value = cur->header( name );
+        if ( value.empty() )
+            value = "[unset]";
 
         /**
          * If we're not wrapping, or if the line will fit, then we just draw it.
