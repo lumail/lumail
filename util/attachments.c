@@ -94,6 +94,10 @@ std::vector<CAttachment> handle_mail( const char *filename )
 {
     std::vector<CAttachment> results;
 
+/**
+ ** Standard setup to match CMessage ..
+ **/
+
     GMimeParser *parser;
     GMimeStream *stream;
     int m_fd = open( filename, O_RDONLY, 0);
@@ -119,6 +123,10 @@ std::vector<CAttachment> handle_mail( const char *filename )
 
     g_object_unref (parser);
 
+/**
+ ** REAL START OF TEST CODE
+ **
+ **/
 
     /**
      * Create an iterator
@@ -221,6 +229,9 @@ std::vector<CAttachment> handle_mail( const char *filename )
 
     g_mime_part_iter_free (iter);
 
+/**
+ ** Standard cleanup to match CMessage ..
+ **/
     if ( m_message != NULL )
     {
         g_object_unref( m_message );
@@ -232,30 +243,46 @@ std::vector<CAttachment> handle_mail( const char *filename )
 
 
 /**
- * For each argument show the attachments
+ * For each argument show the attachments in the specified message.
  */
 int main( int argc, char *argv[] )
 {
-
     g_mime_init(0);
+
     for( int i = 1; i <argc; i++ )
     {
+
+        /**
+         * Parse the given mail-file.
+         */
         std::vector<CAttachment> result =  handle_mail( argv[i] );
 
+
+        /**
+         * Show the initial results.
+         */
         std::cout << "We received " << result.size()
                   << " attachment(s)." << std::endl;
 
         /**
-         * Iterate over each part.
+         * Iterate over each detected attachment.
          */
         std::vector<CAttachment>::iterator it;
         for (CAttachment cur : result)
         {
+            /**
+             * Show some details.
+             */
             std::cout << "\tNAME: " << cur.name()
                       << " size: " << cur.size()
                       << std::endl;
         }
     }
+
+
+    /**
+     * Cleanup.
+     */
     g_mime_shutdown();
 
     return ( 0 );
