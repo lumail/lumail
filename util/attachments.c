@@ -164,8 +164,7 @@ std::vector<CAttachment*> handle_mail( const char *filename )
     do
     {
         GMimeObject *part  = g_mime_part_iter_get_current (iter);
-        if ( (! GMIME_IS_OBJECT( part ) ) ||
-             ( !GMIME_IS_PART(part) ) )
+        if  (GMIME_IS_MULTIPART( part ) )
             continue;
 
         /**
@@ -191,7 +190,8 @@ std::vector<CAttachment*> handle_mail( const char *filename )
         GMimeContentDisposition *disp = NULL;
         disp = g_mime_object_get_content_disposition (part);
 
-        if (disp != NULL && !g_ascii_strcasecmp (disp->disposition, "attachment"))
+        if ( ( disp != NULL ) &&
+             ( !g_ascii_strcasecmp (disp->disposition, "attachment") ) )
         {
             /**
              * Attempt to get the filename/name.
@@ -226,34 +226,53 @@ std::vector<CAttachment*> handle_mail( const char *filename )
 
 
         /**
-         * OK we have a name, possibly, and we have a part.
-         * let us see if we can get the content from it.
+         * Get the attachment data.
          */
-        GMimeDataWrapper *content = g_mime_part_get_content_object(GMIME_PART(part));
-        GMimeStream    *memstream = g_mime_stream_mem_new();
+        GMimeStream *mem = g_mime_stream_mem_new();
 
-        g_mime_data_wrapper_write_to_stream( content, memstream );
+ if (GMIME_IS_MESSAGE_PART (part))
+         {
+             GMimeMessage *msg = g_mime_message_part_get_message (GMIME_MESSAGE_PART (part));
 
-        guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
-        size_t len = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->len;
+             g_mime_object_write_to_stream (GMIME_OBJECT (msg), mem);
+         }
+         else
+         {
+             GMimeDataWrapper *content = g_mime_part_get_content_object (GMIME_PART (part));
 
-        /**
-         * Save the resulting attachment to the array we return.
-         */
-        if ( b != NULL )
-        {
-            CAttachment *foo = new CAttachment( aname ? aname :  "un-named",
-                                                (void *)b,(size_t ) len );
-            results.push_back(foo);
-            std::cout << "\tAdded part to return value" << std::endl;
+             g_mime_data_wrapper_write_to_stream (content, mem);
+         }
+
+         /**
+          * NOTE: by setting the owner to FALSE, it means unreffing the
+          * memory stream won't free the GByteArray data.
+          */
+         g_mime_stream_mem_set_owner (GMIME_STREAM_MEM (mem), FALSE);
+
+         GByteArray *res =  g_mime_stream_mem_get_byte_array (GMIME_STREAM_MEM (mem));
+
+         /**
+          * The actual data from the array, and the size of that data.
+          */
+         adata = (char *)res->data;
+         size_t len = (res->len);
+
+         g_object_unref (mem);
+
+         /**
+          * Save the resulting attachment to the array we return.
+          */
+         if ( adata != NULL )
+         {
+             CAttachment *foo = new CAttachment( aname ? aname :  "inline-part-%d",
+                                                 (void *)adata,(size_t ) len );
+             results.push_back(foo);
+             std::cout << "\tAdded part to return value" << std::endl;
         }
         else
         {
             std::cout << "\tFailed to add part to return value" << std::endl;
         }
-
-        g_mime_stream_close(memstream);
-        g_object_unref(memstream);
 
     }
 
@@ -302,6 +321,7 @@ int main( int argc, char *argv[] )
          * Iterate over each detected attachment.
          */
         std::vector<CAttachment>::iterator it;
+        int c = 0;
         for (CAttachment *cur : result)
         {
             /**
@@ -311,6 +331,9 @@ int main( int argc, char *argv[] )
                       << " size: " << cur->size()
                       << std::endl;
 
+
+            fprintf(stderr, "PART %d: %s\n", c , cur->body() );
+            c += 1;
             delete(cur);
         }
     }
