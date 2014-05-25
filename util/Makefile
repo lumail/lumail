@@ -27,7 +27,7 @@ clean:
 #
 
 attachments: attachments.c Makefile
-	 $(CC) $(CCFLAGS)  -I../src/ attachments.c -o attachments $(shell pkg-config --libs  gmime-2.6) $(shell pkg-config --cflags gmime-2.6)  $(shell pkg-config --libs  glibmm-2.4) $(shell pkg-config --cflags glibmm-2.4)
+	 $(CC) -ggdb $(CCFLAGS)  -I../src/ attachments.c -o attachments $(shell pkg-config --libs  gmime-2.6) $(shell pkg-config --cflags gmime-2.6)  $(shell pkg-config --libs  glibmm-2.4) $(shell pkg-config --cflags glibmm-2.4)
 
 
 add-attachments-to-simple-mail: add-attachments-to-simple-mail.c Makefile

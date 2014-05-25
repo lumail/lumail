@@ -56,10 +56,18 @@ public:
      * TODO: We should probably use `memcpy` to save the body
      * of the attachment away.
      */
-    CAttachment(UTFString name, UTFString body, size_t sz ) {
-        m_body = body;
+    CAttachment(UTFString name, void * body, size_t sz ) {
+
+        /**
+         * Save the name away.
+         */
         m_name = name;
-        m_size = sz;
+
+        /**
+         * Save the data away
+         */
+        m_data = (void *)malloc( sz );
+        memcpy( m_data, body, sz );
     };
 
     /**
@@ -70,7 +78,7 @@ public:
     /**
      * Return the body of the attachment.
      */
-    UTFString body() { return m_body ; }
+    void *body() { return m_data ; }
 
     /**
      * Return the size of the attachment.
@@ -78,8 +86,8 @@ public:
     size_t size() { return m_size ; }
 
 private:
-    UTFString m_name ;
-    UTFString m_body ;
+    UTFString m_name;
+    void    * m_data;
     size_t    m_size;
 };
 
@@ -192,20 +200,20 @@ std::vector<CAttachment> handle_mail( const char *filename )
              */
             if ( aname == NULL )
             {
-                std::cout << "\tAttachment has no name." << std::endl;
+                std::cout << "XX\tAttachment has no name." << std::endl;
             }
             else
             {
-                std::cout << "\tAttachment has name : " << aname << std::endl;
+                std::cout << "XX\tAttachment has name : " << aname << std::endl;
             }
 
         }
         else
         {
             if ( disp != NULL && disp->disposition != NULL )
-                std::cout << "\tInline part with name: " << disp->disposition << std::endl;
+                std::cout << "XX\tInline part with name: " << disp->disposition << std::endl;
             else
-                std::cout << "\tInline part."  << std::endl;
+                std::cout << "XX\tInline part."  << std::endl;
 
 
         }
@@ -222,19 +230,14 @@ std::vector<CAttachment> handle_mail( const char *filename )
         guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
 
 
+        /**
+         * Save the resulting attachment to the array we return.
+         */
         if ( b != NULL )
         {
-            adata = (char*)malloc( len + 1 );
-            if ( adata == NULL )
-            {
-                std::cerr << "Failed to allocate memory" << std::endl;
-                exit(1);
-            }
-
-            memcpy( adata, b, len );
-            asize = (size_t)len;
-
-            std::cout << "\tSize: " << asize << std::endl;
+            CAttachment foo( aname ? aname :  "un-named",
+                             (void *)b,(size_t ) len );
+            results.push_back(foo );
         }
 
         g_mime_stream_close(memstream);
@@ -278,6 +281,8 @@ int main( int argc, char *argv[] )
         /**
          * Show the initial results.
          */
+        std::cout << "Parsing has completed" << std::endl;
+
         std::cout << "We received " << result.size()
                   << " attachment(s)." << std::endl;
 
@@ -293,6 +298,7 @@ int main( int argc, char *argv[] )
             std::cout << "\tNAME: " << cur.name()
                       << " size: " << cur.size()
                       << std::endl;
+
         }
     }
 
