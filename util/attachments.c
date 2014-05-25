@@ -3,24 +3,27 @@
  * to model the reworking of Lumails attachment primitves.
  *
  * Currently there are two parts of src/message.cc that deal with
- * attachments:
+ * attachments
  *
  *   CMessage::attachments()
  *
- *   CMessage::save_attachment()
+ *   CMessage::save_attachment(int offset)
  *
  * The former iterates over the mail and returns a vector of attachment-names,
  * the latter iterates over the mail, counting attachments, and saving the
  * single one specified by offset.
  *
  * It seems obvious that we should only have one piece of code, and instead
- * we should store a vector of attachments:
+ * we should store a vector of attachments which are parsed on demand
+ * (and cached):
  *
  *   CAttachment( filename, data, data_len )
  *
  * Given the potential complexity, and the issue with inline attachments
  * highlighted by #186 we should be careful and thus this code is born.
  *
+ * Steve
+ * --
  */
 
 
@@ -48,7 +51,10 @@ class CAttachment
 public:
 
     /**
-     * Constructor.
+     * Constructor
+     *
+     * TODO: We should probably use `memcpy` to save the body
+     * of the attachment away.
      */
     CAttachment(UTFString name, UTFString body, size_t sz ) {
         m_body = body;
@@ -94,6 +100,11 @@ std::vector<CAttachment> handle_mail( const char *filename )
 {
     std::vector<CAttachment> results;
 
+    std::cout << std::endl;
+    std::cout << "Handling input message: " << filename << std::endl;
+
+
+
 /**
  ** Standard setup to match CMessage ..
  **/
@@ -123,14 +134,12 @@ std::vector<CAttachment> handle_mail( const char *filename )
 
     g_object_unref (parser);
 
+
 /**
  ** REAL START OF TEST CODE
  **
  **/
 
-    /**
-     * Create an iterator
-     */
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
     assert(iter != NULL);
 
@@ -139,90 +148,98 @@ std::vector<CAttachment> handle_mail( const char *filename )
      */
     do
     {
-        std::cout << "Found part ... " << std::endl;
-
         GMimeObject *part  = g_mime_part_iter_get_current (iter);
+        if ( (! GMIME_IS_OBJECT( part ) ) ||
+             ( !GMIME_IS_PART(part) ) )
+            continue;
 
         /**
-         * Get the filename - only one of these will succeed.
+         * Name of the attachment, if we found one.
          */
-        const char *filename = g_mime_object_get_content_disposition_parameter(part, "filename");
-
-        if ( filename != NULL )
-        {
-            std::cout << "Filename: " << filename << std::endl;
-        }
-        else
-        {
-            std::cout << "Filename: NULL" << std::endl;
-
-        }
-
-
-        const char *name =  g_mime_object_get_content_type_parameter(part, "name");
-        if ( name != NULL )
-        {
-            std::cout << "Name: " << filename << std::endl;
-        }
-        else
-        {
-            std::cout << "Name: NULL" << std::endl;
-
-        }
+        char *aname = NULL;
 
         /**
-         * We'll set this to the filename, if one succeeded.
+         * Size of the attachment, if we found one.
          */
-        const char *nm = NULL;
-
-        if ( filename != NULL )
-            nm = filename;
-        else
-            if ( name != NULL )
-                nm = name;
+        size_t asize = 0;
 
         /**
-         * OK did we get a filename?  If so save this away.
+         * Attachment content, if we found one.
          */
-        if ( nm != NULL )
+        char *adata = NULL;
+
+
+        /**
+         * Get the content-disposition, so that we can determine
+         * if we're dealing with an attachment, or an inline-part.
+         */
+        GMimeContentDisposition *disp;
+        disp = g_mime_object_get_content_disposition (part);
+
+
+        if (disp != NULL && !g_ascii_strcasecmp (disp->disposition, "attachment"))
         {
+            /**
+             * Attempt to get the filename/name.
+             */
+            aname = (char *)g_mime_object_get_content_disposition_parameter(part, "filename");
+            if ( aname == NULL )
+                aname = (char *)g_mime_object_get_content_type_parameter(part, "name");
 
-            GMimeDataWrapper *content = g_mime_part_get_content_object ((GMimePart *) part);
-
-            GMimeStream *memstream = g_mime_stream_mem_new();
-
-
-            guint8 len= g_mime_data_wrapper_write_to_stream( content, memstream );
-            guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
-
-
-            char *data    = NULL;
-            size_t length = 0;
 
             /**
-             * No character set found, or it is already UTF-8.
-             *
-             * Save the result.
+             * Did that work?
              */
-            if ( b != NULL )
+            if ( aname == NULL )
             {
-                data = (char*)malloc( len + 1 );
-                memcpy( data, b, len );
-                length = (size_t)len;
+                std::cout << "\tAttachment has no name." << std::endl;
+            }
+            else
+            {
+                std::cout << "\tAttachment has name : " << aname << std::endl;
             }
 
-
-            /**
-             * Now save it away.
-             */
-            results.push_back( CAttachment( nm, data, length ) );
-
-            if ( data != NULL )
-                free(data);
-
-            g_mime_stream_close(memstream);
-            g_object_unref(memstream);
         }
+        else
+        {
+            if ( disp != NULL && disp->disposition != NULL )
+                std::cout << "\tInline part with name: " << disp->disposition << std::endl;
+            else
+                std::cout << "\tInline part."  << std::endl;
+
+
+        }
+
+
+        /**
+         * OK we have a name, possibly, and we have a part.
+         * let us see if we can get the content from it.
+         */
+        GMimeDataWrapper *content = g_mime_part_get_content_object(GMIME_PART(part));
+        GMimeStream    *memstream = g_mime_stream_mem_new();
+
+        guint8 len= g_mime_data_wrapper_write_to_stream( content, memstream );
+        guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
+
+
+        if ( b != NULL )
+        {
+            adata = (char*)malloc( len + 1 );
+            if ( adata == NULL )
+            {
+                std::cerr << "Failed to allocate memory" << std::endl;
+                exit(1);
+            }
+
+            memcpy( adata, b, len );
+            asize = (size_t)len;
+
+            std::cout << "\tSize: " << asize << std::endl;
+        }
+
+        g_mime_stream_close(memstream);
+        g_object_unref(memstream);
+
     }
 
     while (g_mime_part_iter_next (iter));
