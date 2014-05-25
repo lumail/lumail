@@ -65,6 +65,8 @@ public:
          */
         m_data = (void *)malloc( sz );
         memcpy( m_data, body, sz );
+
+        m_size = sz;
     };
 
     ~CAttachment()
@@ -230,9 +232,10 @@ std::vector<CAttachment*> handle_mail( const char *filename )
         GMimeDataWrapper *content = g_mime_part_get_content_object(GMIME_PART(part));
         GMimeStream    *memstream = g_mime_stream_mem_new();
 
-        guint8 len= g_mime_data_wrapper_write_to_stream( content, memstream );
-        guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
+        g_mime_data_wrapper_write_to_stream( content, memstream );
 
+        guint8 *b = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->data;
+        size_t len = g_mime_stream_mem_get_byte_array((GMimeStreamMem *)memstream)->len;
 
         /**
          * Save the resulting attachment to the array we return.
@@ -242,7 +245,6 @@ std::vector<CAttachment*> handle_mail( const char *filename )
             CAttachment *foo = new CAttachment( aname ? aname :  "un-named",
                                                 (void *)b,(size_t ) len );
             results.push_back(foo);
-
             std::cout << "\tAdded part to return value" << std::endl;
         }
         else
