@@ -52,9 +52,6 @@ public:
 
     /**
      * Constructor
-     *
-     * TODO: We should probably use `memcpy` to save the body
-     * of the attachment away.
      */
     CAttachment(UTFString name, void * body, size_t sz ) {
 
@@ -70,6 +67,14 @@ public:
         memcpy( m_data, body, sz );
     };
 
+    ~CAttachment()
+    {
+        if ( m_data != NULL )
+        {
+            free( m_data );
+            m_data = NULL;
+        }
+    }
     /**
      * Return the (file)name of the attachment.
      */
@@ -104,9 +109,9 @@ GMimeMessage *m_message;
  *
  * This will then be ruturned.
  */
-std::vector<CAttachment> handle_mail( const char *filename )
+std::vector<CAttachment*> handle_mail( const char *filename )
 {
-    std::vector<CAttachment> results;
+    std::vector<CAttachment *> results;
 
     std::cout << std::endl;
     std::cout << "Handling input message: " << filename << std::endl;
@@ -181,9 +186,8 @@ std::vector<CAttachment> handle_mail( const char *filename )
          * Get the content-disposition, so that we can determine
          * if we're dealing with an attachment, or an inline-part.
          */
-        GMimeContentDisposition *disp;
+        GMimeContentDisposition *disp = NULL;
         disp = g_mime_object_get_content_disposition (part);
-
 
         if (disp != NULL && !g_ascii_strcasecmp (disp->disposition, "attachment"))
         {
@@ -200,20 +204,20 @@ std::vector<CAttachment> handle_mail( const char *filename )
              */
             if ( aname == NULL )
             {
-                std::cout << "XX\tAttachment has no name." << std::endl;
+                std::cout << "\tAttachment has no name." << std::endl;
             }
             else
             {
-                std::cout << "XX\tAttachment has name : " << aname << std::endl;
+                std::cout << "\tAttachment has name : " << aname << std::endl;
             }
 
         }
         else
         {
             if ( disp != NULL && disp->disposition != NULL )
-                std::cout << "XX\tInline part with name: " << disp->disposition << std::endl;
+                std::cout << "\tInline part with name: " << disp->disposition << std::endl;
             else
-                std::cout << "XX\tInline part."  << std::endl;
+                std::cout << "\tAnonymous inline part."  << std::endl;
 
 
         }
@@ -235,9 +239,15 @@ std::vector<CAttachment> handle_mail( const char *filename )
          */
         if ( b != NULL )
         {
-            CAttachment foo( aname ? aname :  "un-named",
-                             (void *)b,(size_t ) len );
-            results.push_back(foo );
+            CAttachment *foo = new CAttachment( aname ? aname :  "un-named",
+                                                (void *)b,(size_t ) len );
+            results.push_back(foo);
+
+            std::cout << "\tAdded part to return value" << std::endl;
+        }
+        else
+        {
+            std::cout << "\tFailed to add part to return value" << std::endl;
         }
 
         g_mime_stream_close(memstream);
@@ -275,7 +285,7 @@ int main( int argc, char *argv[] )
         /**
          * Parse the given mail-file.
          */
-        std::vector<CAttachment> result =  handle_mail( argv[i] );
+        std::vector<CAttachment *> result =  handle_mail( argv[i] );
 
 
         /**
@@ -290,15 +300,16 @@ int main( int argc, char *argv[] )
          * Iterate over each detected attachment.
          */
         std::vector<CAttachment>::iterator it;
-        for (CAttachment cur : result)
+        for (CAttachment *cur : result)
         {
             /**
              * Show some details.
              */
-            std::cout << "\tNAME: " << cur.name()
-                      << " size: " << cur.size()
+            std::cout << "\tNAME: " << cur->name()
+                      << " size: " << cur->size()
                       << std::endl;
 
+            delete(cur);
         }
     }
 
