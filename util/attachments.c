@@ -33,21 +33,41 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <gmime/gmime.h>
+#include <vector>
 
 
 #include "utfstring.h"
 
+
+/**
+ * Stub class to hold attachments.
+ */
 class CAttachment
 {
 public:
+
+    /**
+     * Constructor.
+     */
     CAttachment(UTFString name, UTFString body, size_t sz ) {
         m_body = body;
         m_name = name;
         m_size = sz;
     };
 
+    /**
+     * Return the (file)name of the attachment.
+     */
     UTFString name() { return m_name ; }
+
+    /**
+     * Return the body of the attachment.
+     */
     UTFString body() { return m_body ; }
+
+    /**
+     * Return the size of the attachment.
+     */
     size_t size() { return m_size ; }
 
 private:
@@ -59,8 +79,23 @@ private:
 
 
 
-void handle_mail( const char *filename )
+
+/**
+ * Given a single email message we want to parse than and populate
+ * a vector of CAttachment objects.
+ *
+ * This will then be ruturned.
+ */
+std::vector<CAttachment> handle_mail( const char *filename )
 {
+    std::vector<CAttachment> results;
+
+    /**
+     * Now do the parsing.
+     */
+
+
+    return( results );
 }
 
 
@@ -73,7 +108,10 @@ int main( int argc, char *argv[] )
     g_mime_init(0);
     for( int i = 1; i <argc; i++ )
     {
-        handle_mail( argv[i] );
+        std::vector<CAttachment> result =  handle_mail( argv[i] );
+
+        std::cout << "We received " << result.size()
+                  << " attachment(s)." << std::endl;
     }
     g_mime_shutdown();
 
