@@ -18,7 +18,7 @@ all: attachments add-attachments-to-simple-mail dump-headers dump-mime dump-part
 #  Cleanup all generated binaries and output-files.
 #
 clean:
-	rm add-attachments-to-simple-mail dump-headers dump-mime dump-parts lumailctl parse-fmt || true
+	rm attachments add-attachments-to-simple-mail dump-headers dump-mime dump-parts lumailctl parse-fmt || true
 	rm input.txt message.out || true
 
 
