@@ -1216,6 +1216,10 @@ std::vector<UTFString> CMessage::body()
 
     /**
      * Split the body into an array, by newlines.
+     *
+     * TODO: Use "util.h"
+     *    std::vector<UTFString> split(const UTFString &s, char delim)
+     *
      */
     std::stringstream stream(body);
     std::string line;
