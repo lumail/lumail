@@ -20,6 +20,7 @@ all: attachments add-attachments-to-simple-mail dump-headers dump-mime dump-part
 clean:
 	rm attachments add-attachments-to-simple-mail dump-headers dump-mime dump-parts lumailctl parse-fmt || true
 	rm input.txt message.out || true
+	rm core || true
 
 
 #
