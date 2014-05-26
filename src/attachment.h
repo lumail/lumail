@@ -29,7 +29,8 @@
  * A small class for holding and retrieving the attachments associated
  * with a particular message.
  *
- * TODO: Break this out into its own header.
+ * All the code here is inline, because the class is nothing more
+ * than a simple wrapper object with no particular logic.
  *
  */
 class CAttachment
@@ -50,8 +51,9 @@ public:
          * Save the data away
          */
         m_data = (void *)malloc( sz );
-        memcpy( m_data, body, sz );
+        assert(m_data);
 
+        memcpy( m_data, body, sz );
         m_size = sz;
     };
 
@@ -72,22 +74,24 @@ public:
     /**
      * Return the (file)name of the attachment.
      */
-    UTFString name() { return m_name ; }
+    UTFString name() { return m_name; }
 
 
     /**
      * Return the body of the attachment.
      */
-    void *body() { return m_data ; }
+    void *body() { return m_data; }
 
 
     /**
      * Return the size of the attachment.
      */
-    size_t size() { return m_size ; }
+    size_t size() { return m_size; }
 
 private:
-
+    /**
+     * Stored objects.
+     */
     UTFString m_name;
     void    * m_data;
     size_t    m_size;
