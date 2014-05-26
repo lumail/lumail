@@ -1397,7 +1397,7 @@ bool CMessage::save_attachment( int offset, std::string output_path )
     /**
      * Bounds-check.
      */
-    if ( offset < 0 || offset > (int)m_attachments.size() )
+    if ( offset < 0 || offset >= (int)m_attachments.size() )
         return false;
 
     /**
@@ -1437,7 +1437,7 @@ CAttachment* CMessage::get_attachment( int offset )
     /**
      * Bounds-check.
      */
-    if ( offset < 0 || offset > (int)m_attachments.size() )
+    if ( offset < 0 || offset >= (int)m_attachments.size() )
         return NULL;
 
     /**
