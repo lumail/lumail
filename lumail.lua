@@ -1260,3 +1260,14 @@ end
 --
 keymap['global']['p'] = "toggle_maildir_names()"
 
+
+
+--
+-- Fun times.
+--
+function  show_attachment_one()
+   txt ={}
+   txt[0] = attachment(1);
+   show_text( txt )
+   global_mode( "text")
+end

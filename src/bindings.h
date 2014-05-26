@@ -109,6 +109,7 @@ int send_email(lua_State *L);
 /**
  * bindings_mime.cc:
  */
+int attachment(lua_State *L);
 int attachments(lua_State *L);
 int count_attachments(lua_State *L);
 int count_body_parts(lua_State *L);

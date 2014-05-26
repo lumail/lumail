@@ -1350,8 +1350,6 @@ bool CMessage::parse_attachments()
 
     g_mime_part_iter_free (iter);
 
-    close_message();
-
     return( true );
 }
 
@@ -1421,6 +1419,39 @@ bool CMessage::save_attachment( int offset, std::string output_path )
 
 
 /**
+ * Return the content of the given attachment.
+ */
+UTFString CMessage::get_attachment( int offset )
+{
+    /**
+     * Parse attachments if empty.
+     */
+    if ( m_attachments.empty() )
+        parse_attachments();
+
+    /**
+     * The UI counts attachments from one-onwards.
+     */
+    offset -= 1;
+
+    /**
+     * Bounds-check.
+     */
+    if ( offset < 0 || offset > (int)m_attachments.size() )
+        return NULL;
+
+    /**
+     * Get the attachment object.
+     */
+    CAttachment *cur = m_attachments.at( offset );
+
+    /**
+     * TODO: This will truncate at the first NULL IIRC.
+     */
+    return( (char *)cur->body() );
+}
+
+/**
  * This method is responsible for invoking the Lua on_read_message hook.
  *
  * We record whether this message has previously been displayed to avoid
@@ -1464,6 +1495,8 @@ void CMessage::open_message( const char *filename )
     {
         char *reason = strerror(errno);
         std::string error = "alert(\"Failed to open file ";
+        error += filename;
+        error += " ";
         error += reason;
         error += "\", 30 );" ;
         CLua *lua = CLua::Instance();

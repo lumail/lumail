@@ -202,6 +202,7 @@ struct CLuaMapping primitive_list[] =
 /**
  * Attachments & body-parts Defined in src/bindings_mime.cc
  */
+    {"attachment", "Return the content of the specified attachment", (lua_CFunction) attachment },
     {"attachments", "Retrieve the list of attachments in the current message.", (lua_CFunction) attachments },
     {"count_attachments", "Count the number of attachments the current message contains.", (lua_CFunction) count_attachments },
     {"count_body_parts", "Return the count of body-parts", (lua_CFunction) count_body_parts },

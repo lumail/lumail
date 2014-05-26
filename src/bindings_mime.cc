@@ -37,6 +37,35 @@
 
 
 /**
+ * Get the contents of the attachment.
+ */
+int attachment(lua_State *L)
+{
+    int offset = lua_tointeger(L,-1);
+
+    CMessage *msg = get_message_for_operation( NULL );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+
+    UTFString a = msg->get_attachment(offset);
+    if ( a.empty() )
+    {
+        return(0);
+    }
+    else
+    {
+        lua_pushstring(L, a.c_str());
+
+        return( 1 );
+    }
+}
+
+
+/**
  * Get a table of attachment names for this mail.
  */
 int attachments(lua_State *L)
