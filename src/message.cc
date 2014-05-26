@@ -1421,7 +1421,7 @@ bool CMessage::save_attachment( int offset, std::string output_path )
 /**
  * Return the content of the given attachment.
  */
-UTFString CMessage::get_attachment( int offset )
+CAttachment* CMessage::get_attachment( int offset )
 {
     /**
      * Parse attachments if empty.
@@ -1441,14 +1441,10 @@ UTFString CMessage::get_attachment( int offset )
         return NULL;
 
     /**
-     * Get the attachment object.
+     * Get the attachment object, and return it.
      */
     CAttachment *cur = m_attachments.at( offset );
-
-    /**
-     * TODO: This will truncate at the first NULL IIRC.
-     */
-    return( (char *)cur->body() );
+    return( cur );
 }
 
 /**

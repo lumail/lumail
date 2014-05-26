@@ -1271,3 +1271,10 @@ function  show_attachment_one()
    show_text( txt )
    global_mode( "text")
 end
+
+function sb()
+   jpg = attachment(3)
+   x = io.open("/tmp/x.jpg", "wb")
+   x:write( jpg )
+   x:close()
+end

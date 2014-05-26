@@ -51,15 +51,18 @@ int attachment(lua_State *L)
         return( 0 );
     }
 
-    UTFString a = msg->get_attachment(offset);
-    if ( a.empty() )
+    CAttachment *c = msg->get_attachment(offset);
+    if ( c == NULL )
     {
         return(0);
     }
     else
     {
-        lua_pushstring(L, a.c_str());
-
+        /**
+         * NOTE: Using the long-form here, so we can push the
+         * string even though it might contain NULLs.
+         */
+        lua_pushlstring(L, (char *)c->body(), c->size() );
         return( 1 );
     }
 }

@@ -161,7 +161,7 @@ public:
     /**
      * Get the body of the attachment.
      */
-    UTFString get_attachment( int offset );
+    CAttachment* get_attachment( int offset );
 
     /**
      * This is solely used for sorting by message-headers
