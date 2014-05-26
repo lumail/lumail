@@ -72,6 +72,19 @@ CMessage::~CMessage()
     DEBUG_LOG( dm );
 #endif
 
+    /**
+     * If we've parsed any attachments then free them
+     */
+    if ( m_attachments.size() > 0 )
+    {
+        std::vector<CAttachment*>::iterator it;
+        for (CAttachment *cur : m_attachments)
+        {
+            DEBUG_LOG( "Deleting attachment object: " + cur->name() );
+            delete( cur );
+        }
+    }
+
 }
 
 /**
@@ -1218,24 +1231,27 @@ std::vector<UTFString> CMessage::body()
 
 
 /**
- * Get the names of attachments to this message.
+ * Parse the attachments associated with the current message.
  */
-std::vector<std::string> CMessage::attachments()
+bool CMessage::parse_attachments()
 {
-    std::vector<std::string> paths;
+    /**
+     * If we have attachments already then we're done.
+     */
+    if ( m_attachments.size() > 0 )
+        return false;
 
     /**
      * Ensure the message has been read.
      */
     if ( !message_parse() )
-        return paths;
+        return( false );
 
-    /**
-     * Create an iterator
-     */
+
+    int count = 1;
+
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
     assert(iter != NULL);
-
 
     /**
      * Iterate over the message.
@@ -1243,26 +1259,119 @@ std::vector<std::string> CMessage::attachments()
     do
     {
         GMimeObject *part  = g_mime_part_iter_get_current (iter);
+        if  (GMIME_IS_MULTIPART( part ) )
+            continue;
 
-        if ( ( GMIME_IS_OBJECT( part ) ) &&
-             ( GMIME_IS_PART(part) ) )
+        /**
+         * Name of the attachment, if we found one.
+         */
+        char *aname = NULL;
+
+        /**
+         * Attachment content, if we found one.
+         */
+        char *adata = NULL;
+
+
+        /**
+         * Get the content-disposition, so that we can determine
+         * if we're dealing with an attachment, or an inline-part.
+         */
+        GMimeContentDisposition *disp = NULL;
+        disp = g_mime_object_get_content_disposition (part);
+
+        if ( ( disp != NULL ) &&
+             ( !g_ascii_strcasecmp (disp->disposition, "attachment") ) )
         {
-            const char *filename = g_mime_object_get_content_disposition_parameter(part, "filename");
-            const char *name =  g_mime_object_get_content_type_parameter(part, "name");
-
-            if ( filename != NULL )
-                paths.push_back( filename );
-            else
-                if ( name != NULL )
-                    paths.push_back( name );
+            /**
+             * Attempt to get the filename/name.
+             */
+            aname = (char *)g_mime_object_get_content_disposition_parameter(part, "filename");
+            if ( aname == NULL || ( strlen( aname ) < 1 ))
+                aname = (char *)g_mime_object_get_content_disposition_parameter(part, "name");
         }
 
+
+        /**
+         * Get the attachment data.
+         */
+        GMimeStream *mem = g_mime_stream_mem_new();
+
+        if (GMIME_IS_MESSAGE_PART (part))
+        {
+            GMimeMessage *msg = g_mime_message_part_get_message (GMIME_MESSAGE_PART (part));
+
+            g_mime_object_write_to_stream (GMIME_OBJECT (msg), mem);
+        }
+        else
+        {
+            GMimeDataWrapper *content = g_mime_part_get_content_object (GMIME_PART (part));
+
+            g_mime_data_wrapper_write_to_stream (content, mem);
+        }
+
+        /**
+         * NOTE: by setting the owner to FALSE, it means unreffing the
+         * memory stream won't free the GByteArray data.
+         */
+        g_mime_stream_mem_set_owner (GMIME_STREAM_MEM (mem), FALSE);
+
+        GByteArray *res =  g_mime_stream_mem_get_byte_array (GMIME_STREAM_MEM (mem));
+
+        /**
+         * The actual data from the array, and the size of that data.
+         */
+        adata = (char *)res->data;
+        size_t len = (res->len);
+
+        g_object_unref (mem);
+
+        /**
+         * Save the resulting attachment to the array we return.
+         */
+        if ( adata != NULL )
+        {
+            char tmp[128] = { '\0' };
+            if ( aname == NULL || ( strlen( aname ) < 1 ) )
+            {
+                snprintf(tmp, sizeof(tmp)-1, "inline-part-%d", count );
+                count += 1;
+                aname = tmp;
+            }
+            CAttachment *foo = new CAttachment( tmp, (void *)adata,(size_t ) len );
+            m_attachments.push_back(foo);
+        }
     }
     while (g_mime_part_iter_next (iter));
 
     g_mime_part_iter_free (iter);
 
     close_message();
+
+    return( true );
+}
+
+
+/**
+ * Get the names of attachments to this message.
+ */
+std::vector<std::string> CMessage::attachments()
+{
+    std::vector<std::string> paths;
+
+    /**
+     * Parse attachments if empty.
+     */
+    if ( m_attachments.empty() )
+        parse_attachments();
+
+
+    std::vector<CAttachment>::iterator it;
+    for (CAttachment *cur : m_attachments)
+    {
+        paths.push_back( cur->name() );
+    }
+
     return( paths );
 }
 
@@ -1272,104 +1381,38 @@ std::vector<std::string> CMessage::attachments()
  */
 bool CMessage::save_attachment( int offset, std::string output_path )
 {
+    /**
+     * Parse attachments if empty.
+     */
+    if ( m_attachments.empty() )
+        parse_attachments();
 
     /**
-     * Did we succeed?
+     * The UI counts attachments from one-onwards.
      */
-    bool ret = false;
+    offset -= 1;
 
     /**
-     * Ensure the message has been read.
+     * Bounds-check.
      */
-    if ( !message_parse() )
-        return ret;
+    if ( offset < 0 || offset > (int)m_attachments.size() )
+        return false;
 
     /**
-     * Create an iterator
+     * Get the attachment object.
      */
-    GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
-    assert(iter != NULL);
+    CAttachment *cur = m_attachments.at( offset );
 
     /**
-     * The current object number.
+     * Write out the data.
+     *
+     * TODO: Does this cope with partial writes?  I think it does.
      */
-    int count = 1;
+    std::ofstream out(output_path, std::ios::out | std::ios::binary );
+    out.write( (char *)cur->body(), cur->size() );
+    out.close();
 
-    /**
-     * Iterate over the message.
-     */
-    do
-    {
-        GMimeObject *part  = g_mime_part_iter_get_current (iter);
-
-        /**
-         * Get the filename - only one of these will succeed.
-         */
-        const char *filename = g_mime_object_get_content_disposition_parameter(part, "filename");
-        const char *name =  g_mime_object_get_content_type_parameter(part, "name");
-
-        /**
-         * We'll set this to the filename, if one succeeded.
-         */
-        const char *nm = NULL;
-
-        if ( filename != NULL )
-            nm = filename;
-        else
-            if ( name != NULL )
-                nm = name;
-
-        /**
-         * OK did we get a filename?  If so test to see if it is the correct
-         * attachment number, and if so save it.
-         */
-        if ( nm != NULL )
-        {
-
-            /**
-             * Are we saving this one?
-             */
-            if ( count == offset )
-            {
-                FILE *fp = NULL;
-
-                if ( (fp = fopen (output_path.c_str(), "wb" ) ) == NULL )
-                {
-                    CLua *lua = CLua::Instance();
-                    lua->execute( "alert('failed to open');" );
-                }
-                else
-                {
-
-                    GMimeDataWrapper *content;
-                    GMimeStream *ostream;
-
-                    content = g_mime_part_get_content_object ((GMimePart *) part);
-                    if(!content) /* part is incomplete. */
-                    {
-                        CLua *lua = CLua::Instance();
-                        lua->execute( "alert('content was incomplete');" );
-                    }
-
-                    ostream = g_mime_stream_file_new (fp);
-                    g_mime_data_wrapper_write_to_stream (content, ostream);
-                    g_object_unref(ostream);
-                }
-            }
-
-            /**
-             * We've found an attachment so bump the count.
-             */
-            count += 1;
-        }
-
-    }
-    while (g_mime_part_iter_next (iter));
-
-    g_mime_part_iter_free (iter);
-
-    close_message();
-    return( ret );
+    return( true );
 }
 
 

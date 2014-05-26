@@ -25,9 +25,11 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <gmime/gmime.h>
+#include <unordered_map>
 
 #include "utfstring.h"
-#include <unordered_map>
+#include "attachment.h"
+
 
 
 /**
@@ -241,6 +243,11 @@ private:
     bool message_parse();
 
     /**
+     * Parse attachments.
+     */
+    bool parse_attachments();
+
+    /**
      * Get the text/plain part of the message, via GMime.
      */
     UTFString get_body();
@@ -256,6 +263,11 @@ private:
      */
     time_t m_date;
 
+
+    /**
+     * Cached attachments belonging to this message.
+     */
+    std::vector<CAttachment *> m_attachments;
 
 };
 
