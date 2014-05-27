@@ -489,10 +489,7 @@ int mime_type(lua_State *L)
     /**
      * Get the file to test.
      */
-    const char *file = NULL;
-
-    if (lua_isstring(L, -1))
-        file = lua_tostring(L, 1);
+    const char *file = luaL_checkstring(L, 1);
 
     if (file == NULL)
         return luaL_error(L, "Missing argument to mime_type(..)");
