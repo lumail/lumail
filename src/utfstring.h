@@ -16,9 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#ifndef _utfstring_h_
-#define _utfstring_h_ 1
-
+#pragma once
 
 
 
@@ -30,7 +28,3 @@
  * We'll use this for string definitions.
  */
 #define UTFString Glib::ustring
-
-
-
-#endif /* _utfstring_h_ */

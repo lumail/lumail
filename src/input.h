@@ -16,8 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#ifndef _input_h_
-#define _input_h_ 1
+#pragma once
 
 #include <string>
 #include <vector>
@@ -75,5 +74,3 @@ private:
     size_t m_offset;
 
 };
-
-#endif /* _history_h_ */

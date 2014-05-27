@@ -16,8 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#ifndef _global_h_
-#define _global_h_ 1
+#pragma once
 
 #include <unordered_map>
 #include <string>
@@ -306,5 +305,3 @@ private:
      */
     std::vector<UTFString> m_text;
 };
-
-#endif /* _global_h_ */

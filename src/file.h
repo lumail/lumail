@@ -16,10 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-
-#ifndef _file_h_
-#define _file_h_ 1
-
+#pragma once
 
 #include <vector>
 #include <string>
@@ -106,5 +103,3 @@ public:
     static std::vector<std::string> complete_filename(std::string path);
 
 };
-
-#endif /* _file_h_ */

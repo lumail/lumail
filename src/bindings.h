@@ -16,8 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#ifndef _bindings_h
-#define _bindings_h  1
+#pragma once
 
 #include "lua.h"
 
@@ -173,7 +172,3 @@ int select_maildir(lua_State *L);
 int show_help(lua_State * L);
 int sleep(lua_State *L );
 int stuff(lua_State * L);
-
-
-
-#endif /* _bindings_h */

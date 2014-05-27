@@ -16,8 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#ifndef _attachment_h
-#define _attachment_h 1
+#pragma once
 
 #include <string.h>
 
@@ -96,7 +95,3 @@ private:
     void    * m_data;
     size_t    m_size;
 };
-
-
-
-#endif /* _attachment_h */

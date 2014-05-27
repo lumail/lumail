@@ -16,8 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#ifndef _maildir_h_
-#define _maildir_h_ 1
+#pragma once
 
 #include <vector>
 #include <string>
@@ -136,5 +135,3 @@ private:
      */
     std::string m_name;
 };
-
-#endif /* _maildir_h_ */
