@@ -16,9 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#ifndef _message_h
-#define _message_h 1
-
+#pragma once
 
 #include <string>
 #include <stdint.h>
@@ -275,5 +273,3 @@ private:
     std::vector<CAttachment *> m_attachments;
 
 };
-
-#endif /* _message_h */

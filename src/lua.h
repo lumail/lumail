@@ -16,10 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-
-#ifndef _clua_h_
-#define _clua_h_ 1
-
+#pragma once
 
 extern "C"
 {
@@ -199,5 +196,3 @@ private:
     lua_State *m_lua;
 
 };
-
-#endif /* _clua_h_ */

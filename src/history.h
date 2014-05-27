@@ -16,8 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#ifndef _history_h_
-#define _history_h_ 1
+#pragma once
 
 #include <string>
 #include <vector>
@@ -95,5 +94,3 @@ private:
     UTFString m_filename;
 
 };
-
-#endif /* _history_h_ */

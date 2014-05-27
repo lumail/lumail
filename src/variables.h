@@ -16,8 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#ifndef _variables_h
-#define _variables_h  1
+#pragma once
 
 #include "lua.h"
 
@@ -69,6 +68,3 @@ int sort(lua_State * L);
  * Get the users's editor, for compose() + reply() primitives.
  */
 std::string get_editor();
-
-
-#endif /* _variables_h */

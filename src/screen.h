@@ -16,8 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#ifndef _screen_h_
-#define _screen_h_ 1
+#pragma once
 
 #include <vector>
 #include <unordered_map>
@@ -125,6 +124,3 @@ private:
     std::unordered_map<std::string, int> m_colours;
 
 };
-
-
-#endif /* _screen_h_ */

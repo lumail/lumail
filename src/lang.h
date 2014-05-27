@@ -16,10 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-
-#ifndef _clang_h_
-#define _clang_h_ 1
-
+#pragma once
 
 /**
  * Displayed literally if there is no colour support in the terminal.
@@ -55,6 +52,3 @@
  * message, but no message is currently selected.
  */
 #define MISSING_MESSAGE "Finding the current message failed."
-
-
-#endif /* _clang_h_ */

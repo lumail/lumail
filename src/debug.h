@@ -16,8 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#ifndef _debug_h_
-#define _debug_h_ 1
+#pragma once
 
 #include <cassert>
 #include <vector>
@@ -110,5 +109,3 @@ class CDebug
   std::vector<UTFString> m_pending;
 
 };
-
-#endif  /* _debug_h_ */

@@ -16,9 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#ifndef _lumail_h_
-#define _lumail_h_ 1
-
+#pragma once
 
 /**
  * Forward declaration of classes.
@@ -86,6 +84,3 @@ private:
     CScreen *m_screen;
 
 };
-
-
-#endif /* _lumail_h_ */

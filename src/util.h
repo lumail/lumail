@@ -16,8 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#ifndef _util_h
-#define _util_h  1
+#pragma once
 
 #include "utfstring.h"
 
@@ -46,6 +45,3 @@ std::vector<UTFString> split(const UTFString &s, char delim)
     split(s, delim, elems);
     return elems;
 }
-
-
-#endif /* _util_h */
