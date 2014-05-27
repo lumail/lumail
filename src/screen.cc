@@ -1275,7 +1275,7 @@ std::vector<std::string> CScreen::get_completions( std::string token )
             }
             else
             {
-                if ( val == token )
+                if ( strstr( val.c_str(), token.c_str() ) != 0 )
                 {
                     results.push_back( val );
                 }
@@ -1310,7 +1310,7 @@ std::vector<std::string> CScreen::get_completions( std::string token )
      * Here we cover two cases:
      *
      *  The token is "~"
-     *  The token is "~/somthing.."
+     *  The token is "~/something.."
      *
      */
     if ( token.at(0) == '~' )
