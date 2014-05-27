@@ -72,7 +72,8 @@ class CDebug
   /**
    * Add a new string to the log.
    *
-   * NOTE: The string might be buffered and not hit the disk immediately.
+   * NOTE: The string will be buffered and not hit the disk immediately, unless
+   * you set the force flag to true.
    */
   void debug( UTFString line, bool force = false );
 
