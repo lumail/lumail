@@ -321,9 +321,25 @@ std::vector<CMaildir *> CGlobal::get_folders()
             display.push_back(maildir);
     }
 
+
     /**
-     * Sort, case-insensitively.
+     * By default we'll sort, case-insensitively, the list of folders.
      */
+
+#if 0
+    CLua *lua = CLua::Instance();
+    if ( lua->is_function( "sort_maildirs" )  )
+    {
+        /**
+         * TODO: We'll need more primitives here.
+         */
+    }
+    else
+    {
+        std::sort(display.begin(), display.end(), sort_maildir_ptr_by_name);
+    }
+#endif
+
     std::sort(display.begin(), display.end(), sort_maildir_ptr_by_name);
 
     return (display);

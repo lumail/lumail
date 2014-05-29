@@ -29,6 +29,9 @@ extern "C"
 #include "utfstring.h"
 
 
+class CMaildir;
+
+
 
 /**
  * A structure for storing the mapping between Lua-function names,
@@ -172,6 +175,11 @@ public:
      * Execute a function from the global keymap.
      */
     bool on_keypress(const char *keypress );
+
+    /**
+     * Does the named function exist?
+     */
+    bool is_function( const char *name );
 
 
 protected:

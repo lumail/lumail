@@ -794,3 +794,17 @@ UTFString CLua::get_signature( UTFString from, UTFString to, UTFString subject )
     }
     return( "" );
 }
+
+
+/**
+ * Does the named function exist?
+ */
+bool CLua::is_function( const char *name )
+{
+    lua_getglobal(m_lua, name );
+
+    if (lua_isfunction(m_lua, -1))
+        return true;
+    else
+        return false;
+}
