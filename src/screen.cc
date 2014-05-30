@@ -903,7 +903,7 @@ void CScreen::drawText()
                          * understand.
                          *
                          */
-                        std::vector<UTFString> elems = split(code, ' ');
+                        std::vector<UTFString> elems = CUtil::split(code, ' ');
 
                         /**
                          * Now we've tokenized look for colours/bold/etc.

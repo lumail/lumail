@@ -22,26 +22,35 @@
 
 
 /**
- * Convert a string to an array, by tokenizing on a given deliminator.
+ * A static class of utility functions.
  */
-std::vector<UTFString> &split(const std::string &s, char delim, std::vector<UTFString> &elems)
+class CUtil
 {
-    std::stringstream ss(s);
-    std::string item;
-    while (std::getline(ss, item, delim))
+public:
+
+    /**
+     * Convert a string to an array, by tokenizing on a given deliminator.
+     */
+    static std::vector<UTFString> &split(const std::string &s, char delim, std::vector<UTFString> &elems)
     {
-        elems.push_back(item);
-    }
-    return elems;
-}
+        std::stringstream ss(s);
+        std::string item;
+        while (std::getline(ss, item, delim))
+        {
+            elems.push_back(item);
+        }
+        return elems;
+    };
 
 
-/**
- * Convert a string to an array, by tokenizing on a given deliminator.
- */
-std::vector<UTFString> split(const UTFString &s, char delim)
-{
-    std::vector<UTFString> elems;
-    split(s, delim, elems);
-    return elems;
-}
+    /**
+     * Convert a string to an array, by tokenizing on a given deliminator.
+     */
+    static std::vector<UTFString> split(const UTFString &s, char delim)
+    {
+        std::vector<UTFString> elems;
+        split(s, delim, elems);
+        return elems;
+    };
+
+};
