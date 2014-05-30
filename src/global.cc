@@ -643,7 +643,7 @@ void CGlobal::set_multi_variable( std::string name, std::vector<std::string> val
     /**
      * Add the new values.
      */
-    for (std::string tmp : values )
+    for (std::string tmp : vals )
         current.push_back(tmp);
 
     /**

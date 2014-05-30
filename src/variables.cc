@@ -433,16 +433,30 @@ int maildir_limit(lua_State * L)
 int maildir_prefix(lua_State * L)
 {
     /**
-     * If we're setting it, make sure the value is sane.
+     * If the argument is a table ...
      */
-    const char *str = lua_tostring(L, -1);
-    if (str != NULL)
+    if ( lua_istable(L, -1 ) )
     {
-        if ( !CFile::is_directory( str ) )
-            return luaL_error(L, "The specified prefix is not a directory" );
-    }
+        /**
+         * If we have a table then we're setting it.
+         */
+        return( get_set_multi_variable( L, "maildir_prefix" ) );
 
-    return( get_set_string_variable(L, "maildir_prefix" ) );
+    }
+    else
+    {
+        /**
+         * If we're setting it, make sure the value is sane.
+         */
+        const char *str = lua_tostring(L, -1);
+        if (str != NULL)
+        {
+            if ( !CFile::is_directory( str ) )
+                return luaL_error(L, "The specified prefix is not a directory" );
+        }
+
+        return( get_set_string_variable(L, "maildir_prefix" ) );
+    }
 }
 
 
