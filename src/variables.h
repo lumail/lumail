@@ -30,10 +30,6 @@
  */
 int get_set_string_variable( lua_State *L, const char * name );
 
-/**
- * Get or set the multi-value of the given string variable.
- */
-int get_set_multi_variable( lua_State *L, const char * name );
 
 
 

@@ -84,62 +84,6 @@ int get_set_string_variable( lua_State *L, const char * name )
 }
 
 
-/**
- * Get or set a table against a string variable.
- */
-int get_set_multi_variable( lua_State *L, const char * name )
-{
-    /**
-     * Global holder for variables.
-     */
-    CGlobal *global = CGlobal::Instance();
-
-    /**
-     * If we're setting a value ..
-     */
-    if ( lua_istable(L, -1 ) )
-    {
-        std::vector<std::string> buf;
-
-        lua_pushnil(L);
-
-        while (lua_next(L, -2))
-        {
-            const char *d  = lua_tostring(L, -1);
-
-            buf.push_back( d );
-            lua_pop( L , 1);
-        }
-
-        /**
-         * Cleanup the table.
-         */
-        lua_pop(L,1);
-
-        global->set_multi_variable( name, buf );
-    }
-
-    /**
-     * get the current value.
-     */
-    std::vector<std::string> stored = global->get_multi_variable( name );
-
-    /**
-     * Return a table of the values.
-     */
-    lua_newtable(L);
-
-    int i = 1;
-    for (std::string value : stored)
-    {
-        lua_pushnumber(L,i);
-        lua_pushstring(L,value.c_str());
-        lua_settable(L,-3);
-        i++;
-    }
-    return 1;
-
-}
 
 /**
  ** Colour & highlight getters/setters.
@@ -433,30 +377,16 @@ int maildir_limit(lua_State * L)
 int maildir_prefix(lua_State * L)
 {
     /**
-     * If the argument is a table ...
+     * If we're setting it, make sure the value is sane.
      */
-    if ( lua_istable(L, -1 ) )
+    const char *str = lua_tostring(L, -1);
+    if (str != NULL)
     {
-        /**
-         * If we have a table then we're setting it.
-         */
-        return( get_set_multi_variable( L, "maildir_prefix" ) );
-
+        if ( !CFile::is_directory( str ) )
+            return luaL_error(L, "The specified prefix is not a directory" );
     }
-    else
-    {
-        /**
-         * If we're setting it, make sure the value is sane.
-         */
-        const char *str = lua_tostring(L, -1);
-        if (str != NULL)
-        {
-            if ( !CFile::is_directory( str ) )
-                return luaL_error(L, "The specified prefix is not a directory" );
-        }
 
-        return( get_set_string_variable(L, "maildir_prefix" ) );
-    }
+    return( get_set_string_variable(L, "maildir_prefix" ) );
 }
 
 

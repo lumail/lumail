@@ -234,16 +234,6 @@ public:
     void set_variable( std::string name, std::string *value );
 
     /**
-     * Set the value of a variable to an array.
-     */
-    void set_multi_variable( std::string name, std::vector<std::string> vals );
-
-    /**
-     * Get the array value of a multi-value.
-     */
-    std::vector<std::string> get_multi_variable( std::string name );
-
-    /**
      * Get the table of all known settings.
      */
     std::unordered_map<std::string, std::string *> get_variables();
@@ -304,7 +294,6 @@ private:
      * The settings we hold.
      */
     std::unordered_map<std::string, std::string *> m_variables;
-    std::unordered_map<std::string, std::vector<std::string> > m_multi_variables;
 
     /**
      * The handle to the domain-socket.

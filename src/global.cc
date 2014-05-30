@@ -628,45 +628,6 @@ void CGlobal::set_variable( std::string name, std::string *value )
 
 
 /**
- * Set the value of a variable to an array.
- */
-void CGlobal::set_multi_variable( std::string name, std::vector<std::string> vals )
-{
-    assert( ! name.empty() );
-
-    /**
-     * Get the current value(s), and empty them.
-     */
-    std::vector<std::string> current = m_multi_variables[name];
-    current.clear();
-
-    /**
-     * Add the new values.
-     */
-    for (std::string tmp : vals )
-        current.push_back(tmp);
-
-    /**
-     * Update the stored values.
-     */
-    m_multi_variables[ name ] = current;
-}
-
-
-std::vector<std::string> CGlobal::get_multi_variable( std::string name )
-{
-    assert( ! name.empty() );
-
-    /**
-     * Free the current value, if one is set.
-     */
-    std::vector<std::string> current = m_multi_variables[name];
-
-    return( current );
-}
-
-
-/**
  * Return our map of variables to the caller.
  */
 std::unordered_map<std::string, std::string *> CGlobal::get_variables()
