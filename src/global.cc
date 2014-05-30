@@ -35,7 +35,7 @@
 #include "lua.h"
 #include "maildir.h"
 #include "message.h"
-
+#include "util.h"
 
 /**
  * Instance-handle.
@@ -394,11 +394,32 @@ void CGlobal::update_maildirs()
     if ( prefix == NULL )
         return;
 
+    /**
+     * The maildir prefix might be set to multiple values.
+     */
+    std::vector<UTFString> prefixes = CUtil::split( prefix->c_str(), '|' );
 
     /**
-     * Get each maildir
+     * We'll store each maildir here.
      */
-    std::vector<std::string> folders = CFile::get_all_maildirs(*prefix);
+    std::vector<std::string> folders;
+
+    /**
+     * For each maildir prefix we have add in the folders we've found.
+     */
+    for (std::string path : prefixes)
+    {
+        DEBUG_LOG( "Handling maildir_prefix " + path );
+        /**
+         * Get the folders, and merge in.
+         */
+        std::vector<std::string> tmp = CFile::get_all_maildirs(path);
+
+        for (std::string t : tmp)
+            folders.push_back( t );
+    }
+
+
 
     /**
      * Should we ignore folders?

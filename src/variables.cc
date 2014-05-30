@@ -36,6 +36,7 @@
 #include "global.h"
 #include "history.h"
 #include "maildir.h"
+#include "util.h"
 #include "variables.h"
 
 
@@ -382,8 +383,14 @@ int maildir_prefix(lua_State * L)
     const char *str = lua_tostring(L, -1);
     if (str != NULL)
     {
-        if ( !CFile::is_directory( str ) )
-            return luaL_error(L, "The specified prefix is not a directory" );
+
+        std::vector<UTFString> prefixes = CUtil::split( str, '|' );
+
+        for (std::string path : prefixes)
+        {
+            if ( !CFile::is_directory( path.c_str() ) )
+                return luaL_error(L, "The specified prefix is not a directory" );
+        }
     }
 
     return( get_set_string_variable(L, "maildir_prefix" ) );
