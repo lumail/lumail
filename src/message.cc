@@ -1252,6 +1252,14 @@ bool CMessage::parse_attachments()
         return( false );
 
 
+    /**
+     * Get access to our Lua object, so we can lookup the value of
+     * the "view_inline_attachments" boolean.
+     */
+    CLua *lua = CLua::Instance();
+    bool view_inline = lua->get_bool( "view_inline_attachments", true );
+
+
     int count = 1;
 
     GMimePartIter *iter =  g_mime_part_iter_new ((GMimeObject *) m_message);
@@ -1336,14 +1344,25 @@ bool CMessage::parse_attachments()
         if ( adata != NULL )
         {
             char tmp[128] = { '\0' };
+            bool is_inline = false;
+
             if ( aname == NULL || ( strlen( aname ) < 1 ) )
             {
                 snprintf(tmp, sizeof(tmp)-1, "inline-part-%d", count );
                 count += 1;
                 aname = tmp;
+                is_inline = true;
             }
-            CAttachment *foo = new CAttachment( tmp, (void *)adata,(size_t ) len );
-            m_attachments.push_back(foo);
+
+            /**
+             * We add inline parts only if we've been told to.
+             */
+            if ( ( view_inline == true ) ||
+                 ( view_inline == false && ( is_inline == false ) ) )
+            {
+                CAttachment *foo = new CAttachment( tmp, (void *)adata,(size_t ) len );
+                m_attachments.push_back(foo);
+            }
         }
     }
     while (g_mime_part_iter_next (iter));

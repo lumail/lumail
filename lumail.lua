@@ -228,6 +228,25 @@ maildir_highlight_mode('bold standout')
 
 
 --
+-- When viewing a message the display will consist of:
+--
+--  The message headers.
+--  The list of attachments.
+--  The body of the message.
+--
+-- Due to recent changes in the way that attachments are viewed
+-- the list of attachments will consist of both external and inline
+-- attachments.
+--
+-- Set this value to true to disable the former:
+--
+-- view_inline_attachments = false
+--
+-- See also `view_attachments`
+--
+
+
+--
 -- This function will invoke offlineimap, if it is installed
 -- and configured for the current user.
 --
@@ -785,6 +804,8 @@ end
 
 --
 -- Should we show attachments when displaying a message?
+--
+-- See also `view_inline_attachments`.
 --
 function toggle_show_attachments ()
    if show_attachments == nil then
