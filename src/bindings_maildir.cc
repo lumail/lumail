@@ -46,7 +46,7 @@ int count_maildirs(lua_State *L)
      * Get all maildirs.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir *> folders = global->get_folders();
+    std::vector<std::shared_ptr<CMaildir> > folders = global->get_folders();
 
 
     /**
@@ -66,13 +66,13 @@ int current_maildir(lua_State * L)
      * get the current folders.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir *> display = global->get_folders();
+    std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
 
     /**
      * Get the selected object.
      */
     int selected = global->get_selected_folder();
-    CMaildir *x = display[selected];
+    std::shared_ptr<CMaildir> x = display[selected];
     assert(x != NULL);
 
     /**
@@ -89,7 +89,7 @@ int current_maildir(lua_State * L)
 int current_maildirs(lua_State *L)
 {
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir *> display = global->get_folders();
+    std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
 
     /**
      * Create the table.
@@ -97,7 +97,7 @@ int current_maildirs(lua_State *L)
     lua_newtable(L);
 
     int i = 1;
-    for (CMaildir * folder : display)
+    for (std::shared_ptr<CMaildir> folder : display)
     {
         lua_pushnumber(L,i);
         lua_pushstring(L,folder->path().c_str());
@@ -155,7 +155,7 @@ int maildirs_matching(lua_State *L)
      * Get all maildirs.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir *> folders = global->get_folders();
+    std::vector<std::shared_ptr<CMaildir> > folders = global->get_folders();
 
     /**
      * create a new table.
@@ -176,7 +176,7 @@ int maildirs_matching(lua_State *L)
     /**
      * For each maildir - add it to the table if it matches.
      */
-    for (CMaildir * folder : folders)
+    for (std::shared_ptr<CMaildir> folder : folders)
     {
         if ( folder->matches_filter( filter ) )
         {
@@ -238,7 +238,7 @@ int scroll_maildir_to(lua_State * L)
      * get the current folders.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector <CMaildir* > display = global->get_folders();
+    std::vector <std::shared_ptr<CMaildir> > display = global->get_folders();
     int max = display.size();
     int selected = global->get_selected_folder();
 
@@ -252,7 +252,7 @@ int scroll_maildir_to(lua_State * L)
         /**
          * Get the display-name of the folder.
          */
-        CMaildir *cur = display[i];
+        std::shared_ptr<CMaildir> cur = display[i];
         std::string p = cur->path();
 
         /**
@@ -313,7 +313,7 @@ int select_maildir(lua_State *L)
      * get the current folders.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir *> display = global->get_folders();
+    std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
     int count = display.size();
 
     /**
@@ -324,7 +324,7 @@ int select_maildir(lua_State *L)
 
     for( i = 0; i < count; i++ )
     {
-        CMaildir *cur = display[i];
+        std::shared_ptr<CMaildir> cur = display[i];
 
         if ( strcmp( cur->path().c_str(), path ) == 0 )
         {

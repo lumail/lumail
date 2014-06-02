@@ -102,7 +102,7 @@ void CScreen::drawMaildir()
      * Get all known folders + the current display mode
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir *> display = global->get_folders();
+    std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
     std::string *limit = global->get_variable("maildir_limit");
 
     /**
@@ -203,7 +203,7 @@ void CScreen::drawMaildir()
         /**
          * The current object.
          */
-        CMaildir *cur = NULL;
+        std::shared_ptr<CMaildir> cur = NULL;
         int mailIndex=count;
         if (topBottomOrMiddle == TOP)
         {
