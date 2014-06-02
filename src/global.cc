@@ -302,7 +302,8 @@ std::vector<std::shared_ptr<CMaildir> > CGlobal::get_folders()
     CGlobal *global = CGlobal::Instance();
     std::vector<std::shared_ptr<CMaildir> > display;
     std::string * filter = global->get_variable("maildir_limit");
-
+    CLua *lua = CLua::Instance();
+    bool have_lua_filter = lua->is_function( "filter_maildirs" );
 
     /**
      * If we have no folders then we must return the empty set.
@@ -319,7 +320,10 @@ std::vector<std::shared_ptr<CMaildir> > CGlobal::get_folders()
     for (std::shared_ptr<CMaildir> maildir : (*m_maildirs))
     {
         if ( maildir->matches_filter( filter ) )
-            display.push_back(maildir);
+        {
+            if (!have_lua_filter || lua->filter("filter_maildirs", maildir))
+                display.push_back(maildir);
+        }
     }
 
 

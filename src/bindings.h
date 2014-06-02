@@ -151,6 +151,8 @@ int scroll_maildir_to(lua_State * L);
 int scroll_maildir_up(lua_State * L);
 int select_maildir(lua_State *L);
 
+bool push_maildir(lua_State *L, std::shared_ptr<CMaildir> maildir);
+
 /**
  * bindings.cc
  */

@@ -26,6 +26,7 @@ extern "C"
 }
 
 #include <vector>
+#include <memory>
 #include "utfstring.h"
 
 
@@ -181,6 +182,19 @@ public:
      */
     bool is_function( const char *name );
 
+    /**
+     * Call a global function, passing a CMaildir, and return the
+     * result as converted to boolean using Lua semantics, ie only
+     * false and nil are not true.
+     *
+     * The named Lua function should return a true value to include the
+     * CMaildir.
+     *
+     * On an error, returns the onerror value, which defaults to true
+     * so that folders aren't accidentally hidden by a Lua error.
+     */
+    bool filter(const char *name, std::shared_ptr<CMaildir> maildir,
+                bool onerror=true);
 
 protected:
 

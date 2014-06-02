@@ -350,3 +350,103 @@ int select_maildir(lua_State *L)
     return 1;
 }
 
+static std::shared_ptr<CMaildir> check_maildir(lua_State *L, int index)
+{
+    void *ud = luaL_checkudata(L, 1, "maildir_mt");
+    if (ud)
+    {
+        /* Return a copy of the pointer */
+        return *(static_cast<std::shared_ptr<CMaildir> *>(ud));
+    }
+    else
+    {
+        /* Invalid, so return a null pointer */
+        return 0;
+    }
+}
+
+/**
+ * Delete the Maildir pointer
+ */
+static int maildir_mt_gc(lua_State *L)
+{
+    void *ud = luaL_checkudata(L, 1, "maildir_mt");
+    if (ud)
+    {
+        std::shared_ptr<CMaildir> *ud_maildir = static_cast<std::shared_ptr<CMaildir> *>(ud);
+        
+        /* Call the destructor */
+        ud_maildir->~shared_ptr<CMaildir>();
+    }
+    return 0;
+}
+
+/**
+ * Read maildir fields
+ */
+static int maildir_mt_index(lua_State *L)
+{
+    std::shared_ptr<CMaildir> maildir = check_maildir(L, 1);
+    if (maildir)
+    {
+        const char *name = luaL_checkstring(L, 2);
+        if (strcmp(name, "name"))
+        {
+            /* Return the maildir's name */
+            lua_pushstring(L, maildir->name().c_str());
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/**
+ * The maildir metatable entries.
+ */
+static const luaL_Reg maildir_mt_fields[] = {
+    { "__index", maildir_mt_index },
+    { "__gc",    maildir_mt_gc },
+    { NULL, NULL },  /* Terminator */
+};
+
+/**
+ * Push the maildir metatable onto the Lua stack, creating it if needed.
+ */
+static void push_maildir_mt(lua_State *L)
+{
+    int created = luaL_newmetatable(L, "maildir_mt");
+    if (created)
+    {
+        /* A new table was created, set it up now. */
+        luaL_register(L, NULL, maildir_mt_fields);
+    }
+}
+
+/**
+ * Push a maildir onto the Lua stack as a userdata.
+ *
+ * Returns true on success.
+ */
+bool push_maildir(lua_State *L, std::shared_ptr<CMaildir> maildir)
+{
+    void *ud = lua_newuserdata(L, sizeof(std::shared_ptr<CMaildir>));
+    if (!ud)
+        return false;
+    
+    /* Construct a blank shared_ptr.  To be safe, make sure it's a valid
+     * object before setting the metatable. */
+    std::shared_ptr<CMaildir> *ud_maildir = new (ud) std::shared_ptr<CMaildir>();
+    if (!ud_maildir)
+    {
+        /* Discard the userdata */
+        lua_pop(L, 1);
+        return false;
+    }
+    
+    /* FIXME: check errors */
+    push_maildir_mt(L);
+    
+    lua_setmetatable(L, -2);
+    
+    return true;
+}
