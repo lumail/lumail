@@ -20,6 +20,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <pcrecpp.h>
 #include <stdlib.h>
 #include <string.h>
@@ -272,7 +273,7 @@ bool sort_messages(CMessage *a, CMessage *b)
 /**
  * Sort maildirs by name, case-insensitively.
  */
-bool sort_maildir_ptr_by_name(CMaildir *a, CMaildir *b)
+bool sort_maildir_ptr_by_name(std::shared_ptr<CMaildir> a, std::shared_ptr<CMaildir> b)
 {
     assert( NULL != a );
     assert( NULL != b );
@@ -296,10 +297,10 @@ std::vector<std::string> CGlobal::get_selected_folders()
 /**
  * Get folders matching the current mode.
  */
-std::vector<CMaildir *> CGlobal::get_folders()
+std::vector<std::shared_ptr<CMaildir> > CGlobal::get_folders()
 {
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir*> display;
+    std::vector<std::shared_ptr<CMaildir> > display;
     std::string * filter = global->get_variable("maildir_limit");
 
 
@@ -315,7 +316,7 @@ std::vector<CMaildir *> CGlobal::get_folders()
     /**
      * Filter the folders to those we can display
      */
-    for (CMaildir *maildir : (*m_maildirs))
+    for (std::shared_ptr<CMaildir> maildir : (*m_maildirs))
     {
         if ( maildir->matches_filter( filter ) )
             display.push_back(maildir);
@@ -367,13 +368,6 @@ void CGlobal::update_maildirs()
      */
     if ( m_maildirs != NULL )
     {
-        /**
-         * Delete
-         */
-        for (CMaildir *maildir : (*m_maildirs))
-        {
-            delete( maildir );
-        }
         delete( m_maildirs );
         m_maildirs = NULL;
     }
@@ -382,7 +376,7 @@ void CGlobal::update_maildirs()
     /**
      * Create a new vector to hold the results.
      */
-    m_maildirs = new std::vector<CMaildir *>;
+    m_maildirs = new std::vector<std::shared_ptr<CMaildir> >;
 
 
     /**
@@ -460,7 +454,7 @@ void CGlobal::update_maildirs()
          * Not ignoring anything.  Add the folder.
          */
         if ( ! ignore )
-            m_maildirs->push_back(new CMaildir(path));
+            m_maildirs->push_back(std::shared_ptr<CMaildir>(new CMaildir(path)));
     }
 
     /**

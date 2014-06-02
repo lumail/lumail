@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
+#include <memory>
 
 /**
  * Forward declaration of classes.
@@ -58,7 +59,7 @@ public:
     /**
      * Get all folders which match the current mode: new/all/pattern
      */
-    std::vector<CMaildir*> get_folders();
+    std::vector<std::shared_ptr<CMaildir> > get_folders();
 
     /**
      * Get all selected folders:
@@ -288,7 +289,7 @@ private:
     /**
      * The list of all currently visible maildirs.
      */
-    std::vector<CMaildir *> *m_maildirs;
+    std::vector<std::shared_ptr<CMaildir> > *m_maildirs;
 
     /**
      * The settings we hold.
