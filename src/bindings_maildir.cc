@@ -390,7 +390,7 @@ static int maildir_mt_index(lua_State *L)
     if (maildir)
     {
         const char *name = luaL_checkstring(L, 2);
-        if (strcmp(name, "name"))
+        if (strcmp(name, "name") == 0)
         {
             /* Return the maildir's name */
             lua_pushstring(L, maildir->name().c_str());
@@ -447,6 +447,9 @@ bool push_maildir(lua_State *L, std::shared_ptr<CMaildir> maildir)
     push_maildir_mt(L);
     
     lua_setmetatable(L, -2);
+    
+    /* And now store the maildir pointer into the userdata */
+    *ud_maildir = maildir;
     
     return true;
 }
