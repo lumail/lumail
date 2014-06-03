@@ -138,6 +138,20 @@ int show_file_contents(lua_State *L);
 int show_text(lua_State *L);
 
 /**
+ * bindings_maildir.cc
+ */
+int count_maildirs(lua_State *L);
+int current_maildir(lua_State * L);
+int current_maildirs(lua_State *L);
+int jump_maildir_to(lua_State * L);
+int maildir_offset(lua_State *L);
+int maildirs_matching(lua_State *L);
+int scroll_maildir_down(lua_State * L);
+int scroll_maildir_to(lua_State * L);
+int scroll_maildir_up(lua_State * L);
+int select_maildir(lua_State *L);
+
+/**
  * bindings.cc
  */
 int abort(lua_State * L);
@@ -146,29 +160,19 @@ int bind_socket(lua_State * L);
 int clear(lua_State * L);
 int close_socket(lua_State * L);
 int count_lines(lua_State * L);
-int count_maildirs(lua_State *L);
 int count_messages(lua_State * L);
-int current_maildir(lua_State * L);
-int current_maildirs(lua_State *L);
 int current_message(lua_State * L);
 int exec(lua_State * L);
 int exit(lua_State * L);
 int get_variables(lua_State *L );
 int hostname(lua_State *L );
-int jump_maildir_to(lua_State * L);
 int log_message(lua_State *L);
 int lua_dump_stack(lua_State *L);
-int maildir_offset(lua_State *L);
-int maildirs_matching(lua_State *L);
 int message_offset(lua_State * L);
 int mime_type(lua_State *L);
 int msg(lua_State * L);
 int screen_height(lua_State * L);
 int screen_width(lua_State * L);
-int scroll_maildir_down(lua_State * L);
-int scroll_maildir_to(lua_State * L);
-int scroll_maildir_up(lua_State * L);
-int select_maildir(lua_State *L);
 int show_help(lua_State * L);
 int sleep(lua_State *L );
 int stuff(lua_State * L);
