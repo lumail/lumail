@@ -396,6 +396,12 @@ static int maildir_mt_index(lua_State *L)
             lua_pushstring(L, maildir->name().c_str());
             return 1;
         }
+        else if (strcmp(name, "path") == 0)
+        {
+            /* Return the maildir's path */
+            lua_pushstring(L, maildir->path().c_str());
+            return 1;
+        }
     }
     return 0;
 }
