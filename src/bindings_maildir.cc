@@ -361,7 +361,7 @@ static std::shared_ptr<CMaildir> check_maildir(lua_State *L, int index)
     else
     {
         /* Invalid, so return a null pointer */
-        return 0;
+        return NULL;
     }
 }
 
@@ -400,6 +400,16 @@ static int maildir_mt_index(lua_State *L)
         {
             /* Return the maildir's path */
             lua_pushstring(L, maildir->path().c_str());
+            return 1;
+        }
+        else if (strcmp(name, "unread_messages") == 0)
+        {
+            lua_pushinteger(L, maildir->unread_messages());
+            return 1;
+        }
+        else if (strcmp(name, "total_messages") == 0)
+        {
+            lua_pushinteger(L, maildir->total_messages());
             return 1;
         }
     }
