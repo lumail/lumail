@@ -20,12 +20,17 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 /**
  * Forward declaration of class.
  */
 class CMessage;
 
+/**
+ * Type of a list of messages.
+ */
+typedef std::vector<std::shared_ptr<CMessage> > CMessageList;
 
 /**
  * An object for working with maildir folders.
@@ -96,7 +101,7 @@ public:
     /**
      * Get all messages in the folder.
      */
-    std::vector<CMessage *> getMessages();
+    CMessageList getMessages();
 
 
 private:

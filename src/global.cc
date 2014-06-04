@@ -139,7 +139,7 @@ CGlobal::CGlobal()
 /**
  * Sort CMessages, by the user-selected criterion.
  */
-bool sort_messages(CMessage *a, CMessage *b)
+bool sort_messages(std::shared_ptr<CMessage> a, std::shared_ptr<CMessage> b)
 {
     assert( NULL != a );
     assert( NULL != b );
@@ -354,7 +354,7 @@ std::vector<std::shared_ptr<CMaildir> > CGlobal::get_folders()
 /**
  * Get all messages from the currently selected folders.
  */
-std::vector<CMessage *>* CGlobal::get_messages()
+CMessageList * CGlobal::get_messages()
 {
     return( m_messages );
 }
@@ -483,10 +483,6 @@ void CGlobal::update_messages()
      */
     if ( m_messages != NULL )
     {
-        for (CMessage *message : (*m_messages) )
-        {
-            delete( message );
-        }
         delete( m_messages );
         m_messages = NULL;
     }
@@ -494,8 +490,7 @@ void CGlobal::update_messages()
     /**
      * create a new store.
      */
-    m_messages = new std::vector<CMessage *>;
-
+    m_messages = new CMessageList;
 
     /**
      * Get the selected maildirs.
@@ -514,17 +509,15 @@ void CGlobal::update_messages()
          * get the messages from this folder.
          */
         CMaildir tmp = CMaildir(folder);
-        std::vector<CMessage *> contents = tmp.getMessages();
+        CMessageList contents = tmp.getMessages();
 
         /**
          * Append to the list of messages combined.
          */
-        for (CMessage *content: contents)
+        for (std::shared_ptr<CMessage> content: contents)
         {
             if ( content->matches_filter( filter ) )
                 m_messages->push_back(content) ;
-            else
-                delete content;
         }
 
         /**

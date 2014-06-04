@@ -129,7 +129,7 @@ void CMaildir::update_cache()
     /**
      * Get all messages, and update the total
      */
-    std::vector<CMessage *> all = getMessages();
+    CMessageList all = getMessages();
     m_total = all.size();
 
 
@@ -137,19 +137,11 @@ void CMaildir::update_cache()
      * Now update the unread count.
      */
     m_unread = 0;
-    for (CMessage * message : all)
+    for (std::shared_ptr<CMessage> message : all)
     {
         if ( message->is_new() )
             m_unread++;
 
-    }
-
-    /**
-     * Now cleanup.
-     */
-    for (CMessage * message : all)
-    {
-        delete(message);
     }
 }
 
@@ -352,9 +344,9 @@ bool CMaildir::matches_filter( std::string *filter )
  *  TODO:  Use CFile::files_in_directory().
  *
  */
-std::vector<CMessage *> CMaildir::getMessages()
+CMessageList CMaildir::getMessages()
 {
-    std::vector<CMessage*> result;
+    CMessageList result;
     dirent *de;
     DIR *dp;
 
@@ -391,7 +383,7 @@ std::vector<CMessage *> CMaildir::getMessages()
 
                     if ( de->d_name[0] != '.' )
                     {
-                        CMessage *t = new CMessage(std::string(path + de->d_name));
+                        std::shared_ptr<CMessage> t = std::shared_ptr<CMessage>(new CMessage(std::string(path + de->d_name)));
                         result.push_back(t);
 
 #ifdef LUMAIL_DEBUG

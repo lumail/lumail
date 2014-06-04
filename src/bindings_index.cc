@@ -25,6 +25,7 @@
 #include "debug.h"
 #include "global.h"
 #include "message.h"
+#include "maildir.h"
 
 
 
@@ -111,7 +112,7 @@ int scroll_index_to(lua_State * L)
      * get the current messages
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMessage *> *messages = global->get_messages();
+    CMessageList *messages = global->get_messages();
 
     /**
      * If we have no messages we're not scrolling anywhere.
@@ -136,7 +137,7 @@ int scroll_index_to(lua_State * L)
         /**
          * Format the message, and lower-case it.
          */
-        CMessage *cur = messages->at(i);
+        std::shared_ptr<CMessage> cur = messages->at(i);
 
         /**
          * Now look for it.

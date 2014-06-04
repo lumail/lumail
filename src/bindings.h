@@ -40,7 +40,7 @@ class CMessage;
  * If the path is NULL then find and return the currently selected
  * message instead.
  */
-CMessage *get_message_for_operation( const char *path );
+std::shared_ptr<CMessage> get_message_for_operation( const char *path );
 
 
 

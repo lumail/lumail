@@ -29,7 +29,6 @@
 class CMaildir;
 class CMessage;
 
-
 /**
  * A singleton class to store global data:
  *
@@ -69,8 +68,7 @@ public:
     /**
      * Get all messages from the currently-selected folders.
      */
-    std::vector<CMessage *> * get_messages();
-
+    std::vector<std::shared_ptr<CMessage> > *get_messages();
 
     /**
      * Update the global list of messages.
@@ -284,7 +282,7 @@ private:
     /**
      * The list of currently visible messages.
      */
-    std::vector<CMessage*> *m_messages;
+    std::vector<std::shared_ptr<CMessage> > *m_messages;
 
     /**
      * The list of all currently visible maildirs.
