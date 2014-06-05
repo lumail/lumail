@@ -839,6 +839,17 @@ bool CLua::filter(const char *name, std::shared_ptr<CMaildir> maildir,
     
     if (error)
     {
+        lua_getglobal(m_lua, "on_error");
+        /* We could check for an error, but what can we do?  Instead we'll
+         * just get an error from lua_pcall. */
+         
+        /* Push the error string from the previous pcall onto the top of
+         * the stack. */
+        lua_pushvalue(m_lua, -2);
+        
+        /* And call the error handler. */
+        lua_pcall(m_lua, 1, 0, 0);
+         
         return onerror;
     }
     
