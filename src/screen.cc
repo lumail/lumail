@@ -853,7 +853,7 @@ void CScreen::drawText()
 
     if ( offset < (int)text.size() )
     {
-        int max = CScreen::height();
+        int max = CScreen::height() - 1;
 
         for( int i = 0; i< max; i++ )
         {
@@ -932,7 +932,7 @@ void CScreen::drawText()
             /**
              * Draw the line of text, and reset attributes.
              */
-            printw(line.c_str());
+            printw("%s", line.c_str());
             attrset( 0 );
         }
     }
