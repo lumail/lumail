@@ -131,6 +131,8 @@ int prompt_maildir(lua_State * L);
 /**
  * bindings_text.cc:
  */
+int jump_text_to(lua_State *L);
+int text_offset(lua_State *L);
 int scroll_text_down(lua_State *L);
 int scroll_text_to(lua_State *L);
 int scroll_text_up(lua_State *L);
