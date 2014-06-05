@@ -170,6 +170,7 @@ int show_file_contents(lua_State *L)
 
     CGlobal *global = CGlobal::Instance();
     global->set_text( buf );
+    global->set_text_offset( 0 );
     return 0;
 }
 
@@ -208,5 +209,7 @@ int show_text(lua_State *L)
 
     CGlobal *global = CGlobal::Instance();
     global->set_text( buf );
+    global->set_text_offset( 0 );
+
     return 0;
 }
