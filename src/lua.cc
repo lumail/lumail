@@ -193,6 +193,8 @@ struct CLuaMapping primitive_list[] =
 /**
  * Text display.  Defined in src/bindings_text.cc
  */
+    {"jump_text_to", "Jump the text display to the given offset.", (lua_CFunction) jump_text_to },
+    {"text_offset", "Get the current offset into the text display.", (lua_CFunction) text_offset},
     {"scroll_text_down", "Scroll the static text down", (lua_CFunction) scroll_text_down },
     {"scroll_text_up", "Scroll the static text up", (lua_CFunction) scroll_text_up },
     {"scroll_text_to", "Scroll the static text to the next occurence of the given pattern", (lua_CFunction) scroll_text_to },

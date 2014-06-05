@@ -42,6 +42,31 @@
 
 
 /**
+ * Jump to the given line of text.
+ */
+int jump_text_to(lua_State *L)
+{
+    int offset = lua_tonumber(L, -1);
+    if ( offset < 0 )
+        offset = 0;
+
+    CGlobal *global = CGlobal::Instance();
+    global->set_text_offset(offset);
+    return (0);
+}
+
+int text_offset(lua_State *L)
+{
+    CGlobal *global = CGlobal::Instance();
+    int offset = global->get_text_offset();
+
+    assert(offset >= 0);
+    lua_pushinteger(L, offset);
+
+    return 1;
+}
+
+/**
  * Scroll the text down.
  */
 int scroll_text_down(lua_State *L)
