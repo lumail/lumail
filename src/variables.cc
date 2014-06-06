@@ -349,28 +349,9 @@ int maildir_limit(lua_State * L)
      */
     const char *str = lua_tostring(L, -1);
 
-    int ret =  get_set_string_variable( L, "maildir_limit" );
-
-
-    /**
-     * Update the maildirs.
-     */
-    if ( str != NULL )
-    {
-        DEBUG_LOG( "maildir_limit(" + std::string(str) + ") triggering CGlobal::update_maildirs" );
-
-        CGlobal *global = CGlobal::Instance();
-        global->update_maildirs();
-
-        /**
-         * Set the first maildir to be selected to avoid us highlighting
-         * a maildir-entry which no longer exists under the cursor.
-         */
-        global->set_selected_folder(0);
-    }
-
-    return( ret );
+    return( get_set_string_variable( L, "maildir_limit" ) );
 }
+
 
 /**
  * Get, or set, the maildir-prefix
