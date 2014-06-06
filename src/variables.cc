@@ -393,7 +393,28 @@ int maildir_prefix(lua_State * L)
         }
     }
 
-    return( get_set_string_variable(L, "maildir_prefix" ) );
+
+    /**
+     * Get/set the return value.
+     */
+    int result = get_set_string_variable(L, "maildir_prefix" ) ;
+
+    if ( str != NULL )
+    {
+       /**
+         * Now update the maildirs.
+         */
+        CGlobal *global = CGlobal::Instance();
+        global->update_maildirs();
+
+        /**
+         * Set the first maildir to be selected to avoid us highlighting
+         * a maildir-entry which no longer exists under the cursor.
+         */
+        global->set_selected_folder(0);
+    }
+
+    return( result );
 }
 
 
