@@ -382,6 +382,29 @@ static int maildir_mt_gc(lua_State *L)
 }
 
 /**
+ * Function which takes a CMaildir (userdata) and a string,
+ * and checks whether the maildir path matches the pattern.
+ */
+static int lmaildir_matches_filter(lua_State *L)
+{
+    std::shared_ptr<CMaildir> maildir = check_maildir(L, 1);
+    const char *cfilt = lua_tostring(L, 2);
+    if (!cfilt)
+    {
+        return luaL_error(L, "Invalid or missing pattern to matches_filter.");
+    }
+    std::string filt(cfilt);
+    
+    bool result = maildir->matches_filter(&filt);
+    /* Tidy up the stack.  cfilt above will no longer be valid. */
+    lua_pop(L, 2);
+    
+    /* And return the result */
+    lua_pushboolean(L, result);
+    return 1;
+}
+
+/**
  * Read maildir fields
  */
 static int maildir_mt_index(lua_State *L)
@@ -410,6 +433,11 @@ static int maildir_mt_index(lua_State *L)
         else if (strcmp(name, "total_messages") == 0)
         {
             lua_pushinteger(L, maildir->total_messages());
+            return 1;
+        }
+        else if (strcmp(name, "matches_filter") == 0)
+        {
+            lua_pushcfunction(L, lmaildir_matches_filter);
             return 1;
         }
     }
