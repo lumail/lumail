@@ -344,9 +344,6 @@ int maildir_format(lua_State *L )
  */
 int maildir_limit(lua_State * L)
 {
-    /**
-     * This is valid only if we're setting the limit.
-     */
     return( get_set_string_variable( L, "maildir_limit" ) );
 }
 
