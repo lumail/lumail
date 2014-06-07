@@ -82,6 +82,11 @@ public:
     bool matches_filter( std::string *filter );
 
     /**
+     * Does this maildir match the given regexp?
+     */
+    bool matches_regexp( std::string *regexp );
+
+    /**
      * Generate a new filename in the given folder.
      */
     static std::string message_in(std::string path, bool is_new);

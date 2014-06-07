@@ -350,6 +350,12 @@ int select_maildir(lua_State *L)
     return 1;
 }
 
+/**
+ * Verify that an item on the Lua stack is a wrapped CMaildir, and return
+ * a (shared) pointer to it of so.
+ *
+ * Returns NULL otherwise.
+ */
 static std::shared_ptr<CMaildir> check_maildir(lua_State *L, int index)
 {
     void *ud = luaL_checkudata(L, 1, "maildir_mt");
@@ -385,7 +391,7 @@ static int maildir_mt_gc(lua_State *L)
  * Function which takes a CMaildir (userdata) and a string,
  * and checks whether the maildir path matches the pattern.
  */
-static int lmaildir_matches_filter(lua_State *L)
+static int lmaildir_matches_regexp(lua_State *L)
 {
     std::shared_ptr<CMaildir> maildir = check_maildir(L, 1);
     const char *cfilt = lua_tostring(L, 2);
@@ -395,7 +401,7 @@ static int lmaildir_matches_filter(lua_State *L)
     }
     std::string filt(cfilt);
     
-    bool result = maildir->matches_filter(&filt);
+    bool result = maildir->matches_regexp(&filt);
     /* Tidy up the stack.  cfilt above will no longer be valid. */
     lua_pop(L, 2);
     
@@ -435,9 +441,13 @@ static int maildir_mt_index(lua_State *L)
             lua_pushinteger(L, maildir->total_messages());
             return 1;
         }
-        else if (strcmp(name, "matches_filter") == 0)
+        else if (strcmp(name, "matches_regexp") == 0)
         {
-            lua_pushcfunction(L, lmaildir_matches_filter);
+            /* We return the function which implements the method, which
+             * will usually be called immediately with the CMaildir as
+             * the first argument and any others.
+             */
+            lua_pushcfunction(L, lmaildir_matches_regexp);
             return 1;
         }
     }

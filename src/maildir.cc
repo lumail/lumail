@@ -318,13 +318,21 @@ bool CMaildir::matches_filter( std::string *filter )
         else
             return false;
     }
+    return matches_regexp(filter);
+}
+    
+/**
+ * Does this folder's match this regular expression?
+ */
+bool CMaildir::matches_regexp( std::string *regexp )
+{
 
     std::string p = path();
 
     /**
      * Regexp Matching.
      */
-    if (pcrecpp::RE(*filter, pcrecpp::RE_Options().set_caseless(true)).PartialMatch(p) )
+    if (pcrecpp::RE(*regexp, pcrecpp::RE_Options().set_caseless(true)).PartialMatch(p) )
         return true;
 
     return false;
