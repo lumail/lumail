@@ -20,6 +20,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <pcrecpp.h>
 #include <stdlib.h>
 #include <string.h>
@@ -138,7 +139,7 @@ CGlobal::CGlobal()
 /**
  * Sort CMessages, by the user-selected criterion.
  */
-bool sort_messages(CMessage *a, CMessage *b)
+bool sort_messages(std::shared_ptr<CMessage> a, std::shared_ptr<CMessage> b)
 {
     assert( NULL != a );
     assert( NULL != b );
@@ -272,7 +273,7 @@ bool sort_messages(CMessage *a, CMessage *b)
 /**
  * Sort maildirs by name, case-insensitively.
  */
-bool sort_maildir_ptr_by_name(CMaildir *a, CMaildir *b)
+bool sort_maildir_ptr_by_name(std::shared_ptr<CMaildir> a, std::shared_ptr<CMaildir> b)
 {
     assert( NULL != a );
     assert( NULL != b );
@@ -296,12 +297,13 @@ std::vector<std::string> CGlobal::get_selected_folders()
 /**
  * Get folders matching the current mode.
  */
-std::vector<CMaildir *> CGlobal::get_folders()
+std::vector<std::shared_ptr<CMaildir> > CGlobal::get_folders()
 {
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir*> display;
+    std::vector<std::shared_ptr<CMaildir> > display;
     std::string * filter = global->get_variable("maildir_limit");
-
+    CLua *lua = CLua::Instance();
+    bool have_lua_filter = lua->is_function( "filter_maildirs" );
 
     /**
      * If we have no folders then we must return the empty set.
@@ -315,10 +317,13 @@ std::vector<CMaildir *> CGlobal::get_folders()
     /**
      * Filter the folders to those we can display
      */
-    for (CMaildir *maildir : (*m_maildirs))
+    for (std::shared_ptr<CMaildir> maildir : (*m_maildirs))
     {
         if ( maildir->matches_filter( filter ) )
-            display.push_back(maildir);
+        {
+            if (!have_lua_filter || lua->filter("filter_maildirs", maildir))
+                display.push_back(maildir);
+        }
     }
 
 
@@ -349,7 +354,7 @@ std::vector<CMaildir *> CGlobal::get_folders()
 /**
  * Get all messages from the currently selected folders.
  */
-std::vector<CMessage *>* CGlobal::get_messages()
+CMessageList * CGlobal::get_messages()
 {
     return( m_messages );
 }
@@ -367,13 +372,6 @@ void CGlobal::update_maildirs()
      */
     if ( m_maildirs != NULL )
     {
-        /**
-         * Delete
-         */
-        for (CMaildir *maildir : (*m_maildirs))
-        {
-            delete( maildir );
-        }
         delete( m_maildirs );
         m_maildirs = NULL;
     }
@@ -382,7 +380,7 @@ void CGlobal::update_maildirs()
     /**
      * Create a new vector to hold the results.
      */
-    m_maildirs = new std::vector<CMaildir *>;
+    m_maildirs = new std::vector<std::shared_ptr<CMaildir> >;
 
 
     /**
@@ -460,7 +458,7 @@ void CGlobal::update_maildirs()
          * Not ignoring anything.  Add the folder.
          */
         if ( ! ignore )
-            m_maildirs->push_back(new CMaildir(path));
+            m_maildirs->push_back(std::shared_ptr<CMaildir>(new CMaildir(path)));
     }
 
     /**
@@ -485,10 +483,6 @@ void CGlobal::update_messages()
      */
     if ( m_messages != NULL )
     {
-        for (CMessage *message : (*m_messages) )
-        {
-            delete( message );
-        }
         delete( m_messages );
         m_messages = NULL;
     }
@@ -496,8 +490,7 @@ void CGlobal::update_messages()
     /**
      * create a new store.
      */
-    m_messages = new std::vector<CMessage *>;
-
+    m_messages = new CMessageList;
 
     /**
      * Get the selected maildirs.
@@ -516,17 +509,15 @@ void CGlobal::update_messages()
          * get the messages from this folder.
          */
         CMaildir tmp = CMaildir(folder);
-        std::vector<CMessage *> contents = tmp.getMessages();
+        CMessageList contents = tmp.getMessages();
 
         /**
          * Append to the list of messages combined.
          */
-        for (CMessage *content: contents)
+        for (std::shared_ptr<CMessage> content: contents)
         {
             if ( content->matches_filter( filter ) )
                 m_messages->push_back(content) ;
-            else
-                delete content;
         }
 
         /**

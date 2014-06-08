@@ -810,3 +810,53 @@ bool CLua::is_function( const char *name )
     else
         return false;
 }
+
+/**
+ * Call a global function, passing a CMaildir, and return the
+ * result as converted to boolean using Lua semantics, ie only
+ * false and nil are not true.
+ *
+ * The named Lua function should return a true value to include the
+ * CMaildir.
+ *
+ * On an error, returns the onerror value, which defaults to true
+ * so that folders aren't accidentally hidden by a Lua error.
+ */
+bool CLua::filter(const char *name, std::shared_ptr<CMaildir> maildir,
+                  bool onerror)
+{
+    lua_getglobal(m_lua, name);
+    
+    if (!lua_isfunction(m_lua, -1))
+    {
+        return onerror;
+    }
+    
+    if (!push_maildir(m_lua, maildir))
+    {
+        return onerror;
+    }
+    
+    int error = lua_pcall(m_lua, 1, 1, 0);
+    
+    if (error)
+    {
+        lua_getglobal(m_lua, "on_error");
+        /* We could check for an error, but what can we do?  Instead we'll
+         * just get an error from lua_pcall. */
+         
+        /* Push the error string from the previous pcall onto the top of
+         * the stack. */
+        lua_pushvalue(m_lua, -2);
+        
+        /* And call the error handler. */
+        lua_pcall(m_lua, 1, 0, 0);
+         
+        return onerror;
+    }
+    
+    /* The call returned successfully, so return the actual result as a
+     * boolean
+     */
+    return lua_toboolean(m_lua, -1);
+}

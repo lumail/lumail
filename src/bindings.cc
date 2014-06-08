@@ -54,16 +54,16 @@
  * If the path is NULL then we allocate the message from the heap as the
  * currently selected message.
  */
-CMessage *get_message_for_operation( const char *path )
+std::shared_ptr<CMessage> get_message_for_operation( const char *path )
 {
-    CMessage *msg = NULL;
+    std::shared_ptr<CMessage> msg = NULL;
 
     /**
      * Given a path?  Use it.
      */
     if ( path != NULL )
     {
-        msg = new CMessage( path );
+        msg = std::shared_ptr<CMessage>(new CMessage( path ));
 
         DEBUG_LOG( "get_message_for_operation:"  + std::string(msg->header( "Subject" ) ) );
 
@@ -79,7 +79,7 @@ CMessage *get_message_for_operation( const char *path )
      * Get all messages from the currently selected messages.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMessage *> *messages = global->get_messages();
+    CMessageList *messages = global->get_messages();
 
     /**
      * The number of items we've found, and the currently selected one.

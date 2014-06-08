@@ -395,7 +395,7 @@ int all_headers(lua_State * L)
     /**
      * Get the message
      */
-    CMessage *msg = get_message_for_operation( path );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( path );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -427,10 +427,6 @@ int all_headers(lua_State * L)
         lua_settable(L,-3);
     }
 
-
-    if ( path != NULL )
-        delete( msg );
-
     return(1);
 }
 
@@ -447,7 +443,7 @@ int body(lua_State * L)
     if (lua_isstring(L, -1))
         str = lua_tostring(L, 1);
 
-    CMessage *msg = get_message_for_operation( str );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( str );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -485,9 +481,6 @@ int body(lua_State * L)
         lua_pushstring(L, res.c_str());
     }
 
-    if ( str != NULL )
-        delete( msg );
-
     return( 1 );
 }
 
@@ -500,7 +493,7 @@ int bounce(lua_State * L)
     /**
      * Get the message we're replying to.
      */
-    CMessage *mssg = get_message_for_operation( NULL );
+    std::shared_ptr<CMessage> mssg = get_message_for_operation( NULL );
     if ( mssg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -737,7 +730,7 @@ int compose(lua_State * L)
 int count_messages(lua_State * L)
 {
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMessage *> *messages = global->get_messages();
+    std::vector<std::shared_ptr<CMessage> > *messages = global->get_messages();
     assert(messages!=NULL);
 
     lua_pushinteger(L, messages->size() );
@@ -753,7 +746,7 @@ int current_message(lua_State * L)
     /**
      * Get the currently selected message.
      */
-    CMessage *msg = get_message_for_operation( NULL );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( NULL );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -785,7 +778,7 @@ int count_lines(lua_State * L)
     /**
      * Get the currently selected message.
      */
-    CMessage *msg = get_message_for_operation( NULL );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( NULL );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -814,7 +807,7 @@ int delete_message( lua_State *L )
     if (lua_isstring(L, -1))
         str = lua_tostring(L, 1);
 
-    CMessage *msg = get_message_for_operation( str );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( str );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -833,12 +826,6 @@ int delete_message( lua_State *L )
      * Now delete the file.
      */
     CFile::delete_file( msg->path().c_str() );
-
-    /**
-     * Free the message.
-     */
-    if ( str != NULL )
-        delete( msg );
 
     /**
      * Update messages
@@ -862,7 +849,7 @@ int forward(lua_State * L)
     /**
      * Get the message we're forwarding.
      */
-    CMessage *mssg = get_message_for_operation( NULL );
+    std::shared_ptr<CMessage> mssg = get_message_for_operation( NULL );
     if ( mssg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -1047,7 +1034,7 @@ int header(lua_State * L)
     /**
      * Get the message
      */
-    CMessage *msg = get_message_for_operation( path );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( path );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -1060,10 +1047,6 @@ int header(lua_State * L)
      */
     std::string value = msg->header( header );
     lua_pushstring(L, value.c_str() );
-
-
-    if ( path != NULL )
-        delete( msg );
 
     return( 1 );
 }
@@ -1085,7 +1068,7 @@ int is_new(lua_State * L)
 
     int ret = 0;
 
-    CMessage *msg = get_message_for_operation( str );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( str );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -1101,9 +1084,6 @@ int is_new(lua_State * L)
 
         ret = 1;
     }
-
-    if ( str != NULL )
-        delete( msg );
 
     return( ret );
 }
@@ -1121,7 +1101,7 @@ int mark_read(lua_State * L)
     if (lua_isstring(L, -1))
         str = lua_tostring(L, 1);
 
-    CMessage *msg = get_message_for_operation( str );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( str );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -1130,9 +1110,6 @@ int mark_read(lua_State * L)
     }
 
     msg->mark_read();
-
-    if ( str != NULL )
-        delete( msg );
 
     return( 0 );
 }
@@ -1150,7 +1127,7 @@ int mark_unread(lua_State * L)
     if (lua_isstring(L, -1))
         str = lua_tostring(L, 1);
 
-    CMessage *msg = get_message_for_operation( str );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( str );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -1159,9 +1136,6 @@ int mark_unread(lua_State * L)
     }
 
     msg->mark_unread();
-
-    if ( str != NULL )
-        delete( msg );
 
     return( 0 );
 }
@@ -1192,7 +1166,7 @@ int reply(lua_State * L)
     /**
      * Get the message we're replying to.
      */
-    CMessage *mssg = get_message_for_operation( NULL );
+    std::shared_ptr<CMessage> mssg = get_message_for_operation( NULL );
     if ( mssg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -1403,7 +1377,7 @@ int save_message( lua_State *L )
     /**
      * Get the message
      */
-    CMessage *msg = get_message_for_operation( NULL );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( NULL );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -1488,7 +1462,7 @@ int scroll_message_to( lua_State *L)
         return luaL_error(L, "Missing argument to scroll_message_to(..)");
 
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMessage *> *messages = global->get_messages();
+    std::vector<std::shared_ptr<CMessage> > *messages = global->get_messages();
 
     int count = messages->size();
     int selected = global->get_selected_message();
@@ -1498,7 +1472,7 @@ int scroll_message_to( lua_State *L)
     std::vector<UTFString> body;
 
 
-    CMessage *cur = NULL;
+    std::shared_ptr<CMessage> cur = NULL;
     if (((selected) < count) && count > 0 )
         cur = messages->at(selected);
 

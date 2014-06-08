@@ -1281,7 +1281,19 @@ end
 --
 keymap['global']['p'] = "toggle_maildir_names()"
 
-
+--
+-- Don't show the spam folder or empty "incoming" folders
+--
+function filter_maildirs(maildir)
+    if maildir.name == "spam" then
+        return false
+    elseif maildir:matches_regexp('/home/foo/mail/incoming/') and
+           maildir.total_messages == 0 then
+        return false
+    end
+    -- Include all other folders
+    return true
+end
 
 --
 -- Fun times.

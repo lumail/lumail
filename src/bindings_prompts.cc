@@ -260,7 +260,7 @@ int prompt_maildir(lua_State * L)
     {
         CScreen::clear_main();
 
-        std::vector<CMaildir*> folders = global->get_folders();
+        std::vector<std::shared_ptr<CMaildir> > folders = global->get_folders();
 
         int count = folders.size();
         if ( count < 1 )
@@ -281,14 +281,14 @@ int prompt_maildir(lua_State * L)
         /**
          * Current selection
          */
-        CMaildir *current = folders.at(selected);
+        std::shared_ptr<CMaildir> current = folders.at(selected);
 
         move(0,0);
         printw("Select a folder:");
 
         for (int row = 0; row < (height - 3); row++)
         {
-            CMaildir *cur = NULL;
+            std::shared_ptr<CMaildir> cur = NULL;
             if ((row + selected) < count)
             {
                 cur = folders[row + selected];

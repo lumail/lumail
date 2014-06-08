@@ -43,7 +43,7 @@ int attachment(lua_State *L)
 {
     int offset = lua_tointeger(L,-1);
 
-    CMessage *msg = get_message_for_operation( NULL );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( NULL );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -81,7 +81,7 @@ int attachments(lua_State *L)
     if (lua_isstring(L, -1))
         str = lua_tostring(L, 1);
 
-    CMessage *msg = get_message_for_operation( str );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( str );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -115,10 +115,6 @@ int attachments(lua_State *L)
         i++;
     }
 
-
-    if ( str != NULL )
-        delete( msg );
-
     return( 1 );
 
 }
@@ -137,7 +133,7 @@ int count_attachments(lua_State *L)
     if (lua_isstring(L, -1))
         str = lua_tostring(L, 1);
 
-    CMessage *msg = get_message_for_operation( str );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( str );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -155,9 +151,6 @@ int count_attachments(lua_State *L)
      * Setup the return values.
      */
     lua_pushinteger(L, count );
-
-    if ( str != NULL )
-        delete( msg );
 
     return( 1 );
 
@@ -177,7 +170,7 @@ int count_body_parts(lua_State *L)
     if (lua_isstring(L, -1))
         str = lua_tostring(L, 1);
 
-    CMessage *msg = get_message_for_operation( str );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( str );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -196,9 +189,6 @@ int count_body_parts(lua_State *L)
      */
     lua_pushinteger(L, count );
 
-    if ( str != NULL )
-        delete( msg );
-
     return( 1 );
 }
 
@@ -213,7 +203,7 @@ int get_body_part(lua_State *L)
      */
     int offset       = lua_tointeger(L,-1);
 
-    CMessage *msg = get_message_for_operation(NULL);
+    std::shared_ptr<CMessage> msg = get_message_for_operation(NULL);
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -269,7 +259,7 @@ int get_body_parts(lua_State *L)
     if (lua_isstring(L, -1))
         str = lua_tostring(L, 1);
 
-    CMessage *msg = get_message_for_operation( str );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( str );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -303,9 +293,6 @@ int get_body_parts(lua_State *L)
         i++;
     }
 
-    if ( str != NULL )
-        delete( msg );
-
     return( 1 );
 }
 
@@ -323,7 +310,7 @@ int has_body_part(lua_State *L)
     if (lua_isstring(L, -1))
         type = lua_tostring(L, 1);
 
-    CMessage *msg = get_message_for_operation( NULL );
+    std::shared_ptr<CMessage> msg = get_message_for_operation( NULL );
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();
@@ -367,7 +354,7 @@ int save_attachment(lua_State *L)
     int offset       = lua_tointeger(L,-2);
     const char *path = lua_tostring(L, -1);
 
-    CMessage *msg = get_message_for_operation(NULL);
+    std::shared_ptr<CMessage> msg = get_message_for_operation(NULL);
     if ( msg == NULL )
     {
         CLua *lua = CLua::Instance();

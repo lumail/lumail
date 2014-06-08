@@ -102,7 +102,7 @@ void CScreen::drawMaildir()
      * Get all known folders + the current display mode
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir *> display = global->get_folders();
+    std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
     std::string *limit = global->get_variable("maildir_limit");
 
     /**
@@ -203,7 +203,7 @@ void CScreen::drawMaildir()
         /**
          * The current object.
          */
-        CMaildir *cur = NULL;
+        std::shared_ptr<CMaildir> cur = NULL;
         int mailIndex=count;
         if (topBottomOrMiddle == TOP)
         {
@@ -290,7 +290,7 @@ void CScreen::drawIndex()
      * Get all messages from the currently selected maildirs.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMessage*> *messages = global->get_messages();
+    CMessageList *messages = global->get_messages();
     std::string *filter = global->get_variable("index_limit" );
 
 
@@ -418,7 +418,7 @@ void CScreen::drawIndex()
         /**
          * The current object.
          */
-        CMessage *cur = NULL;
+        std::shared_ptr<CMessage> cur = NULL;
         int mailIndex=count;
         if (topBottomOrMiddle == TOP)
         {
@@ -501,7 +501,7 @@ void CScreen::drawMessage()
      * Get all messages from the currently selected maildirs.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMessage *> *messages = global->get_messages();
+    CMessageList *messages = global->get_messages();
 
     /**
      * How many lines we've scrolled down the message.
@@ -539,7 +539,7 @@ void CScreen::drawMessage()
     /**
      * Get the current message.
      */
-    CMessage *cur = NULL;
+    std::shared_ptr<CMessage> cur = NULL;
     if (((selected) < count) && count > 0 )
         cur = messages->at(selected);
     else

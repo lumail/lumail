@@ -129,7 +129,7 @@ void CMaildir::update_cache()
     /**
      * Get all messages, and update the total
      */
-    std::vector<CMessage *> all = getMessages();
+    CMessageList all = getMessages();
     m_total = all.size();
 
 
@@ -137,19 +137,11 @@ void CMaildir::update_cache()
      * Now update the unread count.
      */
     m_unread = 0;
-    for (CMessage * message : all)
+    for (std::shared_ptr<CMessage> message : all)
     {
         if ( message->is_new() )
             m_unread++;
 
-    }
-
-    /**
-     * Now cleanup.
-     */
-    for (CMessage * message : all)
-    {
-        delete(message);
     }
 }
 
@@ -326,13 +318,21 @@ bool CMaildir::matches_filter( std::string *filter )
         else
             return false;
     }
+    return matches_regexp(filter);
+}
+    
+/**
+ * Does this folder's match this regular expression?
+ */
+bool CMaildir::matches_regexp( std::string *regexp )
+{
 
     std::string p = path();
 
     /**
      * Regexp Matching.
      */
-    if (pcrecpp::RE(*filter, pcrecpp::RE_Options().set_caseless(true)).PartialMatch(p) )
+    if (pcrecpp::RE(*regexp, pcrecpp::RE_Options().set_caseless(true)).PartialMatch(p) )
         return true;
 
     return false;
@@ -352,9 +352,9 @@ bool CMaildir::matches_filter( std::string *filter )
  *  TODO:  Use CFile::files_in_directory().
  *
  */
-std::vector<CMessage *> CMaildir::getMessages()
+CMessageList CMaildir::getMessages()
 {
-    std::vector<CMessage*> result;
+    CMessageList result;
     dirent *de;
     DIR *dp;
 
@@ -391,7 +391,7 @@ std::vector<CMessage *> CMaildir::getMessages()
 
                     if ( de->d_name[0] != '.' )
                     {
-                        CMessage *t = new CMessage(std::string(path + de->d_name));
+                        std::shared_ptr<CMessage> t = std::shared_ptr<CMessage>(new CMessage(std::string(path + de->d_name)));
                         result.push_back(t);
 
 #ifdef LUMAIL_DEBUG

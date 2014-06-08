@@ -21,13 +21,13 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
+#include <memory>
 
 /**
  * Forward declaration of classes.
  */
 class CMaildir;
 class CMessage;
-
 
 /**
  * A singleton class to store global data:
@@ -58,7 +58,7 @@ public:
     /**
      * Get all folders which match the current mode: new/all/pattern
      */
-    std::vector<CMaildir*> get_folders();
+    std::vector<std::shared_ptr<CMaildir> > get_folders();
 
     /**
      * Get all selected folders:
@@ -68,8 +68,7 @@ public:
     /**
      * Get all messages from the currently-selected folders.
      */
-    std::vector<CMessage *> * get_messages();
-
+    std::vector<std::shared_ptr<CMessage> > *get_messages();
 
     /**
      * Update the global list of messages.
@@ -283,12 +282,12 @@ private:
     /**
      * The list of currently visible messages.
      */
-    std::vector<CMessage*> *m_messages;
+    std::vector<std::shared_ptr<CMessage> > *m_messages;
 
     /**
      * The list of all currently visible maildirs.
      */
-    std::vector<CMaildir *> *m_maildirs;
+    std::vector<std::shared_ptr<CMaildir> > *m_maildirs;
 
     /**
      * The settings we hold.

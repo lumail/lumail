@@ -40,7 +40,7 @@ class CMessage;
  * If the path is NULL then find and return the currently selected
  * message instead.
  */
-CMessage *get_message_for_operation( const char *path );
+std::shared_ptr<CMessage> get_message_for_operation( const char *path );
 
 
 
@@ -152,6 +152,8 @@ int scroll_maildir_down(lua_State * L);
 int scroll_maildir_to(lua_State * L);
 int scroll_maildir_up(lua_State * L);
 int select_maildir(lua_State *L);
+
+bool push_maildir(lua_State *L, std::shared_ptr<CMaildir> maildir);
 
 /**
  * bindings.cc

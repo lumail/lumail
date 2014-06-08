@@ -46,7 +46,7 @@ int count_maildirs(lua_State *L)
      * Get all maildirs.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir *> folders = global->get_folders();
+    std::vector<std::shared_ptr<CMaildir> > folders = global->get_folders();
 
 
     /**
@@ -66,13 +66,13 @@ int current_maildir(lua_State * L)
      * get the current folders.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir *> display = global->get_folders();
+    std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
 
     /**
      * Get the selected object.
      */
     int selected = global->get_selected_folder();
-    CMaildir *x = display[selected];
+    std::shared_ptr<CMaildir> x = display[selected];
     assert(x != NULL);
 
     /**
@@ -89,7 +89,7 @@ int current_maildir(lua_State * L)
 int current_maildirs(lua_State *L)
 {
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir *> display = global->get_folders();
+    std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
 
     /**
      * Create the table.
@@ -97,7 +97,7 @@ int current_maildirs(lua_State *L)
     lua_newtable(L);
 
     int i = 1;
-    for (CMaildir * folder : display)
+    for (std::shared_ptr<CMaildir> folder : display)
     {
         lua_pushnumber(L,i);
         lua_pushstring(L,folder->path().c_str());
@@ -155,7 +155,7 @@ int maildirs_matching(lua_State *L)
      * Get all maildirs.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir *> folders = global->get_folders();
+    std::vector<std::shared_ptr<CMaildir> > folders = global->get_folders();
 
     /**
      * create a new table.
@@ -176,7 +176,7 @@ int maildirs_matching(lua_State *L)
     /**
      * For each maildir - add it to the table if it matches.
      */
-    for (CMaildir * folder : folders)
+    for (std::shared_ptr<CMaildir> folder : folders)
     {
         if ( folder->matches_filter( filter ) )
         {
@@ -238,7 +238,7 @@ int scroll_maildir_to(lua_State * L)
      * get the current folders.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector <CMaildir* > display = global->get_folders();
+    std::vector <std::shared_ptr<CMaildir> > display = global->get_folders();
     int max = display.size();
     int selected = global->get_selected_folder();
 
@@ -252,7 +252,7 @@ int scroll_maildir_to(lua_State * L)
         /**
          * Get the display-name of the folder.
          */
-        CMaildir *cur = display[i];
+        std::shared_ptr<CMaildir> cur = display[i];
         std::string p = cur->path();
 
         /**
@@ -313,7 +313,7 @@ int select_maildir(lua_State *L)
      * get the current folders.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<CMaildir *> display = global->get_folders();
+    std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
     int count = display.size();
 
     /**
@@ -324,7 +324,7 @@ int select_maildir(lua_State *L)
 
     for( i = 0; i < count; i++ )
     {
-        CMaildir *cur = display[i];
+        std::shared_ptr<CMaildir> cur = display[i];
 
         if ( strcmp( cur->path().c_str(), path ) == 0 )
         {
@@ -350,3 +350,160 @@ int select_maildir(lua_State *L)
     return 1;
 }
 
+/**
+ * Verify that an item on the Lua stack is a wrapped CMaildir, and return
+ * a (shared) pointer to it of so.
+ *
+ * Returns NULL otherwise.
+ */
+static std::shared_ptr<CMaildir> check_maildir(lua_State *L, int index)
+{
+    void *ud = luaL_checkudata(L, 1, "maildir_mt");
+    if (ud)
+    {
+        /* Return a copy of the pointer */
+        return *(static_cast<std::shared_ptr<CMaildir> *>(ud));
+    }
+    else
+    {
+        /* Invalid, so return a null pointer */
+        return NULL;
+    }
+}
+
+/**
+ * Delete the Maildir pointer
+ */
+static int maildir_mt_gc(lua_State *L)
+{
+    void *ud = luaL_checkudata(L, 1, "maildir_mt");
+    if (ud)
+    {
+        std::shared_ptr<CMaildir> *ud_maildir = static_cast<std::shared_ptr<CMaildir> *>(ud);
+        
+        /* Call the destructor */
+        ud_maildir->~shared_ptr<CMaildir>();
+    }
+    return 0;
+}
+
+/**
+ * Function which takes a CMaildir (userdata) and a string,
+ * and checks whether the maildir path matches the pattern.
+ */
+static int lmaildir_matches_regexp(lua_State *L)
+{
+    std::shared_ptr<CMaildir> maildir = check_maildir(L, 1);
+    const char *cfilt = lua_tostring(L, 2);
+    if (!cfilt)
+    {
+        return luaL_error(L, "Invalid or missing pattern to matches_filter.");
+    }
+    std::string filt(cfilt);
+    
+    bool result = maildir->matches_regexp(&filt);
+    /* Tidy up the stack.  cfilt above will no longer be valid. */
+    lua_pop(L, 2);
+    
+    /* And return the result */
+    lua_pushboolean(L, result);
+    return 1;
+}
+
+/**
+ * Read maildir fields
+ */
+static int maildir_mt_index(lua_State *L)
+{
+    std::shared_ptr<CMaildir> maildir = check_maildir(L, 1);
+    if (maildir)
+    {
+        const char *name = luaL_checkstring(L, 2);
+        if (strcmp(name, "name") == 0)
+        {
+            /* Return the maildir's name */
+            lua_pushstring(L, maildir->name().c_str());
+            return 1;
+        }
+        else if (strcmp(name, "path") == 0)
+        {
+            /* Return the maildir's path */
+            lua_pushstring(L, maildir->path().c_str());
+            return 1;
+        }
+        else if (strcmp(name, "unread_messages") == 0)
+        {
+            lua_pushinteger(L, maildir->unread_messages());
+            return 1;
+        }
+        else if (strcmp(name, "total_messages") == 0)
+        {
+            lua_pushinteger(L, maildir->total_messages());
+            return 1;
+        }
+        else if (strcmp(name, "matches_regexp") == 0)
+        {
+            /* We return the function which implements the method, which
+             * will usually be called immediately with the CMaildir as
+             * the first argument and any others.
+             */
+            lua_pushcfunction(L, lmaildir_matches_regexp);
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/**
+ * The maildir metatable entries.
+ */
+static const luaL_Reg maildir_mt_fields[] = {
+    { "__index", maildir_mt_index },
+    { "__gc",    maildir_mt_gc },
+    { NULL, NULL },  /* Terminator */
+};
+
+/**
+ * Push the maildir metatable onto the Lua stack, creating it if needed.
+ */
+static void push_maildir_mt(lua_State *L)
+{
+    int created = luaL_newmetatable(L, "maildir_mt");
+    if (created)
+    {
+        /* A new table was created, set it up now. */
+        luaL_register(L, NULL, maildir_mt_fields);
+    }
+}
+
+/**
+ * Push a maildir onto the Lua stack as a userdata.
+ *
+ * Returns true on success.
+ */
+bool push_maildir(lua_State *L, std::shared_ptr<CMaildir> maildir)
+{
+    void *ud = lua_newuserdata(L, sizeof(std::shared_ptr<CMaildir>));
+    if (!ud)
+        return false;
+    
+    /* Construct a blank shared_ptr.  To be safe, make sure it's a valid
+     * object before setting the metatable. */
+    std::shared_ptr<CMaildir> *ud_maildir = new (ud) std::shared_ptr<CMaildir>();
+    if (!ud_maildir)
+    {
+        /* Discard the userdata */
+        lua_pop(L, 1);
+        return false;
+    }
+    
+    /* FIXME: check errors */
+    push_maildir_mt(L);
+    
+    lua_setmetatable(L, -2);
+    
+    /* And now store the maildir pointer into the userdata */
+    *ud_maildir = maildir;
+    
+    return true;
+}

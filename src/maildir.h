@@ -20,12 +20,17 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 /**
  * Forward declaration of class.
  */
 class CMessage;
 
+/**
+ * Type of a list of messages.
+ */
+typedef std::vector<std::shared_ptr<CMessage> > CMessageList;
 
 /**
  * An object for working with maildir folders.
@@ -77,6 +82,11 @@ public:
     bool matches_filter( std::string *filter );
 
     /**
+     * Does this maildir match the given regexp?
+     */
+    bool matches_regexp( std::string *regexp );
+
+    /**
      * Generate a new filename in the given folder.
      */
     static std::string message_in(std::string path, bool is_new);
@@ -96,7 +106,7 @@ public:
     /**
      * Get all messages in the folder.
      */
-    std::vector<CMessage *> getMessages();
+    CMessageList getMessages();
 
 
 private:
