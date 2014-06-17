@@ -1296,6 +1296,16 @@ function filter_maildirs(maildir)
 end
 
 --
+-- Example maildir list sorting by name rather than path.
+--
+--[[
+function sort_maildirs(maildirs)
+    table.sort(maildirs, function (a, b) return a.name < b.name end)
+    return maildirs
+end
+]]
+
+--
 -- Fun times.
 --
 function  show_attachment_one()
