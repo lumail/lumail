@@ -860,3 +860,53 @@ bool CLua::filter(const char *name, std::shared_ptr<CMaildir> maildir,
      */
     return lua_toboolean(m_lua, -1);
 }
+
+/**
+ * Call a global Lua function "name", passing a vector of CMaildirs
+ * (converted to a Lua table).
+ *
+ * The result is (if possible) converted back to a vector of CMaildirs.
+ * On error an empty vector is returned.
+ */
+std::vector<std::shared_ptr<CMaildir> >
+CLua::call_maildirs(const char *name,
+                    const std::vector<std::shared_ptr<CMaildir> > &maildirs)
+{
+    std::vector<std::shared_ptr<CMaildir> > result;
+
+    lua_getglobal(m_lua, name);
+    
+    if (!lua_isfunction(m_lua, -1))
+    {
+        return result;
+    }
+    
+    if (!push_maildir_list(m_lua, maildirs))
+    {
+        return result;
+    }
+    
+    int error = lua_pcall(m_lua, 1, 1, 0);
+    
+    if (error)
+    {
+        lua_getglobal(m_lua, "on_error");
+        /* We could check for an error, but what can we do?  Instead we'll
+         * just get an error from lua_pcall. */
+         
+        /* Push the error string from the previous pcall onto the top of
+         * the stack. */
+        lua_pushvalue(m_lua, -2);
+        
+        /* And call the error handler. */
+        lua_pcall(m_lua, 1, 0, 0);
+         
+        return result;
+    }
+    
+    /* The call returned successfully, so return the actual result as a
+     * boolean
+     */
+    return check_maildir_list(m_lua, -1);
+}
+

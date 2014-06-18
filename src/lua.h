@@ -195,6 +195,16 @@ public:
      */
     bool filter(const char *name, std::shared_ptr<CMaildir> maildir,
                 bool onerror=true);
+                
+    /**
+     * Call a global Lua function "name", passing a vector of CMaildirs
+     * (converted to a Lua table).
+     *
+     * The result is (if possible) converted back to a vector of CMaildirs.
+     * On error an empty vector is returned.
+     */
+    std::vector<std::shared_ptr<CMaildir> > call_maildirs(const char *name,
+                                                          const std::vector<std::shared_ptr<CMaildir> > &maildirs);
 
 protected:
 

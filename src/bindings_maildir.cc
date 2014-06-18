@@ -358,7 +358,7 @@ int select_maildir(lua_State *L)
  */
 static std::shared_ptr<CMaildir> check_maildir(lua_State *L, int index)
 {
-    void *ud = luaL_checkudata(L, 1, "maildir_mt");
+    void *ud = luaL_checkudata(L, index, "maildir_mt");
     if (ud)
     {
         /* Return a copy of the pointer */
@@ -506,4 +506,48 @@ bool push_maildir(lua_State *L, std::shared_ptr<CMaildir> maildir)
     *ud_maildir = maildir;
     
     return true;
+}
+
+/**
+ * Push a vector of CMaildirs onto the Lua stack as a table.
+ *
+ * Returns true on success.
+ */
+bool push_maildir_list(lua_State *L,
+                       const std::vector<std::shared_ptr<CMaildir> > &maildirs)
+{
+    lua_createtable(L, maildirs.size(), 0);
+    for (size_t i=0; i<maildirs.size(); ++i)
+    {
+        if (!push_maildir(L, maildirs[i]))
+            return false;
+        
+        /* Add to the table. */
+        lua_rawseti(L, -2, i+1);
+    }
+    return true;
+}
+
+/**
+ * Verify that an item on the Lua stack is a table of CMaildir, and return
+ * this table converted back to a std::vector if so.
+ *
+ * Returns an empty vector otherwise.
+ */
+std::vector<std::shared_ptr<CMaildir> >
+check_maildir_list(lua_State *L, int index)
+{
+    std::vector<std::shared_ptr<CMaildir> > result;
+    size_t size = lua_objlen(L, index);
+    for (size_t i=1; i<=size; ++i)
+    {
+        std::shared_ptr<CMaildir> md;
+        lua_rawgeti(L, index, i);
+        md = check_maildir(L, -1);
+        /* Ignore anything that isn't a CMaildir */
+        if (md)
+            result.push_back(check_maildir(L, -1));
+        lua_pop(L, 1);
+    }
+    return result;
 }
