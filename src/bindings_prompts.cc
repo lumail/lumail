@@ -113,7 +113,7 @@ int prompt(lua_State * L)
 
     CScreen::clear_status();
     move(CScreen::height() - 1, 0);
-    printw(str);
+    printw("%s", str);
 
     timeout(-1000);
 
@@ -218,7 +218,7 @@ int prompt_chars(lua_State *L)
          */
         CScreen::clear_status();
         move(height - 1, 0);
-        printw(str.c_str());
+        printw("%s", str.c_str());
 
         gunichar key;
         CInput::Instance()->get_wchar(&key);
