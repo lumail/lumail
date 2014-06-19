@@ -170,7 +170,7 @@ struct CLuaMapping primitive_list[] =
  * Maildir-related functions, defined in bindings_maildirs.cc
  */
     {"count_maildirs", "Count the visible Maildirs.", (lua_CFunction) count_maildirs },
-    {"current_maildir", "Return the path to the current Maildir.", (lua_CFunction) current_maildir },
+    {"current_maildir", "Return the current Maildir.", (lua_CFunction) current_maildir },
     {"current_maildirs", "Get the names of all currently visible Maildirs.", (lua_CFunction) current_maildirs },
     {"jump_maildir_to", "Jump the Maildir list to the given offset.", (lua_CFunction) jump_maildir_to },
     {"maildir_offset", "Get the current offset into the maildir list.", (lua_CFunction) maildir_offset},
