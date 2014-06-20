@@ -380,7 +380,7 @@ static int maildir_mt_gc(lua_State *L)
     if (ud)
     {
         std::shared_ptr<CMaildir> *ud_maildir = static_cast<std::shared_ptr<CMaildir> *>(ud);
-        
+
         /* Call the destructor */
         ud_maildir->~shared_ptr<CMaildir>();
     }
@@ -400,11 +400,11 @@ static int lmaildir_matches_regexp(lua_State *L)
         return luaL_error(L, "Invalid or missing pattern to matches_filter.");
     }
     std::string filt(cfilt);
-    
+
     bool result = maildir->matches_regexp(&filt);
     /* Tidy up the stack.  cfilt above will no longer be valid. */
     lua_pop(L, 2);
-    
+
     /* And return the result */
     lua_pushboolean(L, result);
     return 1;
@@ -457,7 +457,8 @@ static int maildir_mt_index(lua_State *L)
 /**
  * The maildir metatable entries.
  */
-static const luaL_Reg maildir_mt_fields[] = {
+static const luaL_Reg maildir_mt_fields[] =
+{
     { "__index", maildir_mt_index },
     { "__gc",    maildir_mt_gc },
     { NULL, NULL },  /* Terminator */
@@ -486,7 +487,7 @@ bool push_maildir(lua_State *L, std::shared_ptr<CMaildir> maildir)
     void *ud = lua_newuserdata(L, sizeof(std::shared_ptr<CMaildir>));
     if (!ud)
         return false;
-    
+
     /* Construct a blank shared_ptr.  To be safe, make sure it's a valid
      * object before setting the metatable. */
     std::shared_ptr<CMaildir> *ud_maildir = new (ud) std::shared_ptr<CMaildir>();
@@ -496,15 +497,15 @@ bool push_maildir(lua_State *L, std::shared_ptr<CMaildir> maildir)
         lua_pop(L, 1);
         return false;
     }
-    
+
     /* FIXME: check errors */
     push_maildir_mt(L);
-    
+
     lua_setmetatable(L, -2);
-    
+
     /* And now store the maildir pointer into the userdata */
     *ud_maildir = maildir;
-    
+
     return true;
 }
 
@@ -521,7 +522,7 @@ bool push_maildir_list(lua_State *L,
     {
         if (!push_maildir(L, maildirs[i]))
             return false;
-        
+
         /* Add to the table. */
         lua_rawseti(L, -2, i+1);
     }
