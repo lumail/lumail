@@ -76,9 +76,9 @@ int current_maildir(lua_State * L)
     assert(x != NULL);
 
     /**
-     * Store the path.
+     * Push it onto the Lua stack.
      */
-    lua_pushstring(L, x->path().c_str());
+    push_maildir(L, x);
     return 1;
 }
 
