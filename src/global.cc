@@ -297,10 +297,10 @@ std::vector<std::string> CGlobal::get_selected_folders()
 /**
  * Get folders matching the current mode.
  */
-std::vector<std::shared_ptr<CMaildir> > CGlobal::get_folders()
+CMaildirList CGlobal::get_folders()
 {
     CGlobal *global = CGlobal::Instance();
-    std::vector<std::shared_ptr<CMaildir> > display;
+    CMaildirList display;
     std::string * filter = global->get_variable("maildir_limit");
     CLua *lua = CLua::Instance();
     bool have_lua_filter = lua->is_function( "filter_maildirs" );
@@ -376,7 +376,7 @@ void CGlobal::update_maildirs()
     /**
      * Create a new vector to hold the results.
      */
-    m_maildirs = new std::vector<std::shared_ptr<CMaildir> >;
+    m_maildirs = new CMaildirList;
 
 
     /**

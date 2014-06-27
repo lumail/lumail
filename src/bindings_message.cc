@@ -730,7 +730,7 @@ int compose(lua_State * L)
 int count_messages(lua_State * L)
 {
     CGlobal *global = CGlobal::Instance();
-    std::vector<std::shared_ptr<CMessage> > *messages = global->get_messages();
+    CMessageList *messages = global->get_messages();
     assert(messages!=NULL);
 
     lua_pushinteger(L, messages->size() );
@@ -1462,7 +1462,7 @@ int scroll_message_to( lua_State *L)
         return luaL_error(L, "Missing argument to scroll_message_to(..)");
 
     CGlobal *global = CGlobal::Instance();
-    std::vector<std::shared_ptr<CMessage> > *messages = global->get_messages();
+    CMessageList *messages = global->get_messages();
 
     int count = messages->size();
     int selected = global->get_selected_message();

@@ -868,11 +868,10 @@ bool CLua::filter(const char *name, std::shared_ptr<CMaildir> maildir,
  * The result is (if possible) converted back to a vector of CMaildirs.
  * On error an empty vector is returned.
  */
-std::vector<std::shared_ptr<CMaildir> >
-CLua::call_maildirs(const char *name,
-                    const std::vector<std::shared_ptr<CMaildir> > &maildirs)
+CMaildirList CLua::call_maildirs(const char *name,
+                                 const CMaildirList &maildirs)
 {
-    std::vector<std::shared_ptr<CMaildir> > result;
+    CMaildirList result;
 
     lua_getglobal(m_lua, name);
     
