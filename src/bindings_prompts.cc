@@ -260,7 +260,7 @@ int prompt_maildir(lua_State * L)
     {
         CScreen::clear_main();
 
-        std::vector<std::shared_ptr<CMaildir> > folders = global->get_folders();
+        CMaildirList folders = global->get_folders();
 
         int count = folders.size();
         if ( count < 1 )

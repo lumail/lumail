@@ -61,7 +61,7 @@ int add_selected_folder(lua_State * L)
     if (str == NULL)
     {
         int selected = global->get_selected_folder();
-        std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
+        CMaildirList display = global->get_folders();
 
         if ( display.size()  == 0 )
             return 0;
@@ -164,7 +164,7 @@ int set_selected_folder(lua_State * L)
      */
     if (str == NULL)
     {
-        std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
+        CMaildirList display = global->get_folders();
         int selected = global->get_selected_folder();
 
         std::shared_ptr<CMaildir> x = display[selected];
@@ -213,7 +213,7 @@ int toggle_selected_folder(lua_State * L)
 
     if (str == NULL)
     {
-        std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
+        CMaildirList display = global->get_folders();
         if ( display.size()  == 0 )
             return 0;
 

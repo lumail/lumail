@@ -46,7 +46,7 @@ int count_maildirs(lua_State *L)
      * Get all maildirs.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<std::shared_ptr<CMaildir> > folders = global->get_folders();
+    CMaildirList folders = global->get_folders();
 
 
     /**
@@ -66,7 +66,7 @@ int current_maildir(lua_State * L)
      * get the current folders.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
+    CMaildirList display = global->get_folders();
 
     /**
      * Get the selected object.
@@ -89,7 +89,7 @@ int current_maildir(lua_State * L)
 int current_maildirs(lua_State *L)
 {
     CGlobal *global = CGlobal::Instance();
-    std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
+    CMaildirList display = global->get_folders();
 
     /**
      * Create the table.
@@ -155,7 +155,7 @@ int maildirs_matching(lua_State *L)
      * Get all maildirs.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<std::shared_ptr<CMaildir> > folders = global->get_folders();
+    CMaildirList folders = global->get_folders();
 
     /**
      * create a new table.
@@ -313,7 +313,7 @@ int select_maildir(lua_State *L)
      * get the current folders.
      */
     CGlobal *global = CGlobal::Instance();
-    std::vector<std::shared_ptr<CMaildir> > display = global->get_folders();
+    CMaildirList display = global->get_folders();
     int count = display.size();
 
     /**
@@ -515,7 +515,7 @@ bool push_maildir(lua_State *L, std::shared_ptr<CMaildir> maildir)
  * Returns true on success.
  */
 bool push_maildir_list(lua_State *L,
-                       const std::vector<std::shared_ptr<CMaildir> > &maildirs)
+                       const CMaildirList &maildirs)
 {
     lua_createtable(L, maildirs.size(), 0);
     for (size_t i=0; i<maildirs.size(); ++i)
@@ -535,10 +535,9 @@ bool push_maildir_list(lua_State *L,
  *
  * Returns an empty vector otherwise.
  */
-std::vector<std::shared_ptr<CMaildir> >
-check_maildir_list(lua_State *L, int index)
+CMaildirList check_maildir_list(lua_State *L, int index)
 {
-    std::vector<std::shared_ptr<CMaildir> > result;
+    CMaildirList result;
     size_t size = lua_objlen(L, index);
     for (size_t i=1; i<=size; ++i)
     {

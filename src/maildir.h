@@ -145,3 +145,8 @@ private:
      */
     std::string m_name;
 };
+
+/**
+ * Type of a list of maildir folders.
+ */
+typedef std::vector<std::shared_ptr<CMaildir> > CMaildirList;
