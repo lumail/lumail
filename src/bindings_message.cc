@@ -879,6 +879,12 @@ int forward(lua_State * L)
     std::string date    = mssg->header("Date");
 
 
+    /**
+     * .signature handling.
+     */
+    UTFString sig = lua->get_signature( sender, to, sub );
+
+
     CGlobal *global   = CGlobal::Instance();
     std::string *from = global->get_variable( "from" );
 
@@ -923,6 +929,12 @@ int forward(lua_State * L)
     for( int i = 0; i < lines; i++ )
     {
         bbody += body[i] + "\n";
+    }
+
+    if ( ! sig.empty() )
+    {
+        bbody += "\n";
+        bbody += sig ;
     }
 
     /**
