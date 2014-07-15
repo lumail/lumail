@@ -19,7 +19,7 @@
 #pragma once
 
 #include "lua.h"
-
+#include "maildir.h"
 
 /**
  * Forward declaration of class.
