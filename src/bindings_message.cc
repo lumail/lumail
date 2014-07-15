@@ -889,7 +889,7 @@ int forward(lua_State * L)
     std::vector<std::string> headers;
     headers.push_back( "To: " + recipient);
     headers.push_back( "From: " + *from);
-    headers.push_back( "Subject: Fwd:" + sub);
+    headers.push_back( "Subject: Fwd: " + sub);
     headers.push_back( "Message-ID: " + get_message_id(L) );
 
 
