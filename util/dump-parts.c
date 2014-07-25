@@ -69,7 +69,11 @@ void dump_mail( char *filename )
         /**
          * Highlight inline parts - which are not attachments.
          */
-        GMimeContentDisposition *disp = g_mime_object_get_content_disposition(part);
+        GMimeContentDisposition *disp = NULL;
+
+        if ( GMIME_IS_OBJECT( disp ) )
+            disp = g_mime_object_get_content_disposition(part);
+
         if ( disp != NULL )
         {
             const char *str = g_mime_content_disposition_get_disposition (disp);

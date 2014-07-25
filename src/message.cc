@@ -1290,7 +1290,8 @@ bool CMessage::parse_attachments()
          * if we're dealing with an attachment, or an inline-part.
          */
         GMimeContentDisposition *disp = NULL;
-        disp = g_mime_object_get_content_disposition (part);
+        if ( GMIME_IS_OBJECT(part) )
+            disp = g_mime_object_get_content_disposition (part);
 
         if ( ( disp != NULL ) &&
              ( !g_ascii_strcasecmp (disp->disposition, "attachment") ) )
@@ -1842,7 +1843,7 @@ bool CMessage::get_body_part( int offset, char **data, size_t *length )
     {
         GMimeObject *part  = g_mime_part_iter_get_current (iter);
 
-        if ( ( GMIME_IS_OBJECT( part ) ) && ( GMIME_IS_PART(part) ) )
+        if ( ( GMIME_IS_OBJECT( part ) )  && ( GMIME_IS_PART(part) ) )
         {
             if ( count == offset )
             {
