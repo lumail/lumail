@@ -1316,7 +1316,7 @@ bool CMessage::parse_attachments()
 
             g_mime_object_write_to_stream (GMIME_OBJECT (msg), mem);
         }
-        else
+        else if ( GMIME_IS_PART(part))
         {
             GMimeDataWrapper *content = g_mime_part_get_content_object (GMIME_PART (part));
 
