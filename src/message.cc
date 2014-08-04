@@ -674,7 +674,14 @@ UTFString CMessage::header( std::string name )
     std::string nm(name);
     std::transform(nm.begin(), nm.end(), nm.begin(), tolower);
 
-    return( m_header_values[nm] );
+    /**
+     * Headers shouldn't have newlines in them.
+     */
+    std::string val = m_header_values[nm];
+    val.erase(std::remove(val.begin(), val.end(), '\n'), val.end());
+    val.erase(std::remove(val.begin(), val.end(), '\r'), val.end());
+
+    return( val );
 
 }
 
