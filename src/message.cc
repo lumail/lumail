@@ -1992,7 +1992,14 @@ bool CMessage::get_body_part( int offset, char **data, size_t *length )
  */
 UTFString CMessage::mime_part_to_text( GMimeObject *obj )
 {
-    assert( obj );
+    /**
+     * This shouldn't happen.
+     */
+    if ( obj == NULL )
+    {
+        DEBUG_LOG( "NULL message passed to mime_part_to_text()" );
+        return "";
+    }
 
     GMimeContentType *content_type = g_mime_object_get_content_type (obj);
 
