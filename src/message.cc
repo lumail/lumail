@@ -454,6 +454,21 @@ bool CMessage::is_new()
 
 
 /**
+ * Is this message flagged?
+ */
+bool CMessage::is_flagged()
+{
+    /**
+     * A message is flagged if it has the flag "F".
+     */
+    if ( has_flag( 'F' ) )
+        return true;
+
+    return false;
+}
+
+
+/**
  * Get the message last modified time (cached).
  */
 time_t CMessage::mtime()

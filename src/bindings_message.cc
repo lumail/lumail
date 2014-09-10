@@ -1102,6 +1102,41 @@ int is_new(lua_State * L)
 
 
 /**
+ * Is the named/current message flagged?
+ */
+int is_flagged(lua_State * L)
+{
+    /**
+     * Get the path (optional).
+     */
+    const char *str = NULL;
+    if (lua_isstring(L, -1))
+        str = lua_tostring(L, 1);
+
+    int ret = 0;
+
+    std::shared_ptr<CMessage> msg = get_message_for_operation( str );
+    if ( msg == NULL )
+    {
+        CLua *lua = CLua::Instance();
+        lua->execute( "msg(\"" MISSING_MESSAGE "\");" );
+        return( 0 );
+    }
+    else
+    {
+        if ( msg->is_flagged() )
+            lua_pushboolean(L,1);
+        else
+            lua_pushboolean(L,0);
+
+        ret = 1;
+    }
+
+    return( ret );
+}
+
+
+/**
  * Mark the message as flagged.
  */
 int mark_flagged(lua_State * L)

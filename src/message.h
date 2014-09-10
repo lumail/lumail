@@ -119,6 +119,11 @@ public:
     bool mark_read();
 
     /**
+     * Is this message flagged?
+     */
+    bool is_flagged();
+
+    /**
      * Mark a message as unflagged.
      */
     bool mark_unflagged();

@@ -156,6 +156,7 @@ struct CLuaMapping primitive_list[] =
     {"is_new", "Is the current message new/unread?", (lua_CFunction) is_new },
     {"mark_read", "Mark the current message as old/read.", (lua_CFunction) mark_read },
     {"mark_unread", "Mark the current message as unread.", (lua_CFunction) mark_unread },
+    {"is_flagged", "Is the current message flagged?", (lua_CFunction) is_flagged },
     {"mark_flagged", "Mark the current message as flagged.", (lua_CFunction) mark_flagged },
     {"mark_unflagged", "Mark the current message as unflagged.", (lua_CFunction) mark_unflagged },
     {"message_offset", "The offset within the message we've scrolled to", (lua_CFunction) message_offset },

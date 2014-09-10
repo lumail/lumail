@@ -96,6 +96,7 @@ int header(lua_State * L);
 int is_new(lua_State * L);
 int mark_read(lua_State * L);
 int mark_unread(lua_State * L);
+int is_flagged(lua_State * L);
 int mark_flagged(lua_State * L);
 int mark_unflagged(lua_State * L);
 int reply(lua_State * L);
