@@ -119,6 +119,21 @@ public:
     bool mark_read();
 
     /**
+     * Is this message flagged?
+     */
+    bool is_flagged();
+
+    /**
+     * Mark a message as unflagged.
+     */
+    bool mark_unflagged();
+
+    /**
+     * Mark a message as flagged.
+     */
+    bool mark_flagged();
+
+    /**
      * Get the message last modified time (cached).
      */
     time_t mtime();

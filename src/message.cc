@@ -454,6 +454,21 @@ bool CMessage::is_new()
 
 
 /**
+ * Is this message flagged?
+ */
+bool CMessage::is_flagged()
+{
+    /**
+     * A message is flagged if it has the flag "F".
+     */
+    if ( has_flag( 'F' ) )
+        return true;
+
+    return false;
+}
+
+
+/**
  * Get the message last modified time (cached).
  */
 time_t CMessage::mtime()
@@ -533,6 +548,36 @@ bool CMessage::mark_unread()
     if ( has_flag( 'S' ) )
     {
         remove_flag( 'S' );
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
+ * Mark the message as flagged.
+ */
+bool CMessage::mark_flagged()
+{
+    if ( !has_flag( 'F' ) )
+    {
+        add_flag( 'F' );
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
+ * Mark the message as unflagged.
+ */
+bool CMessage::mark_unflagged()
+{
+    if ( has_flag( 'F' ) )
+    {
+        remove_flag( 'F' );
         return true;
     }
 
