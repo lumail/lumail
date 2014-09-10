@@ -541,6 +541,36 @@ bool CMessage::mark_unread()
 
 
 /**
+ * Mark the message as flagged.
+ */
+bool CMessage::mark_flagged()
+{
+    if ( !has_flag( 'F' ) )
+    {
+        add_flag( 'F' );
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
+ * Mark the message as unflagged.
+ */
+bool CMessage::mark_unflagged()
+{
+    if ( has_flag( 'F' ) )
+    {
+        remove_flag( 'F' );
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
  * Format the message for display in the header - via the lua format string.
  */
 UTFString CMessage::format( std::string fmt )
