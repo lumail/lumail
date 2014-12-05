@@ -22,20 +22,26 @@
 
 
 
-
+/**
+ * Constructor.
+ */
 CMessage::CMessage(const std::string name)
 {
     m_path = name;
 }
 
+
+/**
+ * Return the path to this message.
+ */
 std::string CMessage::path()
 {
     return (m_path);
 }
 
+
 /**
- * Pretend we parsed the message with GMIME to return the
- * value of a header.
+ * Return the value of a given header.
  */
 std::string CMessage::header(std::string name)
 {
@@ -52,6 +58,10 @@ std::string CMessage::header(std::string name)
     return( h[ name ] );
 }
 
+
+/**
+ * Return all header-names, and their values.
+ */
 std::unordered_map < std::string, std::string > CMessage::headers()
 {
     std::unordered_map < std::string, std::string > m_header_values;
@@ -118,6 +128,10 @@ std::unordered_map < std::string, std::string > CMessage::headers()
     return (m_header_values);
 }
 
+
+/**
+ * Destructor.
+ */
 CMessage::~CMessage()
 {
 }
@@ -153,6 +167,7 @@ std::string CMessage::get_flags()
 
     return flags;
 }
+
 
 /**
  * Set the flags for this message.

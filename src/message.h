@@ -39,7 +39,6 @@ public:
      */
     std::unordered_map < std::string, std::string > headers();
 
-
     /**
      * Retrieve the current flags for this message.
      */
