@@ -57,6 +57,12 @@ bool CMaildir::is_maildir()
 }
 
 
+bool CMaildir::is_maildir(std::string path)
+{
+    CMaildir tmp(path);
+    return( tmp.is_maildir() );
+}
+
 /**
  * This method is bogus.  Ideally we'd cache C++ objects
  * on the mtime of the directory and return a vector of CMessage

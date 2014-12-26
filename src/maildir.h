@@ -40,6 +40,13 @@ public:
      */
     bool is_maildir();
 
+
+    /**
+     * Same again - Does the given path contain a maildir ?
+     */
+    static bool is_maildir(std::string path);
+
+
     /**
      * This method is bogus.  Ideally we'd cache C++ objects
      * on the mtime of the directory and return a vector of CMessage
