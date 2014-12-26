@@ -38,3 +38,13 @@ Examples are found beneath `./test/` for example:
     OK 3 - Read new-flags from message path.
 
 
+
+TODO
+----
+
+* Use 100% consistent implementation for classes and Lua wrapping.
+* Implement missing features.
+* Add user-interface.
+* Complete.
+
+
