@@ -19,6 +19,9 @@ extern "C" {
 #include <unordered_map>
 #include <vector>
 #include <gmime/gmime.h>
+
+
+#include "file.h"
 #include "maildir.h"
 #include "message.h"
 
@@ -155,6 +158,32 @@ int l_CMaildir_destructor(lua_State * l)
 }
 
 
+/**
+ * Get all maildirs beneath a given prefix.
+ */
+int get_maildirs(lua_State *L)
+{
+    const char *prefix = luaL_checkstring(L, 1);
+
+    std::vector < std::string > tmp = CFile::get_all_maildirs(prefix);
+
+    lua_createtable(L, tmp.size(), 0);
+    int i = 0;
+
+    for (std::vector < std::string >::iterator it = tmp.begin(); it != tmp.end(); ++it)
+    {
+        CMaildir **udata = (CMaildir **) lua_newuserdata(L, sizeof(CMaildir *));
+        *udata = new CMaildir(*it);
+        luaL_getmetatable(L, "luaL_CMaildir");
+        lua_setmetatable(L, -2);
+        lua_rawseti(L, -2, i + 1);
+
+        i++;
+    }
+
+    return 1;
+
+}
 
 /**
  * Somebody set us up the mapping.
@@ -184,4 +213,11 @@ void InitMaildir(lua_State * l)
     lua_pushvalue(l, -1);
     lua_setfield(l, -1, "__index");
     lua_setglobal(l, "Maildir");
+
+
+    /**
+     * Now add in the static method.
+     */
+    lua_pushcfunction(l, get_maildirs);
+    lua_setglobal(l, "get_maildirs" );
 }
