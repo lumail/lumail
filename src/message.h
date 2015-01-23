@@ -64,6 +64,10 @@ public:
      */
     bool remove_flag( char c );
 
+    /**
+     * Is this message new?
+     */
+    bool is_new();
 
 
   private:

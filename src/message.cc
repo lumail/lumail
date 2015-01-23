@@ -282,3 +282,20 @@ bool CMessage::remove_flag( char c )
 
     return true;
 }
+
+/**
+ * Is this message new?
+ */
+bool CMessage::is_new()
+{
+    /**
+     * A message is new if:
+     *
+     * It has the flag "N".
+     * It does not have the flag "S".
+     */
+    if ( ( has_flag( 'N' ) ) || ( ! has_flag( 'S' ) ) )
+        return true;
+
+    return false;
+}
