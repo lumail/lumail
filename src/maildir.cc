@@ -18,6 +18,7 @@
 #include <gmime/gmime.h>
 
 
+#include "file.h"
 #include "maildir.h"
 #include "message.h"
 
@@ -159,35 +160,30 @@ void CMaildir::update_cache()
      */
     time_t last_mod = last_modified();
 
-    /**
-     * If we've got -1 for the count/unread then we've
-     * just been created.
-     *
-     */
-    if ( ( last_mod <= m_modified ) &&
-         ( m_unread != -1 ) &&
-         ( m_total != -1 ) )
-        return;
+    if ( last_mod == m_modified )
+      return;
 
+    /**
+     * Otherwise update the last modified time.
+     */
     m_modified = last_mod;
 
+    /**
+     * Get all messages, and update the total
+     */
+    CMessageList all = getMessages();
+    m_total = all.size();
 
-    // /**
-    //  * Get all messages, and update the total
-    //  */
-    // CMessageList all = getMessages();
-    // m_total = all.size();
 
-
-    // /**
-    //  * Now update the unread count.
-    //  */
-    // m_unread = 0;
-    // for (std::shared_ptr<CMessage> message : all)
-    // {
-    //     if ( message->is_new() )
-    //         m_unread++;
-    // }
+    /**
+      * Now update the unread count.
+      */
+    m_unread = 0;
+    for (std::shared_ptr<CMessage> message : all)
+    {
+         if ( message->is_new() )
+             m_unread++;
+    }
 }
 
 /**
@@ -222,4 +218,80 @@ time_t CMaildir::last_modified()
     }
 
     return( last );
+}
+
+/**
+ * Get each messages in the folder.
+ *
+ * These are heap-allocated and will be persistent until the folder
+ * selection is changed.
+ *
+ * The return value is *all possible messages*, no attention to `index_limit`
+ * is paid.
+ *
+ *  TODO:  Use CFile::files_in_directory().
+ *
+ */
+CMessageList CMaildir::getMessages()
+{
+    CMessageList result;
+    dirent *de;
+    DIR *dp;
+
+    /**
+     * Directories we search.
+     */
+    std::vector<std::string> dirs;
+    dirs.push_back(m_path + "/cur/");
+    dirs.push_back(m_path + "/new/");
+
+#ifdef LUMAIL_DEBUG
+    std::string dm = "CMessage::getMessages()";
+    DEBUG_LOG( dm );
+#endif
+
+    /**
+     * For each directory.
+     */
+    for (std::string path : dirs)
+    {
+        dp = opendir(path.c_str());
+        if (dp)
+        {
+            while (true)
+            {
+                de = readdir(dp);
+                if (de == NULL)
+                    break;
+
+                /** Maybe we should check for DT_REG || DT_LNK ? */
+                if ( (de->d_type != DT_DIR)
+                   || ( de->d_type == DT_UNKNOWN && !CFile::is_directory (std::string(path + de->d_name))))
+                {
+
+                    if ( de->d_name[0] != '.' )
+                    {
+                        std::shared_ptr<CMessage> t = std::shared_ptr<CMessage>(new CMessage(std::string(path + de->d_name)));
+                        result.push_back(t);
+
+#ifdef LUMAIL_DEBUG
+                        std::string dm = "CMessage::getMessages() - found ";
+                        dm += path + de->d_name;
+                        DEBUG_LOG( dm );
+#endif
+                    }
+                    else
+                    {
+#ifdef LUMAIL_DEBUG
+                        std::string dm = "CMessage::getMessages() - ignoring dotfile ";
+                        dm += path + de->d_name;
+                        DEBUG_LOG( dm );
+#endif
+                    }
+                }
+            }
+            closedir(dp);
+        }
+    }
+    return result;
 }

@@ -5,7 +5,18 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
+
+/**
+ * Forward declaration of class.
+ */
+class CMessage;
+
+/**
+ * Type of a list of messages.
+ */
+typedef std::vector<std::shared_ptr<CMessage> > CMessageList;
 
 
 /**
@@ -18,7 +29,7 @@ class CMaildir {
 public:
 
     /**
-     * COnstructor.
+     * Constructor.
      */
     CMaildir(const std::string name);
 
@@ -56,15 +67,18 @@ public:
      */
      std::vector < std::string > messages();
 
+
      /**
       * Return the path.
       */
      std::string path();
 
+
      /**
       * The number of new messages for this maildir.
       */
      int unread_messages();
+
 
      /**
       * The total number of messages for this maildir.
@@ -72,30 +86,45 @@ public:
      int total_messages();
 
 
+     /**
+      * Get all messages in the folder.
+      */
+     CMessageList getMessages();
+
+
 private:
+
+
+     /**
+      * The path we represent.
+      */
      std::string m_path;
 
-    /**
-     * Cached time/date object.
-     */
-    time_t m_modified;
 
-    /**
-     * Cached unread-count + cached total count.
-     */
-    int m_unread;
-    int m_total;
+     /**
+      * Cached time/date object.
+      */
+     time_t m_modified;
 
-    /**
-     * Return the last modified time for this Maildir.
-     * Used to determine if we need to update our cache.
-     */
-    time_t last_modified();
 
-    /**
-     * Update the cached total/unread message counts.
-     */
-    void update_cache();
+     /**
+      * Cached unread-count + cached total count.
+      */
+     int m_unread;
+     int m_total;
+
+
+     /**
+      * Return the last modified time for this Maildir.
+      * Used to determine if we need to update our cache.
+      */
+     time_t last_modified();
+
+
+     /**
+      * Update the cached total/unread message counts.
+      */
+     void update_cache();
 
 };
 
