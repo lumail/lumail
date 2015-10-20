@@ -1,0 +1,4 @@
+obj.debug/
+obj.release/
+lumail
+lumail-debug
