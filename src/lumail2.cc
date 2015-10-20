@@ -33,23 +33,13 @@ extern "C" {
 #include <lauxlib.h>
 #include <lualib.h>
 }
-#include <algorithm>
-#include <cstdlib>
-#include <dirent.h>
-#include <fcntl.h>
-#include <fstream>
+
 #include <iostream>
-#include <sstream>
-#include <string.h>
-#include <string>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <unordered_map>
-#include <vector>
 #include <gmime/gmime.h>
+
 #include "maildir.h"
 #include "message.h"
+
 extern void InitMaildir(lua_State * l);
 extern void InitMessage(lua_State * l);
 
