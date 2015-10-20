@@ -39,9 +39,11 @@ extern "C" {
 
 #include "maildir.h"
 #include "message.h"
+#include "message_part.h"
 
 extern void InitMaildir(lua_State * l);
 extern void InitMessage(lua_State * l);
+extern void InitMessagePart(lua_State * l);
 
 
 

@@ -3,6 +3,12 @@
 
 #include <unordered_map>
 #include <string>
+#include <vector>
+
+/**
+ * Forward declaration of class.
+ */
+class CMessagePart;
 
 
 /**
@@ -70,6 +76,11 @@ public:
     bool is_new();
 
 
+    /**
+     * Get message-parts
+     */
+    std::vector<CMessagePart *> get_parts();
+    
   private:
 
     /**

@@ -20,7 +20,9 @@ extern "C" {
 #include <unordered_map>
 #include <vector>
 #include <gmime/gmime.h>
+
 #include "message.h"
+#include "message_part.h"
 
 
 /**
@@ -40,12 +42,17 @@ int l_CMessage_constructor(lua_State * l)
     return 1;
 }
 
+/**
+ * Test that the object is a CMessage.
+ */
 CMessage *l_CheckCMessage(lua_State * l, int n)
 {
     return *(CMessage **) luaL_checkudata(l, n, "luaL_CMessage");
 }
 
-
+/**
+ * Get the path to the message, on-disk.
+ */
 int l_CMessage_path(lua_State * l)
 {
     CMessage *foo = l_CheckCMessage(l, 1);
@@ -54,7 +61,9 @@ int l_CMessage_path(lua_State * l)
     return 1;
 }
 
-
+/**
+ * Get the value of a specific header.
+ */
 int l_CMessage_header(lua_State * l)
 {
     CMessage *foo = l_CheckCMessage(l, 1);
@@ -69,6 +78,9 @@ int l_CMessage_header(lua_State * l)
 
 }
 
+/**
+ * Return all header names & values.
+ */
 int l_CMessage_headers(lua_State * l)
 {
     /**
@@ -101,7 +113,87 @@ int l_CMessage_headers(lua_State * l)
     return (1);
 }
 
+/**
+ * TODO: Rework this.
+ *
+ * At the moment we return a nested-table, which has the values inline.
+ *
+ * TODO: Instead return an array of CMessagePart objects - and update
+ * the CMessagePart binding to allow access to the various methods.
+ *
+ * Right now CMessageType *is* exposed to lua, but without a constructor
+ * and the only method exported is `type()`.
+ */
+int l_CMessage_parts(lua_State * l)
+{
+    CMessage *foo = l_CheckCMessage(l, 1);
 
+    /**
+     * Get the parts, and count.
+     */
+    std::vector<CMessagePart *> parts = foo->get_parts();
+    size_t count = parts.size();
+
+    /**
+     * So we're returning an array of tables - which is a table really.
+     */
+    lua_newtable(l);
+
+    /**
+     * For each attachment - set a table for the element
+     */
+    for ( size_t i = 0; i < count ; i++ )
+    {
+
+      /**
+       * This is the index into the array.
+       */
+       lua_pushnumber(l, i+1);
+
+       lua_newtable(l);
+
+       /**
+	* Setup the nested-table
+	*/
+
+       /**
+	* Content-Type
+	*/
+       CMessagePart *cur = parts.at(i);
+       lua_pushstring(l, "type" );
+       lua_pushstring(l, cur->type().c_str() );
+       lua_settable(l, -3);
+
+       /**
+	* Filename - if it is an attachment.
+	*/
+       if ( cur->is_attachment() )
+	 {
+	   lua_pushstring(l, "filename" );
+	   lua_pushstring(l, cur->filename().c_str() );
+	   lua_settable(l, -3);
+	 }
+
+       /**
+	* Content of this part.
+	*/
+       void *data = cur->content();
+       size_t len = cur->content_size();
+       lua_pushstring(l, "content" );
+       lua_pushlstring(l, (char *)data, len );
+       lua_settable(l, -3);
+
+       lua_settable(l, -3);
+
+    }
+
+
+    return(1);
+}
+
+/**
+ * Get/Set the flags.
+ */
 int l_CMessage_flags(lua_State * l)
 {
     CMessage *foo = l_CheckCMessage(l, 1);
@@ -123,6 +215,9 @@ int l_CMessage_flags(lua_State * l)
     return 1;
 }
 
+/**
+ * Destructor.
+ */
 int l_CMessage_destructor(lua_State * l)
 {
     CMessage *foo = l_CheckCMessage(l, 1);
@@ -136,6 +231,7 @@ void InitMessage(lua_State * l)
     luaL_Reg sFooRegs[] = {
         {"new", l_CMessage_constructor},
         {"path", l_CMessage_path},
+        {"parts", l_CMessage_parts},
         {"header", l_CMessage_header},
         {"headers", l_CMessage_headers},
         {"flags", l_CMessage_flags},

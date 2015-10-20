@@ -2,7 +2,7 @@
 lumail2
 =======
 
-This is a small repository containing some minimal code for working with Maildir objects and Email objects.
+This is a small repository containing some minimal code for working with Maildir objects, email-messages, and MIME-parts.
 
 If you're familiar with the [lumail](http://lumail.org/) project it should make sense, otherwise it might not.
 
@@ -46,5 +46,3 @@ TODO
 * Implement missing features.
 * Add user-interface.
 * Complete.
-
-
