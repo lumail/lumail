@@ -82,9 +82,7 @@ int main(int argc, char *argv[])
             std::cout << "Lua error: " << luaL_checkstring(l, -1) << std::endl;
     } else
     {
-        int erred = luaL_dofile(l, "driver.lua");
-        if (erred)
-            std::cout << "Lua error: " << luaL_checkstring(l, -1) << std::endl;
+      std::cout << "Usage: " << argv[0] << " path/to/script.lua" << std::endl;
     }
 
 
