@@ -12,7 +12,6 @@
 CMessagePart::CMessagePart( std::string type, std::string filename, void *content, size_t content_length )
 {
   m_type       = type;
-  m_content    = content;
   m_filename   = filename;
 
   m_content        = NULL;

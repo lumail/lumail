@@ -131,15 +131,7 @@ std::unordered_map < std::string, std::string > CMessage::headers()
 CMessage::~CMessage()
 {
   if ( m_parts.size() > 0 )
-    {
-      for (CMessagePart *cur : m_parts)
-        {
-          if ( cur ) {
-            delete( cur );
-            cur = NULL;
-          }
-        }
-    }
+      m_parts.clear();
 }
 
 

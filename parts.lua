@@ -1,9 +1,9 @@
 
 
 
-function show_folder( i )
+function show_folder( path )
 
-   folder = folders[i]
+   folder = Maildir.new( path )
    print( "\nFolder : " .. folder:path() )
 
    --
@@ -41,10 +41,9 @@ function show_folder( i )
       end
 
       --
-      -- We know the second folder has a message - let us print out
-      -- the body of that message.
+      -- If we're handing the simple-folder then show the message.
       --
-      if ( i == 2 ) then
+      if ( string.find( folder:path(), "simple" ) ) then
          print( v:content() )
       end
 
@@ -75,8 +74,8 @@ end
 --  Show both of the folders - NOTE the second one will have the message
 --  output too.
 --
-show_folder( 1 )
-show_folder( 2 )
+show_folder( "./Maildir/simple" )
+show_folder( "./Maildir/attachment" )
 
 --
 -- All done

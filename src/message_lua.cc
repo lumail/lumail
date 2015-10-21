@@ -11,6 +11,7 @@ extern "C" {
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string.h>
 #include <string>
@@ -134,8 +135,8 @@ int l_CMessage_parts(lua_State * l)
 
     for (std::vector < CMessagePart *>::iterator it = parts.begin(); it != parts.end(); ++it)
     {
-        CMessagePart **udata = (CMessagePart **) lua_newuserdata(l, sizeof(CMessagePart *));
-        *udata = (*it);
+      CMessagePart **udata = (CMessagePart **) lua_newuserdata(l, sizeof(CMessagePart *));
+      *udata = (*it);
         luaL_getmetatable(l, "luaL_CMessagePart");
         lua_setmetatable(l, -2);
         lua_rawseti(l, -2, i + 1);
