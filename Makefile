@@ -117,3 +117,7 @@ $(DEBUG_OBJECTS): $(DEBUG_OBJDIR)/%.o : $(SRCDIR)/%.cc
 	@mkdir $(DEBUG_OBJDIR) 2>/dev/null || true
 	$(CC) $(FEATURES) -ggdb -DDEBUG=1 $(CPPFLAGS) $(GMIME_INC) $(GLIBMM_INC) -O2 -c $< -o $@
 
+
+.PHONY: indent
+indent:
+	indent -bl -i4 -di0  -bli0 $(SRCDIR)/*.cc $(SRCDIR)/*.h
