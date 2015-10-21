@@ -16,7 +16,11 @@ class CMessage;
 /**
  * Type of a list of messages.
  */
-typedef std::vector<std::shared_ptr<CMessage> > CMessageList;
+typedef
+    std::vector <
+    std::shared_ptr <
+CMessage > >
+    CMessageList;
 
 
 /**
@@ -25,37 +29,43 @@ typedef std::vector<std::shared_ptr<CMessage> > CMessageList;
  * This is the C++ implementation of the maildir class.
  *
  */
-class CMaildir {
-public:
+class
+    CMaildir
+{
+  public:
 
     /**
      * Constructor.
      */
-    CMaildir(const std::string name);
+    CMaildir (const std::string name);
 
 
     /**
      * Destructor
      */
-    ~CMaildir();
+         ~
+    CMaildir ();
 
 
     /**
      * Is the given path a directory?
      */
-    static bool is_directory(std::string path);
+    static bool
+    is_directory (std::string path);
 
 
     /**
      * Does the given path contain a maildir ?
      */
-    bool is_maildir();
+    bool
+    is_maildir ();
 
 
     /**
      * Same again - Does the given path contain a maildir ?
      */
-    static bool is_maildir(std::string path);
+    static bool
+    is_maildir (std::string path);
 
 
     /**
@@ -65,69 +75,81 @@ public:
      *
      * Instead we're returning a vector of paths.
      */
-     std::vector < std::string > messages();
+    std::vector <
+	std::string >
+    messages ();
 
 
      /**
       * Return the path.
       */
-     std::string path();
+    std::string
+    path ();
 
 
      /**
       * The number of new messages for this maildir.
       */
-     int unread_messages();
+    int
+    unread_messages ();
 
 
      /**
       * The total number of messages for this maildir.
       */
-     int total_messages();
+    int
+    total_messages ();
 
 
      /**
       * Get all messages in the folder.
       */
-     CMessageList getMessages();
+    CMessageList
+    getMessages ();
 
 
-private:
+  private:
 
 
      /**
       * The path we represent.
       */
-     std::string m_path;
+    std::string
+	m_path;
 
 
      /**
       * Cached time/date object.
       */
-     time_t m_modified;
+    time_t
+	m_modified;
 
 
      /**
       * Cached unread-count + cached total count.
       */
-     int m_unread;
-     int m_total;
+    int
+	m_unread;
+    int
+	m_total;
 
 
      /**
       * Return the last modified time for this Maildir.
       * Used to determine if we need to update our cache.
       */
-     time_t last_modified();
+    time_t
+    last_modified ();
 
 
      /**
       * Update the cached total/unread message counts.
       */
-     void update_cache();
+    void
+    update_cache ();
 
 };
 
 
 
-#endif                          /* _MAILDIR_H */
+#endif /* _MAILDIR_H */

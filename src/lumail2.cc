@@ -28,7 +28,8 @@
  *
  */
 
-extern "C" {
+extern "C"
+{
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
@@ -41,9 +42,9 @@ extern "C" {
 #include "message.h"
 #include "message_part.h"
 
-extern void InitMaildir(lua_State * l);
-extern void InitMessage(lua_State * l);
-extern void InitMessagePart(lua_State * l);
+extern void InitMaildir (lua_State * l);
+extern void InitMessage (lua_State * l);
+extern void InitMessagePart (lua_State * l);
 
 
 
@@ -51,45 +52,49 @@ extern void InitMessagePart(lua_State * l);
  * The entry point to our code.
  */
 
-int main(int argc, char *argv[])
+int
+main (int argc, char *argv[])
 {
     /**
      * Initi mime.
      */
-    g_mime_init(0);
+    g_mime_init (0);
 
     /**
      * Setup Lua
      */
-    lua_State *l = luaL_newstate();
-    luaL_openlibs(l);
+    lua_State *l = luaL_newstate ();
+    luaL_openlibs (l);
 
 
     /**
      * Setup our objects.
      */
-    InitMaildir(l);
-    InitMessage(l);
-    InitMessagePart(l);
+    InitMaildir (l);
+    InitMessage (l);
+    InitMessagePart (l);
 
     /**
      * Load the script.
      */
     if (argc > 1)
     {
-        int erred = luaL_dofile(l, argv[1]);
-        if (erred)
-            std::cout << "Lua error: " << luaL_checkstring(l, -1) << std::endl;
-    } else
+	int erred = luaL_dofile (l, argv[1]);
+	if (erred)
+	    std::cout << "Lua error: " << luaL_checkstring (l,
+							    -1) << std::endl;
+    }
+    else
     {
-      std::cout << "Usage: " << argv[0] << " path/to/script.lua" << std::endl;
+	std::cout << "Usage: " << argv[0] << " path/to/script.lua" << std::
+	    endl;
     }
 
 
     /**
      * All done.
      */
-    lua_close(l);
-    g_mime_shutdown();
+    lua_close (l);
+    g_mime_shutdown ();
     return 0;
 }
