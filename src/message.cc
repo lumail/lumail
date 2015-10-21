@@ -126,10 +126,17 @@ std::unordered_map < std::string, std::string > CMessage::headers()
 
 
 /**
- * Destructor.
+ * Destructor: If we've parsed any MIME-parts then free them here.
  */
 CMessage::~CMessage()
 {
+  if ( m_parts.size() > 0 )
+    {
+      for (CMessagePart *cur : m_parts)
+        {
+            delete( cur );
+        }
+    }
 }
 
 
@@ -296,10 +303,25 @@ bool CMessage::is_new()
   return false;
 }
 
+
+/**
+ * Parse the message into MIME-parts, if we've not already done so.
+ */
 std::vector<CMessagePart*> CMessage::get_parts()
 {
-  std::vector<CMessagePart *> results;
 
+  /**
+   * If we've already parsed then return the cached results.
+   *
+   * A message can't/won't change under our feet.
+   */
+  if ( m_parts.size() > 0 )
+    return( m_parts );
+
+
+  /**
+   * Boiler variables.
+   */
   GMimeMessage *m_message;
   GMimeParser *parser;
   GMimeStream *stream;
@@ -308,7 +330,7 @@ std::vector<CMessagePart*> CMessage::get_parts()
   if ((fd = open( m_path.c_str(), O_RDONLY, 0)) == -1)
     {
       std::cout << "Opening failed ..." << std::endl;
-      return results;
+      return m_parts;
     }
 
   stream = g_mime_stream_fs_new (fd);
@@ -369,12 +391,12 @@ std::vector<CMessagePart*> CMessage::get_parts()
 	  if ( filename )
 	    {
 	      CMessagePart *attach = new CMessagePart( type, filename, data, data_len );
-	      results.push_back( attach );
+	      m_parts.push_back( attach );
 	    }
 	  else
 	    {
 	      CMessagePart *part = new CMessagePart( type, "", data, data_len );
-	      results.push_back( part );
+	      m_parts.push_back( part );
 	    }
 	}
 
@@ -386,5 +408,5 @@ std::vector<CMessagePart*> CMessage::get_parts()
   g_object_unref(m_message);
 
 
-  return( results );
+  return( m_parts );
 }

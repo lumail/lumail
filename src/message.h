@@ -80,13 +80,19 @@ public:
      * Get message-parts
      */
     std::vector<CMessagePart *> get_parts();
-    
+
   private:
 
     /**
      * The path on-disk to the message.
      */
      std::string m_path;
+
+     /**
+      * Cached MIME-parts to this message.
+      */
+     std::vector<CMessagePart *> m_parts;
+
 };
 
 
