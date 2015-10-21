@@ -110,9 +110,8 @@ std::vector < std::string > CMaildir::messages ()
 		/** Maybe we should check for DT_REG || DT_LNK ? */
 		if ((de->d_type != DT_DIR)
 		    || (de->d_type == DT_UNKNOWN
-			&& !CMaildir::is_directory (std::
-						    string (path +
-							    de->d_name))))
+			&& !CMaildir::is_directory (std::string (path +
+								 de->d_name))))
 		{
 
 		    if (de->d_name[0] != '.')

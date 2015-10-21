@@ -86,8 +86,8 @@ main (int argc, char *argv[])
     }
     else
     {
-	std::cout << "Usage: " << argv[0] << " path/to/script.lua" << std::
-	    endl;
+	std::cout << "Usage: " << argv[0] << " path/to/script.lua" <<
+	    std::endl;
     }
 
 

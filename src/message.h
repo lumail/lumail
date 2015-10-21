@@ -35,20 +35,27 @@ class CMessage
      */
           std::string path ();
 
+
+    /**
+     * Update the path to the message.
+     */
+    void path (std::string new_path);
+
+
     /**
      * Get the value of the given header.
      */
-          std::string header (std::string name);
+         std::string header (std::string name);
 
     /**
      * Get all headers, and their values.
      */
-          std::unordered_map < std::string, std::string > headers ();
+         std::unordered_map < std::string, std::string > headers ();
 
     /**
      * Retrieve the current flags for this message.
      */
-          std::string get_flags ();
+         std::string get_flags ();
 
     /**
      * Set the flags for this message.

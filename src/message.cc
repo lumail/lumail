@@ -13,6 +13,7 @@
 
 #include <gmime/gmime.h>
 
+#include "file.h"
 #include "message.h"
 #include "message_part.h"
 
@@ -33,6 +34,16 @@ CMessage::CMessage (const std::string name)
 std::string CMessage::path ()
 {
     return (m_path);
+}
+
+
+/**
+ * Update the path to the message.
+ */
+void
+CMessage::path (std::string new_path)
+{
+    m_path = new_path;
 }
 
 
@@ -214,11 +225,8 @@ CMessage::set_flags (std::string new_flags)
 
     if (cur_path != dst_path)
     {
-	//
-	//  TODO:  Rename
-	//
-	//CFile::move( cur_path, dst_path );
-	//path( dst_path );
+	CFile::move (cur_path, dst_path);
+	path (dst_path);
     }
 }
 
@@ -235,9 +243,9 @@ CMessage::add_flag (char c)
 
     size_t offset = std::string::npos;
 
-  /**
-   * If the flag was missing, add it.
-   */
+    /**
+     * If the flag was missing, add it.
+     */
     if ((offset = flags.find (c)) == std::string::npos)
     {
 	flags += c;
@@ -409,8 +417,7 @@ std::vector < CMessagePart * >CMessage::get_parts ()
 	   */
 	    void *
 		data = (void *) malloc (len + 1);
-	    size_t
-		data_len = (size_t) len;
+	    size_t data_len = (size_t) len;
 	    memcpy (data, b, len);
 
 

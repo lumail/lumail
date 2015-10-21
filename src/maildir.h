@@ -50,7 +50,8 @@ class
     /**
      * Is the given path a directory?
      */
-    static bool
+    static
+	bool
     is_directory (std::string path);
 
 
@@ -64,7 +65,8 @@ class
     /**
      * Same again - Does the given path contain a maildir ?
      */
-    static bool
+    static
+	bool
     is_maildir (std::string path);
 
 
