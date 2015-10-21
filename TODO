@@ -3,7 +3,7 @@ TODO
 
 Items at the top have priority, and pull-requests are welcome!
 
-
+* Double-free issue with CMEssageParts - suspect we need sharedptr.
 
 * Use 100% consistent implementation for classes and Lua wrapping.
 
