@@ -1,0 +1,18 @@
+TODO
+----
+
+Items at the top have priority, and pull-requests are welcome!
+
+
+
+* Cache CMessagePart objects.
+
+* Make CMessage::parts() return an array of CMessagePart objects.
+
+* Use 100% consistent implementation for classes and Lua wrapping.
+
+* Implement missing features.
+
+* Add user-interface.
+
+* Complete.

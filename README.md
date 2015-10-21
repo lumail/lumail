@@ -36,13 +36,3 @@ Examples are found beneath `./test/` for example:
     OK 1 - Read flags from message path.
     OK 2 - Read new-flag from message path.
     OK 3 - Read new-flags from message path.
-
-
-
-TODO
-----
-
-* Use 100% consistent implementation for classes and Lua wrapping.
-* Implement missing features.
-* Add user-interface.
-* Complete.
