@@ -22,10 +22,10 @@ function show_folder( i )
    -- Output a summary of the MIME-parts.
    --
    for i = 1, #parts do
-      tbl = parts[i]
-      print( "Content-Type of part " .. i .. "  is " .. tbl['type'] )
-      if ( tbl['filename'] ) then
-	 print( "\tThis is an attachment - with filename : " .. tbl['filename'] )
+      entry  = parts[i]
+      print( "Content-Type of part " .. i .. "  is " .. entry:type() )
+      if ( entry:is_attachment() ) then
+	 print( "\tThis is an attachment - with filename : " .. entry:filename() )
       end
 
    end
@@ -35,9 +35,9 @@ function show_folder( i )
    --
    print "Repeating that information:"
    for k,v in ipairs( parts ) do
-      print( "\t" .. v['type'] )
-      if ( v['filename'] ) then
-	 print( "\t\tThis is an attachment - with filename : " .. v['filename'] )
+      print( "\t" .. v:type() )
+      if ( v:is_attachment() ) then
+	 print( "\t\tThis is an attachment - with filename : " .. v:filename() )
       end
 
       --
@@ -45,7 +45,7 @@ function show_folder( i )
       -- the body of that message.
       --
       if ( i == 2 ) then
-         print( v['content'])
+         print( v:content() )
       end
 
    end

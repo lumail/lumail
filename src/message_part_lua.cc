@@ -13,6 +13,39 @@ CMessagePart *l_CheckCMessagePart(lua_State * l, int n)
     return *(CMessagePart **) luaL_checkudata(l, n, "luaL_CMessagePart");
 }
 
+int l_CMessagePart_content(lua_State * l)
+{
+    CMessagePart *foo = l_CheckCMessagePart(l, 1);
+
+    void *content = foo->content();
+    size_t content_size = foo->content_size();
+
+    if ( content_size > 0 )
+      lua_pushlstring(l, (char *)content, content_size );
+    else
+      lua_pushnil(l);
+    return 1;
+}
+
+int l_CMessagePart_filename(lua_State * l)
+{
+    CMessagePart *foo = l_CheckCMessagePart(l, 1);
+
+    lua_pushstring(l, foo->filename().c_str());
+    return 1;
+}
+
+int l_CMessagePart_is_attachment(lua_State * l)
+{
+    CMessagePart *foo = l_CheckCMessagePart(l, 1);
+
+    if ( foo->is_attachment() )
+      lua_pushboolean(l,1);
+    else
+      lua_pushboolean(l,0);
+
+    return 1;
+}
 
 int l_CMessagePart_type(lua_State * l)
 {
@@ -32,6 +65,9 @@ int l_CMessagePart_destructor(lua_State * l)
 void InitMessagePart(lua_State * l)
 {
     luaL_Reg sFooRegs[] = {
+        {"content", l_CMessagePart_content},
+        {"filename", l_CMessagePart_filename},
+        {"is_attachment", l_CMessagePart_is_attachment},
         {"type", l_CMessagePart_type},
         {"__gc", l_CMessagePart_destructor},
         {NULL, NULL}

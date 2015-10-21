@@ -134,7 +134,10 @@ CMessage::~CMessage()
     {
       for (CMessagePart *cur : m_parts)
         {
+          if ( cur ) {
             delete( cur );
+            cur = NULL;
+          }
         }
     }
 }

@@ -114,15 +114,11 @@ int l_CMessage_headers(lua_State * l)
 }
 
 /**
- * TODO: Rework this.
+ * Return an array of CMessagePart objects to Lua.  These can be inspected
+ * as the user wishes.
  *
- * At the moment we return a nested-table, which has the values inline.
+ * NOTE: CMessagePart is *NOT* creatable via Lua.  This is a good thing.
  *
- * TODO: Instead return an array of CMessagePart objects - and update
- * the CMessagePart binding to allow access to the various methods.
- *
- * Right now CMessageType *is* exposed to lua, but without a constructor
- * and the only method exported is `type()`.
  */
 int l_CMessage_parts(lua_State * l)
 {
@@ -132,60 +128,22 @@ int l_CMessage_parts(lua_State * l)
      * Get the parts, and count.
      */
     std::vector<CMessagePart *> parts = foo->get_parts();
-    size_t count = parts.size();
 
-    /**
-     * So we're returning an array of tables - which is a table really.
-     */
-    lua_newtable(l);
+    lua_createtable(l, parts.size(), 0);
+    int i = 0;
 
-    /**
-     * For each attachment - set a table for the element
-     */
-    for ( size_t i = 0; i < count ; i++ )
+    for (std::vector < CMessagePart *>::iterator it = parts.begin(); it != parts.end(); ++it)
     {
+        CMessagePart **udata = (CMessagePart **) lua_newuserdata(l, sizeof(CMessagePart *));
+        *udata = (*it);
+        luaL_getmetatable(l, "luaL_CMessagePart");
+        lua_setmetatable(l, -2);
+        lua_rawseti(l, -2, i + 1);
 
-      /**
-       * This is the index into the array.
-       */
-       lua_pushnumber(l, i+1);
-
-       lua_newtable(l);
-
-       /**
-	* Setup the nested-table
-	*/
-
-       /**
-	* Content-Type
-	*/
-       CMessagePart *cur = parts.at(i);
-       lua_pushstring(l, "type" );
-       lua_pushstring(l, cur->type().c_str() );
-       lua_settable(l, -3);
-
-       /**
-	* Filename - if it is an attachment.
-	*/
-       if ( cur->is_attachment() )
-	 {
-	   lua_pushstring(l, "filename" );
-	   lua_pushstring(l, cur->filename().c_str() );
-	   lua_settable(l, -3);
-	 }
-
-       /**
-	* Content of this part.
-	*/
-       void *data = cur->content();
-       size_t len = cur->content_size();
-       lua_pushstring(l, "content" );
-       lua_pushlstring(l, (char *)data, len );
-       lua_settable(l, -3);
-
-       lua_settable(l, -3);
-
+        i++;
     }
+
+    return 1;
 
 
     return(1);
