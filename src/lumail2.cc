@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
      */
     InitMaildir(l);
     InitMessage(l);
+    InitMessagePart(l);
 
     /**
      * Load the script.
