@@ -90,5 +90,9 @@ CLua::load_file (std::string filename)
 bool
 CLua::execute (std::string lua)
 {
-    return false;
+    if (luaL_dostring (m_lua, lua.c_str ()))
+    {
+	return false;
+    }
+    return true;
 }

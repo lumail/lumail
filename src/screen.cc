@@ -6,8 +6,9 @@
 #include <panel.h>
 #include <string.h>
 
-#include "screen.h"
 #include "demo_view.h"
+#include "lua.h"
+#include "screen.h"
 
 
 
@@ -29,11 +30,11 @@ typedef struct _PANEL_DATA
 /**
  * The status-bar window, panel, & data.
  */
-WINDOW     *g_status_bar_window;
-PANEL      *g_status_bar;
+WINDOW *g_status_bar_window;
+PANEL *g_status_bar;
 PANEL_DATA g_status_bar_data;
 
-
+#define PANEL_HEIGHT 6
 
 
 /**
@@ -51,7 +52,8 @@ CScreen::CScreen ()
 /**
  * Gain access to our singleton object.
  */
-CScreen * CScreen::instance ()
+CScreen *
+CScreen::instance ()
 {
     static CScreen *instance = new CScreen ();
     return (instance);
@@ -76,15 +78,29 @@ CScreen::run_main_loop ()
    */
     timeout (500);
 
+    CScreen *s = CScreen::instance ();
+    s->clear ();
+
+
     int ch;
     int running = 1;
     while ((running > 0) && (ch = getch ()))
     {
+	CScreen *s = CScreen::instance ();
+	s->clear ();
+
 	switch (ch)
 	{
 	case 'q':
 	    running = 0;
 	    break;
+	case ':':
+	    {
+		std::string e = get_line ();
+		CLua *lua = CLua::Instance ();
+		lua->execute (e);
+		break;
+	    }
 	case '\t':
 	    if (g_status_bar_data.hide == FALSE)
 	    {
@@ -106,11 +122,11 @@ CScreen::run_main_loop ()
 	CViewMode *mode = m_views["demo"];
 	mode->draw ();
 
-        /**
+	/**
          * Update our panel.
          */
-        update_panels ();
-        doupdate ();
+	update_panels ();
+	doupdate ();
 
     }
 
@@ -193,11 +209,13 @@ CScreen::clear ()
     while ((int) blank.length () < width)
 	blank += " ";
 
-    for (int i = 0; i < height; i++)
+    for (int i = 0; i <= height; i++)
     {
-	mvprintw (i, 0, "%i%s", i, blank.c_str ());
+	mvprintw (i, 0, "%s", blank.c_str ());
     }
+    update_panels ();
     doupdate ();
+    refresh ();
 }
 
 
@@ -239,7 +257,7 @@ CScreen::width ()
 void
 CScreen::init_status_bar ()
 {
-  int show = 1;
+    int show = 1;
     int x, y;
 
     /*
@@ -252,7 +270,7 @@ CScreen::init_status_bar ()
   /**
    * Size of panel
    */
-    int rows = 6;
+    int rows = PANEL_HEIGHT;
     int cols = size.ws_col;
 
   /**
@@ -266,7 +284,9 @@ CScreen::init_status_bar ()
    * Set the content of the status-bar
    */
     g_status_bar_data.title = strdup ("Status Panel");
-    g_status_bar_data.line_one = strdup ("Lumail v2 UI demo - Toggle panel via 'tab'.  Exit via 'q'.");
+    g_status_bar_data.line_one =
+	strdup
+	("Lumail v2 UI demo - Toggle panel via 'tab'.  Exit via 'q'.  Eval via ':'.");
     g_status_bar_data.line_two = strdup ("by Steve Kemp");
 
   /**
@@ -350,4 +370,141 @@ CScreen::redraw_status_bar ()
    * Avoid a leak.
    */
     free (blank);
+}
+
+
+/**
+ * Read a line of input via the status-line.
+ */
+std::string CScreen::get_line ()
+{
+    std::string buffer;
+
+    int
+	old_curs = curs_set (1);
+    int
+	pos = 0;
+    int
+	x,
+	y;
+    int
+	orig_x,
+	orig_y;
+
+    /**
+     * Get the cursor position
+     */
+    getyx (stdscr, orig_y, orig_x);
+
+    /**
+     * Determine where to move the cursor to.  If the panel is visible it'll
+     * be above that.
+     */
+    x = 0;
+    y = height () - 1;
+    if (g_status_bar_data.hide == FALSE)
+    {
+	y -= PANEL_HEIGHT;
+    }
+
+    mvaddnstr (y, x, ":", 1);
+
+    x = 2;
+    while (true)
+    {
+	int
+	    c;
+	bool isKeyCode;
+
+	mvaddnstr (y, x, buffer.c_str (), buffer.size ());
+
+	/**
+         * Clear the line- the "-2" comes from the size of the prompt.
+         */
+	for (int padding = buffer.size (); padding < (width () - 2);
+	     padding++)
+	    printw (" ");
+
+	/**
+         * Move the cursor
+         */
+	move (y, x + pos);
+
+	/**
+         * Get input - paying attention to the buffer set by 'stuff()'.
+         */
+	isKeyCode = ((c = getch ()) == KEY_CODE_YES);
+
+	/**
+         * Ropy input-handler.
+         */
+	if ((isKeyCode && c == KEY_ENTER) || (c == '\n' || c == '\r'))
+	{
+	    break;
+	}
+	else if (c == 1)	/* ctrl-a : beginning of line */
+	{
+	    pos = 0;
+	}
+	else if (c == 5)	/* ctrl-e: end of line */
+	{
+	    pos = buffer.size ();
+	}
+	else if (c == 11)	/* ctrl-k: kill to end of line */
+	{
+	    /**
+             * Kill the buffer from the current position onwards.
+             */
+	    buffer = buffer.substr (0, pos);
+	}
+	else if ((c == 2) ||	/* ctrl-b : back char */
+		 (isKeyCode && (c == KEY_LEFT)))
+	{
+	    if (pos > 0)
+		pos -= 1;
+	}
+	else if ((c == 6) ||	/* ctrl-f: forward char */
+		 (isKeyCode && (c == KEY_RIGHT)))
+	{
+	    if (pos < (int) buffer.size ())
+		pos += 1;
+	}
+	else if (isKeyCode && (c == KEY_BACKSPACE))
+	{
+	    if (pos > 0)
+	    {
+		buffer.erase (pos - 1, 1);
+		pos -= 1;
+	    }
+	}
+	else if (c == 4)	/* ctrl+d */
+	{
+	    /**
+             * Remove the character after the point.
+             */
+	    if (pos < (int) buffer.size ())
+	    {
+		buffer.erase (pos, 1);
+	    }
+	}
+	else if (!isKeyCode && isprint (c))
+	{
+	    /**
+             * Insert the character into the buffer-string.
+             */
+	    buffer.insert (pos, 1, c);
+	    pos += 1;
+	}
+
+    }
+
+    if (old_curs != ERR)
+	curs_set (old_curs);
+
+    /**
+     * Restore cursor position.  If that matters.
+     */
+    //    move( orig_y, orig_x );
+
+    return (buffer);
 }

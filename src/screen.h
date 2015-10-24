@@ -80,16 +80,21 @@ class CScreen
    */
     void sleep (int seconds);
 
- private:
-    void redraw_status_bar();
-    void init_status_bar();
+    /**
+     * Read a line of input via the status-line.
+     */
+        std::string get_line ();
+
+  private:
+    void redraw_status_bar ();
+    void init_status_bar ();
 
   private:
 
     /**
      * This contains the mapping of "global.mode" -> drawing routines.
      */
-        std::unordered_map < std::string, CViewMode * >m_views;
+         std::unordered_map < std::string, CViewMode * >m_views;
 };
 
 
