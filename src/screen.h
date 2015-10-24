@@ -92,6 +92,8 @@ class CScreen
     void hide_status_panel ();
     void toggle_status_panel ();
     bool status_panel_visible ();
+    void status_panel_title (std::string new_title);
+         std::string status_panel_title ();
 
   private:
     void redraw_status_bar ();

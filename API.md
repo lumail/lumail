@@ -105,6 +105,19 @@ Sample code:
      lumail --no-curses --load-file ./screen.lua
 
 
+The screen also has an associated status-panel, hereby referred to as "Panel".  The Panel object has the following methods:
+
+* hide()
+     * Hide the panel, if visible.
+* show()
+     * Show the panel, if hidden.
+* title( "New Title" )
+     * Set the title of the panel
+* title()
+     * Get the title of the panel.
+* toggle()
+     * Toggle the visibility of the panel.
+
 
 Utilities
 ---------

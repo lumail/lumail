@@ -11,6 +11,14 @@ extern "C"
 
 
 int
+l_CPanel_hide (lua_State * l)
+{
+    CScreen *screen = CScreen::instance ();
+    screen->hide_status_panel ();
+    return 0;
+}
+
+int
 l_CPanel_show (lua_State * l)
 {
     CScreen *screen = CScreen::instance ();
@@ -18,12 +26,24 @@ l_CPanel_show (lua_State * l)
     return 0;
 }
 
+
 int
-l_CPanel_hide (lua_State * l)
+l_CPanel_title (lua_State * l)
 {
     CScreen *screen = CScreen::instance ();
-    screen->hide_status_panel ();
-    return 0;
+
+    const char *str = lua_tostring (l, 2);
+    if (str != NULL)
+    {
+	screen->status_panel_title (str);
+	return 0;
+    }
+    else
+    {
+	std::string existing = screen->status_panel_title ();
+	lua_pushstring (l, existing.c_str ());
+	return 1;
+    }
 }
 
 int
@@ -49,10 +69,11 @@ void
 InitPanel (lua_State * l)
 {
     luaL_Reg sFooRegs[] = {
-	{"visible", l_CPanel_visible},
-	{"show", l_CPanel_show},
 	{"hide", l_CPanel_hide},
+	{"show", l_CPanel_show},
+	{"title", l_CPanel_title},
 	{"toggle", l_CPanel_toggle},
+	{"visible", l_CPanel_visible},
 	{NULL, NULL}
     };
     luaL_newmetatable (l, "luaL_CPanel");

@@ -21,7 +21,7 @@
 typedef struct _PANEL_DATA
 {
     int hide;
-    char *title;
+        std::string title;
     char *line_one;
     char *line_two;
 } PANEL_DATA;
@@ -283,7 +283,7 @@ CScreen::init_status_bar ()
   /**
    * Set the content of the status-bar
    */
-    g_status_bar_data.title = strdup ("Status Panel");
+    g_status_bar_data.title = std::string ("Status Panel");
     g_status_bar_data.line_one =
 	strdup
 	("Lumail v2 UI demo - Toggle panel via 'tab'.  Exit via 'q'.  Eval via ':'.");
@@ -347,11 +347,11 @@ CScreen::redraw_status_bar ()
    * Show the title, and the two lines of text we might have.
    */
     PANEL_DATA x = g_status_bar_data;
-    if (x.title)
+    if (!x.title.empty ())
     {
 	wattron (g_status_bar_window, COLOR_PAIR (2));
 	mvwprintw (g_status_bar_window, 1, 1, blank);
-	mvwprintw (g_status_bar_window, 1, 1, x.title);
+	mvwprintw (g_status_bar_window, 1, 1, x.title.c_str ());
     }
     if (x.line_one)
     {
@@ -540,4 +540,16 @@ CScreen::status_panel_visible ()
 	return true;
     else
 	return false;
+}
+
+void
+CScreen::status_panel_title (std::string new_title)
+{
+    g_status_bar_data.title = new_title;
+    redraw_status_bar ();
+}
+
+std::string CScreen::status_panel_title ()
+{
+    return (g_status_bar_data.title);
 }
