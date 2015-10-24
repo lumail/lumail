@@ -21,7 +21,7 @@ Usage
 
 Compile with `make`, then run a lua-script by running:
 
-    ./lumail2 ./path/to/script
+    ./lumail2 --load-file ./path/to/script.lua
 
 Examples are found beneath `./test/` for example:
 
