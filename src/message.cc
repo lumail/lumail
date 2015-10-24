@@ -167,8 +167,7 @@ std::string CMessage::get_flags ()
     if (pth.empty ())
 	return (flags);
 
-    size_t
-	offset = pth.find (":2,");
+    size_t offset = pth.find (":2,");
     if (offset != std::string::npos)
 	flags = pth.substr (offset + 3);
 
@@ -236,12 +235,12 @@ CMessage::set_flags (std::string new_flags)
  *
  * Return true if the flag was added, false if already present.
  */
-bool
-CMessage::add_flag (char c)
+bool CMessage::add_flag (char c)
 {
     std::string flags = get_flags ();
 
-    size_t offset = std::string::npos;
+    size_t
+	offset = std::string::npos;
 
     /**
      * If the flag was missing, add it.
@@ -260,8 +259,7 @@ CMessage::add_flag (char c)
 /**
  * Does this message possess the given flag?
  */
-bool
-CMessage::has_flag (char c)
+bool CMessage::has_flag (char c)
 {
   /**
    * Flags are upper-case.
@@ -279,8 +277,7 @@ CMessage::has_flag (char c)
  *
  * Return true if the flag was removed, false if it wasn't present.
  */
-bool
-CMessage::remove_flag (char c)
+bool CMessage::remove_flag (char c)
 {
     c = toupper (c);
 
@@ -307,8 +304,7 @@ CMessage::remove_flag (char c)
 /**
  * Is this message new?
  */
-bool
-CMessage::is_new ()
+bool CMessage::is_new ()
 {
   /**
    * A message is new if:
@@ -405,8 +401,7 @@ std::vector < CMessagePart * >CMessage::get_parts ()
 		c = g_mime_part_get_content_object (GMIME_PART (part));
 	    GMimeStream *
 		memstream = g_mime_stream_mem_new ();
-	    gint64
-		len = g_mime_data_wrapper_write_to_stream (c, memstream);
+	    gint64 len = g_mime_data_wrapper_write_to_stream (c, memstream);
 	    guint8 *
 		b =
 		g_mime_stream_mem_get_byte_array ((GMimeStreamMem *)
@@ -417,7 +412,8 @@ std::vector < CMessagePart * >CMessage::get_parts ()
 	   */
 	    void *
 		data = (void *) malloc (len + 1);
-	    size_t data_len = (size_t) len;
+	    size_t
+		data_len = (size_t) len;
 	    memcpy (data, b, len);
 
 

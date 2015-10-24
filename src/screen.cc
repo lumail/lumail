@@ -22,8 +22,7 @@ typedef struct _PANEL_DATA
 {
     int hide;
         std::string title;
-    char *line_one;
-    char *line_two;
+        std::vector < std::string > text;
 } PANEL_DATA;
 
 
@@ -284,10 +283,10 @@ CScreen::init_status_bar ()
    * Set the content of the status-bar
    */
     g_status_bar_data.title = std::string ("Status Panel");
-    g_status_bar_data.line_one =
-	strdup
+    g_status_bar_data.text.
+	push_back
 	("Lumail v2 UI demo - Toggle panel via 'tab'.  Exit via 'q'.  Eval via ':'.");
-    g_status_bar_data.line_two = strdup ("by Steve Kemp");
+    g_status_bar_data.text.push_back ("by Steve Kemp");
 
   /**
    * Refresh the panel display.
@@ -353,17 +352,20 @@ CScreen::redraw_status_bar ()
 	mvwprintw (g_status_bar_window, 1, 1, blank);
 	mvwprintw (g_status_bar_window, 1, 1, x.title.c_str ());
     }
-    if (x.line_one)
+
+    if (x.text.size () > 0)
     {
-	wattron (g_status_bar_window, COLOR_PAIR (3));
-	mvwprintw (g_status_bar_window, 3, 1, blank);
-	mvwprintw (g_status_bar_window, 3, 1, x.line_one);
-    }
-    if (x.line_two)
-    {
-	wattron (g_status_bar_window, COLOR_PAIR (4));
-	mvwprintw (g_status_bar_window, 4, 1, blank);
-	mvwprintw (g_status_bar_window, 4, 1, x.line_two);
+	int line = 3;
+
+	for (std::vector < std::string >::iterator it = x.text.begin ();
+	     it != x.text.end (); it++)
+	{
+	    wattron (g_status_bar_window, COLOR_PAIR (3));
+	    mvwprintw (g_status_bar_window, line, 1, blank);
+	    mvwprintw (g_status_bar_window, line, 1, (*it).c_str ());
+
+	    line += 1;
+	}
     }
 
   /**
@@ -414,7 +416,8 @@ std::string CScreen::get_line ()
     {
 	int
 	    c;
-	bool isKeyCode;
+	bool
+	    isKeyCode;
 
 	mvaddnstr (y, x, buffer.c_str (), buffer.size ());
 
@@ -533,8 +536,7 @@ CScreen::toggle_status_panel ()
 	show_status_panel ();
 }
 
-bool
-CScreen::status_panel_visible ()
+bool CScreen::status_panel_visible ()
 {
     if (g_status_bar_data.hide == FALSE)
 	return true;
