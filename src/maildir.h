@@ -29,7 +29,8 @@ CMessage > >
  * This is the C++ implementation of the maildir class.
  *
  */
-class CMaildir
+class
+    CMaildir
 {
   public:
 
@@ -42,7 +43,8 @@ class CMaildir
     /**
      * Destructor
      */
-    ~CMaildir ();
+         ~
+    CMaildir ();
 
 
     /**
@@ -56,7 +58,8 @@ class CMaildir
     /**
      * Does the given path contain a maildir ?
      */
-    bool is_maildir ();
+    bool
+    is_maildir ();
 
 
     /**
@@ -74,13 +77,16 @@ class CMaildir
      *
      * Instead we're returning a vector of paths.
      */
-    std::vector < std::string > messages ();
+    std::vector <
+	std::string >
+    messages ();
 
 
      /**
       * Return the path.
       */
-    std::string path ();
+    std::string
+    path ();
 
 
      /**
@@ -100,7 +106,8 @@ class CMaildir
      /**
       * Get all messages in the folder.
       */
-    CMessageList getMessages ();
+    CMessageList
+    getMessages ();
 
 
   private:
@@ -109,13 +116,15 @@ class CMaildir
      /**
       * The path we represent.
       */
-    std::string m_path;
+    std::string
+	m_path;
 
 
      /**
       * Cached time/date object.
       */
-    time_t m_modified;
+    time_t
+	m_modified;
 
 
      /**
@@ -131,7 +140,8 @@ class CMaildir
       * Return the last modified time for this Maildir.
       * Used to determine if we need to update our cache.
       */
-    time_t last_modified ();
+    time_t
+    last_modified ();
 
 
      /**

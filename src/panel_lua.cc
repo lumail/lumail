@@ -13,36 +13,36 @@ extern "C"
 int
 l_CPanel_show (lua_State * l)
 {
-  CScreen *screen  = CScreen::instance();
-  screen->show_status_panel();
-  return 0;
+    CScreen *screen = CScreen::instance ();
+    screen->show_status_panel ();
+    return 0;
 }
 
 int
 l_CPanel_hide (lua_State * l)
 {
-  CScreen *screen  = CScreen::instance();
-  screen->hide_status_panel();
-  return 0;
+    CScreen *screen = CScreen::instance ();
+    screen->hide_status_panel ();
+    return 0;
 }
 
 int
 l_CPanel_toggle (lua_State * l)
 {
-  CScreen *screen  = CScreen::instance();
-  screen->toggle_status_panel();
-  return 0;
+    CScreen *screen = CScreen::instance ();
+    screen->toggle_status_panel ();
+    return 0;
 }
 
 int
 l_CPanel_visible (lua_State * l)
 {
-  CScreen *screen  = CScreen::instance();
-  if ( screen->status_panel_visible() )
-    lua_pushboolean(l,1);
-  else
-    lua_pushboolean(l,0);
-  return 1;
+    CScreen *screen = CScreen::instance ();
+    if (screen->status_panel_visible ())
+	lua_pushboolean (l, 1);
+    else
+	lua_pushboolean (l, 0);
+    return 1;
 }
 
 void

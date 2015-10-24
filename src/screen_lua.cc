@@ -23,12 +23,12 @@ int
 l_CScreen_get_line (lua_State * l)
 {
     CScreen *foo = CScreen::instance ();
-    std::string received = foo->get_line();
+    std::string received = foo->get_line ();
 
-    if ( received.empty() )
-      lua_pushnil(l);
+    if (received.empty ())
+	lua_pushnil (l);
     else
-      lua_pushstring(l, received.c_str());
+	lua_pushstring (l, received.c_str ());
 
     return 1;
 }

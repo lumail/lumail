@@ -414,8 +414,7 @@ std::string CScreen::get_line ()
     {
 	int
 	    c;
-	bool
-	    isKeyCode;
+	bool isKeyCode;
 
 	mvaddnstr (y, x, buffer.c_str (), buffer.size ());
 
@@ -511,27 +510,34 @@ std::string CScreen::get_line ()
 }
 
 
-void CScreen::show_status_panel()
+void
+CScreen::show_status_panel ()
 {
-  show_panel (g_status_bar);
-  g_status_bar_data.hide = FALSE;
+    show_panel (g_status_bar);
+    g_status_bar_data.hide = FALSE;
 }
-void CScreen::hide_status_panel()
+
+void
+CScreen::hide_status_panel ()
 {
-  hide_panel (g_status_bar);
-  g_status_bar_data.hide = TRUE;
+    hide_panel (g_status_bar);
+    g_status_bar_data.hide = TRUE;
 }
-void CScreen::toggle_status_panel()
+
+void
+CScreen::toggle_status_panel ()
 {
-  if ( status_panel_visible() )
-    hide_status_panel();
-  else
-    show_status_panel();
+    if (status_panel_visible ())
+	hide_status_panel ();
+    else
+	show_status_panel ();
 }
-bool CScreen::status_panel_visible()
+
+bool
+CScreen::status_panel_visible ()
 {
-  if (g_status_bar_data.hide == FALSE)
-    return true;
-  else
-    return false;
+    if (g_status_bar_data.hide == FALSE)
+	return true;
+    else
+	return false;
 }
