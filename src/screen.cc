@@ -17,8 +17,7 @@ CScreen::CScreen ()
     /**
      * Register our view-modes.
      */
-    CDemoView *iv = new CDemoView();
-    m_views[ "demo" ] = iv;
+    m_views["demo"] = new CDemoView ();
 }
 
 CScreen *
@@ -39,29 +38,30 @@ CScreen::~CScreen ()
 /**
  * Run our event loop.
  */
-void CScreen::run_main_loop()
+void
+CScreen::run_main_loop ()
 {
   /**
    * Timeout on input every half-second.
    */
-  timeout (500);
+    timeout (500);
 
-int ch;
-int running = 1;
-  while ((running > 0) && (ch = getch ()))
+    int ch;
+    int running = 1;
+    while ((running > 0) && (ch = getch ()))
     {
-      switch (ch)
-        {
+	switch (ch)
+	{
 	case 'q':
-          running = 0;
-          break;
-        }
+	    running = 0;
+	    break;
+	}
 
       /**
        * Get the global mode .. TODO
        */
-      CViewMode *mode = m_views[ "demo" ];
-      mode->draw();
+	CViewMode *mode = m_views["demo"];
+	mode->draw ();
     }
 
 }

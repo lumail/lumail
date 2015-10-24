@@ -7,19 +7,20 @@
 /**
  * This is a demo-view of the screen.
  */
-class CDemoView: public CViewMode {
+class CDemoView:public CViewMode
+{
 
- public:
+  public:
   /**
    * Constructor / Destructor.
    */
-  CDemoView();
-  ~CDemoView();
+    CDemoView ();
+    ~CDemoView ();
 
   /**
    * Drawing routine - called when the current.mode=="demo".
    */
-  void draw();
+    void draw ();
 };
 
 #endif

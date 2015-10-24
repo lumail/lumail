@@ -22,8 +22,8 @@
  */
 class CViewMode
 {
- public:
-  virtual void draw() = 0;
+  public:
+    virtual void draw () = 0;
 };
 
 
@@ -58,7 +58,7 @@ class CScreen
     /**
      * Run our event loop.
      */
-    void run_main_loop();
+    void run_main_loop ();
 
   /**
    * Return the width of the screen.
@@ -80,12 +80,12 @@ class CScreen
    */
     void sleep (int seconds);
 
- private:
+  private:
 
     /**
      * This contains the mapping of "global.mode" -> drawing routines.
      */
-    std::unordered_map<std::string, CViewMode *> m_views;
+        std::unordered_map < std::string, CViewMode * >m_views;
 };
 
 

@@ -4,9 +4,9 @@
 
 extern "C"
 {
-# include <lua.h>
-# include <lauxlib.h>
-# include <lualib.h>
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
 }
 
 #include <string>
@@ -22,33 +22,33 @@ class CLua
     CLua ();
     ~CLua ();
 
- public:
+  public:
 
     /**
      * Get access to this singleton instance.
      */
-    static CLua *Instance();
+    static CLua *Instance ();
 
     /**
      * Load the specified Lua file, and evaluate it.
      *
      * Return true on success.  False on error.
      */
-    bool load_file(std::string filename);
+    bool load_file (std::string filename);
 
     /**
      * Evaluate the given string.
      *
      * Return true on success.  False on error.
      */
-    bool execute(std::string lua );
+    bool execute (std::string lua);
 
-private:
+  private:
 
     /**
      * The handle to the Lua interpreter.
      */
-    lua_State *m_lua;
+         lua_State * m_lua;
 
 };
 

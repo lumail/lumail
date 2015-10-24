@@ -7,14 +7,14 @@
 /**
  * Constructor.  NOP.
  */
-CDemoView::CDemoView()
+CDemoView::CDemoView ()
 {
 }
 
 /**
  * Destructor.  NOP.
  */
-CDemoView::~CDemoView()
+CDemoView::~CDemoView ()
 {
 }
 
@@ -22,7 +22,8 @@ CDemoView::~CDemoView()
  * This is the virtual function which is called to refresh the display
  * when the global.mode == "demo"
  */
-void CDemoView::draw()
+void
+CDemoView::draw ()
 {
-  mvprintw( 10, 10, "Hello World - This is 'demo' mode" );
+    mvprintw (10, 10, "Hello World - This is 'demo' mode");
 }

@@ -22,7 +22,8 @@
 /**
  * The entry point to our code.
  */
-int main (int argc, char *argv[])
+int
+main (int argc, char *argv[])
 {
     /**
      * Initiate mime.
@@ -76,7 +77,7 @@ int main (int argc, char *argv[])
      */
     if (curses == true)
     {
-        CScreen *screen = CScreen::instance ();
+	CScreen *screen = CScreen::instance ();
 	screen->setup ();
     }
 
@@ -86,23 +87,23 @@ int main (int argc, char *argv[])
      */
     if (!load.empty ())
     {
-      CLua *instance = CLua::Instance();
+	CLua *instance = CLua::Instance ();
 
       for (std::string filename:load)
 	{
 
-          instance->load_file( filename );
+	    instance->load_file (filename);
 
 	}
     }
     else
     {
-      if ( curses == true )
-        {
-          CScreen *screen = CScreen::instance();
+	if (curses == true)
+	{
+	    CScreen *screen = CScreen::instance ();
 
-          screen->run_main_loop();
-        }
+	    screen->run_main_loop ();
+	}
     }
 
 
@@ -110,10 +111,10 @@ int main (int argc, char *argv[])
      * If we're using Curses then tear it down.
      */
     if (curses == true)
-      {
-        CScreen *screen = CScreen::instance ();
+    {
+	CScreen *screen = CScreen::instance ();
 	screen->teardown ();
-      }
+    }
 
 
     /**
