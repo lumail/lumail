@@ -10,6 +10,24 @@ We have three groups of objects:
 * The utilities
 
 
+
+Config
+------
+
+The Config method is registered automatically and doesn't need to be constructed.
+
+The following methods are available:
+
+* get(key)
+    * Return the value of a given key.
+    * The value might be a string or an array (table of strings with integer indexes).
+* set(key,value)
+    * Set the value of the given key.
+    * The value might be a string or an array (table of strings with integer indexes).
+
+
+
+
 Maildir
 -------
 
@@ -30,20 +48,6 @@ The Maildir object has the following methods:
 * `exists`
 	* Returns `true` if the Maildir exists.
 
-
-Config
-------
-
-The Config method is registered automatically and doesn't need to be constructed.
-
-The following methods are available:
-
-* get(key)
-    * Return the value of a given key.
-    * The value might be a string or an array (table of strings with integer indexes).
-* set(key,value)
-    * Set the value of the given key.
-    * The value might be a string or an array (table of strings with integer indexes).
 
 
 
@@ -75,6 +79,21 @@ contains methods:
 	* Returns the name of the attachment, if `is_attachment` returned true.
 
 See [show_message.lua](show_message.lua) for an example use-case of this method.
+
+
+Screen
+------
+
+The Screen object is registered automatically and doesn't need to be constructed  The following methods are available:
+
+* clear()
+    * Clear the screan-area.
+* height()
+    * Return the height of the screen.
+* sleep(N)
+    * Sleep for N-seconds.
+* width()
+    * Return the width of the screen.
 
 
 
