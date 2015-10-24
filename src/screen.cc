@@ -4,15 +4,21 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "screen.h"
 
+#include "screen.h"
+#include "demo_view.h"
 
 
 /**
- * Constructor.  NOP.
+ * Constructor.  Register our view-modes
  */
 CScreen::CScreen ()
 {
+    /**
+     * Register our view-modes.
+     */
+    CDemoView *iv = new CDemoView();
+    m_views[ "demo" ] = iv;
 }
 
 CScreen *
@@ -28,6 +34,36 @@ CScreen::instance ()
 CScreen::~CScreen ()
 {
     teardown ();
+}
+
+/**
+ * Run our event loop.
+ */
+void CScreen::run_main_loop()
+{
+  /**
+   * Timeout on input every half-second.
+   */
+  timeout (500);
+
+int ch;
+int running = 1;
+  while ((running > 0) && (ch = getch ()))
+    {
+      switch (ch)
+        {
+	case 'q':
+          running = 0;
+          break;
+        }
+
+      /**
+       * Get the global mode .. TODO
+       */
+      CViewMode *mode = m_views[ "demo" ];
+      mode->draw();
+    }
+
 }
 
 /**
