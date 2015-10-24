@@ -14,3 +14,8 @@ Screen:sleep(2)
 print( "Screen still has dimensions:" .. Screen:width() .. "x" .. Screen:height() )
 print( "Screen still has dimensions:" .. Screen:width() .. "x" .. Screen:height() )
 print( "Screen still has dimensions:" .. Screen:width() .. "x" .. Screen:height() )
+
+
+print( Screen:get_line() );
+
+Screen:sleep(3)

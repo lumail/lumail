@@ -20,6 +20,20 @@ l_CScreen_clear (lua_State * l)
 }
 
 int
+l_CScreen_get_line (lua_State * l)
+{
+    CScreen *foo = CScreen::instance ();
+    std::string received = foo->get_line();
+
+    if ( received.empty() )
+      lua_pushnil(l);
+    else
+      lua_pushstring(l, received.c_str());
+
+    return 1;
+}
+
+int
 l_CScreen_height (lua_State * l)
 {
     CScreen *foo = CScreen::instance ();
@@ -49,6 +63,7 @@ InitScreen (lua_State * l)
 {
     luaL_Reg sFooRegs[] = {
 	{"clear", l_CScreen_clear},
+	{"get_line", l_CScreen_get_line},
 	{"height", l_CScreen_height},
 	{"sleep", l_CScreen_sleep},
 	{"width", l_CScreen_width},
