@@ -80,6 +80,10 @@ class CScreen
    */
     void sleep (int seconds);
 
+ private:
+    void redraw_status_bar();
+    void init_status_bar();
+
   private:
 
     /**
