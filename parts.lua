@@ -1,3 +1,9 @@
+--
+--
+-- Usage:
+--
+--     ./lumail --no-curses --load-file ./parts.lua
+--
 
 
 
@@ -76,8 +82,3 @@ end
 --
 show_folder( "./Maildir/simple" )
 show_folder( "./Maildir/attachment" )
-
---
--- All done
---
-os.exit(0)

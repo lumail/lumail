@@ -1,3 +1,9 @@
+--
+--
+-- Usage:
+--
+--     ./lumail --no-curses --load-file ./show_message.lua
+--
 
 function show_message( file )
    m =  Message.new( file )
@@ -30,7 +36,7 @@ function show_message( file )
    shown = false
    for i,part in ipairs( parts ) do
       if ( shown == false ) then
-	 
+
 	 --
 	 -- Get the content-type of this part.
 	 --
