@@ -3,11 +3,12 @@ API
 
 The core idea of lumail2, and the reason for writing it, is that everything is an object.
 
-We have three groups of objects:
+At the moment we have stub-objects for working with:
 
-* The maildir
-* The message
-* The utilities
+* Configuration variables.
+* Maildirs.
+* Messages.
+* The screen.
 
 
 
@@ -25,7 +26,9 @@ The following methods are available:
     * Set the value of the given key.
     * The value might be a string or an array (table of strings with integer indexes).
 
+Sample code:
 
+     lumail --no-curses --load-file ./config.lua
 
 
 Maildir
@@ -94,6 +97,10 @@ The Screen object is registered automatically and doesn't need to be constructed
     * Sleep for N-seconds.
 * width()
     * Return the width of the screen.
+
+Sample code:
+
+     lumail --no-curses --load-file ./screen.lua
 
 
 
