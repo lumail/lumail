@@ -16,6 +16,19 @@ That said we do have a consistent and reliable way of handling objects, and a de
 
 
 
+User-Interface
+--------------
+
+The user-interface will be familiar to users of lumail 1.x, but we
+do expect to see a toggleable status-panel.
+
+This is demonstrated in the example:
+
+        cd misc/
+        make
+        ./ui-demo
+
+
 Usage
 -----
 
