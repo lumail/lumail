@@ -97,7 +97,12 @@ int main (int argc, char *argv[])
     }
     else
     {
-	// TODO :Run main loop
+      if ( curses == true )
+        {
+          CScreen *screen = CScreen::instance();
+
+          screen->run_main_loop();
+        }
     }
 
 
