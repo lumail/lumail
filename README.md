@@ -6,21 +6,15 @@ This is a small repository containing some minimal code for working with Maildir
 
 If you're familiar with the [lumail](http://lumail.org/) project it should make sense, otherwise it might not.
 
-
-Overview
---------
-
-The code is basic at the moment with none of the niceties that we'd actually implement if we were going further.
-
-That said we do have a consistent and reliable way of handling objects, and a decent pattern for adding future objects.
+This is work-in-progress at the moment, significant work needs to be done before this is even remotely useful or interesting to anybody but the author.
 
 
 
 User-Interface
 --------------
 
-The user-interface will be familiar to users of lumail 1.x, but we
-do expect to see a toggleable status-panel.
+The user-interface I expect to develop will be familiar to users of lumail 1.x,
+but we do expect to see a toggleable status-panel.
 
 This is demonstrated in the example:
 
@@ -32,20 +26,16 @@ This is demonstrated in the example:
 Usage
 -----
 
-Compile with `make`, then run a lua-script by running:
+At the moment there is no useable user-interface, just a driver script
+which loads a bunch of objects and API-methods from the embedded code.
 
-    ./lumail2 --load-file ./path/to/script.lua
+You can see the [API documentation](API.md) for details, but for the moment
+the only useful thing you can do is execute simple scripts.  For example:
 
-Examples are found beneath `./test/` for example:
+    ./lumail2 --no-curses --load-file ./config.lua
+    ./lumail2 --no-curses --load-file ./parts.lua
+    ./lumail2 --no-curses --load-file ./show_message.lua
 
-    shelob ~/lumail2 $ make test
-    for i in test/*.lua; do ./lumail $i ; done
-    OK. We decoded the From-header.
-    OK 1 - Read 'From' header
-    OK 2 - Read 'From' header
-    OK 3 - Read 'From' header
-    OK 4 - Read 'From' header
-    OK 5 - Headers all have identical contents.
-    OK 1 - Read flags from message path.
-    OK 2 - Read new-flag from message path.
-    OK 3 - Read new-flags from message path.
+You'll need to read the [API documentation](API.md) to see what you can do,
+until we have a workable user-interface - that is Steve's current priority.
+
