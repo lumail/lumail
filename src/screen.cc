@@ -509,3 +509,29 @@ std::string CScreen::get_line ()
 
     return (buffer);
 }
+
+
+void CScreen::show_status_panel()
+{
+  show_panel (g_status_bar);
+  g_status_bar_data.hide = FALSE;
+}
+void CScreen::hide_status_panel()
+{
+  hide_panel (g_status_bar);
+  g_status_bar_data.hide = TRUE;
+}
+void CScreen::toggle_status_panel()
+{
+  if ( status_panel_visible() )
+    hide_status_panel();
+  else
+    show_status_panel();
+}
+bool CScreen::status_panel_visible()
+{
+  if (g_status_bar_data.hide == FALSE)
+    return true;
+  else
+    return false;
+}
