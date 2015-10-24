@@ -31,6 +31,22 @@ The Maildir object has the following methods:
 	* Returns `true` if the Maildir exists.
 
 
+Config
+------
+
+The Config method is registered automatically and doesn't need to be constructed.
+
+The following methods are available:
+
+* get(key)
+    * Return the value of a given key.
+    * The value might be a string or an array (table of strings with integer indexes).
+* set(key,value)
+    * Set the value of the given key.
+    * The value might be a string or an array (table of strings with integer indexes).
+
+
+
 Message
 -------
 
@@ -61,5 +77,8 @@ contains methods:
 See [show_message.lua](show_message.lua) for an example use-case of this method.
 
 
+
 Utilities
 ---------
+
+None, at this time.
