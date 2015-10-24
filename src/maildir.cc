@@ -30,10 +30,10 @@ CMaildir::CMaildir (const std::string name)
 }
 
 
-bool
-CMaildir::is_directory (std::string path)
+bool CMaildir::is_directory (std::string path)
 {
-    struct stat sb;
+    struct stat
+	sb;
 
     if (stat (path.c_str (), &sb) < 0)
 	return false;
@@ -42,8 +42,7 @@ CMaildir::is_directory (std::string path)
 }
 
 
-bool
-CMaildir::is_maildir ()
+bool CMaildir::is_maildir ()
 {
     std::vector < std::string > dirs;
     dirs.push_back (m_path);
@@ -61,10 +60,10 @@ CMaildir::is_maildir ()
 }
 
 
-bool
-CMaildir::is_maildir (std::string path)
+bool CMaildir::is_maildir (std::string path)
 {
-    CMaildir tmp (path);
+    CMaildir
+    tmp (path);
     return (tmp.is_maildir ());
 }
 
@@ -111,7 +110,8 @@ std::vector < std::string > CMaildir::messages ()
 		if ((de->d_type != DT_DIR)
 		    || (de->d_type == DT_UNKNOWN
 			&& !CMaildir::is_directory (std::string (path +
-								 de->d_name))))
+								 de->
+								 d_name))))
 		{
 
 		    if (de->d_name[0] != '.')
@@ -200,11 +200,12 @@ CMaildir::update_cache ()
 /**
  * Return the last modified time for this Maildir.
  */
-time_t
-CMaildir::last_modified ()
+time_t CMaildir::last_modified ()
 {
-    time_t last = 0;
-    struct stat st_buf;
+    time_t
+	last = 0;
+    struct stat
+	st_buf;
 
     std::string p = path ();
 
@@ -244,12 +245,14 @@ CMaildir::last_modified ()
  *  TODO:  Use CFile::files_in_directory().
  *
  */
-CMessageList
-CMaildir::getMessages ()
+CMessageList CMaildir::getMessages ()
 {
-    CMessageList result;
-    dirent *de;
-    DIR *dp;
+    CMessageList
+	result;
+    dirent *
+	de;
+    DIR *
+	dp;
 
     /**
      * Directories we search.
@@ -280,8 +283,8 @@ CMaildir::getMessages ()
 		/** Maybe we should check for DT_REG || DT_LNK ? */
 		if ((de->d_type != DT_DIR)
 		    || (de->d_type == DT_UNKNOWN
-			&& !CFile::is_directory (std::
-						 string (path + de->d_name))))
+			&& !CFile::
+			is_directory (std::string (path + de->d_name))))
 		{
 
 		    if (de->d_name[0] != '.')

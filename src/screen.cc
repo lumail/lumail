@@ -414,7 +414,8 @@ std::string CScreen::get_line ()
     {
 	int
 	    c;
-	bool isKeyCode;
+	bool
+	    isKeyCode;
 
 	mvaddnstr (y, x, buffer.c_str (), buffer.size ());
 
