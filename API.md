@@ -111,12 +111,21 @@ The screen also has an associated status-panel, hereby referred to as "Panel".  
      * Hide the panel, if visible.
 * show()
      * Show the panel, if hidden.
+* text( { "Some text to display", "Goes here" } )
+     * Update the text to display.
+* text()
+     * Retrieve the current text.
 * title( "New Title" )
      * Set the title of the panel
 * title()
      * Get the title of the panel.
 * toggle()
      * Toggle the visibility of the panel.
+
+Sample code:
+
+     lumail --load-file ./panel.lua
+
 
 
 Utilities
