@@ -93,7 +93,7 @@ void CMessageView::draw()
     // TODO: Fix this properly
     //
     CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
-    *udata = new CMessage( message->path() );
+    *udata = new CMessage(message->path());
     luaL_getmetatable(l, "luaL_CMessage");
     lua_setmetatable(l, -2);
 
