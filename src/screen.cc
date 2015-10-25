@@ -92,23 +92,24 @@ CScreen::run_main_loop ()
 	CScreen *s = CScreen::instance ();
 	s->clear ();
 
-        /**
+	/**
          * If the user wanted to quit - do that.
          */
-        if ( ch == 'q' || ch == 'Q' )
-          {  running = 0;
-            continue;
-          }
+	if (ch == 'q' || ch == 'Q')
+	{
+	    running = 0;
+	    continue;
+	}
 
-        /**
+	/**
          * Otherwise try to handle the input, via Lua
          */
-        if ( ch != ERR )
-          {
-            char input[] = { '\0', '\0' };
-            input[0] = ch;
-            on_keypress( input );
-          }
+	if (ch != ERR)
+	{
+	    char input[] = { '\0', '\0' };
+	    input[0] = ch;
+	    on_keypress (input);
+	}
 
       /**
        * Get the global mode .. TODO .. and draw it.
@@ -408,7 +409,8 @@ std::string CScreen::get_line ()
     {
 	int
 	    c;
-	bool isKeyCode;
+	bool
+	    isKeyCode;
 
 	mvaddnstr (y, x, buffer.c_str (), buffer.size ());
 
@@ -527,8 +529,7 @@ CScreen::toggle_status_panel ()
 	show_status_panel ();
 }
 
-bool
-CScreen::status_panel_visible ()
+bool CScreen::status_panel_visible ()
 {
     if (g_status_bar_data.hide == FALSE)
 	return true;
@@ -566,7 +567,8 @@ CScreen::status_panel_text (std::vector < std::string > new_text)
  *
  * If the result is a string then execute it as a function.
  */
-bool CScreen::on_keypress(char *key )
+bool
+CScreen::on_keypress (char *key)
 {
     /**
      * The result of the lookup.
@@ -578,22 +580,22 @@ bool CScreen::on_keypress(char *key )
      */
     std::string mode = "";
 
-    CConfig *config   = CConfig::instance();
-    CConfigEntry *ent = config->get( "global.mode" );
-    if ( ( ent != NULL ) && ( ent->type == CONFIG_STRING ) )
-        mode = *ent->value.str;
+    CConfig *config = CConfig::instance ();
+    CConfigEntry *ent = config->get ("global.mode");
+    if ((ent != NULL) && (ent->type == CONFIG_STRING))
+	mode = *ent->value.str;
 
     /**
      * Default mode.
      */
-    if ( mode.empty() )
-      mode = "demo";
+    if (mode.empty ())
+	mode = "demo";
 
     /**
      * Lookup the keypress in the current-mode-keymap.
      */
-    CLua *lua = CLua::Instance();
-    result = lua->get_nested_table( "keymap", mode.c_str(), key );
+    CLua *lua = CLua::Instance ();
+    result = lua->get_nested_table ("keymap", mode.c_str (), key);
 
 
     /**
@@ -601,17 +603,17 @@ bool CScreen::on_keypress(char *key )
      *
      * This order ensures you can have a "global" keymap, overridden in just one mode.
      */
-    if ( result == NULL )
-        result = lua->get_nested_table( "keymap", "global", key );
+    if (result == NULL)
+	result = lua->get_nested_table ("keymap", "global", key);
 
     /**
      * If one/other of these lookups resulted in success then we're golden.
      */
-    if ( result != NULL )
-        lua->execute(result);
+    if (result != NULL)
+	lua->execute (result);
 
     /**
      * We succeeded if the result wasn't NULL.
      */
-    return( result != NULL );
+    return (result != NULL);
 }

@@ -46,7 +46,8 @@ class CLua
     /**
      * Lookup a key in a nested table structure - used for keyboard lookups.
      */
-    char * get_nested_table( std::string table, const char *key, const char *subkey );
+    char *get_nested_table (std::string table, const char *key,
+			    const char *subkey);
 
 
   private:

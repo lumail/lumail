@@ -73,10 +73,10 @@ CLua::~CLua ()
  *
  * Return true on success.  False on error.
  */
-bool
-CLua::load_file (std::string filename)
+bool CLua::load_file (std::string filename)
 {
-    int erred = luaL_dofile (m_lua, filename.c_str ());
+    int
+	erred = luaL_dofile (m_lua, filename.c_str ());
     if (erred)
 	return false;
     else
@@ -89,8 +89,7 @@ CLua::load_file (std::string filename)
  *
  * Return true on success.  False on error.
  */
-bool
-CLua::execute (std::string lua)
+bool CLua::execute (std::string lua)
 {
     if (luaL_dostring (m_lua, lua.c_str ()))
     {
@@ -103,39 +102,41 @@ CLua::execute (std::string lua)
 /**
  * Lookup a value in a nested-table - used for keyboard lookups.
  */
-char *CLua::get_nested_table( std::string table, const char *key, const char * subkey )
+char *
+CLua::get_nested_table (std::string table, const char *key,
+			const char *subkey)
 {
     char *result = NULL;
 
     /**
      * Ensure the table exists - if it doesn't return NULL.
      */
-    lua_getglobal(m_lua, table.c_str() );
-    if (lua_isnil (m_lua, -1 ) )
+    lua_getglobal (m_lua, table.c_str ());
+    if (lua_isnil (m_lua, -1))
     {
-      return NULL;
+	return NULL;
     }
 
     /**
      * Get the sub-table.
      */
-    lua_pushstring(m_lua, key );
-    lua_gettable(m_lua, -2);
-    if (! lua_istable(m_lua, -1 ) )
-        return result;
+    lua_pushstring (m_lua, key);
+    lua_gettable (m_lua, -2);
+    if (!lua_istable (m_lua, -1))
+	return result;
 
     /**
      * Get the value.
      */
-    lua_pushstring(m_lua, subkey);
-    lua_gettable(m_lua, -2);
-    if (lua_isnil (m_lua, -1 ) )
-        return result;
+    lua_pushstring (m_lua, subkey);
+    lua_gettable (m_lua, -2);
+    if (lua_isnil (m_lua, -1))
+	return result;
 
     /**
      * If it worked, and is a string .. return it.
      */
-    if (lua_isstring(m_lua, -1))
-        result = (char *)lua_tostring(m_lua, -1);
+    if (lua_isstring (m_lua, -1))
+	result = (char *) lua_tostring (m_lua, -1);
     return result;
 }
