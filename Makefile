@@ -71,6 +71,7 @@ clean:
 	test -d $(RELEASE_OBJDIR)  && rm -rf $(RELEASE_OBJDIR) || true
 	test -d $(DEBUG_OBJDIR)    && rm -rf $(DEBUG_OBJDIR)   || true
 	rm -f gmon.out lumail lumail-debug core                || true
+	find . -name '*.orig' -delete                          || true
 
 
 #
