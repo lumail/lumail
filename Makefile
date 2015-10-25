@@ -113,4 +113,4 @@ $(DEBUG_OBJECTS): $(DEBUG_OBJDIR)/%.o : $(SRCDIR)/%.cc
 
 .PHONY: indent
 indent:
-	indent -bl -i4 -di0  -bli0 $(SRCDIR)/*.cc $(SRCDIR)/*.h
+	astyle --style=allman -A1 --indent=spaces=4   --break-blocks --pad-oper --pad-header --unpad-paren --max-code-length=200 $(SRCDIR)/*.cc $(SRCDIR)/*.h
