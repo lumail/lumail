@@ -27,8 +27,8 @@
 /**
  * Constructor.
  */
-CMessagePart::CMessagePart (std::string type, std::string filename,
-			    void *content, size_t content_length)
+CMessagePart::CMessagePart(std::string type, std::string filename,
+                           void *content, size_t content_length)
 {
     m_type = type;
     m_filename = filename;
@@ -38,21 +38,21 @@ CMessagePart::CMessagePart (std::string type, std::string filename,
 
     if ((content_length > 0) && (content != NULL))
     {
-	m_content = content;
-	m_content_length = content_length;
+        m_content = content;
+        m_content_length = content_length;
     }
 }
 
 /**
  * Destructor.
  */
-CMessagePart::~CMessagePart ()
+CMessagePart::~CMessagePart()
 {
     if (m_content != NULL)
     {
-	free (m_content);
-	m_content = NULL;
-	m_content_length = 0;
+        free(m_content);
+        m_content = NULL;
+        m_content_length = 0;
     }
 
 }
@@ -60,7 +60,7 @@ CMessagePart::~CMessagePart ()
 /**
  * Get the content-type of the MIME-part.
  */
-std::string CMessagePart::type ()
+std::string CMessagePart::type()
 {
     return (m_type);
 }
@@ -68,7 +68,7 @@ std::string CMessagePart::type ()
 /**
  * Get the filename - only makes sense for "is_attachment() == true".
  */
-std::string CMessagePart::filename ()
+std::string CMessagePart::filename()
 {
     return (m_filename);
 }
@@ -77,17 +77,16 @@ std::string CMessagePart::filename ()
 /**
  * Is this an attachment?
  */
-bool CMessagePart::is_attachment ()
+bool CMessagePart::is_attachment()
 {
-    return (m_filename.empty () == false);
+    return (m_filename.empty() == false);
 }
 
 
 /**
  * Get the content.
  */
-void *
-CMessagePart::content ()
+void * CMessagePart::content()
 {
     return (m_content);
 }
@@ -95,7 +94,7 @@ CMessagePart::content ()
 /**
  * Get the length of the content.
  */
-size_t CMessagePart::content_size ()
+size_t CMessagePart::content_size()
 {
     return (m_content_length);
 }

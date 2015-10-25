@@ -23,10 +23,9 @@
 /**
  * Accessor for our singleton.
  */
-CConfig *
-CConfig::instance ()
+CConfig * CConfig::instance()
 {
-    static CConfig *instance = new CConfig ();
+    static CConfig *instance = new CConfig();
     return (instance);
 }
 
@@ -34,7 +33,7 @@ CConfig::instance ()
 /**
  * Constructor
  */
-CConfig::CConfig ()
+CConfig::CConfig()
 {
 }
 
@@ -42,29 +41,30 @@ CConfig::CConfig ()
 /**
  * Destructor
  */
-CConfig::~CConfig ()
+CConfig::~CConfig()
 {
-  /**
-   * Free all our entries.
-   */
-    for (std::vector < CConfigEntry * >::iterator it = m_entries.begin ();
-	 it != m_entries.end (); ++it)
+    /**
+     * Free all our entries.
+     */
+    for (std::vector < CConfigEntry * >::iterator it = m_entries.begin();
+            it != m_entries.end(); ++it)
     {
-	CConfigEntry *tmp = (*it);
-	if (tmp->type == CONFIG_STRING)
-	{
-	    delete (tmp->value.str);
-	}
-	else if (tmp->type == CONFIG_ARRAY)
-	{
-	    delete (tmp->value.array);
-	}
-	else
-	{
-	    throw "Unknown config-type!";
-	}
+        CConfigEntry *tmp = (*it);
 
-	free (tmp);
+        if (tmp->type == CONFIG_STRING)
+        {
+            delete(tmp->value.str);
+        }
+        else if (tmp->type == CONFIG_ARRAY)
+        {
+            delete(tmp->value.array);
+        }
+        else
+        {
+            throw "Unknown config-type!";
+        }
+
+        free(tmp);
     }
 }
 
@@ -72,42 +72,41 @@ CConfig::~CConfig ()
 /**
  * Delete the value of the named key.
  */
-void
-CConfig::delete_key (std::string name)
+void CConfig::delete_key(std::string name)
 {
     int i = 0;
     int found = -1;
 
-    for (std::vector < CConfigEntry * >::iterator it = m_entries.begin ();
-	 it != m_entries.end (); ++it)
+    for (std::vector < CConfigEntry * >::iterator it = m_entries.begin();
+            it != m_entries.end(); ++it)
     {
-	if (*(*it)->name == name)
-	    found = i;
+        if (*(*it)->name == name)
+            found = i;
 
-	i += 1;
+        i += 1;
     }
 
-  /**
-   * If we found the entry then we can remove it.
-   */
+    /**
+     * If we found the entry then we can remove it.
+     */
     if (found != -1)
-	m_entries.erase (m_entries.begin () + found);
+        m_entries.erase(m_entries.begin() + found);
 }
 
 
 /**
  * Get a configuration-value by name, returning NULL on failure.
  */
-CConfigEntry *
-CConfig::get (std::string name)
+CConfigEntry * CConfig::get(std::string name)
 {
 
-    for (std::vector < CConfigEntry * >::iterator it = m_entries.begin ();
-	 it != m_entries.end (); ++it)
+    for (std::vector < CConfigEntry * >::iterator it = m_entries.begin();
+            it != m_entries.end(); ++it)
     {
-	CConfigEntry *tmp = (*it);
-	if (*tmp->name == name)
-	    return (tmp);
+        CConfigEntry *tmp = (*it);
+
+        if (*tmp->name == name)
+            return (tmp);
     }
 
     return NULL;
@@ -117,16 +116,16 @@ CConfig::get (std::string name)
 /**
  * Get all the keys we know about.
  */
-std::vector < std::string > CConfig::keys ()
+std::vector < std::string > CConfig::keys()
 {
     std::vector < std::string > results;
 
-    for (std::vector < CConfigEntry * >::iterator it = m_entries.begin ();
-	 it != m_entries.end (); ++it)
+    for (std::vector < CConfigEntry * >::iterator it = m_entries.begin();
+            it != m_entries.end(); ++it)
     {
-	CConfigEntry *
-	    tmp = (*it);
-	results.push_back (*tmp->name);
+        CConfigEntry *
+        tmp = (*it);
+        results.push_back(*tmp->name);
     }
 
     return (results);
@@ -138,32 +137,32 @@ std::vector < std::string > CConfig::keys ()
  *
  * This replaces any prior value which might have been stored under that key.
  */
-void
-CConfig::set (std::string name, std::string val)
+void CConfig::set(std::string name, std::string val)
 {
-  /**
-   * Delete the existing value(s).
-   */
-    delete_key (name);
+    /**
+     * Delete the existing value(s).
+     */
+    delete_key(name);
 
-  /**
-   * Create the new the new entry.
-   */
-    CConfigEntry *x = (CConfigEntry *) malloc (sizeof (CConfigEntry));
+    /**
+     * Create the new the new entry.
+     */
+    CConfigEntry *x = (CConfigEntry *) malloc(sizeof(CConfigEntry));
+
     if (x == NULL)
-	throw "Memory allocation failure";
+        throw "Memory allocation failure";
 
     /**
      * Store the data
      */
-    x->name = new std::string (name);
+    x->name = new std::string(name);
     x->type = CONFIG_STRING;
-    x->value.str = new std::string (val);
+    x->value.str = new std::string(val);
 
     /**
      * Store the entry.
      */
-    m_entries.push_back (x);
+    m_entries.push_back(x);
 }
 
 
@@ -172,37 +171,36 @@ CConfig::set (std::string name, std::string val)
  *
  * This replaces any prior value which might have been stored under that key.
  */
-void
-CConfig::set (std::string name, std::vector < std::string > entries)
+void CConfig::set(std::string name, std::vector < std::string > entries)
 {
-  /**
-   * Delete the existing value(s).
-   */
-    delete_key (name);
+    /**
+     * Delete the existing value(s).
+     */
+    delete_key(name);
 
-  /**
-   * Create the new entry.
-   */
-    CConfigEntry *x = (CConfigEntry *) malloc (sizeof (CConfigEntry));
+    /**
+     * Create the new entry.
+     */
+    CConfigEntry *x = (CConfigEntry *) malloc(sizeof(CConfigEntry));
 
     /**
      * Store the data.
      */
-    x->name = new std::string (name);
+    x->name = new std::string(name);
     x->type = CONFIG_ARRAY;
     x->value.array = new std::vector < std::string >;
 
-  /**
-   * Copy the string-values.
-   */
-    for (std::vector < std::string >::iterator it = entries.begin ();
-	 it != entries.end (); ++it)
+    /**
+     * Copy the string-values.
+     */
+    for (std::vector < std::string >::iterator it = entries.begin();
+            it != entries.end(); ++it)
     {
-	x->value.array->push_back ((*it));
+        x->value.array->push_back((*it));
     }
 
     /**
      * Add the entry.
      */
-    m_entries.push_back (x);
+    m_entries.push_back(x);
 }

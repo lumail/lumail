@@ -42,47 +42,46 @@
 
 
 
-CMaildir::CMaildir (const std::string name)
+CMaildir::CMaildir(const std::string name)
 {
     m_path = name;
 }
 
 
-bool CMaildir::is_directory (std::string path)
+bool CMaildir::is_directory(std::string path)
 {
-    struct stat
-	sb;
+    struct stat sb;
 
-    if (stat (path.c_str (), &sb) < 0)
-	return false;
+    if (stat(path.c_str(), &sb) < 0)
+        return false;
 
-    return (S_ISDIR (sb.st_mode));
+    return (S_ISDIR(sb.st_mode));
 }
 
 
-bool CMaildir::is_maildir ()
+bool CMaildir::is_maildir()
 {
     std::vector < std::string > dirs;
-    dirs.push_back (m_path);
-    dirs.push_back (m_path + "/cur");
-    dirs.push_back (m_path + "/tmp");
-    dirs.push_back (m_path + "/new");
+    dirs.push_back(m_path);
+    dirs.push_back(m_path + "/cur");
+    dirs.push_back(m_path + "/tmp");
+    dirs.push_back(m_path + "/new");
 
-    for (std::vector < std::string >::iterator it = dirs.begin ();
-	 it != dirs.end (); ++it)
+    for (std::vector < std::string >::iterator it = dirs.begin();
+            it != dirs.end(); ++it)
     {
-	if (!CMaildir::is_directory (*it))
-	    return false;
+        if (!CMaildir::is_directory(*it))
+            return false;
     }
+
     return true;
 }
 
 
-bool CMaildir::is_maildir (std::string path)
+bool CMaildir::is_maildir(std::string path)
 {
-    CMaildir
-    tmp (path);
-    return (tmp.is_maildir ());
+    CMaildir tmp(path);
+    return (tmp.is_maildir());
 }
 
 /**
@@ -92,65 +91,68 @@ bool CMaildir::is_maildir (std::string path)
  *
  * Instead we're returning a vector of paths.
  */
-std::vector < std::string > CMaildir::messages ()
+std::vector < std::string > CMaildir::messages()
 {
     std::vector < std::string > tmp;
 
     dirent *
-	de;
+    de;
     DIR *
-	dp;
+    dp;
 
     /**
      * Directories we search.
      */
     std::vector < std::string > dirs;
-    dirs.push_back (m_path + "/cur/");
-    dirs.push_back (m_path + "/new/");
+    dirs.push_back(m_path + "/cur/");
+    dirs.push_back(m_path + "/new/");
 
     /**
      * For each directory.
      */
-    for (std::vector < std::string >::iterator it = dirs.begin ();
-	 it != dirs.end (); ++it)
+    for (std::vector < std::string >::iterator it = dirs.begin();
+            it != dirs.end(); ++it)
     {
-	std::string path = *it;
-	dp = opendir (path.c_str ());
-	if (dp)
-	{
-	    while (true)
-	    {
-		de = readdir (dp);
-		if (de == NULL)
-		    break;
+        std::string path = *it;
+        dp = opendir(path.c_str());
 
-		/** Maybe we should check for DT_REG || DT_LNK ? */
-		if ((de->d_type != DT_DIR)
-		    || (de->d_type == DT_UNKNOWN
-			&& !CMaildir::is_directory (std::string (path +
-								 de->
-								 d_name))))
-		{
+        if (dp)
+        {
+            while (true)
+            {
+                de = readdir(dp);
 
-		    if (de->d_name[0] != '.')
-		    {
-			tmp.push_back (path + de->d_name);
-		    }
-		}
-	    }
-	    closedir (dp);
-	}
+                if (de == NULL)
+                    break;
+
+                /** Maybe we should check for DT_REG || DT_LNK ? */
+                if ((de->d_type != DT_DIR)
+                        || (de->d_type == DT_UNKNOWN
+                            && !CMaildir::is_directory(std::string(path +
+                                                       de->d_name))))
+                {
+
+                    if (de->d_name[0] != '.')
+                    {
+                        tmp.push_back(path + de->d_name);
+                    }
+                }
+            }
+
+            closedir(dp);
+        }
     }
+
     return tmp;
 }
 
-std::string CMaildir::path ()
+std::string CMaildir::path()
 {
     return (m_path);
 }
 
 
-CMaildir::~CMaildir ()
+CMaildir::~CMaildir()
 {
 }
 
@@ -158,10 +160,9 @@ CMaildir::~CMaildir ()
 /**
  * The number of new messages for this maildir.
  */
-int
-CMaildir::unread_messages ()
+int CMaildir::unread_messages()
 {
-    update_cache ();
+    update_cache();
     return (m_unread);
 }
 
@@ -169,10 +170,9 @@ CMaildir::unread_messages ()
 /**
  * The total number of messages for this maildir.
  */
-int
-CMaildir::total_messages ()
+int CMaildir::total_messages()
 {
-    update_cache ();
+    update_cache();
     return (m_total);
 }
 
@@ -181,16 +181,15 @@ CMaildir::total_messages ()
 /**
  * Update the cached total/unread message counts.
  */
-void
-CMaildir::update_cache ()
+void CMaildir::update_cache()
 {
     /**
      * If the cached date isn't different then we need do nothing.
      */
-    time_t last_mod = last_modified ();
+    time_t last_mod = last_modified();
 
     if (last_mod == m_modified)
-	return;
+        return;
 
     /**
      * Otherwise update the last modified time.
@@ -200,52 +199,51 @@ CMaildir::update_cache ()
     /**
      * Get all messages, and update the total
      */
-    CMessageList all = getMessages ();
-    m_total = all.size ();
+    CMessageList all = getMessages();
+    m_total = all.size();
 
 
     /**
       * Now update the unread count.
       */
     m_unread = 0;
-  for (std::shared_ptr < CMessage > message:all)
+
+    for (std::shared_ptr < CMessage > message : all)
     {
-	if (message->is_new ())
-	    m_unread++;
+        if (message->is_new())
+            m_unread++;
     }
 }
 
 /**
  * Return the last modified time for this Maildir.
  */
-time_t CMaildir::last_modified ()
+time_t CMaildir::last_modified()
 {
-    time_t
-	last = 0;
-    struct stat
-	st_buf;
+    time_t last = 0;
+    struct stat st_buf;
 
-    std::string p = path ();
+    std::string p = path();
 
     /**
      * The two directories we care about: new/ + cur/
      */
     std::vector < std::string > dirs;
-    dirs.push_back (p + "/cur");
-    dirs.push_back (p + "/new");
+    dirs.push_back(p + "/cur");
+    dirs.push_back(p + "/new");
 
     /**
      * See which was the most recently modified.
      */
-  for (std::string dir:dirs)
+    for (std::string dir : dirs)
     {
-	/**
-         * If we can stat() the dir and it is more recent
-         * than the current value - update it.
-         */
-	if (!stat (dir.c_str (), &st_buf))
-	    if (st_buf.st_mtime > last)
-		last = st_buf.st_mtime;
+        /**
+             * If we can stat() the dir and it is more recent
+             * than the current value - update it.
+             */
+        if (!stat(dir.c_str(), &st_buf))
+            if (st_buf.st_mtime > last)
+                last = st_buf.st_mtime;
     }
 
     return (last);
@@ -263,74 +261,75 @@ time_t CMaildir::last_modified ()
  *  TODO:  Use CFile::files_in_directory().
  *
  */
-CMessageList CMaildir::getMessages ()
+CMessageList CMaildir::getMessages()
 {
-    CMessageList
-	result;
-    dirent *
-	de;
-    DIR *
-	dp;
+    CMessageList result;
+    dirent *de;
+    DIR *dp;
 
     /**
      * Directories we search.
      */
     std::vector < std::string > dirs;
-    dirs.push_back (m_path + "/cur/");
-    dirs.push_back (m_path + "/new/");
+    dirs.push_back(m_path + "/cur/");
+    dirs.push_back(m_path + "/new/");
 
 #ifdef LUMAIL_DEBUG
     std::string dm = "CMessage::getMessages()";
-    DEBUG_LOG (dm);
+    DEBUG_LOG(dm);
 #endif
 
     /**
      * For each directory.
      */
-  for (std::string path:dirs)
+    for (std::string path : dirs)
     {
-	dp = opendir (path.c_str ());
-	if (dp)
-	{
-	    while (true)
-	    {
-		de = readdir (dp);
-		if (de == NULL)
-		    break;
+        dp = opendir(path.c_str());
 
-		/** Maybe we should check for DT_REG || DT_LNK ? */
-		if ((de->d_type != DT_DIR)
-		    || (de->d_type == DT_UNKNOWN
-			&& !CFile::
-			is_directory (std::string (path + de->d_name))))
-		{
+        if (dp)
+        {
+            while (true)
+            {
+                de = readdir(dp);
 
-		    if (de->d_name[0] != '.')
-		    {
-			std::shared_ptr < CMessage > t =
-			    std::shared_ptr < CMessage >
-			    (new CMessage (std::string (path + de->d_name)));
-			result.push_back (t);
+                if (de == NULL)
+                    break;
+
+                /** Maybe we should check for DT_REG || DT_LNK ? */
+                if ((de->d_type != DT_DIR)
+                        || (de->d_type == DT_UNKNOWN
+                            && !CFile::is_directory(std::
+                                                    string(path + de->d_name))))
+                {
+
+                    if (de->d_name[0] != '.')
+                    {
+                        std::shared_ptr < CMessage > t =
+                            std::shared_ptr < CMessage >
+                            (new CMessage(std::string(path + de->d_name)));
+                        result.push_back(t);
 
 #ifdef LUMAIL_DEBUG
-			std::string dm = "CMessage::getMessages() - found ";
-			dm += path + de->d_name;
-			DEBUG_LOG (dm);
+                        std::string dm = "CMessage::getMessages() - found ";
+                        dm += path + de->d_name;
+                        DEBUG_LOG(dm);
 #endif
-		    }
-		    else
-		    {
+                    }
+                    else
+                    {
 #ifdef LUMAIL_DEBUG
-			std::string dm =
-			    "CMessage::getMessages() - ignoring dotfile ";
-			dm += path + de->d_name;
-			DEBUG_LOG (dm);
+                        std::string dm =
+                            "CMessage::getMessages() - ignoring dotfile ";
+                        dm += path + de->d_name;
+                        DEBUG_LOG(dm);
 #endif
-		    }
-		}
-	    }
-	    closedir (dp);
-	}
+                    }
+                }
+            }
+
+            closedir(dp);
+        }
     }
+
     return result;
 }

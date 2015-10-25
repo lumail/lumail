@@ -42,23 +42,23 @@ typedef enum
  */
 struct CConfigEntry
 {
-  /**
-   * The name of the configuration-option.
-   */
+    /**
+     * The name of the configuration-option.
+     */
     std::string * name;
 
-  /**
-   * The type of the configuration-option: STRING vs ARRAY
-   */
+    /**
+     * The type of the configuration-option: STRING vs ARRAY
+     */
     configType type;
 
-  /**
-   * The actual value of this entry, stored as a union.
-   */
+    /**
+     * The actual value of this entry, stored as a union.
+     */
     union
     {
-	std::string * str;
-	std::vector < std::string > *array;
+        std::string * str;
+        std::vector < std::string > *array;
     } value;
 
 };
@@ -70,48 +70,48 @@ struct CConfigEntry
  */
 class CConfig
 {
-  private:
-    CConfig ();
-    ~CConfig ();
+private:
+    CConfig();
+    ~CConfig();
 
-  public:
+public:
 
-  /**
-   * Instance accessor - this is a singleton.
-   */
-    static CConfig *instance ();
+    /**
+     * Instance accessor - this is a singleton.
+     */
+    static CConfig *instance();
 
-  /**
-   * Get the value associated with a name.
-   */
-    CConfigEntry *get (std::string name);
+    /**
+     * Get the value associated with a name.
+     */
+    CConfigEntry *get(std::string name);
 
     /**
      * Get all the keys we know about.
      */
-                 std::vector < std::string > keys ();
+    std::vector < std::string > keys();
 
-  /**
-   * Set a configuration key to contain the specified value.
-   */
-    void set (std::string name, std::string value);
+    /**
+     * Set a configuration key to contain the specified value.
+     */
+    void set(std::string name, std::string value);
 
-  /**
-   * Set a configuration key to contain the specified array-value.
-   */
-    void set (std::string name, std::vector < std::string > entries);
+    /**
+     * Set a configuration key to contain the specified array-value.
+     */
+    void set(std::string name, std::vector < std::string > entries);
 
-  private:
+private:
 
-  /**
-   * Remove the value of the given key.
-   */
-    void delete_key (std::string key);
+    /**
+     * Remove the value of the given key.
+     */
+    void delete_key(std::string key);
 
-  private:
+private:
 
-  /**
-   * The actual storage.
-   */
-         std::vector < CConfigEntry * >m_entries;
+    /**
+     * The actual storage.
+     */
+    std::vector < CConfigEntry * >m_entries;
 };

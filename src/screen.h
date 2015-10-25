@@ -45,8 +45,8 @@
  */
 class CViewMode
 {
-  public:
-    virtual void draw () = 0;
+public:
+    virtual void draw() = 0;
 };
 
 
@@ -56,84 +56,84 @@ class CViewMode
 class CScreen
 {
 
-  private:
-    CScreen ();
+private:
+    CScreen();
 
-  /**
-   * Destructor.  NOP.
-   */
-    ~CScreen ();
+    /**
+     * Destructor.  NOP.
+     */
+    ~CScreen();
 
-  public:
+public:
 
-  /**
-   * Instance accessor - this is a singleton.
-   */
-    static CScreen *instance ();
+    /**
+     * Instance accessor - this is a singleton.
+     */
+    static CScreen *instance();
 
 
-  /**
-   * Setup/Teardown
-   */
-    void setup ();
-    void teardown ();
+    /**
+     * Setup/Teardown
+     */
+    void setup();
+    void teardown();
 
     /**
      * Run our event loop.
      */
-    void run_main_loop ();
+    void run_main_loop();
 
-  /**
-   * Return the width of the screen.
-   */
-    int width ();
+    /**
+     * Return the width of the screen.
+     */
+    int width();
 
-  /**
-   * Return the height of the screen.
-   */
-    int height ();
+    /**
+     * Return the height of the screen.
+     */
+    int height();
 
-  /**
-   * Clear the screen.
-   */
-    void clear ();
+    /**
+     * Clear the screen.
+     */
+    void clear();
 
-  /**
-   * Delay for the given period.
-   */
-    void sleep (int seconds);
+    /**
+     * Delay for the given period.
+     */
+    void sleep(int seconds);
 
-  /**
-   * Read a line of input via the status-line.
-   */
-        std::string get_line ();
+    /**
+     * Read a line of input via the status-line.
+     */
+    std::string get_line();
 
-  /**
-   * Panel-related functions.
-   */
-    bool status_panel_visible ();
-         std::string status_panel_title ();
-         std::vector < std::string > status_panel_text ();
-    void hide_status_panel ();
-    void show_status_panel ();
-    void status_panel_text (std::vector < std::string >);
-    void status_panel_title (std::string new_title);
-    void toggle_status_panel ();
+    /**
+     * Panel-related functions.
+     */
+    bool status_panel_visible();
+    std::string status_panel_title();
+    std::vector < std::string > status_panel_text();
+    void hide_status_panel();
+    void show_status_panel();
+    void status_panel_text(std::vector < std::string >);
+    void status_panel_title(std::string new_title);
+    void toggle_status_panel();
 
     /**
      * Execute a function from the global keymap.
      */
-    bool on_keypress (char *key);
+    bool on_keypress(char *key);
 
 
-  private:
-    void redraw_status_bar ();
-    void init_status_bar ();
+private:
+    void redraw_status_bar();
+    void init_status_bar();
 
-  private:
+private:
 
     /**
      * This contains the mapping of "global.mode" -> drawing routines.
      */
-         std::unordered_map < std::string, CViewMode * >m_views;
+    std::unordered_map < std::string, CViewMode * >m_views;
 };

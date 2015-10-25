@@ -25,12 +25,12 @@
 /**
  * External functions implemented in *_lua.cc
  */
-extern void InitConfig (lua_State * l);
-extern void InitMaildir (lua_State * l);
-extern void InitMessage (lua_State * l);
-extern void InitMessagePart (lua_State * l);
-extern void InitPanel (lua_State * l);
-extern void InitScreen (lua_State * l);
+extern void InitConfig(lua_State * l);
+extern void InitMaildir(lua_State * l);
+extern void InitMessage(lua_State * l);
+extern void InitMessagePart(lua_State * l);
+extern void InitPanel(lua_State * l);
+extern void InitScreen(lua_State * l);
 
 
 
@@ -38,10 +38,9 @@ extern void InitScreen (lua_State * l);
 /**
  * Get access to this singleton object.
  */
-CLua *
-CLua::Instance ()
+CLua * CLua::Instance()
 {
-    static CLua *instance = new CLua ();
+    static CLua *instance = new CLua();
     return (instance);
 }
 
@@ -50,38 +49,39 @@ CLua::Instance ()
 /**
  * Constructor - This is private as this class is a singleton.
  */
-CLua::CLua ()
+CLua::CLua()
 {
     /**
      * Create a new Lua object.
      */
-    m_lua = luaL_newstate ();
+    m_lua = luaL_newstate();
 
 
     /**
      * Register the libraries.
      */
-    luaopen_base (m_lua);
-    luaL_openlibs (m_lua);
+    luaopen_base(m_lua);
+    luaL_openlibs(m_lua);
 
 
     /**
      * Load our bindings.
      */
-    InitConfig (m_lua);
-    InitMaildir (m_lua);
-    InitMessage (m_lua);
-    InitMessagePart (m_lua);
-    InitPanel (m_lua);
-    InitScreen (m_lua);
+    InitConfig(m_lua);
+    InitMaildir(m_lua);
+    InitMessage(m_lua);
+    InitMessagePart(m_lua);
+    InitPanel(m_lua);
+    InitScreen(m_lua);
 }
+
 
 /**
  * Destructor.
  */
-CLua::~CLua ()
+CLua::~CLua()
 {
-    lua_close (m_lua);
+    lua_close(m_lua);
 
 }
 
@@ -91,14 +91,14 @@ CLua::~CLua ()
  *
  * Return true on success.  False on error.
  */
-bool CLua::load_file (std::string filename)
+bool CLua::load_file(std::string filename)
 {
-    int
-	erred = luaL_dofile (m_lua, filename.c_str ());
+    int erred = luaL_dofile(m_lua, filename.c_str());
+
     if (erred)
-	return false;
+        return false;
     else
-	return true;
+        return true;
 }
 
 
@@ -107,54 +107,55 @@ bool CLua::load_file (std::string filename)
  *
  * Return true on success.  False on error.
  */
-bool CLua::execute (std::string lua)
+bool CLua::execute(std::string lua)
 {
-    if (luaL_dostring (m_lua, lua.c_str ()))
-    {
-	return false;
-    }
-    return true;
+    if (luaL_dostring(m_lua, lua.c_str()))
+        return false;
+    else
+        return true;
 }
 
 
 /**
  * Lookup a value in a nested-table - used for keyboard lookups.
  */
-char *
-CLua::get_nested_table (std::string table, const char *key,
-			const char *subkey)
+char * CLua::get_nested_table(std::string table, const char *key, const char *subkey)
 {
     char *result = NULL;
 
     /**
      * Ensure the table exists - if it doesn't return NULL.
      */
-    lua_getglobal (m_lua, table.c_str ());
-    if (lua_isnil (m_lua, -1))
+    lua_getglobal(m_lua, table.c_str());
+
+    if (lua_isnil(m_lua, -1))
     {
-	return NULL;
+        return NULL;
     }
 
     /**
      * Get the sub-table.
      */
-    lua_pushstring (m_lua, key);
-    lua_gettable (m_lua, -2);
-    if (!lua_istable (m_lua, -1))
-	return result;
+    lua_pushstring(m_lua, key);
+    lua_gettable(m_lua, -2);
+
+    if (!lua_istable(m_lua, -1))
+        return result;
 
     /**
      * Get the value.
      */
-    lua_pushstring (m_lua, subkey);
-    lua_gettable (m_lua, -2);
-    if (lua_isnil (m_lua, -1))
-	return result;
+    lua_pushstring(m_lua, subkey);
+    lua_gettable(m_lua, -2);
+
+    if (lua_isnil(m_lua, -1))
+        return result;
 
     /**
      * If it worked, and is a string .. return it.
      */
-    if (lua_isstring (m_lua, -1))
-	result = (char *) lua_tostring (m_lua, -1);
+    if (lua_isstring(m_lua, -1))
+        result = (char *) lua_tostring(m_lua, -1);
+
     return result;
 }
