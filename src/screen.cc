@@ -167,7 +167,7 @@ void CScreen::run_main_loop()
             mode = *ent->value.str;
 
         if (mode.empty())
-            mode = "maildir";
+            mode = "message";
 
         /**
          * Now draw the mode.
@@ -641,7 +641,7 @@ bool CScreen::on_keypress(char *key)
      * Default mode.
      */
     if (mode.empty())
-        mode = "maildir";
+        mode = "message";
 
     /**
      * Lookup the keypress in the current-mode-keymap.

@@ -17,10 +17,15 @@
  */
 
 
+#include <iostream>
 #include <cursesw.h>
 
-#include "message_view.h"
+#include "global_state.h"
+#include "lua.h"
 
+#include "message.h"
+#include "message_view.h"
+#include "util.h"
 
 /**
  * Constructor.  NOP.
@@ -42,6 +47,80 @@ CMessageView::~CMessageView()
  */
 void CMessageView::draw()
 {
-    mvprintw(10, 10, "This is 'message' mode");
-    mvprintw(12, 10, "This should draw a single message.");
+
+    /**
+     * Get the current message.
+     */
+    CGlobalState *state = CGlobalState::instance();
+    CMessage *message   = state->current_message();
+
+    /**
+     * If there is no current message then we're done.
+     */
+    if (message == NULL)
+    {
+        mvprintw(10, 10, "This is 'message' mode.");
+        mvprintw(12, 10, "No message is currently selected.");
+        return;
+    }
+
+    /**
+     * Get access to our lua-magic.
+     */
+    CLua *lua = CLua::Instance();
+    lua_State * l = lua->state();
+
+    /**
+     * Push a new Message object to the lua-stack, which relates to
+     * this message.
+     *
+     * We do this so that we can call "to_string" on the Message object
+     * and use that for display.
+     */
+    lua_getglobal(l, "Message");
+    lua_getfield(l, -1, "to_string");
+
+    CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
+    *udata = message;
+    luaL_getmetatable(l, "luaL_CMessage");
+    lua_setmetatable(l, -2);
+
+
+    /**
+     * Now call "to_string"
+     */
+    if (lua_pcall(l, 1, 1, 0) != 0)
+    {
+        std::cerr << "Error calling CMessage:to_string - " << lua_tostring(l, -1);
+        return;
+    }
+
+    /**
+     * Fingers crossed we now have the message.
+     */
+    if (lua_tostring(l, -1) == NULL)
+    {
+        std::cerr << "NULL OUTPUT!!!1!! " << std::endl;
+        return;
+    }
+
+    std::string output = lua_tostring(l, -1);
+    /**
+     * Split the message into an array.
+     */
+    std::vector<std::string> lines = CUtil::split(output, '\n');
+
+    /**
+     * Draw it.
+     */
+    int cur = 0;
+    int max = 40 ; // CScreen::height();
+
+    while ((cur < max) && (cur < (int)lines.size()))
+    {
+        mvprintw(cur, 0, "%s", lines.at(cur).c_str());
+        cur += 1;
+    }
+
+
 }

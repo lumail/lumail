@@ -3,6 +3,74 @@
 -- Define some utility functions
 --
 
+
+--
+-- This method is CRUCIAL to our operation.
+--
+-- This method returns the text which is displayed when a specific
+-- message-object is displayed.
+--
+-- If you want to perform HTML->Text conversion, apply filters, or do
+-- other such things you must override this method.
+--
+function Message.to_string(self)
+   local output = ""
+
+   --
+   -- The headers we want to see by default.
+   --
+   headers = { "To", "From", "Cc", "Subject", "Date" }
+
+   --
+   -- For each header, get it, and the value.
+   --
+   for i,header in ipairs( headers ) do
+      value = self:header(header) or "[unset]"
+      if ( value  ) then
+         output = output ..  header .. ": " .. value .. "\n"
+      end
+   end
+
+   --
+   -- Add some text.
+   --
+   output = output .. "\n"
+
+   --
+   -- Now look for the first text/* content-type
+   --
+   parts = self:parts()
+
+   local found = false
+   for i,part in ipairs( parts ) do
+      if ( found == false ) then
+
+         --
+         -- Get the content-type of this part.
+         --
+         ct = part:type()
+
+         if ( string.find( ct, "text/" ) ) then
+            output = output .. part:content()
+            found = true
+         end
+      end
+   end
+
+   --
+   -- Did we show the body?
+   --
+   if ( found == false ) then
+      output = output .. "Failed to find a 'text/xxx' part from the message."
+   end
+
+   return( output )
+end
+
+
+--
+-- This is utility-function for showing some output in the status-panel.
+--
 function show_command_output( title, cmd )
    Panel:title("Command Output");
 
@@ -44,10 +112,8 @@ end
 --
 function on_idle()
    title = Panel:title()
-
    local tmp = string.sub(title, 2 )
    tmp = tmp .. string.sub(title,1,1)
-
    Panel:title(tmp)
 end
 
@@ -60,8 +126,9 @@ function change_mode( new_mode )
    Panel:title( "Mode is now " .. new_mode .. " " )
 end
 
+
 --
--- Setup KeyMaps
+-- Setup our KeyMaps
 --
 keymap = {}
 keymap['global']  = {}

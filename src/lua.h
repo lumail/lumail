@@ -71,6 +71,14 @@ public:
                            const char *subkey);
 
 
+    /**
+     * HACK - TODO - FIx
+     */
+    lua_State *state()
+    {
+        return m_lua;
+    }
+
 private:
 
     /**
