@@ -57,11 +57,26 @@ end
 test_table()
 test_string()
 
+
+--
+-- Define a notification function, this will get invoked
+-- when future keys are updated.
+--
+function Config.key_changed( name )
+   print("The value was changed of the key : " .. name )
+end
+print( "\n")
+
 --
 -- I like a good pie.
 --
 Config:set( "π", "3.14159265359" )
 
+--
+-- I like watching the names change.
+--
+Config:set( "name", "Steve Kemp" )
+Config:set( "name", "Bob Smith" )
 
 --
 -- Show all the keys we set

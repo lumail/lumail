@@ -17,7 +17,7 @@
  */
 
 #include "config.h"
-
+#include "global_state.h"
 
 
 /**
@@ -163,6 +163,12 @@ void CConfig::set(std::string name, std::string val)
      * Store the entry.
      */
     m_entries.push_back(x);
+
+    /**
+     * Notify our global state of the variable change.
+     */
+    CGlobalState *global = CGlobalState::instance();
+    global->config_key_changed(name);
 }
 
 
@@ -203,4 +209,10 @@ void CConfig::set(std::string name, std::vector < std::string > entries)
      * Add the entry.
      */
     m_entries.push_back(x);
+
+    /**
+     * Notify our global state of the variable change.
+     */
+    CGlobalState *global = CGlobalState::instance();
+    global->config_key_changed(name);
 }

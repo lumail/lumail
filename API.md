@@ -49,6 +49,8 @@ The following methods are available:
     * Set the value of the given key.
     * The value might be a string or an array (table of strings with integer indexes).
 
+If the function `Config.key_changed` is defined it will be invoked whenever a key has a value updated.
+
 Sample code:
 
      lumail --no-curses --load-file ./config.lua

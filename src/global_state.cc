@@ -17,6 +17,7 @@
  */
 
 #include "global_state.h"
+#include "lua.h"
 #include "maildir.h"
 #include "message.h"
 
@@ -57,4 +58,44 @@ CGlobalState::~CGlobalState()
 CMessage *CGlobalState::current_message()
 {
     return (m_current_message);
+}
+
+/**
+ * Called when a configuration-key has changed.
+ */
+void CGlobalState::config_key_changed(std::string name)
+{
+    if (name == "maildir.limit")
+    {
+        // TODO - update the maildir list
+    }
+    else if (name == "index.limit")
+    {
+        // TODO - Update the message list.
+    }
+    else
+    {
+        // NOP.
+    }
+
+    /**
+     * Get access to our Lua magic.
+     */
+    CLua *lua = CLua::instance();
+    lua_State * l = lua->state();
+
+    /**
+     * If there is a Config:key_changed() function, then call it.
+     */
+    lua_getglobal(l, "Config");
+    lua_getfield(l, -1, "key_changed");
+
+    if (lua_isnil(l, -1))
+        return;
+
+    /**
+     * Call the function.
+     */
+    lua_pushstring(l, name.c_str());
+    lua_pcall(l, 1, 0, 0);
 }

@@ -119,6 +119,18 @@ end
 
 
 --
+-- If this function is defined it will be invoked any time
+-- a configuration-key has its value changed.
+--
+-- The single argument will be the name of the key which has
+-- been updated - the value can be retrieved via Config:get
+--
+--[[
+function Config.key_changed( name )
+   print( "Key changed: " .. name)
+end
+--]]
+--
 -- Change the mode - and update the panel-title, if we have one.
 --
 function change_mode( new_mode )

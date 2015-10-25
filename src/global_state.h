@@ -23,6 +23,7 @@
 #pragma once
 
 
+#include <string>
 #include <vector>
 
 
@@ -61,6 +62,11 @@ public:
      * Get the currently selected message.
      */
     CMessage *current_message();
+
+    /**
+     * Called when a configuration-key has changed.
+     */
+    void config_key_changed(std::string name);
 
 private:
 
