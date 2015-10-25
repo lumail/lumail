@@ -98,3 +98,44 @@ CLua::execute (std::string lua)
     }
     return true;
 }
+
+
+/**
+ * Lookup a value in a nested-table - used for keyboard lookups.
+ */
+char *CLua::get_nested_table( std::string table, const char *key, const char * subkey )
+{
+    char *result = NULL;
+
+    /**
+     * Ensure the table exists - if it doesn't return NULL.
+     */
+    lua_getglobal(m_lua, table.c_str() );
+    if (lua_isnil (m_lua, -1 ) )
+    {
+      return NULL;
+    }
+
+    /**
+     * Get the sub-table.
+     */
+    lua_pushstring(m_lua, key );
+    lua_gettable(m_lua, -2);
+    if (! lua_istable(m_lua, -1 ) )
+        return result;
+
+    /**
+     * Get the value.
+     */
+    lua_pushstring(m_lua, subkey);
+    lua_gettable(m_lua, -2);
+    if (lua_isnil (m_lua, -1 ) )
+        return result;
+
+    /**
+     * If it worked, and is a string .. return it.
+     */
+    if (lua_isstring(m_lua, -1))
+        result = (char *)lua_tostring(m_lua, -1);
+    return result;
+}

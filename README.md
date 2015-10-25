@@ -14,28 +14,35 @@ User-Interface
 --------------
 
 The user-interface I expect to develop will be familiar to users of lumail 1.x,
-but we do expect to see a toggleable status-panel.
-
-This is demonstrated in the example:
-
-        cd misc/
-        make
-        ./ui-demo
+the only real change is that we now have a status-panel which can display
+persistent output, under the control of Lua.
 
 
 Usage
 -----
 
-At the moment there is no useable user-interface, just a driver script
-which loads a bunch of objects and API-methods from the embedded code.
+Lumail is a modal email client, which is expcted to have several major modes:
 
-You can see the [API documentation](API.md) for details, but for the moment
-the only useful thing you can do is execute simple scripts.  For example:
+* A mode for looking at maildir lists.
+* A mode for looking at message lists.
+* A mode for looking at a single message.
+* ..
+
+At the moment there is only a single mode implemented "`demo`" which outputs
+`Hello World`.  However this single mode is sufficient to allow us to
+prove that things work - specifically that we've wired up keyboard input
+correctly, our refresh code works, and that the status-panel works as
+expected.
+
+With that in mind you can access the GUI, and execute the client with:
+
+    ./lumail2  --load-file ./lumail2.lua
+
+
+You can see the [API documentation](API.md) for details of the kind of functions
+that you can write, but until we have implemented more of the modes to do
+things with useful objects you'll instead need to run the examples like so:
 
     ./lumail2 --no-curses --load-file ./config.lua
     ./lumail2 --no-curses --load-file ./parts.lua
     ./lumail2 --no-curses --load-file ./show_message.lua
-
-You'll need to read the [API documentation](API.md) to see what you can do,
-until we have a workable user-interface - that is Steve's current priority.
-

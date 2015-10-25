@@ -6,6 +6,7 @@
 #include <panel.h>
 #include <string.h>
 
+#include "config.h"
 #include "demo_view.h"
 #include "lua.h"
 #include "screen.h"
@@ -85,35 +86,29 @@ CScreen::run_main_loop ()
     int running = 1;
     while ((running > 0) && (ch = getch ()))
     {
+      /**
+       * Clear the screen.
+       */
 	CScreen *s = CScreen::instance ();
 	s->clear ();
 
-	switch (ch)
-	{
-	case 'q':
-	    running = 0;
-	    break;
-	case ':':
-	    {
-		std::string e = get_line ();
-		CLua *lua = CLua::Instance ();
-		lua->execute (e);
-		break;
-	    }
-	case '\t':
-	    if (g_status_bar_data.hide == FALSE)
-	    {
-		hide_panel (g_status_bar);
-		g_status_bar_data.hide = TRUE;
-	    }
-	    else
-	    {
-		show_panel (g_status_bar);
-		g_status_bar_data.hide = FALSE;
-	    }
-	    break;
+        /**
+         * If the user wanted to quit - do that.
+         */
+        if ( ch == 'q' || ch == 'Q' )
+          {  running = 0;
+            continue;
+          }
 
-	}
+        /**
+         * Otherwise try to handle the input, via Lua
+         */
+        if ( ch != ERR )
+          {
+            char input[] = { '\0', '\0' };
+            input[0] = ch;
+            on_keypress( input );
+          }
 
       /**
        * Get the global mode .. TODO .. and draw it.
@@ -323,7 +318,7 @@ CScreen::redraw_status_bar ()
    * The width of the screen is the max-length of the string
    * we need to construct - but note that we subtract two:
    *
-   *  One for the trailign NULL.
+   *  One for the trailing NULL.
    *  One for the border-character at the end of the line.
    */
     char *blank = (char *) malloc (width);
@@ -563,4 +558,60 @@ CScreen::status_panel_text (std::vector < std::string > new_text)
 {
     g_status_bar_data.text = new_text;
     redraw_status_bar ();
+}
+
+
+/**
+ * Look up the binding for the named keystroke in our keymap(s).
+ *
+ * If the result is a string then execute it as a function.
+ */
+bool CScreen::on_keypress(char *key )
+{
+    /**
+     * The result of the lookup.
+     */
+    char *result = NULL;
+
+    /**
+     * Get the current global-mode.
+     */
+    std::string mode = "";
+
+    CConfig *config   = CConfig::instance();
+    CConfigEntry *ent = config->get( "global.mode" );
+    if ( ( ent != NULL ) && ( ent->type == CONFIG_STRING ) )
+        mode = *ent->value.str;
+
+    /**
+     * Default mode.
+     */
+    if ( mode.empty() )
+      mode = "demo";
+
+    /**
+     * Lookup the keypress in the current-mode-keymap.
+     */
+    CLua *lua = CLua::Instance();
+    result = lua->get_nested_table( "keymap", mode.c_str(), key );
+
+
+    /**
+     * If that failed then lookup the global keymap.
+     *
+     * This order ensures you can have a "global" keymap, overridden in just one mode.
+     */
+    if ( result == NULL )
+        result = lua->get_nested_table( "keymap", "global", key );
+
+    /**
+     * If one/other of these lookups resulted in success then we're golden.
+     */
+    if ( result != NULL )
+        lua->execute(result);
+
+    /**
+     * We succeeded if the result wasn't NULL.
+     */
+    return( result != NULL );
 }
