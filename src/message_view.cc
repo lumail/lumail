@@ -80,8 +80,20 @@ void CMessageView::draw()
     lua_getglobal(l, "Message");
     lua_getfield(l, -1, "to_string");
 
+    //
+    // This is buggy because the message is freed.
+    //
+    //  CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
+    //  *udata = message
+    //
+    // We can fix it temporarily by re-creating the current-message, thusly:
+    //
+    //  *udate = new CMessage( message->path() );
+    //
+    // TODO: Fix this properly
+    //
     CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
-    *udata = message;
+    *udata = new CMessage( message->path() );
     luaL_getmetatable(l, "luaL_CMessage");
     lua_setmetatable(l, -2);
 
