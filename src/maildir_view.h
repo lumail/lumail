@@ -43,4 +43,9 @@ public:
      * Drawing routine - called when the current.mode=="maildir".
      */
     void draw();
+
+    /**
+     * Called when things are idle.
+     */
+    void on_idle();
 };

@@ -23,7 +23,19 @@
  */
 #pragma once
 
+#include <vector>
 #include "screen.h"
+
+
+/**
+ * We draw random stars in the demo-view.
+ */
+struct DemoStars
+{
+    int x;
+    int y;
+    int c;  /* Colour */
+};
 
 
 /**
@@ -43,4 +55,15 @@ public:
      * Drawing routine - called when the current.mode=="demo".
      */
     void draw();
+
+    /**
+     * Called when things are idle.
+     */
+    void on_idle();
+
+private:
+    /**
+     * Holder for our "stars"
+     */
+    std::vector<DemoStars *> m_stars;
 };

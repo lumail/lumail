@@ -130,6 +130,8 @@ function Config.key_changed( name )
    print( "Key changed: " .. name)
 end
 --]]
+
+
 --
 -- Change the mode - and update the panel-title, if we have one.
 --

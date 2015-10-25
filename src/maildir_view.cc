@@ -45,3 +45,10 @@ void CMaildirView::draw()
     mvprintw(10, 10, "This is 'maildir' mode");
     mvprintw(12, 10, "This should draw a list of maildirs");
 }
+
+/**
+ * Called when things are idle.  NOP.
+ */
+void CMaildirView::on_idle()
+{
+}

@@ -18,7 +18,9 @@
 
 
 #include <cursesw.h>
+#include <sys/ioctl.h>
 
+#include "screen.h"
 #include "demo_view.h"
 
 
@@ -43,4 +45,36 @@ CDemoView::~CDemoView()
 void CDemoView::draw()
 {
     mvprintw(10, 10, "Hello World - This is 'demo' mode");
+    mvprintw(12, 10, "Random stars are added, when idle.");
+
+    for (std::vector < DemoStars * >::iterator it = m_stars.begin();
+            it != m_stars.end(); ++it)
+    {
+        DemoStars *cur = (*it);
+
+	wattron(stdscr, cur->c);
+        mvprintw(cur->x, cur->y, "*");
+	wattroff(stdscr, cur->c);
+
+    }
+}
+
+
+/**
+ * Called when things are idle.  NOP.
+ */
+void CDemoView::on_idle()
+{
+    struct winsize w;
+    ioctl(0, TIOCGWINSZ, &w);
+
+    /**
+    * Add a new star.
+    */
+    DemoStars *add = (DemoStars *)malloc(sizeof(DemoStars));
+    add->x = rand() % w.ws_col + 1;
+    add->y = rand() % w.ws_row + 1;
+    add->c = rand() % 8 + 1;
+
+    m_stars.push_back(add);
 }

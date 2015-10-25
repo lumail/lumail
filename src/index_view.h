@@ -43,4 +43,9 @@ public:
      * Drawing routine - called when the current.mode=="index".
      */
     void draw();
+
+    /**
+     * Called when things are idle.
+     */
+    void on_idle();
 };

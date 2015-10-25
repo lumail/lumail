@@ -46,7 +46,17 @@
 class CViewMode
 {
 public:
+
+    /**
+     * Allow our virtual mode to draw its own display.
+     */
     virtual void draw() = 0;
+
+    /**
+     * It might be useful to have the virtual modes have
+     * an idle function to update things.
+     */
+    virtual void on_idle() = 0;
 };
 
 

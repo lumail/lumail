@@ -128,6 +128,26 @@ void CScreen::run_main_loop()
         CScreen *s = CScreen::instance();
         s->clear();
 
+
+        /**
+         * Get the global mode...
+         */
+        std::string mode = "";
+        CConfig *config   = CConfig::instance();
+        CConfigEntry *ent = config->get("global.mode");
+
+
+        if ((ent != NULL) && (ent->type == CONFIG_STRING))
+            mode = *ent->value.str;
+
+        if (mode.empty())
+            mode = "message";
+
+        /**
+         * This is the virtual view class.
+         */
+        CViewMode *view = m_views[mode];
+
         /**
          * If the user wanted to quit - do that.
          */
@@ -142,11 +162,15 @@ void CScreen::run_main_loop()
          */
         if (ch == ERR)
         {
-            /*
-             * Timeout - so we go round the loop again.
+            /**
+             * Timeout - So call the Lua on_idle() function.
              */
             lua->execute("on_idle()");
 
+            /**
+             * Call our view-specific on-idle handler.
+             */
+            view->on_idle();
         }
         else
         {
@@ -156,23 +180,8 @@ void CScreen::run_main_loop()
         }
 
         /**
-         * Get the global mode...
+         * Update the view.
          */
-        std::string mode = "";
-
-        CConfig *config = CConfig::instance();
-        CConfigEntry *ent = config->get("global.mode");
-
-        if ((ent != NULL) && (ent->type == CONFIG_STRING))
-            mode = *ent->value.str;
-
-        if (mode.empty())
-            mode = "message";
-
-        /**
-         * Now draw the mode.
-         */
-        CViewMode *view = m_views[mode];
         view->draw();
 
         /**
@@ -225,10 +234,14 @@ void CScreen::setup()
 
 
     /* Initialize all the colors */
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    init_pair(3, COLOR_BLUE, COLOR_BLACK);
-    init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(1, COLOR_WHITE, -1);
+    init_pair(2, COLOR_RED, -1);
+    init_pair(3, COLOR_BLUE, -1);
+    init_pair(4, COLOR_GREEN, -1);
+    init_pair(5, COLOR_CYAN, -1);
+    init_pair(6, COLOR_MAGENTA, -1);
+    init_pair(7, COLOR_YELLOW, -1);
+    init_pair(8, COLOR_BLACK, COLOR_WHITE);
 
     /* Create the status-bar.  Show it */
     init_status_bar();
@@ -359,6 +372,7 @@ void CScreen::redraw_status_bar()
     getmaxyx(g_status_bar_window, height, width);
     height += 1;		// nop
 
+    wattron(g_status_bar_window, COLOR_PAIR(2));
     box(g_status_bar_window, 0, 0);
     mvwaddch(g_status_bar_window, 2, 0, ACS_LTEE);
     mvwhline(g_status_bar_window, 2, 1, ACS_HLINE, width - 2);
@@ -408,7 +422,7 @@ void CScreen::redraw_status_bar()
         for (std::vector < std::string >::iterator it = x.text.begin();
                 it != x.text.end(); it++)
         {
-            wattron(g_status_bar_window, COLOR_PAIR(3));
+            wattron(g_status_bar_window, COLOR_PAIR(2));
             mvwprintw(g_status_bar_window, line, 1, blank);
             mvwprintw(g_status_bar_window, line, 1, (*it).c_str());
 

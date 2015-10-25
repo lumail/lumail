@@ -45,3 +45,10 @@ void CIndexView::draw()
     mvprintw(10, 10, "This is 'index' mode");
     mvprintw(12, 10, "This should draw a list of messages");
 }
+
+/**
+ * Called when things are idle.  NOP.
+ */
+void CIndexView::on_idle()
+{
+}

@@ -136,3 +136,10 @@ void CMessageView::draw()
 
 
 }
+
+/**
+ * Called when things are idle.  NOP.
+ */
+void CMessageView::on_idle()
+{
+}
