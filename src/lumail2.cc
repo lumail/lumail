@@ -88,22 +88,16 @@ main (int argc, char *argv[])
     if (!load.empty ())
     {
 	CLua *instance = CLua::Instance ();
-
       for (std::string filename:load)
 	{
-
 	    instance->load_file (filename);
-
 	}
     }
-    else
-    {
-	if (curses == true)
-	{
-	    CScreen *screen = CScreen::instance ();
 
-	    screen->run_main_loop ();
-	}
+    if (curses == true)
+    {
+	CScreen *screen = CScreen::instance ();
+	screen->run_main_loop ();
     }
 
 

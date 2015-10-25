@@ -26,10 +26,10 @@
 /**
  * Test if a file exists.
  */
-bool CFile::exists (std::string path)
+bool
+CFile::exists (std::string path)
 {
-    struct stat
-	sb;
+    struct stat sb;
 
     if ((stat (path.c_str (), &sb) == 0))
 	return true;
@@ -41,10 +41,10 @@ bool CFile::exists (std::string path)
 /**
  * Is the given file executable?
  */
-bool CFile::executable (std::string path)
+bool
+CFile::executable (std::string path)
 {
-    struct stat
-	sb;
+    struct stat sb;
 
     /**
      * Fail to stat?  Then not executable.
@@ -70,10 +70,10 @@ bool CFile::executable (std::string path)
 /**
  * Is the given path a directory?
  */
-bool CFile::is_directory (std::string path)
+bool
+CFile::is_directory (std::string path)
 {
-    struct stat
-	sb;
+    struct stat sb;
 
     if (stat (path.c_str (), &sb) < 0)
 	return false;
@@ -140,7 +140,8 @@ std::vector < std::string > CFile::files_in_directory (std::string path)
 /**
  * Remove a file.
  */
-bool CFile::delete_file (std::string path)
+bool
+CFile::delete_file (std::string path)
 {
     /**
      * Ensure we're not removing a directory.
@@ -150,8 +151,7 @@ bool CFile::delete_file (std::string path)
     /**
      * Unlink.
      */
-    bool
-	result = unlink (path.c_str ());
+    bool result = unlink (path.c_str ());
 
     /**
      * Test that the file was removed.
@@ -167,7 +167,8 @@ bool CFile::delete_file (std::string path)
  */
 std::string CFile::basename (std::string path)
 {
-    size_t offset = path.find_last_of ("/");
+    size_t
+	offset = path.find_last_of ("/");
 
     if (offset != std::string::npos)
 	return (path.substr (offset + 1));
@@ -203,10 +204,10 @@ CFile::copy (std::string src, std::string dst)
 /**
  * Move a file.
  */
-bool CFile::move (std::string src, std::string dst)
+bool
+CFile::move (std::string src, std::string dst)
 {
-    int
-	ret = rename (src.c_str (), dst.c_str ());
+    int ret = rename (src.c_str (), dst.c_str ());
 
     assert (CFile::exists (dst));
     assert (!CFile::exists (src));
@@ -218,21 +219,18 @@ bool CFile::move (std::string src, std::string dst)
 /**
  * Send the contents of a file to the given command, via popen.
  */
-bool CFile::file_to_pipe (std::string src, std::string cmd)
+bool
+CFile::file_to_pipe (std::string src, std::string cmd)
 {
 
-    char
-    buf[FILE_READ_BUFFER] = { '\0' };
-    ssize_t
-	nread;
+    char buf[FILE_READ_BUFFER] = { '\0' };
+    ssize_t nread;
 
-    FILE *
-	file = fopen (src.c_str (), "r");
+    FILE *file = fopen (src.c_str (), "r");
     if (file == NULL)
 	return false;
 
-    FILE *
-	pipe = popen (cmd.c_str (), "w");
+    FILE *pipe = popen (cmd.c_str (), "w");
     if (pipe == NULL)
 	return false;
 
@@ -241,10 +239,8 @@ bool CFile::file_to_pipe (std::string src, std::string cmd)
      */
     while ((nread = fread (buf, sizeof (char), sizeof buf - 1, file)) > 0)
     {
-	char *
-	    out_ptr = buf;
-	ssize_t
-	    nwritten;
+	char *out_ptr = buf;
+	ssize_t nwritten;
 
 	do
 	{
@@ -343,7 +339,8 @@ std::vector < std::string > CFile::complete_filename (std::string path)
     /**
      * Get the directory-name.
      */
-    size_t offset = path.find_last_of ("/");
+    size_t
+	offset = path.find_last_of ("/");
     if (offset != std::string::npos)
     {
 	dir = path.substr (0, offset);

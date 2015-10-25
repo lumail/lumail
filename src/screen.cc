@@ -193,14 +193,11 @@ CScreen::teardown ()
 
 
 /**
- * Clear the screen
+ * Clear the whole screen by printing lines of blanks.
  */
 void
 CScreen::clear ()
 {
-  /**
-   * Clear the whole screen.
-   */
     int width = CScreen::width ();
     int height = CScreen::height ();
 
@@ -259,32 +256,24 @@ CScreen::init_status_bar ()
     int show = 1;
     int x, y;
 
-    /*
-     * Get window width/height
-     */
-    struct winsize size;
-    if (ioctl (0, TIOCGWINSZ, (char *) &size) < 0)
-	printf ("TIOCGWINSZ error");
-
   /**
    * Size of panel
    */
     int rows = PANEL_HEIGHT;
-    int cols = size.ws_col;
+    int cols = CScreen::width ();
 
   /**
    * Create the window.
    */
     x = 0;
-    y = size.ws_row - rows;
+    y = CScreen::height () - rows;
     g_status_bar_window = newwin (rows, cols, y, x);
 
   /**
    * Set the content of the status-bar
    */
     g_status_bar_data.title = std::string ("Status Panel");
-    g_status_bar_data.text.
-	push_back
+    g_status_bar_data.text.push_back
 	("Lumail v2 UI demo - Toggle panel via 'tab'.  Exit via 'q'.  Eval via ':'.");
     g_status_bar_data.text.push_back ("by Steve Kemp");
 
@@ -355,6 +344,14 @@ CScreen::redraw_status_bar ()
 
     if (x.text.size () > 0)
     {
+      /**
+       * Starting offset of text-drawing, because we have:
+       *
+       *  [0] ---
+       *  [1] Title goes here
+       *  [2] ----
+       *
+       */
 	int line = 3;
 
 	for (std::vector < std::string >::iterator it = x.text.begin ();
@@ -416,8 +413,7 @@ std::string CScreen::get_line ()
     {
 	int
 	    c;
-	bool
-	    isKeyCode;
+	bool isKeyCode;
 
 	mvaddnstr (y, x, buffer.c_str (), buffer.size ());
 
@@ -536,7 +532,8 @@ CScreen::toggle_status_panel ()
 	show_status_panel ();
 }
 
-bool CScreen::status_panel_visible ()
+bool
+CScreen::status_panel_visible ()
 {
     if (g_status_bar_data.hide == FALSE)
 	return true;
@@ -554,4 +551,16 @@ CScreen::status_panel_title (std::string new_title)
 std::string CScreen::status_panel_title ()
 {
     return (g_status_bar_data.title);
+}
+
+std::vector < std::string > CScreen::status_panel_text ()
+{
+    return (g_status_bar_data.text);
+}
+
+void
+CScreen::status_panel_text (std::vector < std::string > new_text)
+{
+    g_status_bar_data.text = new_text;
+    redraw_status_bar ();
 }

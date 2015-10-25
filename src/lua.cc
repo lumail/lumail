@@ -73,10 +73,10 @@ CLua::~CLua ()
  *
  * Return true on success.  False on error.
  */
-bool CLua::load_file (std::string filename)
+bool
+CLua::load_file (std::string filename)
 {
-    int
-	erred = luaL_dofile (m_lua, filename.c_str ());
+    int erred = luaL_dofile (m_lua, filename.c_str ());
     if (erred)
 	return false;
     else
@@ -89,7 +89,8 @@ bool CLua::load_file (std::string filename)
  *
  * Return true on success.  False on error.
  */
-bool CLua::execute (std::string lua)
+bool
+CLua::execute (std::string lua)
 {
     if (luaL_dostring (m_lua, lua.c_str ()))
     {

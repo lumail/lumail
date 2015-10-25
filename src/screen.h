@@ -89,15 +89,14 @@ class CScreen
 	/**
          * Panel-related functions.
          */
-    void show_status_panel ();
-    void hide_status_panel ();
-    void toggle_status_panel ();
     bool status_panel_visible ();
-    void status_panel_title (std::string new_title);
          std::string status_panel_title ();
-
-    void status_panel_text (std::vector < std::string >);
          std::vector < std::string > status_panel_text ();
+    void hide_status_panel ();
+    void show_status_panel ();
+    void status_panel_text (std::vector < std::string >);
+    void status_panel_title (std::string new_title);
+    void toggle_status_panel ();
 
   private:
     void redraw_status_bar ();

@@ -59,7 +59,8 @@ std::string CMessagePart::filename ()
 /**
  * Is this an attachment?
  */
-bool CMessagePart::is_attachment ()
+bool
+CMessagePart::is_attachment ()
 {
     return (m_filename.empty () == false);
 }
@@ -77,7 +78,8 @@ CMessagePart::content ()
 /**
  * Get the length of the content.
  */
-size_t CMessagePart::content_size ()
+size_t
+CMessagePart::content_size ()
 {
     return (m_content_length);
 }
