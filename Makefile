@@ -65,13 +65,6 @@ default: lumail lumail-debug
 
 
 #
-#  Style-check our code
-#
-.PHONY: test
-test: lumail
-	for i in test/*.lua; do ./lumail $$i ; done
-
-#
 #  Cleanup
 #
 clean:
