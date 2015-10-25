@@ -1,7 +1,27 @@
+/**
+ * $FILENAME - $TITLE
+ *
+ * This file is part of lumail - http://lumail.org/
+ *
+ * Copyright (c) 2015 by Steve Kemp.  All rights reserved.
+ *
+ **
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 dated June, 1991, or (at your
+ * option) any later version.
+ *
+ * On Debian GNU/Linux systems, the complete text of version 2 of the GNU
+ * General Public License can be found in `/usr/share/common-licenses/GPL-2'
+ */
 
 
-#ifndef _MAILDIR_H
-#define _MAILDIR_H 1
+/**
+ * Only include this header one time.
+ */
+#pragma once
+
 
 #include <string>
 #include <vector>
@@ -121,10 +141,8 @@ class CMaildir
      /**
       * Cached unread-count + cached total count.
       */
-    int
-	m_unread;
-    int
-	m_total;
+    int	m_unread;
+    int	m_total;
 
 
      /**
@@ -137,11 +155,6 @@ class CMaildir
      /**
       * Update the cached total/unread message counts.
       */
-    void
-    update_cache ();
+    void update_cache ();
 
 };
-
-
-
-#endif /* _MAILDIR_H */
