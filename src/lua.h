@@ -48,7 +48,7 @@ public:
     /**
      * Get access to this singleton instance.
      */
-    static CLua *Instance();
+    static CLua *instance();
 
     /**
      * Load the specified Lua file, and evaluate it.

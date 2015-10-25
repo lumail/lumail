@@ -67,7 +67,7 @@ void CMessageView::draw()
     /**
      * Get access to our lua-magic.
      */
-    CLua *lua = CLua::Instance();
+    CLua *lua = CLua::instance();
     lua_State * l = lua->state();
 
     /**

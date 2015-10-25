@@ -38,7 +38,7 @@ extern void InitScreen(lua_State * l);
 /**
  * Get access to this singleton object.
  */
-CLua * CLua::Instance()
+CLua * CLua::instance()
 {
     static CLua *instance = new CLua();
     return (instance);

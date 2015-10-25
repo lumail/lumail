@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
      */
     if (!load.empty())
     {
-        CLua *instance = CLua::Instance();
+        CLua *instance = CLua::instance();
 
         for (std::string filename : load)
         {

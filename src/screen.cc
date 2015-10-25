@@ -114,7 +114,7 @@ void CScreen::run_main_loop()
     /**
      * Get the lua-helper.
      */
-    CLua *lua = CLua::Instance();
+    CLua *lua = CLua::instance();
 
 
     int ch;
@@ -647,7 +647,7 @@ bool CScreen::on_keypress(char *key)
      * Lookup the keypress in the current-mode-keymap.
      */
     CLua *
-    lua = CLua::Instance();
+    lua = CLua::instance();
     result = lua->get_nested_table("keymap", mode.c_str(), key);
 
 
