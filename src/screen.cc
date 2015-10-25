@@ -78,8 +78,16 @@ CScreen::run_main_loop ()
    */
     timeout (500);
 
+    /**
+     * Get the screen.
+     */
     CScreen *s = CScreen::instance ();
     s->clear ();
+
+    /**
+     * Get the lua-helper.
+     */
+    CLua *lua = CLua::Instance();
 
 
     int ch;
@@ -104,7 +112,15 @@ CScreen::run_main_loop ()
 	/**
          * Otherwise try to handle the input, via Lua
          */
-	if (ch != ERR)
+	if (ch == ERR)
+        {
+            /*
+             * Timeout - so we go round the loop again.
+             */
+            lua->execute("on_idle()");
+
+        }
+        else
 	{
 	    char input[] = { '\0', '\0' };
 	    input[0] = ch;

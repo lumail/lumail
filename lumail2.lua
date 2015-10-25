@@ -1,3 +1,4 @@
+
 --
 -- Define some utility functions
 --
@@ -35,6 +36,19 @@ end
 function read_eval()
    local txt = Screen:get_line();
    loadstring( txt )()
+end
+
+--
+-- This animates the title of the display-panel, which is an interesting
+-- effect!
+--
+function on_idle()
+   title = Panel:title()
+
+   local tmp = string.sub(title, 2 )
+   tmp = tmp .. string.sub(title,1,1)
+
+   Panel:title(tmp)
 end
 
 

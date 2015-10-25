@@ -3,12 +3,35 @@ API
 
 The core idea of lumail2, and the reason for writing it, is that everything is an object.
 
-At the moment we have stub-objects for working with:
+At the moment we have objects for working with:
 
 * Configuration variables.
 * Maildirs.
 * Messages.
 * The screen.
+* The status-panel, which is optionally displayed upon the screen.
+
+
+Variables
+---------
+
+Beyond that we have a number of variables which are used, the two most
+obvious ones are:
+
+* `global.mode`
+    * This holds he name of the currently active display-mode
+* `global.prefix`
+    * This holds the prefix to the maildir hierarchy.
+* `global.editor`
+    * The user's editor.
+* `global.from`
+    * The email address to send messages from.
+
+Callbacks
+---------
+
+We only hae a single hook at the moment which is `on_idle` executed approximately twice a second.
+
 
 
 
