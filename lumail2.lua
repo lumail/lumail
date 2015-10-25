@@ -52,6 +52,13 @@ function on_idle()
 end
 
 
+--
+-- Change the mode - and update the panel-title, if we have one.
+--
+function change_mode( new_mode )
+   Config:set( "global.mode", new_mode )
+   Panel:title( "Mode is now " .. new_mode .. " " )
+end
 
 --
 -- Setup KeyMaps
@@ -59,6 +66,9 @@ end
 keymap = {}
 keymap['global']  = {}
 keymap['demo']    = {}
+keymap['maildir'] = {}
+keymap['index']   = {}
+keymap['message'] = {}
 
 --
 -- Global Mode
@@ -67,9 +77,13 @@ keymap['global'][':'] = "read_eval()"
 keymap['global']['\t'] = "Panel:toggle()"
 
 
+keymap['global']['M'] = "change_mode( 'maildir' );"
+keymap['global']['I'] = "change_mode( 'index' );"
+keymap['global']['D'] = "change_mode( 'demo' );"
+
 
 --
--- Demo Mode
+-- Demo Mode-specific bindings
 --
 keymap['demo']['d' ] = "date()"
 keymap['demo']['h' ] = "hostname()"

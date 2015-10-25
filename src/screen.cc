@@ -26,9 +26,16 @@
 #include <string.h>
 
 #include "config.h"
-#include "demo_view.h"
 #include "lua.h"
 #include "screen.h"
+
+/**
+ * Views.
+ */
+#include "demo_view.h"
+#include "index_view.h"
+#include "maildir_view.h"
+#include "message_view.h"
 
 
 
@@ -64,6 +71,9 @@ CScreen::CScreen()
     /**
      * Register our view-modes.
      */
+    m_views["maildir"] = new CMaildirView();
+    m_views["index"] = new CIndexView();
+    m_views["message"] = new CMessageView();
     m_views["demo"] = new CDemoView();
 }
 
@@ -119,8 +129,8 @@ void CScreen::run_main_loop()
         s->clear();
 
         /**
-             * If the user wanted to quit - do that.
-             */
+         * If the user wanted to quit - do that.
+         */
         if (ch == 'q' || ch == 'Q')
         {
             running = 0;
@@ -128,8 +138,8 @@ void CScreen::run_main_loop()
         }
 
         /**
-             * Otherwise try to handle the input, via Lua
-             */
+         * Otherwise try to handle the input, via Lua
+         */
         if (ch == ERR)
         {
             /*
@@ -146,14 +156,28 @@ void CScreen::run_main_loop()
         }
 
         /**
-         * Get the global mode .. TODO .. and draw it.
+         * Get the global mode...
          */
-        CViewMode *mode = m_views["demo"];
-        mode->draw();
+        std::string mode = "";
+
+        CConfig *config = CConfig::instance();
+        CConfigEntry *ent = config->get("global.mode");
+
+        if ((ent != NULL) && (ent->type == CONFIG_STRING))
+            mode = *ent->value.str;
+
+        if (mode.empty())
+            mode = "maildir";
 
         /**
-             * Update our panel.
-             */
+         * Now draw the mode.
+         */
+        CViewMode *view = m_views[mode];
+        view->draw();
+
+        /**
+         * Update our panel.
+         */
         update_panels();
         doupdate();
 
@@ -607,10 +631,8 @@ bool CScreen::on_keypress(char *key)
      */
     std::string mode = "";
 
-    CConfig *
-    config = CConfig::instance();
-    CConfigEntry *
-    ent = config->get("global.mode");
+    CConfig *config = CConfig::instance();
+    CConfigEntry *ent = config->get("global.mode");
 
     if ((ent != NULL) && (ent->type == CONFIG_STRING))
         mode = *ent->value.str;
@@ -619,7 +641,7 @@ bool CScreen::on_keypress(char *key)
      * Default mode.
      */
     if (mode.empty())
-        mode = "demo";
+        mode = "maildir";
 
     /**
      * Lookup the keypress in the current-mode-keymap.
