@@ -53,8 +53,6 @@ public:
      */
     static CGlobalState *instance();
 
-
-
     /**
      * Get all folders which match the current mode.
      */
@@ -66,16 +64,24 @@ public:
     std::vector<std::shared_ptr<CMessage> > *get_messages();
 
     /**
-     * Get the currently selected message.
+     * Get/Set the currently selected message.
      */
-    CMessage *current_message();
+    std::shared_ptr<CMessage> current_message();
+    void set_message(std::shared_ptr<CMessage>);
+
+    /**
+
+     * Get/Set the current-maildir.
+     */
+    std::shared_ptr<CMaildir > current_maildir();
+    void set_maildir(std::shared_ptr<CMaildir >  folder);
 
     /**
      * Called when a configuration-key has changed.
      */
     void config_key_changed(std::string name);
 
- private:
+private:
     void update_maildirs();
     void update_messages();
 
@@ -89,7 +95,7 @@ private:
     /**
      * The current maildir.
      */
-    CMaildir *m_current_maildir;
+    std::shared_ptr<CMaildir>m_current_maildir;
 
     /**
      * All messages.
@@ -104,5 +110,5 @@ private:
     /**
      * The currently selected message.
      */
-    CMessage * m_current_message;
+    std::shared_ptr<CMessage> m_current_message;
 };

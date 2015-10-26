@@ -68,6 +68,51 @@ function Message.to_string(self)
 end
 
 
+--
+-- Remove a colour-string from the given string
+--
+-- A colour-string is something like "$[BLUE]" at the
+-- start of a line.
+--
+function strip_colour( input )
+   while( string.find(input, "^$[^]]+]" ) ) do
+      input = string.gsub( input, "^$[^]]+]", "" )
+   end
+   return input
+end
+
+
+--
+-- This method is CRUCIAL to our operation.
+--
+-- This method returns the index-entry for a message in `index`-mode.
+--
+function Message.to_index(self)
+   local flags = self:flags()
+   local subject = self:header( "Subject" )
+   local sender  = self:header( "From" )
+
+   local output = string.format( "[%4s] - %s - %s", flags, sender, subject )
+
+   --
+   -- If the message is unread then show it in RED
+   --
+   if ( string.find( self:flags(), "N" ) ) then
+      output = "$[RED]" .. output
+   end
+
+   --
+   -- If the message contains the word "STEVE" - show it in blue
+   --
+   if ( string.find( output, "steve" )  ) then
+      output = strip_colour( output )
+      output = "$[BLUE]" .. output
+   end
+
+
+   return( output );
+end
+
 
 --
 -- This method is CRUCIAL to our operation.
@@ -84,6 +129,15 @@ function Maildir.to_string(self)
 
    if ( unread > 0 ) then
       output = "$[RED]" .. output
+   end
+
+   if ( string.find( output, "Automated." ) ) then
+      output = strip_colour( output )
+      output = "$[YELLOW]" .. output
+   end
+   if ( string.find( output, "lists" ) ) then
+      output = strip_colour( output )
+      output = "$[GREEN]" .. output
    end
    return output
 end
@@ -127,15 +181,116 @@ function read_eval()
    loadstring( txt )()
 end
 
+
+--
+-- Allow navigation - Selection of a maildir, or message.
+--
+function select()
+   local mode = Config:get("global.mode")
+   local cur  = Config:get(mode .. ".current")
+
+   if ( mode == "maildir" ) then
+      Screen:select_maildir( cur )
+      Config:set("global.mode", "index" )
+      return
+   end
+   if ( mode == "index" ) then
+      Screen:select_message( cur )
+      Config:set("global.mode", "message" )
+      return
+   end
+end
+
+
+--
+-- Allow navigation - Scroll down a maildir, or index.
+--
+function next( offset )
+
+   local mode = Config:get("global.mode")
+   local cur  = Config:get(mode .. ".current")
+   local max  = Config:get(mode .. ".max" )
+
+   if ( not cur ) then
+      cur = 0
+   else
+      cur = tonumber( cur )
+   end
+
+   max = tonumber( max )
+
+   if ( cur + offset < (max-1) ) then
+      cur = cur + offset
+   else
+      cur = max-1
+   end
+   Config:set( mode .. ".current", cur )
+end
+
+
+--
+-- Allow navigation - Scroll up a maildir, or index.
+--
+function prev( offset )
+   local mode = Config:get("global.mode")
+   local cur  = Config:get(mode .. ".current")
+
+   if ( not cur ) then
+      cur = 0
+   else
+      cur = tonumber( cur )
+   end
+
+   max = tonumber( max )
+
+   if ( cur - offset > 0 ) then
+      cur = cur - offset
+   else
+      cur = 0
+   end
+   Config:set( mode .. ".current", cur )
+end
+
+
 --
 -- This animates the title of the display-panel, which is an interesting
--- effect!
+-- effect.  Or an annoyance, depending on which you prefer.
 --
 function on_idle()
+
+   --
+   -- Get the title, shift it once byte, and set it
+   --
    title = Panel:title()
    local tmp = string.sub(title, 2 )
    tmp = tmp .. string.sub(title,1,1)
    Panel:title(tmp)
+
+   --
+   --  Show some information in the panel.
+   --
+   local mode = Config:get("global.mode")
+   local cur  = Config:get(mode .. ".current")
+   if not cur  then
+      cur = "UNSET"
+   end
+   local max  = Config:get(mode .. ".max" )
+   if not max  then
+      max = "UNSET"
+   end
+
+   local text  = "Current mode "..mode.." Current offset:".. cur .." Max offset:".. max
+   local text2 =  "This is lumail2, by Steve Kemp"
+
+   if ( mode == "index" ) then
+      local md = Screen:maildir()
+      text2 = "Current maildir : " .. md:path()
+   end
+   if ( mode == "message" ) then
+      local md = Screen:message()
+      text2 = "Current message : " .. md:path()
+   end
+   Panel:text( { text, text2 } )
 end
 
 
@@ -185,6 +340,33 @@ keymap['global']['D'] = "change_mode( 'demo' );"
 
 
 --
+-- Next/Previous navigation for different modes
+--
+keymap['global']['k'] = "prev(1)"
+keymap['global']['j'] = "next(1)"
+keymap['global']['K'] = "prev(10)"
+keymap['global']['J'] = "next(10)"
+keymap['global']['\n'] = "select()"
+
+--
+-- Change the display-limits
+--
+keymap['maildir']['a'] = 'Config:set( "maildir.limit", "all" )'
+keymap['maildir']['n'] = 'Config:set( "maildir.limit", "new" )'
+
+--
+-- Change the display-limits
+--
+keymap['index']['a'] = 'Config:set( "index.limit", "all" )'
+keymap['index']['n'] = 'Config:set( "index.limit", "new" )'
+
+--
+-- Exit out of modes
+--
+keymap['index']['q']   = "change_mode('maildir')"
+keymap['message']['q'] = "change_mode('index')"
+
+--
 -- Demo Mode-specific bindings
 --
 keymap['demo']['d' ] = "date()"
@@ -193,6 +375,11 @@ keymap['demo']['h' ] = "hostname()"
 
 
 --
--- Setup the prefix to our maildir hierarchy
+-- Setup the prefix to our maildir hierarchy.
 --
 Config:set( "maildir.prefix", os.getenv( "HOME" ) .. "/Maildir" )
+
+--
+-- Setup our default editor.  Not used.
+--
+Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )

@@ -35,13 +35,13 @@ CConfig * CConfig::instance()
  */
 CConfig::CConfig()
 {
-  set("global.mode", "maildir", false);
+    set("global.mode", "maildir", false);
 
-  set("index.limit", "all", false);
-  set("index.max", "0", false);
+    set("index.limit", "all", false);
+    set("index.max", "0", false);
 
-  set("maildir.limit", "all", false );
-  set("maildir.max", "0", false);
+    set("maildir.limit", "all", false);
+    set("maildir.max", "0", false);
 }
 
 
@@ -144,7 +144,7 @@ std::vector < std::string > CConfig::keys()
  *
  * This replaces any prior value which might have been stored under that key.
  */
-void CConfig::set(std::string name, std::string val, bool notify )
+void CConfig::set(std::string name, std::string val, bool notify)
 {
     /**
      * Delete the existing value(s).
@@ -174,11 +174,11 @@ void CConfig::set(std::string name, std::string val, bool notify )
     /**
      * Notify our global state of the variable change.
      */
-    if ( notify )
-      {
+    if (notify)
+    {
         CGlobalState *global = CGlobalState::instance();
         global->config_key_changed(name);
-      }
+    }
 }
 
 
@@ -223,11 +223,11 @@ void CConfig::set(std::string name, std::vector < std::string > entries, bool no
     /**
      * Notify our global state of the variable change.
      */
-    if ( notify )
-      {
+    if (notify)
+    {
         CGlobalState *global = CGlobalState::instance();
         global->config_key_changed(name);
-      }
+    }
 }
 
 /**

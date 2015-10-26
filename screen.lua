@@ -2,7 +2,7 @@
 --
 -- Usage:
 --
---     ./lumail --load-file ./screen.lua
+--     ./lumail2 --load-file ./screen.lua
 --
 
 

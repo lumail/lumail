@@ -22,6 +22,7 @@
 #include <getopt.h>
 
 #include "config.h"
+#include "file.h"
 #include "lua.h"
 #include "maildir.h"
 #include "message.h"
@@ -52,6 +53,38 @@ int main(int argc, char *argv[])
      */
     std::vector < std::string > load;
     bool curses = true;
+
+
+    /**
+     * Default to loading some configuration files, if they
+     * exist
+     */
+    if (CFile::exists("/etc/lumail2/lumail2.lua"))
+        load.push_back("/etc/lumail2/lumail2.lua");
+
+    /**
+     * Get the home-directory of the current user.
+     */
+    std::string home;
+
+    if (getenv("HOME") != NULL)
+    {
+        /**
+         * If that worked then try to find things from beneath it.
+         */
+        home = getenv("HOME");
+
+        if (!home.empty())
+        {
+            home = home + "/.lumail2/lumail2.lua";
+
+            if (CFile::exists(home))
+                load.push_back(home);
+        }
+    }
+
+    if (CFile::exists("./lumail2.lua"))
+        load.push_back("./lumail2.lua");
 
 
     while (1)

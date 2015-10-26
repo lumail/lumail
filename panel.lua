@@ -2,7 +2,7 @@
 --
 -- Usage:
 --
---     ./lumail --load-file ./panel.lua
+--     ./lumail2 --load-file ./panel.lua
 --
 --
 -- Once loaded execute the lua-prompt by typing ":" and enter

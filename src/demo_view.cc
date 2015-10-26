@@ -44,6 +44,9 @@ CDemoView::~CDemoView()
  */
 void CDemoView::draw()
 {
+    CScreen *screen = CScreen::instance();
+    screen->clear();
+
     mvprintw(10, 10, "Hello World - This is 'demo' mode");
     mvprintw(12, 10, "Random stars are added, when idle.");
 

@@ -96,12 +96,12 @@ public:
     /**
      * Return the width of the screen.
      */
-    int width();
+    static int width();
 
     /**
      * Return the height of the screen.
      */
-    int height();
+    static int height();
 
     /**
      * Clear the screen.
@@ -135,6 +135,10 @@ public:
      */
     bool on_keypress(char *key);
 
+    /**
+     * Get the colour-pair for the given name.
+     */
+    int get_colour(std::string name);
 
 private:
     void redraw_status_bar();
@@ -146,4 +150,9 @@ private:
      * This contains the mapping of "global.mode" -> drawing routines.
      */
     std::unordered_map < std::string, CViewMode * >m_views;
+
+    /**
+     * Colour-pairs
+     */
+    std::unordered_map < std::string, int >m_colours;
 };

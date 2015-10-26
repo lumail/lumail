@@ -24,6 +24,7 @@
 #include "lua.h"
 
 #include "message.h"
+#include "screen.h"
 #include "message_view.h"
 #include "util.h"
 
@@ -47,12 +48,14 @@ CMessageView::~CMessageView()
  */
 void CMessageView::draw()
 {
+    CScreen *screen = CScreen::instance();
+    screen->clear();
 
     /**
      * Get the current message.
      */
     CGlobalState *state = CGlobalState::instance();
-    CMessage *message   = state->current_message();
+    std::shared_ptr<CMessage> message = state->current_message();
 
     /**
      * If there is no current message then we're done.
@@ -133,8 +136,6 @@ void CMessageView::draw()
         mvprintw(cur, 0, "%s", lines.at(cur).c_str());
         cur += 1;
     }
-
-
 }
 
 /**

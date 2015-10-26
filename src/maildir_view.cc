@@ -46,7 +46,9 @@ CMaildirView::~CMaildirView()
  */
 void CMaildirView::draw()
 {
-
+    CScreen *screen = CScreen::instance();
+    screen->clear();
+    
     /**
      * Get all maildirs.
      */
@@ -64,8 +66,21 @@ void CMaildirView::draw()
     if (max.empty())
         max = "0";
 
+    /**
+     * Get the item under the cursor.
+     */
+    std::string current = config->get_string("maildir.current");
+
+    if (current.empty())
+    {
+        config->set("maildir.current", "0" , false);
+        current = "0";
+    }
+
+
     std::string::size_type sz;
     size_t max_message = std::stoi(max, &sz);
+    size_t cur_message = std::stoi(current, &sz);
 
     if (max_message < 1)
     {
@@ -115,7 +130,7 @@ void CMaildirView::draw()
         // maildir_object.
         //
         CMaildir **udata = (CMaildir **) lua_newuserdata(l, sizeof(CMaildir *));
-        *udata = new CMaildir( m->path() );
+        *udata = new CMaildir(m->path());
         luaL_getmetatable(l, "luaL_CMaildir");
         lua_setmetatable(l, -2);
 
@@ -124,57 +139,73 @@ void CMaildirView::draw()
          * Now call "to_string"
          */
         if (lua_pcall(l, 1, 1, 0) != 0)
-          {
+        {
             std::cerr << "Error calling CMaildir:to_string - " << lua_tostring(l, -1);
             return;
-          }
+        }
 
         /**
          * Fingers crossed we now have the message.
          */
         if (lua_tostring(l, -1) == NULL)
-          {
+        {
             std::cerr << "NULL OUTPUT!!!1!! " << std::endl;
             return;
-          }
+        }
 
         std::string output = lua_tostring(l, -1);
+
 
         /**
          * Look for a colour-string
          */
         std::string colour = "";
 
-        if ( output.at( 0 ) == '$' )
-          {
+        if (output.at(0) == '$')
+        {
             std::size_t start = output.find("[");
             std::size_t end   = output.find("]");
 
-            if ( ( start != std::string::npos ) &&
-                 ( end != std::string::npos ) )
-              {
+            if ((start != std::string::npos) &&
+                    (end != std::string::npos))
+            {
+                colour = output.substr(start + 1, end - start - 1);
+                output = output.substr(end + 1);
+            }
+        }
 
-                output = output.substr( end + 1);
-                colour = output.substr( start +1, end-start -1 );
-              }
-          }
+        while ((int)output.length() < CScreen::width())
+            output += " ";
 
         /**
          * TODO: Change to the colour in `colour`.
          */
-        if ( !colour.empty() )
-            wattron(stdscr, COLOR_PAIR(2));
+        if (!colour.empty())
+            wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
+
+        if (cur == (int)cur_message)
+            wattron(stdscr, A_REVERSE | A_STANDOUT);
+        else
+            wattroff(stdscr, A_REVERSE | A_STANDOUT);
 
         mvprintw(cur, 0, "%s", output.c_str());
 
         /**
          * Reset the colour
          */
-        if ( ! colour.empty() )
-            wattron(stdscr, COLOR_PAIR(1));
+        if (! colour.empty())
+            wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
 
         cur += 1;
     }
+
+    /**
+     * Ensure we turn off the attribute on the last line - so that
+     * any blank lines are "normal".
+     */
+    wattroff(stdscr, A_REVERSE | A_STANDOUT);
+
+    refresh();
 }
 
 /**

@@ -23,7 +23,10 @@ extern "C"
 #include <lauxlib.h>
 #include <lualib.h>
 }
-#include <iostream>
+
+
+
+#include "global_state.h"
 #include "screen.h"
 
 
@@ -36,6 +39,95 @@ l_CScreen_clear(lua_State * l)
     foo->clear();
     return 0;
 }
+
+
+/**
+ * Get the current maildir.
+ */
+int l_CScreen_maildir(lua_State * l)
+{
+    /**
+     * Get all maildirs.
+     */
+    CGlobalState *state = CGlobalState::instance();
+    std::shared_ptr<CMaildir > current = state->current_maildir();
+
+    if (! current)
+        return 0;
+
+    CMaildir **udata = (CMaildir **) lua_newuserdata(l, sizeof(CMaildir *));
+    *udata = new CMaildir(current->path());
+    luaL_getmetatable(l, "luaL_CMaildir");
+    lua_setmetatable(l, -2);
+
+    return 1;
+}
+
+
+/**
+ * Get the current message
+ */
+int l_CScreen_message(lua_State * l)
+{
+    /**
+     * Get all maildirs.
+     */
+    CGlobalState *state = CGlobalState::instance();
+    std::shared_ptr<CMessage> m = state->current_message();
+
+    CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
+    *udata = new CMessage(m->path());
+    luaL_getmetatable(l, "luaL_CMessage");
+    lua_setmetatable(l, -2);
+
+    return 1;
+}
+
+
+int l_CScreen_select_maildir(lua_State * l)
+{
+    const int offset = luaL_checkinteger(l, 2);
+
+    /**
+     * Get all maildirs.
+     */
+    CGlobalState *state = CGlobalState::instance();
+    std::vector<std::shared_ptr<CMaildir> > maildirs = state->get_maildirs();
+
+    /**
+     * Get the one at the index.
+     */
+    std::shared_ptr<CMaildir> m = maildirs.at(offset);
+
+    /**
+     * Update the global-state
+     */
+    state->set_maildir(m);
+    return 0;
+}
+
+int l_CScreen_select_message(lua_State * l)
+{
+    const int offset = luaL_checkinteger(l, 2);
+
+    /**
+     * Get the messages
+     */
+    CGlobalState *global   = CGlobalState::instance();
+    CMessageList *messages = global->get_messages();
+
+    /**
+     * Get the one at the index.
+     */
+    std::shared_ptr<CMessage> m = messages->at(offset);
+
+    /**
+     * Update the global-state
+     */
+    global->set_message(m);
+    return 0;
+}
+
 
 int
 l_CScreen_get_line(lua_State * l)
@@ -84,6 +176,10 @@ InitScreen(lua_State * l)
         {"clear", l_CScreen_clear},
         {"get_line", l_CScreen_get_line},
         {"height", l_CScreen_height},
+        {"maildir", l_CScreen_maildir},
+        {"message", l_CScreen_message},
+        {"select_maildir", l_CScreen_select_maildir},
+        {"select_message", l_CScreen_select_message},
         {"sleep", l_CScreen_sleep},
         {"width", l_CScreen_width},
         {NULL, NULL}

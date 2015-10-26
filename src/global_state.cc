@@ -26,7 +26,6 @@
 #include "message.h"
 
 
-
 /**
  * Accessor for our singleton.
  */
@@ -42,8 +41,6 @@ CGlobalState * CGlobalState::instance()
  */
 CGlobalState::CGlobalState()
 {
-    m_current_message =  new CMessage("./Maildir/simple/cur/1445339679.21187_2.ssh.steve.org.uk:2,S");
-
     m_maildirs = NULL;
     m_messages = NULL;
 }
@@ -54,35 +51,60 @@ CGlobalState::CGlobalState()
  */
 CGlobalState::~CGlobalState()
 {
-    if (m_current_message)
-        delete(m_current_message);
 }
 
 
 /**
  * Get the currently selected message.
  */
-CMessage *CGlobalState::current_message()
+std::shared_ptr<CMessage>CGlobalState::current_message()
 {
     return (m_current_message);
 }
+
+void CGlobalState::set_message(std::shared_ptr<CMessage> update)
+{
+    m_current_message = update;
+}
+
+
 
 /**
  * Called when a configuration-key has changed.
  */
 void CGlobalState::config_key_changed(std::string name)
 {
-  if ( (name == "maildir.limit") || ( name == "maildir.prefix" ) )
+    /**
+     * If we've changed global-mode then we might need to update
+     * our messages/maildirs.
+     */
+    if (name == "global.mode")
     {
-      update_maildirs();
+        CConfig *config = CConfig::instance();
+        std::string new_mode = config->get_string("global.mode");
+
+        if (! new_mode.empty() && (new_mode == "index"))
+            update_messages();
+
+        if (!new_mode.empty() && (new_mode == "maildir"))
+            update_maildirs();
+
     }
-    else if (name == "index.limit")
+
+    /**
+     * Otherwise if the maildir-prefix or limit has changed update things
+     */
+    if ((name == "maildir.limit") || (name == "maildir.prefix"))
     {
-      update_messages();
+        update_maildirs();
     }
-    else
+
+    /**
+     * If the index-limit has changed update that too.
+     */
+    if (name == "index.limit")
     {
-        // NOP.
+        update_messages();
     }
 
     /**
@@ -128,7 +150,6 @@ std::vector<std::shared_ptr<CMaildir> > CGlobalState::get_maildirs()
     if (m_maildirs == NULL)
         return (display);
 
-
     /**
      * Filter the folders to those we can display
      */
@@ -145,20 +166,32 @@ void CGlobalState::update_maildirs()
     /**
      * If we have items already then free each of them.
      */
-    if ( m_maildirs != NULL )
+    if (m_maildirs != NULL)
     {
-        delete( m_maildirs );
+        delete(m_maildirs);
         m_maildirs = NULL;
     }
+
     m_maildirs = new CMaildirList;
 
     /**
      * Get the maildir prefix.
      */
     CConfig *config = CConfig::instance();
-    std::string prefix = config->get_string( "maildir.prefix" );
-    if ( prefix.empty() )
-      return;
+    std::string prefix = config->get_string("maildir.prefix");
+
+    if (prefix.empty())
+        return;
+
+
+    /**
+     * Get the maildir.limit.
+     */
+    std::string limit = config->get_string("maildir.limit");
+
+    if (limit.empty())
+        limit = "all";
+
 
     /**
      * We'll store each maildir here.
@@ -166,20 +199,76 @@ void CGlobalState::update_maildirs()
     std::vector<std::string> folders;
     folders = CFile::get_all_maildirs(prefix);
 
-    /**
-     * TODO: Look at maildir.limit
-     */
     for (std::string path : folders)
     {
-      m_maildirs->push_back(std::shared_ptr<CMaildir>(new CMaildir(path)));
+        std::shared_ptr<CMaildir> m = std::shared_ptr<CMaildir>(new CMaildir(path));
+
+        if (limit == "all")
+            m_maildirs->push_back(m);
+
+        if (limit == "new")
+            if (m->unread_messages() > 0)
+                m_maildirs->push_back(m);
     }
 
     /**
      * Setup the size.
      */
-    config->set( "maildir.max", std::to_string( m_maildirs->size() ));
+    config->set("maildir.max", std::to_string(m_maildirs->size()));
 }
 
 void CGlobalState::update_messages()
 {
+    /**
+     * If we have items already then free each of them.
+     */
+    if (m_messages != NULL)
+        delete(m_messages);
+
+    /**
+     * create a new store.
+     */
+    m_messages = new CMessageList;
+
+    /**
+     * Get the selected maildirs.  If any.
+     */
+    std::shared_ptr<CMaildir> current = current_maildir();
+
+    if (current)
+    {
+        CConfig *config = CConfig::instance();
+        std::string limit = config->get_string("index.limit");
+
+        if (limit.empty())
+            limit = "all";
+
+        CMessageList contents = current->getMessages();
+
+        /**
+         * Append to the list of messages combined.
+         */
+        for (std::shared_ptr<CMessage> content : contents)
+        {
+            if (limit == "all")
+                m_messages->push_back(content) ;
+
+            if (limit == "new")
+                if (content->is_new())
+                    m_messages->push_back(content);
+        }
+    }
+
+    CConfig *config = CConfig::instance();
+    config->set("index.max", std::to_string(m_messages->size()));
+}
+
+
+std::shared_ptr<CMaildir>CGlobalState::current_maildir()
+{
+    return (m_current_maildir);
+}
+void CGlobalState::set_maildir(std::shared_ptr<CMaildir> updated)
+{
+    m_current_maildir = updated;
 }

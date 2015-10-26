@@ -120,8 +120,7 @@ public:
     /**
      * Get all messages in the folder.
      */
-    CMessageList
-    getMessages();
+    CMessageList getMessages();
 
 
 private:

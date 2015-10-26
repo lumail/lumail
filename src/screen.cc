@@ -16,7 +16,7 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-
+#include <algorithm>
 #include <sys/ioctl.h>
 #include <cursesw.h>
 #include <iostream>
@@ -103,7 +103,7 @@ void CScreen::run_main_loop()
     /**
      * Timeout on input every half-second.
      */
-    timeout(500);
+    timeout(750);
 
     /**
      * Get the screen.
@@ -122,13 +122,7 @@ void CScreen::run_main_loop()
 
     while ((running > 0) && (ch = getch()))
     {
-        /**
-         * Clear the screen.
-         */
-        CScreen *s = CScreen::instance();
-        s->clear();
-
-
+      
         /**
          * Get the global mode...
          */
@@ -141,7 +135,7 @@ void CScreen::run_main_loop()
             mode = *ent->value.str;
 
         if (mode.empty())
-            mode = "message";
+            mode = "maildir";
 
         /**
          * This is the virtual view class.
@@ -151,7 +145,7 @@ void CScreen::run_main_loop()
         /**
          * If the user wanted to quit - do that.
          */
-        if (ch == 'q' || ch == 'Q')
+        if (ch == 'Q')
         {
             running = 0;
             continue;
@@ -235,13 +229,28 @@ void CScreen::setup()
 
     /* Initialize all the colors */
     init_pair(1, COLOR_WHITE, -1);
+    m_colours[ "white" ] = 1;
+
     init_pair(2, COLOR_RED, -1);
+    m_colours[ "red" ] = 2;
+
     init_pair(3, COLOR_BLUE, -1);
+    m_colours[ "blue" ] = 3;
+
     init_pair(4, COLOR_GREEN, -1);
+    m_colours[ "green" ] = 4;
+
     init_pair(5, COLOR_CYAN, -1);
+    m_colours[ "cyan" ] = 5;
+
     init_pair(6, COLOR_MAGENTA, -1);
+    m_colours[ "magenta" ] = 6;
+
     init_pair(7, COLOR_YELLOW, -1);
+    m_colours[ "yellow" ] = 7;
+
     init_pair(8, COLOR_BLACK, COLOR_WHITE);
+    m_colours[ "black" ] = 8;
 
     /* Create the status-bar.  Show it */
     init_status_bar();
@@ -267,7 +276,7 @@ void CScreen::clear()
 
     std::string blank = "";
 
-    while ((int) blank.length() < width)
+    while ((int) blank.size() < width)
         blank += " ";
 
     for (int i = 0; i <= height; i++)
@@ -683,4 +692,11 @@ bool CScreen::on_keypress(char *key)
      * We succeeded if the result wasn't NULL.
      */
     return (result != NULL);
+}
+
+
+int CScreen::get_colour(std::string name)
+{
+    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+    return (m_colours[name]);
 }
