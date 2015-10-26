@@ -15,23 +15,47 @@ At the moment we have objects for working with:
 Variables
 ---------
 
-Beyond that we have a number of variables which are used, the two most
-obvious ones are:
+We have a number of variables which are special, the most important ones
+will be:
 
-* `global.mode`
-    * This holds he name of the currently active display-mode
-* `global.prefix`
+* `maildir.prefix`
     * This holds the prefix to the maildir hierarchy.
+* `global.mode`
+    * This holds the name of the currently active display-mode
 * `global.editor`
     * The user's editor.
 * `global.from`
     * The email address to send messages from.
 
+For each mode that has a display there will be a `$mode.max` to store the
+count of the objects, as well as `$mode.current`.
+
+So if the current mode is `maildir` then:
+
+* `maildir.limit` contains any constraint in-use `all|new|pattern`.
+* `maildir.max` contains the (integer) count of messages.
+* `maildir.current` contains the index of the currently selected maildir.
+
+
+
 Callbacks
 ---------
 
-We only hae a single hook at the moment which is `on_idle` executed approximately twice a second.
+The global function `on_idle` is invoked between screen-refreshes.
 
+Otherwise the two most important functions are:
+
+* Message.to_string()
+      * Called to convert a message to something we can display.
+* Maildir.to_string()
+      * Called to format a Maildir object.
+
+The latter function can return lines with colour settings via:
+
+    $[RED]TEXT TO DISPLAY
+
+At the moment colour lookup is broken, and the red-colour is hardwired, but
+this will change in the future.
 
 
 
