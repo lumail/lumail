@@ -68,6 +68,27 @@ function Message.to_string(self)
 end
 
 
+
+--
+-- This method is CRUCIAL to our operation.
+--
+-- This method returns the text which is displayed when a maildir is
+-- to be show in maildir-mode.
+--
+function Maildir.to_string(self)
+   local total = self:total_messages()
+   local unread = self:unread_messages()
+   local path   = self:path()
+
+   local output = string.format( "[%05d / %05d] - %s", unread, total, path );
+
+   if ( unread > 0 ) then
+      output = "$[RED]" .. output
+   end
+   return output
+end
+
+
 --
 -- This is utility-function for showing some output in the status-panel.
 --
@@ -174,4 +195,4 @@ keymap['demo']['h' ] = "hostname()"
 --
 -- Setup the prefix to our maildir hierarchy
 --
-Config:set( "maildir.prefix", "./Maildir" )
+Config:set( "maildir.prefix", os.getenv( "HOME" ) .. "/Maildir" )

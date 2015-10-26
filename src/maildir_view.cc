@@ -21,6 +21,7 @@
 
 #include "config.h"
 #include "global_state.h"
+#include "lua.h"
 #include "maildir.h"
 #include "maildir_view.h"
 
@@ -73,7 +74,15 @@ void CMaildirView::draw()
         return;
     }
 
+    /**
+     * Get access to our lua-magic.
+     */
+    CLua *lua = CLua::instance();
+    lua_State * l = lua->state();
 
+    /**
+     * Draw each maildir in the list.
+     */
     while (cur < (int)max_message)
     {
         /**
@@ -81,10 +90,89 @@ void CMaildirView::draw()
          */
         std::shared_ptr<CMaildir>  m = maildirs.at(cur);
 
+
         /**
-         * Draw the path - TODO: Call `to_string`.
+         * Push a new Message object to the lua-stack, which relates to
+         * this message.
+         *
+         * We do this so that we can call "to_string" on the Message object
+         * and use that for display.
          */
-        mvprintw(cur, 0, "%s", m->path().c_str());
+        lua_getglobal(l, "Maildir");
+        lua_getfield(l, -1, "to_string");
+
+        //
+        // This is buggy because the maildir is freed.
+        //
+        //  CMaildir **udata = (CMaildir **) lua_newuserdata(l, sizeof(CMaildir *));
+        //  *udata = m.get()
+        //
+        // We can fix it temporarily by re-creating the current-maildir, thusly:
+        //
+        //  *udate = new CMaildir( m->path() );
+        //
+        // TODO: Fix this properly - we need to use a shared_ptr for the
+        // maildir_object.
+        //
+        CMaildir **udata = (CMaildir **) lua_newuserdata(l, sizeof(CMaildir *));
+        *udata = new CMaildir( m->path() );
+        luaL_getmetatable(l, "luaL_CMaildir");
+        lua_setmetatable(l, -2);
+
+
+        /**
+         * Now call "to_string"
+         */
+        if (lua_pcall(l, 1, 1, 0) != 0)
+          {
+            std::cerr << "Error calling CMaildir:to_string - " << lua_tostring(l, -1);
+            return;
+          }
+
+        /**
+         * Fingers crossed we now have the message.
+         */
+        if (lua_tostring(l, -1) == NULL)
+          {
+            std::cerr << "NULL OUTPUT!!!1!! " << std::endl;
+            return;
+          }
+
+        std::string output = lua_tostring(l, -1);
+
+        /**
+         * Look for a colour-string
+         */
+        std::string colour = "";
+
+        if ( output.at( 0 ) == '$' )
+          {
+            std::size_t start = output.find("[");
+            std::size_t end   = output.find("]");
+
+            if ( ( start != std::string::npos ) &&
+                 ( end != std::string::npos ) )
+              {
+
+                output = output.substr( end + 1);
+                colour = output.substr( start +1, end-start -1 );
+              }
+          }
+
+        /**
+         * TODO: Change to the colour in `colour`.
+         */
+        if ( !colour.empty() )
+            wattron(stdscr, COLOR_PAIR(2));
+
+        mvprintw(cur, 0, "%s", output.c_str());
+
+        /**
+         * Reset the colour
+         */
+        if ( ! colour.empty() )
+            wattron(stdscr, COLOR_PAIR(1));
+
         cur += 1;
     }
 }
