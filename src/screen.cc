@@ -481,17 +481,14 @@ std::string CScreen::get_line()
 
     while (true)
     {
-        int
-        c;
-        bool isKeyCode;
+        int  c;
 
         mvaddnstr(y, x, buffer.c_str(), buffer.size());
 
         /**
           * Clear the line- the "-2" comes from the size of the prompt.
           */
-        for (int padding = buffer.size(); padding < (width() - 2);
-                padding++)
+        for (int padding = buffer.size(); padding < (width() - 2); padding++)
             printw(" ");
 
         /**
@@ -500,14 +497,14 @@ std::string CScreen::get_line()
         move(y, x + pos);
 
         /**
-             * Get input - paying attention to the buffer set by 'stuff()'.
-             */
-        isKeyCode = ((c = getch()) == KEY_CODE_YES);
+         * Get some input
+         */
+        c = getch();
 
         /**
           * Ropy input-handler.
           */
-        if ((isKeyCode && c == KEY_ENTER) || (c == '\n' || c == '\r'))
+        if (c == KEY_ENTER || c == '\n' || c == '\r')
         {
             break;
         }
@@ -527,18 +524,18 @@ std::string CScreen::get_line()
             buffer = buffer.substr(0, pos);
         }
         else if ((c == 2) ||	/* ctrl-b : back char */
-                 (isKeyCode && (c == KEY_LEFT)))
+                 (c == KEY_LEFT))
         {
             if (pos > 0)
                 pos -= 1;
         }
         else if ((c == 6) ||	/* ctrl-f: forward char */
-                 (isKeyCode && (c == KEY_RIGHT)))
+                 (c == KEY_RIGHT))
         {
             if (pos < (int) buffer.size())
                 pos += 1;
         }
-        else if (isKeyCode && (c == KEY_BACKSPACE))
+        else if (c == KEY_BACKSPACE)
         {
             if (pos > 0)
             {
@@ -549,18 +546,18 @@ std::string CScreen::get_line()
         else if (c == 4)	/* ctrl+d */
         {
             /**
-                 * Remove the character after the point.
-                 */
+             * Remove the character after the point.
+             */
             if (pos < (int) buffer.size())
             {
                 buffer.erase(pos, 1);
             }
         }
-        else if (!isKeyCode && isprint(c))
+        else if (isprint(c))
         {
             /**
-                 * Insert the character into the buffer-string.
-                 */
+             * Insert the character into the buffer-string.
+             */
             buffer.insert(pos, 1, c);
             pos += 1;
         }
