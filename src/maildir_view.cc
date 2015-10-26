@@ -173,8 +173,19 @@ void CMaildirView::draw()
             }
         }
 
+        /**
+         * Ensure we draw a complete line - so that we cover
+         * any old text.
+         */
         while ((int)output.length() < CScreen::width())
             output += " ";
+
+        /**
+         * Ensure the line isn't too long, so we don't
+         * wrap around.
+         */
+        if ( (int)output.length() >  CScreen::width() )
+          output = output.substr(0, CScreen::width()-1);
 
         /**
          * TODO: Change to the colour in `colour`.

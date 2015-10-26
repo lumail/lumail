@@ -130,7 +130,23 @@ void CMessageView::draw()
 
     while ((cur < max) && (cur < (int)lines.size()))
     {
-        mvprintw(cur, 0, "%s", lines.at(cur).c_str());
+        std::string output = lines.at(cur);
+
+        /**
+         * Ensure we draw a complete line - so that we cover
+         * any old text.
+         */
+        while ((int)output.length() < CScreen::width())
+            output += " ";
+
+        /**
+         * Ensure the line isn't too long, so we don't
+         * wrap around.
+         */
+        if ( (int)output.length() >  CScreen::width() )
+          output = output.substr(0, CScreen::width()-1);
+
+        mvprintw(cur, 0, "%s", output.c_str());
         cur += 1;
     }
 }
