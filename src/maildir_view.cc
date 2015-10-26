@@ -101,12 +101,13 @@ void CMaildirView::draw()
      */
     while (cur < (int)max_message)
     {
-      /**
-       * Don't draw over the top of the screen.
-       */
-      drawn += 1;
-      if ( drawn >= height )
-        break;
+        /**
+         * Don't draw over the top of the screen.
+         */
+        drawn += 1;
+
+        if (drawn >= height)
+            break;
 
         /**
          * Get the maildir.
@@ -193,8 +194,8 @@ void CMaildirView::draw()
          * Ensure the line isn't too long, so we don't
          * wrap around.
          */
-        if ( (int)output.length() >  CScreen::width() )
-          output = output.substr(0, CScreen::width()-1);
+        if ((int)output.length() >  CScreen::width())
+            output = output.substr(0, CScreen::width() - 1);
 
         /**
          * TODO: Change to the colour in `colour`.

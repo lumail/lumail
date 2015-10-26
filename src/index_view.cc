@@ -124,17 +124,18 @@ void CIndexView::draw()
      */
     while (cur < (int)max_message)
     {
-      /**
-       * Don't draw over the top of the screen.
-       */
-      drawn += 1;
-      if ( drawn >= height )
-        break;
-
-
-      /**
-         * Get the message.
+        /**
+         * Don't draw over the top of the screen.
          */
+        drawn += 1;
+
+        if (drawn >= height)
+            break;
+
+
+        /**
+           * Get the message.
+           */
         std::shared_ptr<CMessage>  m = messages->at(cur);
 
 
@@ -217,8 +218,8 @@ void CIndexView::draw()
          * Ensure the line isn't too long, so we don't
          * wrap around.
          */
-        if ( (int)output.length() >  CScreen::width() )
-          output = output.substr(0, CScreen::width()-1);
+        if ((int)output.length() >  CScreen::width())
+            output = output.substr(0, CScreen::width() - 1);
 
 
         /**
