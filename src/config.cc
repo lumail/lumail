@@ -31,10 +31,17 @@ CConfig * CConfig::instance()
 
 
 /**
- * Constructor
+ * Constructor - set some default variables.
  */
 CConfig::CConfig()
 {
+  set("global.mode", "maildir", false);
+
+  set("index.limit", "all", false);
+  set("index.max", "0", false);
+
+  set("maildir.limit", "all", false );
+  set("maildir.max", "0", false);
 }
 
 
@@ -137,7 +144,7 @@ std::vector < std::string > CConfig::keys()
  *
  * This replaces any prior value which might have been stored under that key.
  */
-void CConfig::set(std::string name, std::string val)
+void CConfig::set(std::string name, std::string val, bool notify )
 {
     /**
      * Delete the existing value(s).
@@ -167,8 +174,11 @@ void CConfig::set(std::string name, std::string val)
     /**
      * Notify our global state of the variable change.
      */
-    CGlobalState *global = CGlobalState::instance();
-    global->config_key_changed(name);
+    if ( notify )
+      {
+        CGlobalState *global = CGlobalState::instance();
+        global->config_key_changed(name);
+      }
 }
 
 
@@ -177,7 +187,7 @@ void CConfig::set(std::string name, std::string val)
  *
  * This replaces any prior value which might have been stored under that key.
  */
-void CConfig::set(std::string name, std::vector < std::string > entries)
+void CConfig::set(std::string name, std::vector < std::string > entries, bool notify)
 {
     /**
      * Delete the existing value(s).
@@ -213,6 +223,48 @@ void CConfig::set(std::string name, std::vector < std::string > entries)
     /**
      * Notify our global state of the variable change.
      */
-    CGlobalState *global = CGlobalState::instance();
-    global->config_key_changed(name);
+    if ( notify )
+      {
+        CGlobalState *global = CGlobalState::instance();
+        global->config_key_changed(name);
+      }
+}
+
+/**
+ * Helper to get the string-value of a named key.
+ */
+std::string CConfig::get_string(std::string name)
+{
+    std::string result;
+
+    for (std::vector < CConfigEntry * >::iterator it = m_entries.begin();
+            it != m_entries.end(); ++it)
+    {
+        CConfigEntry *tmp = (*it);
+
+        if ((*tmp->name == name) && (tmp->type == CONFIG_STRING))
+            result = *tmp->value.str;
+    }
+
+    return (result);
+}
+
+/**
+ * Helper to get the array-value of a named key.
+ */
+std::vector<std::string> CConfig::get_array(std::string name)
+{
+    std::vector<std::string> result;
+
+
+    for (std::vector < CConfigEntry * >::iterator it = m_entries.begin();
+            it != m_entries.end(); ++it)
+    {
+        CConfigEntry *tmp = (*it);
+
+        if ((*tmp->name == name) && (tmp->type == CONFIG_ARRAY))
+            result = *tmp->value.array;
+    }
+
+    return result;
 }

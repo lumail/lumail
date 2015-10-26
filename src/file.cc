@@ -286,12 +286,10 @@ bool CFile::file_to_pipe(std::string src, std::string cmd)
 std::vector < std::string > CFile::get_all_maildirs(std::string prefix)
 {
     std::vector < std::string > result;
-    dirent *
-    de;
-    DIR *
-    dp;
 
-    prefix = prefix.empty() ? "." : prefix.c_str();
+    dirent *de;
+    DIR *dp;
+
     dp = opendir(prefix.c_str());
 
     if (dp)
@@ -320,15 +318,13 @@ std::vector < std::string > CFile::get_all_maildirs(std::string prefix)
                 {
                     if (subdir_name != "." && subdir_name != "..")
                     {
-                        DIR *
-                        sdp = opendir(subdir_path.c_str());
+                        DIR *sdp = opendir(subdir_path.c_str());
 
                         if (sdp)
                         {
                             closedir(sdp);
                             std::vector < std::string > sub_maildirs;
-                            sub_maildirs =
-                                CFile::get_all_maildirs(subdir_path);
+                            sub_maildirs = CFile::get_all_maildirs(subdir_path);
 
                             for (std::string sub_maildir : sub_maildirs)
                             {

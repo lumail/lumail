@@ -16,6 +16,10 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
+#include <iostream>
+
+#include "config.h"
+#include "file.h"
 #include "global_state.h"
 #include "lua.h"
 #include "maildir.h"
@@ -39,6 +43,9 @@ CGlobalState * CGlobalState::instance()
 CGlobalState::CGlobalState()
 {
     m_current_message =  new CMessage("./Maildir/simple/cur/1445339679.21187_2.ssh.steve.org.uk:2,S");
+
+    m_maildirs = NULL;
+    m_messages = NULL;
 }
 
 
@@ -65,13 +72,13 @@ CMessage *CGlobalState::current_message()
  */
 void CGlobalState::config_key_changed(std::string name)
 {
-    if (name == "maildir.limit")
+  if ( (name == "maildir.limit") || ( name == "maildir.prefix" ) )
     {
-        // TODO - update the maildir list
+      update_maildirs();
     }
     else if (name == "index.limit")
     {
-        // TODO - Update the message list.
+      update_messages();
     }
     else
     {
@@ -111,7 +118,6 @@ CMessageList * CGlobalState::get_messages()
 
 std::vector<std::shared_ptr<CMaildir> > CGlobalState::get_maildirs()
 {
-
     CMaildirList display;
 
     /**
@@ -131,6 +137,49 @@ std::vector<std::shared_ptr<CMaildir> > CGlobalState::get_maildirs()
         display.push_back(maildir);
     }
 
-
     return (display);
+}
+
+void CGlobalState::update_maildirs()
+{
+    /**
+     * If we have items already then free each of them.
+     */
+    if ( m_maildirs != NULL )
+    {
+        delete( m_maildirs );
+        m_maildirs = NULL;
+    }
+    m_maildirs = new CMaildirList;
+
+    /**
+     * Get the maildir prefix.
+     */
+    CConfig *config = CConfig::instance();
+    std::string prefix = config->get_string( "maildir.prefix" );
+    if ( prefix.empty() )
+      return;
+
+    /**
+     * We'll store each maildir here.
+     */
+    std::vector<std::string> folders;
+    folders = CFile::get_all_maildirs(prefix);
+
+    /**
+     * TODO: Look at maildir.limit
+     */
+    for (std::string path : folders)
+    {
+      m_maildirs->push_back(std::shared_ptr<CMaildir>(new CMaildir(path)));
+    }
+
+    /**
+     * Setup the size.
+     */
+    config->set( "maildir.max", std::to_string( m_maildirs->size() ));
+}
+
+void CGlobalState::update_messages()
+{
 }

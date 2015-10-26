@@ -168,3 +168,10 @@ keymap['global']['D'] = "change_mode( 'demo' );"
 --
 keymap['demo']['d' ] = "date()"
 keymap['demo']['h' ] = "hostname()"
+
+
+
+--
+-- Setup the prefix to our maildir hierarchy
+--
+Config:set( "maildir.prefix", "./Maildir" )

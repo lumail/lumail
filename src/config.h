@@ -94,12 +94,23 @@ public:
     /**
      * Set a configuration key to contain the specified value.
      */
-    void set(std::string name, std::string value);
+    void set(std::string name, std::string value, bool notify = true);
 
     /**
      * Set a configuration key to contain the specified array-value.
      */
-    void set(std::string name, std::vector < std::string > entries);
+    void set(std::string name, std::vector < std::string > entries, bool notify  = true);
+
+
+    /**
+     * Helper to get the string-value of a named key.
+     */
+    std::string get_string(std::string name);
+
+    /**
+     * Helper to get the array-value of a named key.
+     */
+    std::vector<std::string> get_array(std::string name);
 
 private:
 

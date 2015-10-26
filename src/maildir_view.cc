@@ -16,9 +16,12 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-
+#include <iostream>
 #include <cursesw.h>
 
+#include "config.h"
+#include "global_state.h"
+#include "maildir.h"
 #include "maildir_view.h"
 
 
@@ -42,8 +45,48 @@ CMaildirView::~CMaildirView()
  */
 void CMaildirView::draw()
 {
-    mvprintw(10, 10, "This is 'maildir' mode");
-    mvprintw(12, 10, "This should draw a list of maildirs");
+
+    /**
+     * Get all maildirs.
+     */
+    CGlobalState *state = CGlobalState::instance();
+    std::vector<std::shared_ptr<CMaildir> > maildirs = state->get_maildirs();
+
+    /**
+     * Draw them
+     */
+    int cur = 0;
+
+    CConfig *config = CConfig::instance();
+    std::string max = config->get_string("maildir.max");
+
+    if (max.empty())
+        max = "0";
+
+    std::string::size_type sz;
+    size_t max_message = std::stoi(max, &sz);
+
+    if (max_message < 1)
+    {
+        mvprintw(10, 10, "This is 'maildir' mode");
+        mvprintw(12, 10, "There are no maildirs found");
+        return;
+    }
+
+
+    while (cur < (int)max_message)
+    {
+        /**
+         * Get the maildir.
+         */
+        std::shared_ptr<CMaildir>  m = maildirs.at(cur);
+
+        /**
+         * Draw the path - TODO: Call `to_string`.
+         */
+        mvprintw(cur, 0, "%s", m->path().c_str());
+        cur += 1;
+    }
 }
 
 /**
