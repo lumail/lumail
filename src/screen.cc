@@ -106,12 +106,6 @@ void CScreen::run_main_loop()
     timeout(750);
 
     /**
-     * Get the screen.
-     */
-    CScreen *s = CScreen::instance();
-    s->clear();
-
-    /**
      * Get the lua-helper.
      */
     CLua *lua = CLua::instance();
@@ -122,7 +116,14 @@ void CScreen::run_main_loop()
 
     while ((running > 0) && (ch = getch()))
     {
-      
+
+      /**
+       * Clear the screen - note we're using the
+       * curses function here, not our method.
+       */
+      ::clear();
+
+
         /**
          * Get the global mode...
          */

@@ -48,9 +48,6 @@ CMessageView::~CMessageView()
  */
 void CMessageView::draw()
 {
-    CScreen *screen = CScreen::instance();
-    screen->clear();
-
     /**
      * Get the current message.
      */
@@ -129,7 +126,7 @@ void CMessageView::draw()
      * Draw it.
      */
     int cur = 0;
-    int max = 40 ; // CScreen::height();
+    int max = CScreen::height();
 
     while ((cur < max) && (cur < (int)lines.size()))
     {

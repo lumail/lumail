@@ -47,7 +47,6 @@ CIndexView::~CIndexView()
 void CIndexView::draw()
 {
     CScreen *screen = CScreen::instance();
-    screen->clear();
 
     CGlobalState *state = CGlobalState::instance();
     std::shared_ptr<CMaildir> folder = state->current_maildir();

@@ -47,8 +47,7 @@ CMaildirView::~CMaildirView()
 void CMaildirView::draw()
 {
     CScreen *screen = CScreen::instance();
-    screen->clear();
-    
+
     /**
      * Get all maildirs.
      */
