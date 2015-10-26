@@ -99,3 +99,38 @@ void CGlobalState::config_key_changed(std::string name)
     lua_pushstring(l, name.c_str());
     lua_pcall(l, 1, 0, 0);
 }
+
+
+/**
+ * Get all messages from the currently selected folders.
+ */
+CMessageList * CGlobalState::get_messages()
+{
+    return (m_messages);
+}
+
+std::vector<std::shared_ptr<CMaildir> > CGlobalState::get_maildirs()
+{
+
+    CMaildirList display;
+
+    /**
+     * If we have no folders then we must return the empty set.
+     *
+     * Most likely cause?  The maildir_prefix isn't set, or is set incorrectly.
+     */
+    if (m_maildirs == NULL)
+        return (display);
+
+
+    /**
+     * Filter the folders to those we can display
+     */
+    for (std::shared_ptr<CMaildir> maildir : (*m_maildirs))
+    {
+        display.push_back(maildir);
+    }
+
+
+    return (display);
+}

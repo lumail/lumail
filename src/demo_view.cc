@@ -52,9 +52,9 @@ void CDemoView::draw()
     {
         DemoStars *cur = (*it);
 
-	wattron(stdscr, cur->c);
+        wattron(stdscr, cur->c);
         mvprintw(cur->x, cur->y, "*");
-	wattroff(stdscr, cur->c);
+        wattroff(stdscr, cur->c);
 
     }
 }

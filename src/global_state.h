@@ -23,15 +23,11 @@
 #pragma once
 
 
+#include <memory>
 #include <string>
 #include <vector>
-
-
-/**
- * Forward declarations.
- */
-class CMessage;
-class CMaildir;
+#include "maildir.h"
+#include "message.h"
 
 /**
  * This is a class to hold "global state".
@@ -39,7 +35,7 @@ class CMaildir;
  * In the future it will store all Maildirs, and the currently selected one.
  *
  * Similarly it will hold all the messages in the current directory as
- * well as teh current one.
+ * well as the current one.
  *
  * For the moment it will only be a hacky-stub.
  */
@@ -57,6 +53,17 @@ public:
      */
     static CGlobalState *instance();
 
+
+
+    /**
+     * Get all folders which match the current mode.
+     */
+    std::vector<std::shared_ptr<CMaildir> > get_maildirs();
+
+    /**
+     * Get all messages from the currently-selected folders.
+     */
+    std::vector<std::shared_ptr<CMessage> > *get_messages();
 
     /**
      * Get the currently selected message.
@@ -83,7 +90,12 @@ private:
     /**
      * All messages.
      */
-    std::vector<CMessage *> m_all_messages;
+    std::vector<std::shared_ptr<CMessage> > *m_messages;
+
+    /**
+     * The list of all currently visible maildirs.
+     */
+    std::vector<std::shared_ptr<CMaildir> > *m_maildirs;
 
     /**
      * The currently selected message.

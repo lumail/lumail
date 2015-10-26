@@ -36,11 +36,7 @@ class CMessage;
 /**
  * Type of a list of messages.
  */
-typedef
-std::vector <
-std::shared_ptr <
-CMessage > >
-CMessageList;
+typedef std::vector <std::shared_ptr <CMessage > > CMessageList;
 
 
 /**
@@ -169,3 +165,5 @@ private:
     update_cache();
 
 };
+
+typedef std::vector<std::shared_ptr<CMaildir> > CMaildirList;
