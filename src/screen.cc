@@ -219,12 +219,11 @@ void CScreen::setup()
     }
 
     /* Initialize curses */
-    initscr();
-    start_color();
-    raw();
-    cbreak();
-    noecho();
     keypad(stdscr, TRUE);
+    crmode();
+    noecho();
+    curs_set(0);
+    timeout(1000);
     use_default_colors();
 
 
