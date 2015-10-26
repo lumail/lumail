@@ -18,7 +18,6 @@
 
 
 #include <cursesw.h>
-#include <sys/ioctl.h>
 
 #include "screen.h"
 #include "demo_view.h"
@@ -68,15 +67,12 @@ void CDemoView::draw()
  */
 void CDemoView::on_idle()
 {
-    struct winsize w;
-    ioctl(0, TIOCGWINSZ, &w);
-
     /**
     * Add a new star.
     */
     DemoStars *add = (DemoStars *)malloc(sizeof(DemoStars));
-    add->x = rand() % w.ws_col + 1;
-    add->y = rand() % w.ws_row + 1;
+    add->x = rand() % CScreen::width() + 1;
+    add->y = rand() % CScreen::height() + 1;
     add->c = rand() % 8 + 1;
 
     m_stars.push_back(add);
