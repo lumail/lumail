@@ -61,7 +61,7 @@ GLIBMM_INC=$(shell pkg-config --cflags glibmm-2.4)
 #
 #  Build both targets by default, along with the helper.
 #
-default: lumail lumail-debug
+default: lumail2
 
 
 #
@@ -70,7 +70,7 @@ default: lumail lumail-debug
 clean:
 	test -d $(RELEASE_OBJDIR)  && rm -rf $(RELEASE_OBJDIR) || true
 	test -d $(DEBUG_OBJDIR)    && rm -rf $(DEBUG_OBJDIR)   || true
-	rm -f gmon.out lumail lumail-debug core                || true
+	rm -f gmon.out lumail2 lumail2-debug core              || true
 	find . -name '*.orig' -delete                          || true
 
 
@@ -85,13 +85,13 @@ DEBUG_OBJECTS   := $(SOURCES:$(SRCDIR)/%.cc=$(DEBUG_OBJDIR)/%.o)
 #
 #  The release-build.
 #
-lumail: $(RELEASE_OBJECTS)
+lumail2: $(RELEASE_OBJECTS)
 	$(LINKER) $@ $(LFLAGS) $(RELEASE_OBJECTS) $(LDLIBS) $(GMIME_LIBS) $(GLIBMM_LIBS)
 
 #
 #  The debug-build.
 #
-lumail-debug: $(DEBUG_OBJECTS)
+lumail2-debug: $(DEBUG_OBJECTS)
 	$(LINKER) $@ $(LFLAGS) -rdynamic -ggdb -pg $(DEBUG_OBJECTS) $(LDLIBS) $(GMIME_LIBS) $(GLIBMM_LIBS)
 
 
