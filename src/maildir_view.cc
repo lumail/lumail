@@ -88,6 +88,8 @@ void CMaildirView::draw()
         return;
     }
 
+    int height = CScreen::height();
+    int drawn  = 0 ;
     /**
      * Get access to our lua-magic.
      */
@@ -99,6 +101,13 @@ void CMaildirView::draw()
      */
     while (cur < (int)max_message)
     {
+      /**
+       * Don't draw over the top of the screen.
+       */
+      drawn += 1;
+      if ( drawn >= height )
+        break;
+
         /**
          * Get the maildir.
          */

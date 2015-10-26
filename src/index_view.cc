@@ -110,6 +110,8 @@ void CIndexView::draw()
         return;
     }
 
+    int drawn = 0;
+    int height = CScreen::height();
 
     /**
      * Get access to our lua-magic.
@@ -122,7 +124,15 @@ void CIndexView::draw()
      */
     while (cur < (int)max_message)
     {
-        /**
+      /**
+       * Don't draw over the top of the screen.
+       */
+      drawn += 1;
+      if ( drawn >= height )
+        break;
+
+
+      /**
          * Get the message.
          */
         std::shared_ptr<CMessage>  m = messages->at(cur);
