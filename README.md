@@ -2,11 +2,20 @@
 lumail2
 =======
 
-This is a small repository containing some minimal code for working with Maildir objects, email-messages, and MIME-parts.
+This repository contains a very primitive "email client".  This is in quotes because right now the only thing that works is :
 
-If you're familiar with the [lumail](http://lumail.org/) project it should make sense, otherwise it might not.
+* Listing Maildirs.
+* Listing Messages within a particular Maildir.
+* Viewing a single email-message.
 
-This is work-in-progress at the moment, significant work needs to be done before this is even remotely useful or interesting to anybody but the author.
+There is zero support for:
+
+* Forwarding emails.
+* Replying to emails.
+* Sending emails.
+* Deleting emails.
+
+If you're familiar with the original [lumail project](http://lumail.org/) it should make sense, otherwise it might not.
 
 
 
@@ -21,28 +30,47 @@ persistent output, under the control of Lua.
 Usage
 -----
 
-Lumail is a modal email client, which is expcted to have several major modes:
+Lumail is a modal email client, which is expected to have several major modes:
 
 * A mode for looking at maildir lists.
 * A mode for looking at message lists.
 * A mode for looking at a single message.
 * ..
 
-At the moment there is only a single mode implemented "`demo`" which outputs
-`Hello World`.  However this single mode is sufficient to allow us to
-prove that things work - specifically that we've wired up keyboard input
-correctly, our refresh code works, and that the status-panel works as
-expected.
+We also have "`demo` mode implemented, which outputs a static-message,
+and randomly draws stars upon itself.
 
-With that in mind you can access the GUI, and execute the client with:
+To get started build the client, and execute it like so:
 
-    ./lumail2  --load-file ./lumail2.lua
+    make
+    ./lumail2
+
+When the program starts it will load each of the following files, in order,
+if they exit:
+
+* `/etc/lumail2/lumail2.lua`
+* `~/.lumail2/lumail2.lua`
+* `./lumail2.lua`
+     * This will be removed before the first release - it is a security-hole.
+
+Once you've done that you'll be in the `maildir`-mode, and you can
+navigate with `j`/`k`, and view the contents of a maildir via `return`.
+
+For quick use you can use:
+
+* `TAB` - Toggle the panel
+* `M` - Maildir mode
+* `I` - Index mode
+* `D` - Demo-mode.
+* `Q` - Exit
 
 
-You can see the [API documentation](API.md) for details of the kind of functions
-that you can write, but until we have implemented more of the modes to do
-things with useful objects you'll instead need to run the examples like so:
+Finally you may see the [API documentation](API.md) for details of the kind
+of functions that you can write, but until we have implemented more of the
+modes to do things with useful objects you'll instead need to run the
+examples like so:
 
     ./lumail2 --no-curses --load-file ./config.lua
     ./lumail2 --no-curses --load-file ./parts.lua
     ./lumail2 --no-curses --load-file ./show_message.lua
+    ./lumail2 --no-curses --load-file ./dump_maildir.lua

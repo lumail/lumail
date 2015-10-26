@@ -43,20 +43,20 @@ Callbacks
 
 The global function `on_idle` is invoked between screen-refreshes.
 
-Otherwise the two most important functions are:
+Otherwise the most important user-definable functions are:
 
 * Message.to_string()
       * Called to convert a message to something we can display.
 * Maildir.to_string()
       * Called to format a Maildir object.
+* Message.to_index()
+      * Called t format a message for the index-mode.
 
-The latter function can return lines with colour settings via:
+The latter two functions can return lines with colour settings via:
 
     $[RED]TEXT TO DISPLAY
 
-At the moment colour lookup is broken, and the red-colour is hardwired, but
-this will change in the future.
-
+Colours include `red`, `blue`, `yellow`, `green`, etc.
 
 
 Config
@@ -77,7 +77,7 @@ If the function `Config.key_changed` is defined it will be invoked whenever a ke
 
 Sample code:
 
-     lumail --no-curses --load-file ./config.lua
+     lumail2 --no-curses --load-file ./config.lua
 
 
 Maildir
@@ -151,7 +151,7 @@ The Screen object is registered automatically and doesn't need to be constructed
 
 Sample code:
 
-     lumail --no-curses --load-file ./screen.lua
+     lumail2 --no-curses --load-file ./screen.lua
 
 
 The screen also has an associated status-panel, hereby referred to as "Panel".  The Panel object has the following methods:
@@ -173,7 +173,7 @@ The screen also has an associated status-panel, hereby referred to as "Panel".  
 
 Sample code:
 
-     lumail --load-file ./panel.lua
+     lumail2 --load-file ./panel.lua
 
 
 
