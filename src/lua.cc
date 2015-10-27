@@ -26,6 +26,7 @@
  * External functions implemented in *_lua.cc
  */
 extern void InitConfig(lua_State * l);
+extern void InitFile(lua_State * l);
 extern void InitMaildir(lua_State * l);
 extern void InitMessage(lua_State * l);
 extern void InitMessagePart(lua_State * l);
@@ -68,6 +69,7 @@ CLua::CLua()
      * Load our bindings.
      */
     InitConfig(m_lua);
+    InitFile(m_lua);
     InitMaildir(m_lua);
     InitMessage(m_lua);
     InitMessagePart(m_lua);
