@@ -5,6 +5,35 @@
 
 
 --
+-- Split a string on newlines, and return the result as a table.
+--
+function string_to_table(str)
+  local t = {}
+  local function helper(line) table.insert(t, line) return "" end
+  helper((str:gsub("(.-)\r?\n", helper)))
+  return t
+end
+
+
+--
+-- Remove a colour-string from the given string
+--
+-- A colour-string is something like "$[BLUE]" at the
+-- start of a line.
+--
+function strip_colour( input )
+   while( string.find(input, "^$[^]]+]" ) ) do
+      input = string.gsub( input, "^$[^]]+]", "" )
+   end
+   return input
+end
+
+
+
+
+
+
+--
 -- This method is CRUCIAL to our operation.
 --
 -- This method returns the text which is displayed when a specific
@@ -64,21 +93,10 @@ function Message.to_string(self)
       output = output .. "Failed to find a 'text/xxx' part from the message."
    end
 
-   return( output )
-end
-
-
---
--- Remove a colour-string from the given string
---
--- A colour-string is something like "$[BLUE]" at the
--- start of a line.
---
-function strip_colour( input )
-   while( string.find(input, "^$[^]]+]" ) ) do
-      input = string.gsub( input, "^$[^]]+]", "" )
-   end
-   return input
+   --
+   -- The command output is now split into rows.
+   --
+   return( string_to_table( output ) )
 end
 
 
@@ -182,16 +200,6 @@ function read_eval()
 end
 
 
-
---
--- Split a string on newlines, and return the result as a table.
---
-function string_to_table(str)
-  local t = {}
-  local function helper(line) table.insert(t, line) return "" end
-  helper((str:gsub("(.-)\r?\n", helper)))
-  return t
-end
 
 
 --
