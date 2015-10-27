@@ -42,9 +42,9 @@ CIndexView::~CIndexView()
 
 
 /**
- * Call Maildir.to_string()
+ * Call Message.to_index()
  */
-std::string CIndexView::formatMaildir(std::shared_ptr<CMessage> cur)
+std::string CIndexView::format(std::shared_ptr<CMessage> cur)
 {
     /**
      * Get access to our lua-magic.
@@ -266,7 +266,7 @@ void CIndexView::draw()
         std::string buf;
 
         if (msg != NULL)
-            buf = formatMaildir(msg);
+            buf = format(msg);
 
         /**
          * Look for a colour-string
@@ -311,6 +311,14 @@ void CIndexView::draw()
         if (! colour.empty())
             wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
     }
+
+    /**
+     * Ensure we turn off the attribute on the last line - so that
+     * any blank lines are "normal".
+     */
+    wattroff(stdscr, A_REVERSE | A_STANDOUT);
+    wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
+
 }
 
 /**

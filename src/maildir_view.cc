@@ -1,5 +1,5 @@
 /**
- * $FILENAME - $TITLE
+ * maildir_view.cc - Draw a list of Maildirs.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -57,8 +57,6 @@ void CMaildirView::draw()
     /**
      * Draw them
      */
-    int cur = 0;
-
     CConfig *config = CConfig::instance();
     std::string max = config->get_string("maildir.max");
 
@@ -77,109 +75,129 @@ void CMaildirView::draw()
     }
 
 
+    /**
+     * Now we have:
+     *
+     *  max   -> The max number of messages.
+     *  cur   -> The current message.
+     * height -> The screen height.
+     */
     std::string::size_type sz;
     size_t max_message = std::stoi(max, &sz);
     size_t cur_message = std::stoi(current, &sz);
+    int    height      = CScreen::height();
 
-    if (max_message < 1)
+    /**
+     * Ensure we highlight the correct line.
+     */
+    if (cur_message > max_message)
     {
-        mvprintw(10, 10, "This is 'maildir' mode");
-        mvprintw(12, 10, "There are no maildirs found");
-        return;
+        config->set("maildir.current", "0" , false);
+        cur_message = 0;
     }
 
-    int height = CScreen::height();
-    int drawn  = 0 ;
-    /**
-     * Get access to our lua-magic.
-     */
-    CLua *lua = CLua::instance();
-    lua_State * l = lua->state();
+
+    int middle = (height) / 2;
+    int rowToHighlight = 0;
+    vectorPosition topBottomOrMiddle = NONE;
+
+    // TODO - Remove
+    int count = max_message;
+    int selected = cur_message;
 
     /**
-     * Draw each maildir in the list.
+     * default to TOP if our list is shorter then the screen height
      */
-    while (cur < (int)max_message)
+    if (selected < middle || count <= height)
     {
+        topBottomOrMiddle = TOP;
+        rowToHighlight = selected;
         /**
-         * Don't draw over the top of the screen.
+         * if height is uneven we have to switch to the BOTTOM case on row earlier
          */
-        drawn += 1;
+    }
+    else if ((count - selected <= middle) || (height % 2 == 1 && count - selected <= middle + 1))
+    {
+        topBottomOrMiddle = BOTTOM;
+        rowToHighlight =  height - count + selected - 1 ;
+    }
+    else
+    {
+        topBottomOrMiddle = MIDDLE;
+        rowToHighlight = middle;
+    }
 
-        if (drawn >= height)
-            break;
 
-        /**
-         * Get the maildir.
-         */
-        std::shared_ptr<CMaildir>  m = maildirs.at(cur);
+    /**
+     * OK so we have (at least one) selected maildir and we have messages.
+     */
+    int row = 0;
 
-
-        /**
-         * Push a new Message object to the lua-stack, which relates to
-         * this message.
-         *
-         * We do this so that we can call "to_string" on the Message object
-         * and use that for display.
-         */
-        lua_getglobal(l, "Maildir");
-        lua_getfield(l, -1, "to_string");
-
-        //
-        // This is buggy because the maildir is freed.
-        //
-        //  CMaildir **udata = (CMaildir **) lua_newuserdata(l, sizeof(CMaildir *));
-        //  *udata = m.get()
-        //
-        // We can fix it temporarily by re-creating the current-maildir, thusly:
-        //
-        //  *udate = new CMaildir( m->path() );
-        //
-        // TODO: Fix this properly - we need to use a shared_ptr for the
-        // maildir_object.
-        //
-        CMaildir **udata = (CMaildir **) lua_newuserdata(l, sizeof(CMaildir *));
-        *udata = new CMaildir(m->path());
-        luaL_getmetatable(l, "luaL_CMaildir");
-        lua_setmetatable(l, -2);
-
+    for (row = 0; row < height; row++)
+    {
+        move(row, 0);
 
         /**
-         * Now call "to_string"
+         * The current object.
          */
-        if (lua_pcall(l, 1, 1, 0) != 0)
+        std::shared_ptr<CMaildir> msg = NULL;
+        int mailIndex = count;
+
+        if (topBottomOrMiddle == TOP)
         {
-            std::cerr << "Error calling CMaildir:to_string - " << lua_tostring(l, -1);
-            return;
+            /**
+             * we start at the top of the list so just use row
+             */
+            mailIndex = row;
+        }
+        else if (topBottomOrMiddle == BOTTOM)
+        {
+            /**
+             * when we reached the end of the list mailIndex can maximally be
+             * count-1, that this is given can easily be shown
+             * row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
+             */
+            mailIndex = count - height + row + 1;
+        }
+        else if (topBottomOrMiddle == MIDDLE)
+        {
+            mailIndex = row + selected - middle;
         }
 
-        /**
-         * Fingers crossed we now have the message.
-         */
-        if (lua_tostring(l, -1) == NULL)
-        {
-            std::cerr << "NULL OUTPUT!!!1!! " << std::endl;
-            return;
-        }
+        if ((mailIndex < count) && (mailIndex < (int)maildirs.size()))
+            msg = maildirs.at(mailIndex);
 
-        std::string output = lua_tostring(l, -1);
+        if (! msg)
+            continue;
 
+        //
+        // TODO fix this
+        //
+        if (row == rowToHighlight)
+            wattron(stdscr, A_REVERSE | A_STANDOUT);
+        else
+            wattroff(stdscr, A_REVERSE | A_STANDOUT);
+
+        std::string buf;
+
+        if (msg != NULL)
+            buf = format(msg);
 
         /**
          * Look for a colour-string
          */
         std::string colour = "";
 
-        if (output.at(0) == '$')
+        if (buf.at(0) == '$')
         {
-            std::size_t start = output.find("[");
-            std::size_t end   = output.find("]");
+            std::size_t start = buf.find("[");
+            std::size_t end   = buf.find("]");
 
             if ((start != std::string::npos) &&
                     (end != std::string::npos))
             {
-                colour = output.substr(start + 1, end - start - 1);
-                output = output.substr(end + 1);
+                colour = buf.substr(start + 1, end - start - 1);
+                buf    = buf.substr(end + 1);
             }
         }
 
@@ -187,15 +205,15 @@ void CMaildirView::draw()
          * Ensure we draw a complete line - so that we cover
          * any old text.
          */
-        while ((int)output.length() < CScreen::width())
-            output += " ";
+        while ((int)buf.length() < CScreen::width())
+            buf += " ";
 
         /**
          * Ensure the line isn't too long, so we don't
          * wrap around.
          */
-        if ((int)output.length() >  CScreen::width())
-            output = output.substr(0, CScreen::width() - 1);
+        if ((int)buf.length() >  CScreen::width())
+            buf = buf.substr(0, CScreen::width() - 1);
 
         /**
          * TODO: Change to the colour in `colour`.
@@ -203,20 +221,10 @@ void CMaildirView::draw()
         if (!colour.empty())
             wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
 
-        if (cur == (int)cur_message)
-            wattron(stdscr, A_REVERSE | A_STANDOUT);
-        else
-            wattroff(stdscr, A_REVERSE | A_STANDOUT);
+        printw("%s", buf.c_str());
 
-        mvprintw(cur, 0, "%s", output.c_str());
-
-        /**
-         * Reset the colour
-         */
         if (! colour.empty())
             wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
-
-        cur += 1;
     }
 
     /**
@@ -224,8 +232,7 @@ void CMaildirView::draw()
      * any blank lines are "normal".
      */
     wattroff(stdscr, A_REVERSE | A_STANDOUT);
-
-    refresh();
+    wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
 }
 
 /**
@@ -233,4 +240,66 @@ void CMaildirView::draw()
  */
 void CMaildirView::on_idle()
 {
+}
+
+/**
+ * Call Maildir.to_string() against the maildir.
+ */
+std::string CMaildirView::format(std::shared_ptr<CMaildir> cur)
+{
+    /**
+     * Get access to our lua-magic.
+     */
+    CLua *lua = CLua::instance();
+    lua_State * l = lua->state();
+
+    /**
+     * Push a new Message object to the lua-stack, which relates to
+     * this message.
+     *
+     * We do this so that we can call "to_string" on the Message object
+     * and use that for display.
+     */
+    lua_getglobal(l, "Maildir");
+    lua_getfield(l, -1, "to_string");
+
+    //
+    // This is buggy because the maildir is freed.
+    //
+    //  CMaildir **udata = (CMaildir **) lua_newuserdata(l, sizeof(CMaildir *));
+    //  *udata = m.get()
+    //
+    // We can fix it temporarily by re-creating the current-maildir, thusly:
+    //
+    //  *udate = new CMaildir( m->path() );
+    //
+    // TODO: Fix this properly - we need to use a shared_ptr for the
+    // maildir_object.
+    //
+    CMaildir **udata = (CMaildir **) lua_newuserdata(l, sizeof(CMaildir *));
+    *udata = new CMaildir(cur->path());
+    luaL_getmetatable(l, "luaL_CMaildir");
+    lua_setmetatable(l, -2);
+
+
+    /**
+     * Now call "to_string"
+     */
+    if (lua_pcall(l, 1, 1, 0) != 0)
+    {
+        std::cerr << "Error calling CMaildir:to_string - " << lua_tostring(l, -1);
+        return "";
+    }
+
+    /**
+     * Fingers crossed we now have the message.
+     */
+    if (lua_tostring(l, -1) == NULL)
+    {
+        std::cerr << "NULL OUTPUT!!!1!! " << std::endl;
+        return "";
+    }
+
+    std::string output = lua_tostring(l, -1);
+    return output;
 }

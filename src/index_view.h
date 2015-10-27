@@ -53,9 +53,13 @@ public:
      * Called when things are idle.
      */
     void on_idle();
+
 private:
 
-    std::string formatMaildir(std::shared_ptr<CMessage> cur);
+    /**
+     * Call Message.to_index().
+     */
+    std::string format(std::shared_ptr<CMessage> cur);
 
     /**
      * The segment of the screen the highlighted row is within.

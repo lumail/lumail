@@ -1,5 +1,5 @@
 /**
- * $FILENAME - $TITLE
+ * maildir_view.h - Draw a list of Maildirs.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -27,7 +27,10 @@
 
 
 /**
- * This is a maildir-view of the screen - it shows lists of *maildirs*
+ * This is a maildir-view of the screen - it shows lists of *maildirs*.
+ *
+ * The list is created, and mainted, by lumail2, but the drawing is
+ * deferred to Lua.
  */
 class CMaildirView: public CViewMode
 {
@@ -48,4 +51,22 @@ public:
      * Called when things are idle.
      */
     void on_idle();
+private:
+
+    /**
+     * Format a single Maildir.
+     */
+    std::string format(std::shared_ptr<CMaildir> cur);
+
+    /**
+     * The segment of the screen the highlighted row is within.
+     */
+    enum vectorPosition
+    {
+        TOP,
+        MIDDLE,
+        BOTTOM,
+        NONE
+    };
+
 };
