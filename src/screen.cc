@@ -378,12 +378,12 @@ void CScreen::init_status_bar()
  */
 void CScreen::redraw_status_bar()
 {
-    int width;
-    int height;
-    getmaxyx(g_status_bar_window, height, width);
-    height += 1;		// nop
+    int width = CScreen::width();
 
-    wattron(g_status_bar_window, COLOR_PAIR(2));
+    /**
+     * Select white, and draw a box.
+     */
+    wattron(g_status_bar_window, COLOR_PAIR(1));
     box(g_status_bar_window, 0, 0);
     mvwaddch(g_status_bar_window, 2, 0, ACS_LTEE);
     mvwhline(g_status_bar_window, 2, 1, ACS_HLINE, width - 2);
@@ -411,11 +411,34 @@ void CScreen::redraw_status_bar()
      */
     PANEL_DATA x = g_status_bar_data;
 
-    if (!x.title.empty())
+    std::string title = x.title;
+
+    if (!title.empty())
     {
-        wattron(g_status_bar_window, COLOR_PAIR(2));
+        std::string colour = "";
+
+        if (title.at(0) == '$')
+        {
+            std::size_t start = title.find("[");
+            std::size_t end   = title.find("]");
+
+            if ((start != std::string::npos) &&
+                    (end != std::string::npos))
+            {
+                colour = title.substr(start + 1, end - start - 1);
+                title  = title.substr(end + 1);
+            }
+        }
+
+        /**
+         * Set the colour, and draw the text.
+         */
+        if (colour.empty())
+            colour = "white";
+
+        wattron(g_status_bar_window, COLOR_PAIR(get_colour(colour)));
         mvwprintw(g_status_bar_window, 1, 1, blank);
-        mvwprintw(g_status_bar_window, 1, 1, x.title.c_str());
+        mvwprintw(g_status_bar_window, 1, 1, title.c_str());
     }
 
     if (x.text.size() > 0)
@@ -433,9 +456,28 @@ void CScreen::redraw_status_bar()
         for (std::vector < std::string >::iterator it = x.text.begin();
                 it != x.text.end(); it++)
         {
-            wattron(g_status_bar_window, COLOR_PAIR(2));
+            std::string text   = (*it);
+            std::string colour = "";
+
+            if (text.at(0) == '$')
+            {
+                std::size_t start = text.find("[");
+                std::size_t end   = text.find("]");
+
+                if ((start != std::string::npos) &&
+                        (end != std::string::npos))
+                {
+                    colour = text.substr(start + 1, end - start - 1);
+                    text   = text.substr(end + 1);
+                }
+            }
+
+            if (colour.empty())
+                colour = "white";
+
+            wattron(g_status_bar_window, COLOR_PAIR(get_colour(colour)));
             mvwprintw(g_status_bar_window, line, 1, blank);
-            mvwprintw(g_status_bar_window, line, 1, (*it).c_str());
+            mvwprintw(g_status_bar_window, line, 1, text.c_str());
 
             line += 1;
         }

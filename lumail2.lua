@@ -339,7 +339,7 @@ end
 -- effect.  Or an annoyance, depending on which you prefer.
 --
 function on_idle()
-
+--[[
    --
    -- Get the title, shift it once byte, and set it
    --
@@ -362,7 +362,7 @@ function on_idle()
    end
 
    local text  = "Current mode "..mode.." Current offset:".. cur .." Max offset:".. max
-   local text2 =  "This is lumail2, by Steve Kemp"
+   local text2 =  "$[YELLOW]This is lumail2, by Steve Kemp"
 
    if ( mode == "index" ) then
       local md = Screen:maildir()
@@ -373,6 +373,9 @@ function on_idle()
       text2 = "Current message : " .. md:path()
    end
    Panel:text( { text, text2 } )
+--]]
+   Panel:title( "$[RED]Red title here. This must be serious!" )
+   Panel:text( { "$[YELLOW]Yellow line here.", "$[GREEN]Green line here!" } )
 end
 
 
@@ -395,7 +398,7 @@ end
 --
 function change_mode( new_mode )
    Config:set( "global.mode", new_mode )
-   Panel:title( "Mode is now " .. new_mode .. " " )
+   Panel:title( "Mode is now " .. new_mode )
 end
 
 
