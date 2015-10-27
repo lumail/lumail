@@ -183,6 +183,20 @@ end
 
 
 --
+-- Get output for Lua-mode
+--
+function lua_mode()
+   a = {
+      "$[RED]This is a red line",
+      "$[BLUE]This is a blue line",
+      "$[GREEN]This is a green line",
+   }
+
+   return a
+end
+
+
+
 -- Allow navigation - Selection of a maildir, or message.
 --
 function select()
@@ -356,6 +370,7 @@ keymap['global']['\t'] = "Panel:toggle()"
 keymap['global']['M'] = "change_mode( 'maildir' );"
 keymap['global']['I'] = "change_mode( 'index' );"
 keymap['global']['D'] = "change_mode( 'demo' );"
+keymap['global']['L'] = "change_mode( 'lua' );"
 
 
 --

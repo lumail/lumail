@@ -34,6 +34,7 @@
  */
 #include "demo_view.h"
 #include "index_view.h"
+#include "lua_view.h"
 #include "maildir_view.h"
 #include "message_view.h"
 
@@ -71,10 +72,11 @@ CScreen::CScreen()
     /**
      * Register our view-modes.
      */
+    m_views["demo"]    = new CDemoView();
+    m_views["index"]   = new CIndexView();
+    m_views["lua"]     = new CLuaView();
     m_views["maildir"] = new CMaildirView();
-    m_views["index"] = new CIndexView();
     m_views["message"] = new CMessageView();
-    m_views["demo"] = new CDemoView();
 }
 
 
