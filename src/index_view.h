@@ -1,5 +1,5 @@
 /**
- * $FILENAME - $TITLE
+ * index_view.h - Draw a list of messages for an index.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -23,11 +23,16 @@
  */
 #pragma once
 
+#include <string>
+#include "maildir.h"
 #include "screen.h"
 
 
 /**
- * This is a index-view of the screen - it shows lists of *messages*
+ * This is a index-view of the screen - it shows lists of *messages*.
+ *
+ * The list is created, and mainted, by lumail2, but the drawing is
+ * deferred to Lua.
  */
 class CIndexView: public CViewMode
 {
@@ -48,4 +53,19 @@ public:
      * Called when things are idle.
      */
     void on_idle();
+private:
+
+    std::string formatMaildir(std::shared_ptr<CMessage> cur);
+
+    /**
+     * The segment of the screen the highlighted row is within.
+     */
+    enum vectorPosition
+    {
+        TOP,
+        MIDDLE,
+        BOTTOM,
+        NONE
+    };
+
 };

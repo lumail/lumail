@@ -1,5 +1,5 @@
 /**
- * $FILENAME - $TITLE
+ * index_view.cc - Draw a list of messages for an index.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -40,6 +40,71 @@ CIndexView::~CIndexView()
 {
 }
 
+
+/**
+ * Call Maildir.to_string()
+ */
+std::string CIndexView::formatMaildir(std::shared_ptr<CMessage> cur)
+{
+    /**
+     * Get access to our lua-magic.
+     */
+    CLua *lua = CLua::instance();
+    lua_State * l = lua->state();
+
+
+    /**
+     * Push a new Message object to the lua-stack, which relates to
+     * this message.
+     *
+     * We do this so that we can call "to_index" on the Message object
+     * and use that for display.
+     */
+    lua_getglobal(l, "Message");
+    lua_getfield(l, -1, "to_index");
+
+    //
+    // This is buggy because the message is freed.
+    //
+    //  CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
+    //  *udata = m.get()
+    //
+    // We can fix it temporarily by re-creating the current-message, thusly:
+    //
+    //  *udate = new CMessage( m->path() );
+    //
+    // TODO: Fix this properly - we need to use a shared_ptr for the
+    // maildir_object.
+    //
+    CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
+    *udata = new CMessage(cur->path());
+    luaL_getmetatable(l, "luaL_CMessage");
+    lua_setmetatable(l, -2);
+
+
+    /**
+     * Now call "to_string"
+     */
+    if (lua_pcall(l, 1, 1, 0) != 0)
+    {
+        std::cerr << "Error calling CMessage:to_index - " << lua_tostring(l, -1);
+        return "";
+    }
+
+    /**
+     * Fingers crossed we now have the message.
+     */
+    if (lua_tostring(l, -1) == NULL)
+    {
+        std::cerr << "NULL OUTPUT!!!1!! " << std::endl;
+        return "";
+    }
+
+    std::string output = lua_tostring(l, -1);
+    return (output);
+}
+
+
 /**
  * This is the virtual function which is called to refresh the display
  * when the global.mode == "index"
@@ -79,8 +144,6 @@ void CIndexView::draw()
     /**
      * Draw them
      */
-    int cur = 0;
-
     CConfig *config = CConfig::instance();
     std::string max = config->get_string("index.max");
 
@@ -98,112 +161,128 @@ void CIndexView::draw()
         current = "0";
     }
 
-
+    /**
+     * Now we have:
+     *
+     *  max   -> The max number of messages.
+     *  cur   -> The current message.
+     * height -> The screen height.
+     */
     std::string::size_type sz;
     size_t max_message = std::stoi(max, &sz);
     size_t cur_message = std::stoi(current, &sz);
+    int    height      = CScreen::height();
 
-    if (max_message < 1)
+    /**
+     * Ensure we highlight the correct line.
+     */
+    if (cur_message > max_message)
     {
-        mvprintw(10, 10, "This is 'index' mode");
-        mvprintw(12, 10, "There are no messages found");
-        return;
+        config->set("index.current", "0" , false);
+        cur_message = 0;
     }
 
-    int drawn = 0;
-    int height = CScreen::height();
+    int middle = (height) / 2;
+    int rowToHighlight = 0;
+    vectorPosition topBottomOrMiddle = NONE;
+
+    // TODO - Remove
+    int count = max_message;
+    int selected = cur_message;
 
     /**
-     * Get access to our lua-magic.
+     * default to TOP if our list is shorter then the screen height
      */
-    CLua *lua = CLua::instance();
-    lua_State * l = lua->state();
-
-    /**
-     * Draw each maildir in the list.
-     */
-    while (cur < (int)max_message)
+    if (selected < middle || count <= height)
     {
+        topBottomOrMiddle = TOP;
+        rowToHighlight = selected;
         /**
-         * Don't draw over the top of the screen.
+         * if height is uneven we have to switch to the BOTTOM case on row earlier
          */
-        drawn += 1;
+    }
+    else if ((count - selected <= middle) || (height % 2 == 1 && count - selected <= middle + 1))
+    {
+        topBottomOrMiddle = BOTTOM;
+        rowToHighlight =  height - count + selected - 1 ;
+    }
+    else
+    {
+        topBottomOrMiddle = MIDDLE;
+        rowToHighlight = middle;
+    }
 
-        if (drawn >= height)
-            break;
 
+    /**
+     * OK so we have (at least one) selected maildir and we have messages.
+     */
+    int row = 0;
+
+    for (row = 0; row < height; row++)
+    {
+        move(row, 0);
 
         /**
-           * Get the message.
-           */
-        std::shared_ptr<CMessage>  m = messages->at(cur);
-
-
-        /**
-         * Push a new Message object to the lua-stack, which relates to
-         * this message.
-         *
-         * We do this so that we can call "to_index" on the Message object
-         * and use that for display.
+         * The current object.
          */
-        lua_getglobal(l, "Message");
-        lua_getfield(l, -1, "to_index");
+        std::shared_ptr<CMessage> msg = NULL;
+        int mailIndex = count;
 
-        //
-        // This is buggy because the message is freed.
-        //
-        //  CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
-        //  *udata = m.get()
-        //
-        // We can fix it temporarily by re-creating the current-message, thusly:
-        //
-        //  *udate = new CMessage( m->path() );
-        //
-        // TODO: Fix this properly - we need to use a shared_ptr for the
-        // maildir_object.
-        //
-        CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
-        *udata = new CMessage(m->path());
-        luaL_getmetatable(l, "luaL_CMessage");
-        lua_setmetatable(l, -2);
-
-
-        /**
-         * Now call "to_string"
-         */
-        if (lua_pcall(l, 1, 1, 0) != 0)
+        if (topBottomOrMiddle == TOP)
         {
-            std::cerr << "Error calling CMessage:to_index - " << lua_tostring(l, -1);
-            return;
+            /**
+             * we start at the top of the list so just use row
+             */
+            mailIndex = row;
+        }
+        else if (topBottomOrMiddle == BOTTOM)
+        {
+            /**
+             * when we reached the end of the list mailIndex can maximally be
+             * count-1, that this is given can easily be shown
+             * row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
+             */
+            mailIndex = count - height + row + 1;
+        }
+        else if (topBottomOrMiddle == MIDDLE)
+        {
+            mailIndex = row + selected - middle;
         }
 
-        /**
-         * Fingers crossed we now have the message.
-         */
-        if (lua_tostring(l, -1) == NULL)
-        {
-            std::cerr << "NULL OUTPUT!!!1!! " << std::endl;
-            return;
-        }
+        if ((mailIndex < count) && (mailIndex < (int)messages->size()))
+            msg = messages->at(mailIndex);
 
-        std::string output = lua_tostring(l, -1);
+        if (! msg)
+            continue;
 
+        //
+        // TODO fix this
+        //
+        if (row == rowToHighlight)
+            wattron(stdscr, A_REVERSE | A_STANDOUT);
+        else
+            wattroff(stdscr, A_REVERSE | A_STANDOUT);
+
+        std::string buf;
+
+        if (msg != NULL)
+            buf = formatMaildir(msg);
 
         /**
          * Look for a colour-string
          */
         std::string colour = "";
 
-        if (output.at(0) == '$')
+        if (buf.at(0) == '$')
         {
-            std::size_t start = output.find("[");
-            std::size_t end   = output.find("]");
+            std::size_t start = buf.find("[");
+            std::size_t end   = buf.find("]");
 
             if ((start != std::string::npos) &&
                     (end != std::string::npos))
             {
-                colour = output.substr(start + 1, end - start - 1);
-                output = output.substr(end + 1);
+                colour = buf.substr(start + 1, end - start - 1);
+                buf    = buf.substr(end + 1);
             }
         }
 
@@ -211,16 +290,15 @@ void CIndexView::draw()
          * Ensure we draw a complete line - so that we cover
          * any old text.
          */
-        while ((int)output.length() < CScreen::width())
-            output += " ";
+        while ((int)buf.length() < CScreen::width())
+            buf += " ";
 
         /**
          * Ensure the line isn't too long, so we don't
          * wrap around.
          */
-        if ((int)output.length() >  CScreen::width())
-            output = output.substr(0, CScreen::width() - 1);
-
+        if ((int)buf.length() >  CScreen::width())
+            buf = buf.substr(0, CScreen::width() - 1);
 
         /**
          * TODO: Change to the colour in `colour`.
@@ -228,27 +306,11 @@ void CIndexView::draw()
         if (!colour.empty())
             wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
 
-        if (cur == (int)cur_message)
-            wattron(stdscr, A_REVERSE | A_STANDOUT);
-        else
-            wattroff(stdscr, A_REVERSE | A_STANDOUT);
+        printw("%s", buf.c_str());
 
-        mvprintw(cur, 0, "%s", output.c_str());
-
-        /**
-         * Reset the colour
-         */
         if (! colour.empty())
             wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
-
-        cur += 1;
     }
-
-    /**
-     * Ensure we turn off the attribute on the last line - so that
-     * any blank lines are "normal".
-     */
-    wattroff(stdscr, A_REVERSE | A_STANDOUT);
 }
 
 /**
