@@ -202,6 +202,25 @@ function select()
 end
 
 
+
+--
+-- Jump to first/last entries.
+--
+function first()
+   local mode = Config:get("global.mode")
+   Config:set( mode .. ".current", "0" )
+end
+
+function last()
+
+   local mode = Config:get("global.mode")
+   local max  = Config:get(mode .. ".max" )
+
+   max = tonumber( max )
+   Config:set( mode .. ".current", max-1 )
+end
+
+
 --
 -- Allow navigation - Scroll down a maildir, or index.
 --
@@ -344,6 +363,9 @@ keymap['global']['D'] = "change_mode( 'demo' );"
 --
 keymap['global']['k'] = "prev(1)"
 keymap['global']['j'] = "next(1)"
+keymap['global']['*'] = "last()"
+keymap['global']['<'] = "first()"
+keymap['global']['>'] = "last()"
 keymap['global']['K'] = "prev(10)"
 keymap['global']['J'] = "next(10)"
 keymap['global']['\n'] = "select()"
