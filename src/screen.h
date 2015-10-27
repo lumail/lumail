@@ -129,6 +129,7 @@ public:
     void status_panel_text(std::vector < std::string >);
     void status_panel_title(std::string new_title);
     void toggle_status_panel();
+    int status_panel_height();
 
     /**
      * Execute a function from the global keymap.

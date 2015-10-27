@@ -601,6 +601,14 @@ CScreen::toggle_status_panel()
         show_status_panel();
 }
 
+int CScreen::status_panel_height()
+{
+    /**
+     * TODO - calculate.
+     */
+    return 6;
+}
+
 bool
 CScreen::status_panel_visible()
 {

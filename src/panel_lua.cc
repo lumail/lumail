@@ -1,5 +1,5 @@
 /**
- * $FILENAME - $TITLE
+ * panel_lua.cc - Export the `Panel` object to Lua.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -28,6 +28,17 @@ extern "C"
 
 
 /**
+ * Return the height of the panel.
+ */
+int l_CPanel_height(lua_State * l)
+{
+    CScreen *screen = CScreen::instance();
+    lua_pushinteger(l, screen->status_panel_height());
+    return 1;
+}
+
+
+/**
  * Hide the panel.
  */
 int l_CPanel_hide(lua_State * l)
@@ -36,6 +47,7 @@ int l_CPanel_hide(lua_State * l)
     screen->hide_status_panel();
     return 0;
 }
+
 
 /**
  * Show the panel.
@@ -93,8 +105,8 @@ int l_CPanel_text(lua_State * l)
     }
 
     return 1;
-
 }
+
 
 /**
  * Get/Set the title text which is displayed.
@@ -118,6 +130,7 @@ int l_CPanel_title(lua_State * l)
     }
 }
 
+
 /**
  * Toggle the visibility of the panel.
  */
@@ -127,6 +140,7 @@ int l_CPanel_toggle(lua_State * l)
     screen->toggle_status_panel();
     return 0;
 }
+
 
 /**
  * Is the panel visible?
@@ -143,17 +157,24 @@ int l_CPanel_visible(lua_State * l)
     return 1;
 }
 
+
+/**
+ * Export the `Panel` class to Lua.
+ *
+ * Bind the appropriate methods to that object.
+ */
 void InitPanel(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
     {
-        {"hide", l_CPanel_hide},
-        {"show", l_CPanel_show},
-        {"text", l_CPanel_text},
-        {"title", l_CPanel_title},
-        {"toggle", l_CPanel_toggle},
+        {"height",  l_CPanel_height},
+        {"hide",    l_CPanel_hide},
+        {"show",    l_CPanel_show},
+        {"text",    l_CPanel_text},
+        {"title",   l_CPanel_title},
+        {"toggle",  l_CPanel_toggle},
         {"visible", l_CPanel_visible},
-        {NULL, NULL}
+        {NULL,      NULL}
     };
     luaL_newmetatable(l, "luaL_CPanel");
 
