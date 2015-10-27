@@ -182,17 +182,58 @@ function read_eval()
 end
 
 
+
+--
+-- Split a string on newlines, and return the result as a table.
+--
+function string_to_table(str)
+  local t = {}
+  local function helper(line) table.insert(t, line) return "" end
+  helper((str:gsub("(.-)\r?\n", helper)))
+  return t
+end
+
+
 --
 -- Get output for Lua-mode
 --
 function lua_mode()
+   --
+   -- We show this first
+   --
    a = {
       "$[RED]This is a red line",
       "$[BLUE]This is a blue line",
       "$[GREEN]This is a green line",
    }
 
-   return a
+   --
+   -- Now we get some text from running a command.
+   --
+   local handle = io.popen("cat /etc/passwd")
+   local result = handle:read("*a")
+   handle:close()
+
+   --
+   -- The command output is now split into rows.
+   --
+   result = string_to_table( result )
+
+   --
+   -- Add the command output to the original table.
+   --
+   for k,v in ipairs( result ) do
+      if ( string.find( v, "root" ) or
+	   string.find( v, "nobody" ) ) then
+	 v = "$[CYAN]" .. v
+	 end
+      table.insert( a, v )
+   end
+
+   --
+   -- And return the text.
+   --
+   return( a )
 end
 
 

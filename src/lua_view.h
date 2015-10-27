@@ -54,4 +54,16 @@ public:
 private:
     std::vector<std::string> get_text();
 
+    /**
+     * The segment of the screen the highlighted row is within.
+     */
+    enum vectorPosition
+    {
+        TOP,
+        MIDDLE,
+        BOTTOM,
+        NONE
+    };
+
+
 };

@@ -26,21 +26,25 @@ The user-interface I expect to develop will be familiar to users of lumail 1.x,
 the only real change is that we now have a status-panel which can display
 persistent output, under the control of Lua.
 
+Lumail is a modal client, which means you're always in one of a fixed number of modes:
 
-Usage
------
+* `maildir`-mode
+    * Allows viewing mail folders.
+* `index`-mode
+    * Allows viewing a list of messages, i.e. the contents of a Maildir.
+* `demo`-mode.
+    * Shows some simple animation.
+* `lua`-mode.
+    * Is a mode that displays output created by Lua.
+    * This is the way that we allow you to write custom output.
 
-Lumail is a modal email client, which is expected to have several major modes:
 
-* A mode for looking at maildir lists.
-* A mode for looking at message lists.
-* A mode for looking at a single message.
-* ..
 
-We also have "`demo` mode implemented, which outputs a static-message,
-and randomly draws stars upon itself.
+Using Lumail
+------------
 
-To get started build the client, and execute it like so:
+The first step is obviously to compile the code, and then execute the
+client itself:
 
     make
     ./lumail2
@@ -61,6 +65,7 @@ For quick use you can use:
 * `TAB` - Toggle the panel
 * `M` - Maildir mode
 * `I` - Index mode
+* `L` - Lua-mode.
 * `D` - Demo-mode.
 * `Q` - Exit
 

@@ -19,6 +19,7 @@
 
 #include <cursesw.h>
 
+#include "config.h"
 #include "lua.h"
 #include "lua_view.h"
 #include "screen.h"
@@ -79,6 +80,12 @@ std::vector<std::string> CLuaView::get_text()
         }
     }
 
+    /**
+     * Store the number of lines we've retrieved.
+     */
+    CConfig *config = CConfig::instance();
+    config->set("lua.max", std::to_string(result.size()));
+
     return (result);
 
 }
@@ -97,18 +104,130 @@ void CLuaView::draw()
 
     if (txt.empty())
     {
-        mvprintw(10, 10, "Hello World - This is 'lua' mode");
+        mvprintw(10, 10, "This is 'lua' mode - define `lua_mode()' to setup output.");
         return;
     }
 
+
     /**
-     * Otherwise draw the text
+     * Get the size.
      */
+    CConfig *config = CConfig::instance();
+    std::string max_line = config->get_string("lua.max");
+
+    if (max_line.empty())
+        max_line = "0";
+
+    /**
+     * Get the item under the cursor.
+     */
+    std::string current = config->get_string("lua.current");
+
+    if (current.empty())
+    {
+        config->set("lua.current", "0" , false);
+        current = "0";
+    }
+
+    /**
+     * Now we have:
+     *
+     *  max   -> The max number of lines to display.
+     *  cur   -> The current line.
+     * height -> The screen height.
+     */
+    std::string::size_type sz;
+    size_t max = std::stoi(max_line, &sz);
+    size_t cur = std::stoi(current, &sz);
+    int height = CScreen::height();
+
+
+    /**
+     * Ensure we highlight the correct line.
+     */
+    if (cur > max)
+    {
+        config->set("lua.current", "0" , false);
+        cur = 0;
+    }
+
+    int middle = (height) / 2;
+    int rowToHighlight = 0;
+    vectorPosition topBottomOrMiddle = NONE;
+
+    // TODO - Remove
+    int count = max;
+    int selected = cur;
+
+    /**
+     * default to TOP if our list is shorter then the screen height
+     */
+    if (selected < middle || count <= height)
+    {
+        topBottomOrMiddle = TOP;
+        rowToHighlight = selected;
+        /**
+         * if height is uneven we have to switch to the BOTTOM case on row earlier
+         */
+    }
+    else if ((count - selected <= middle) || (height % 2 == 1 && count - selected <= middle + 1))
+    {
+        topBottomOrMiddle = BOTTOM;
+        rowToHighlight =  height - count + selected - 1 ;
+    }
+    else
+    {
+        topBottomOrMiddle = MIDDLE;
+        rowToHighlight = middle;
+    }
+
+
     int row = 0;
 
-    for (std::vector < std::string >::iterator it = txt.begin(); it != txt.end(); ++it)
+    for (row = 0; row < height; row++)
     {
-        std::string buf = (*it);
+        move(row, 0);
+
+        /**
+         * The current object.
+         */
+        int mailIndex = count;
+
+        if (topBottomOrMiddle == TOP)
+        {
+            /**
+             * we start at the top of the list so just use row
+             */
+            mailIndex = row;
+        }
+        else if (topBottomOrMiddle == BOTTOM)
+        {
+            /**
+             * when we reached the end of the list mailIndex can maximally be
+             * count-1, that this is given can easily be shown
+             * row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
+             */
+            mailIndex = count - height + row + 1;
+        }
+        else if (topBottomOrMiddle == MIDDLE)
+        {
+            mailIndex = row + selected - middle;
+        }
+
+
+        std::string buf;
+
+        if ((mailIndex < count) && (mailIndex < (int)txt.size()))
+            buf = txt.at(mailIndex);
+
+        if (buf.empty())
+            continue;
+
+
+        if (row == rowToHighlight)
+            wattron(stdscr, A_REVERSE | A_STANDOUT);
+        else
+            wattroff(stdscr, A_REVERSE | A_STANDOUT);
 
         /**
          * Look for a colour-string
@@ -143,24 +262,23 @@ void CLuaView::draw()
             buf = buf.substr(0, CScreen::width() - 1);
 
         /**
-         * Change to the colour in `colour`.
+         * TODO: Change to the colour in `colour`.
          */
         if (!colour.empty())
             wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
 
-        /**
-         * Draw the line.
-         */
-        mvprintw(row, 0 , "%s", buf.c_str());
+        printw("%s", buf.c_str());
 
-        /**
-         * Reset the output.
-         */
         if (! colour.empty())
             wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
-
-        row += 1;
     }
+
+    /**
+     * Ensure we turn off the attribute on the last line - so that
+     * any blank lines are "normal".
+     */
+    wattroff(stdscr, A_REVERSE | A_STANDOUT);
+    wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
 }
 
 
