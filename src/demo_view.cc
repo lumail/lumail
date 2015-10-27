@@ -63,7 +63,7 @@ void CDemoView::draw()
 
 
 /**
- * Called when things are idle.  NOP.
+ * Called when things are idle.
  */
 void CDemoView::on_idle()
 {
