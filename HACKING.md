@@ -2,7 +2,19 @@
 Overview
 --------
 
-The core of the code is the main-loop implemented in `screen.cc`.
+
+
+Wrapping C++ to Lua
+-------------------
+
+The rule of thumb is that when we want to wrap a C++ object
+we create a new file with a `_lua.cc` suffix.
+
+So for example our configuration getter/setter class is `CConfig`,
+which is implemented in `config.[cc h]`.  The Lua wrapper to this
+class is defined in `config_lua.cc`.
+
+The wrappers are very simple, and follow a template.
 
 
 (Display) Modes
@@ -17,11 +29,13 @@ the `CModeView` class. To write a new mode:
 
 * Define a class inheriting from `CModeView`
 * Implement `draw()` to draw it
-* Implement `on_idle()` as appropriate.
+* Implement `on_idle()` if you need timed-events to happen.
 
 The `draw` method may draw to the screen with standard curses functions,
-or it might send a vector of text-lines to `CScreen::draw_text_lines`.  This
-ensures that there is no duplication in selection/navigation
+or it might send a vector of text-lines to `CScreen::draw_text_lines`.  
+
+Using the `draw_text_lines` method ensure there is little duplication
+between modes.
 
 
 Navigation

@@ -22,16 +22,18 @@ If you're familiar with the original [lumail project](http://lumail.org/) it sho
 User-Interface
 --------------
 
-The user-interface I expect to develop will be familiar to users of lumail 1.x,
-the only real change is that we now have a status-panel which can display
-persistent output, under the control of Lua.
+The user-interface will be familiar to users of lumail 1.x, the only obvious
+changes is the status-panel which can display persistent output, under the control of Lua,
+and the addition of new display-modes.
 
-Lumail is a modal client, which means you're always in one of a fixed number of modes:
+Because this is a modal-application you're always in one of a fixed number of modes:
 
 * `maildir`-mode
     * Allows viewing mail folders.
 * `index`-mode
     * Allows viewing a list of messages, i.e. the contents of a Maildir.
+* `message`-mode
+    * Allows you to view a single message.
 * `demo`-mode.
     * Shows some simple animation.
 * `lua`-mode.
@@ -60,7 +62,7 @@ if they exit:
 Once you've done that you'll be in the `maildir`-mode, and you can
 navigate with `j`/`k`, and view the contents of a maildir via `return`.
 
-For quick use you can use:
+For a quick-start you can use the following bindings:
 
 * `TAB` - Toggle the panel
 * `M` - Maildir mode
@@ -70,12 +72,10 @@ For quick use you can use:
 * `Q` - Exit
 
 
-Finally you may see the [API documentation](API.md) for details of the kind
-of functions that you can write, but until we have implemented more of the
-modes to do things with useful objects you'll instead need to run the
-examples like so:
+Further Notes
+-------------
 
-    ./lumail2 --no-curses --load-file ./config.lua
-    ./lumail2 --no-curses --load-file ./parts.lua
-    ./lumail2 --no-curses --load-file ./show_message.lua
-    ./lumail2 --no-curses --load-file ./dump_maildir.lua
+* [API Documentation](API.md)
+   * Documents the Lua classes.
+* [Notes on implementation & structure](HACKING.md)
+   * See also the [experiments repository](https://github.com/lumail/experiments) where some standalone code has been isolated for testing/learning purposes.
