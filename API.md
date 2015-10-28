@@ -1,31 +1,34 @@
 API
 ===
 
-The core idea of lumail2, and the reason for writing it, is that everything is an object.
+The core idea of lumail2, and the reason for writing it rather than continuing to extend
+the version one project, is that everything is an object.
 
 At the moment we have objects for working with:
 
 * Configuration variables.
+* Files.
 * Maildirs.
 * Messages.
 * The screen.
-* The status-panel, which is optionally displayed upon the screen.
+    * The status-panel, which is optionally displayed upon the screen.
 
 
 Variables
 ---------
 
-We have a number of variables which are special, the most important ones
-will be:
+We have a number of variables which are special, the most important ones are:
 
 * `maildir.prefix`
     * This holds the prefix to the maildir hierarchy.
-* `global.mode`
-    * This holds the name of the currently active display-mode
 * `global.editor`
     * The user's editor.
 * `global.from`
     * The email address to send messages from.
+* `global.history`
+    * The name of the file to write input-history to.
+* `global.mode`
+    * This holds the name of the currently active display-mode
 
 For each mode that has a display there will be a `$mode.max` to store the
 count of the objects, as well as `$mode.current`.
@@ -80,6 +83,19 @@ If the function `Config.key_changed` is defined it will be invoked whenever a ke
 Sample code:
 
      lumail2 --no-curses --load-file ./config.lua
+
+
+
+Files
+-----
+
+The following (static) methods exist:
+
+* File:exists(path)
+   * Return a boolean based on whether the named file exists.
+* File:stat(path)
+   * Return a table of information about the named target.
+   * Returns `nil` on fialure.
 
 
 Maildir
