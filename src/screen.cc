@@ -109,15 +109,21 @@ void CScreen::run_main_loop()
     timeout(750);
 
     /**
+     * Now we're in our loop.
+     */
+    m_running = true;
+
+    /**
      * Get the lua-helper.
      */
     CLua *lua = CLua::instance();
 
-
+    /**
+     * Holder for keyboard input.
+     */
     int ch;
-    int running = 1;
 
-    while ((running > 0) && (ch = getch()))
+    while ((m_running) && (ch = getch()))
     {
 
         /**
@@ -128,21 +134,16 @@ void CScreen::run_main_loop()
 
 
         /**
-         * Get the global mode...
+         * Get the current global mode.
          */
-        std::string mode = "";
         CConfig *config   = CConfig::instance();
-        CConfigEntry *ent = config->get("global.mode");
+        std::string mode  = config->get_string("global.mode");
+        if ( mode.empty())
+          mode = "maildir";
 
-
-        if ((ent != NULL) && (ent->type == CONFIG_STRING))
-            mode = *ent->value.str;
-
-        if (mode.empty())
-            mode = "maildir";
 
         /**
-         * This is the virtual view class.
+         * Get the virtual view class.
          */
         CViewMode *view = m_views[mode];
 
@@ -151,17 +152,17 @@ void CScreen::run_main_loop()
          */
         if (ch == 'Q')
         {
-            running = 0;
+            m_running = false;
             continue;
         }
 
         /**
-         * Otherwise try to handle the input, via Lua
+         * If the key fetching timed out then call our idle functions.
          */
         if (ch == ERR)
         {
             /**
-             * Timeout - So call the Lua on_idle() function.
+             * Call the Lua on_idle() function.
              */
             lua->execute("on_idle()");
 
@@ -172,6 +173,9 @@ void CScreen::run_main_loop()
         }
         else
         {
+            /**
+             * Fake a string, and call our handler.
+             */
             char input[] = { '\0', '\0' };
             input[0] = ch;
             on_keypress(input);
@@ -189,8 +193,17 @@ void CScreen::run_main_loop()
         doupdate();
 
     }
-
 }
+
+
+/**
+ * Exit our main event-loop
+ */
+void CScreen::exit_main_loop()
+{
+  m_running = false;
+}
+
 
 /**
  * Setup the curses/screen.

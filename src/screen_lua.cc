@@ -32,14 +32,26 @@ extern "C"
 
 
 
-int
-l_CScreen_clear(lua_State * l)
+/**
+ * Clear the screen.
+ */
+int l_CScreen_clear(lua_State * l)
 {
     CScreen *foo = CScreen::instance();
     foo->clear();
     return 0;
 }
 
+
+/**
+ * Exit our main event-loop.
+ */
+int l_CScreen_exit(lua_State * l)
+{
+    CScreen *foo = CScreen::instance();
+    foo->exit_main_loop();
+    return 0;
+}
 
 /**
  * Get the current maildir.
@@ -174,6 +186,7 @@ InitScreen(lua_State * l)
     luaL_Reg sFooRegs[] =
     {
         {"clear", l_CScreen_clear},
+        {"exit",  l_CScreen_exit},
         {"get_line", l_CScreen_get_line},
         {"height", l_CScreen_height},
         {"maildir", l_CScreen_maildir},

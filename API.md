@@ -156,15 +156,17 @@ Screen
 
 The Screen object is registered automatically and doesn't need to be constructed  The following methods are available:
 
-* clear()
+* `clear()`
     * Clear the screan-area.
-* get_line()
+* `exit()`
+    * Exit the main event-loop, and terminate the program.
+* `get_line()`
     * Receive a line of input, from the prompt.
-* height()
+* `height()`
     * Return the height of the screen.
-* sleep(N)
+* `sleep(N)`
     * Sleep for N-seconds.
-* width()
+* `width()`
     * Return the width of the screen.
 
 Sample code:

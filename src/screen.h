@@ -95,6 +95,11 @@ public:
     void run_main_loop();
 
     /**
+     * Exit our main event-loop
+     */
+    void exit_main_loop();
+
+    /**
      * Return the width of the screen.
      */
     static int width();
@@ -153,6 +158,12 @@ private:
     void init_status_bar();
 
 private:
+
+    /**
+     * Are we in the event-loop?
+     */
+    bool m_running;
+
 
     /**
      * This contains the mapping of "global.mode" -> drawing routines.

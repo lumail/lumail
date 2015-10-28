@@ -5,6 +5,15 @@
 
 
 --
+-- Helper function to ensure that if anything calls `os.exit`
+-- we reset the screen neatly, etc.
+--
+function os.exit(code)
+   Screen:exit()
+end
+
+
+--
 -- Split a string on newlines, and return the result as a table.
 --
 function string_to_table(str)
