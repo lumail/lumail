@@ -32,6 +32,7 @@ CLuaView::CLuaView()
 {
 }
 
+
 /**
  * Destructor.  NOP.
  */
@@ -39,8 +40,9 @@ CLuaView::~CLuaView()
 {
 }
 
+
 /**
- * Get the output of calling `lua_mode`
+ * Get the output of calling `lua_mode`, which is the text we'll display.
  */
 std::vector<std::string> CLuaView::get_text()
 {
@@ -84,7 +86,12 @@ std::vector<std::string> CLuaView::get_text()
      * Store the number of lines we've retrieved.
      */
     CConfig *config = CConfig::instance();
-    config->set("lua.max", std::to_string(result.size()));
+    int max = result.size();
+
+    if (max > 0)
+        max -= 1;
+
+    config->set("lua.max", std::to_string(max));
 
     return (result);
 
@@ -97,9 +104,9 @@ std::vector<std::string> CLuaView::get_text()
  */
 void CLuaView::draw()
 {
-    CScreen *screen = CScreen::instance();
-    screen->clear();
-
+    /**
+     * Get the string(s) we're supposed to display.
+     */
     std::vector<std::string> txt = get_text();
 
     if (txt.empty())
@@ -109,19 +116,19 @@ void CLuaView::draw()
     }
 
 
-    /**
-     * Get the size.
-     */
     CConfig *config = CConfig::instance();
+
+    /**
+     * Get the currently-selected item, and the size of the lines.
+     */
+    std::string current = config->get_string("lua.current");
     std::string max_line = config->get_string("lua.max");
 
     if (max_line.empty())
+    {
+        config->set("lua.max", "0", false);
         max_line = "0";
-
-    /**
-     * Get the item under the cursor.
-     */
-    std::string current = config->get_string("lua.current");
+    }
 
     if (current.empty())
     {
@@ -130,155 +137,29 @@ void CLuaView::draw()
     }
 
     /**
-     * Now we have:
+     * Now we should have, as integers:
      *
      *  max   -> The max number of lines to display.
      *  cur   -> The current line.
-     * height -> The screen height.
      */
     std::string::size_type sz;
     size_t max = std::stoi(max_line, &sz);
     size_t cur = std::stoi(current, &sz);
-    int height = CScreen::height();
-
 
     /**
      * Ensure we highlight the correct line.
      */
     if (cur > max)
     {
-        config->set("lua.current", "0" , false);
-        cur = 0;
-    }
-
-    int middle = (height) / 2;
-    int rowToHighlight = 0;
-    vectorPosition topBottomOrMiddle = NONE;
-
-    // TODO - Remove
-    int count = max;
-    int selected = cur;
-
-    /**
-     * default to TOP if our list is shorter then the screen height
-     */
-    if (selected < middle || count <= height)
-    {
-        topBottomOrMiddle = TOP;
-        rowToHighlight = selected;
-        /**
-         * if height is uneven we have to switch to the BOTTOM case on row earlier
-         */
-    }
-    else if ((count - selected <= middle) || (height % 2 == 1 && count - selected <= middle + 1))
-    {
-        topBottomOrMiddle = BOTTOM;
-        rowToHighlight =  height - count + selected - 1 ;
-    }
-    else
-    {
-        topBottomOrMiddle = MIDDLE;
-        rowToHighlight = middle;
-    }
-
-
-    int row = 0;
-
-    for (row = 0; row < height; row++)
-    {
-        move(row, 0);
-
-        /**
-         * The current object.
-         */
-        int mailIndex = count;
-
-        if (topBottomOrMiddle == TOP)
-        {
-            /**
-             * we start at the top of the list so just use row
-             */
-            mailIndex = row;
-        }
-        else if (topBottomOrMiddle == BOTTOM)
-        {
-            /**
-             * when we reached the end of the list mailIndex can maximally be
-             * count-1, that this is given can easily be shown
-             * row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
-             */
-            mailIndex = count - height + row + 1;
-        }
-        else if (topBottomOrMiddle == MIDDLE)
-        {
-            mailIndex = row + selected - middle;
-        }
-
-
-        std::string buf;
-
-        if ((mailIndex < count) && (mailIndex < (int)txt.size()))
-            buf = txt.at(mailIndex);
-
-        if (buf.empty())
-            continue;
-
-
-        if (row == rowToHighlight)
-            wattron(stdscr, A_REVERSE | A_STANDOUT);
-        else
-            wattroff(stdscr, A_REVERSE | A_STANDOUT);
-
-        /**
-         * Look for a colour-string
-         */
-        std::string colour = "";
-
-        if (buf.at(0) == '$')
-        {
-            std::size_t start = buf.find("[");
-            std::size_t end   = buf.find("]");
-
-            if ((start != std::string::npos) &&
-                    (end != std::string::npos))
-            {
-                colour = buf.substr(start + 1, end - start - 1);
-                buf    = buf.substr(end + 1);
-            }
-        }
-
-        /**
-         * Ensure we draw a complete line - so that we cover
-         * any old text.
-         */
-        while ((int)buf.length() < CScreen::width())
-            buf += " ";
-
-        /**
-         * Ensure the line isn't too long, so we don't
-         * wrap around.
-         */
-        if ((int)buf.length() >  CScreen::width())
-            buf = buf.substr(0, CScreen::width() - 1);
-
-        /**
-         * TODO: Change to the colour in `colour`.
-         */
-        if (!colour.empty())
-            wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
-
-        printw("%s", buf.c_str());
-
-        if (! colour.empty())
-            wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
+        config->set("lua.current", std::to_string(max) , false);
+        cur = max;
     }
 
     /**
-     * Ensure we turn off the attribute on the last line - so that
-     * any blank lines are "normal".
+     * Draw the text, via our base-class.
      */
-    wattroff(stdscr, A_REVERSE | A_STANDOUT);
-    wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
+    CScreen *screen = CScreen::instance();
+    screen->draw_text_lines(txt, cur, max);
 }
 
 

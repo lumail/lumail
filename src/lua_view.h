@@ -52,18 +52,10 @@ public:
     void on_idle();
 
 private:
-    std::vector<std::string> get_text();
 
     /**
-     * The segment of the screen the highlighted row is within.
+     * Get the output of calling `lua_mode`, which is the text we'll display.
      */
-    enum vectorPosition
-    {
-        TOP,
-        MIDDLE,
-        BOTTOM,
-        NONE
-    };
-
+    std::vector<std::string> get_text();
 
 };
