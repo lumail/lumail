@@ -308,7 +308,7 @@ function next( offset )
    end
 
    if ( cur >= max ) then cur = max end
-   
+
    Config:set( mode .. ".current", cur )
 end
 
@@ -475,3 +475,8 @@ Config:set( "maildir.prefix", os.getenv( "HOME" ) .. "/Maildir" )
 -- Setup our default editor.  Not used.
 --
 Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )
+
+--
+-- Save persistant history of our input in the named file.
+--
+Config:set( "global.history", os.getenv( "HOME" ) .. "/.lumail2.history" )

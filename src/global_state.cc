@@ -21,6 +21,7 @@
 #include "config.h"
 #include "file.h"
 #include "global_state.h"
+#include "history.h"
 #include "lua.h"
 #include "maildir.h"
 #include "message.h"
@@ -89,6 +90,21 @@ void CGlobalState::config_key_changed(std::string name)
         if (!new_mode.empty() && (new_mode == "maildir"))
             update_maildirs();
 
+    }
+
+    /**
+     * The name of the history file.
+     */
+    if (name == "global.history")
+    {
+        CConfig *config = CConfig::instance();
+        std::string path = config->get_string("global.history");
+
+        if (path.empty())
+            return;
+
+        CHistory *history = CHistory::instance();
+        history->set_file(path);
     }
 
     /**

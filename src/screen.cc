@@ -33,6 +33,7 @@
  * Views.
  */
 #include "demo_view.h"
+#include "history.h"
 #include "index_view.h"
 #include "lua_view.h"
 #include "maildir_view.h"
@@ -503,6 +504,12 @@ std::string CScreen::get_line()
     int orig_x, orig_y;
 
     /**
+     * Gain access to any past history.
+     */
+    CHistory *history  = CHistory::instance();
+    int history_offset = history->size();
+
+    /**
      * Get the cursor position
      */
     getyx(stdscr, orig_y, orig_x);
@@ -579,6 +586,34 @@ std::string CScreen::get_line()
             if (pos < (int) buffer.size())
                 pos += 1;
         }
+        else if (c == KEY_UP)
+        {
+            history_offset -= 1;
+
+            if (history_offset >= 0)
+            {
+                buffer = history->at(history_offset);
+                pos    = buffer.size();
+            }
+            else
+            {
+                history_offset = 0;
+            }
+        }
+        else if (c == KEY_DOWN)
+        {
+            history_offset += 1;
+
+            if (history_offset < history->size())
+            {
+                buffer = history->at(history_offset);
+                pos    = buffer.size();
+            }
+            else
+            {
+                history_offset = history->size();
+            }
+        }
         else if (c == KEY_BACKSPACE)
         {
             if (pos > 0)
@@ -612,9 +647,9 @@ std::string CScreen::get_line()
         curs_set(old_curs);
 
     /**
-     * Restore cursor position.  If that matters.
+     * Add the line to the history.
      */
-    //    move( orig_y, orig_x );
+    history->add(buffer);
 
     return (buffer);
 }
