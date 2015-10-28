@@ -138,8 +138,9 @@ void CScreen::run_main_loop()
          */
         CConfig *config   = CConfig::instance();
         std::string mode  = config->get_string("global.mode");
-        if ( mode.empty())
-          mode = "maildir";
+
+        if (mode.empty())
+            mode = "maildir";
 
 
         /**
@@ -201,7 +202,7 @@ void CScreen::run_main_loop()
  */
 void CScreen::exit_main_loop()
 {
-  m_running = false;
+    m_running = false;
 }
 
 
@@ -804,8 +805,12 @@ int CScreen::get_colour(std::string name)
  * Draw an array of lines to the screen, highlighting the current line.
  *
  * This is used by our view-classes, as a helper.
+ *
+ * If `simple` is set to true then we display the lines in a  simplified
+ * fashion - with no selection, and no smooth-scrolling.
+ *
  */
-void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int max)
+void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int max, bool simple)
 {
     CScreen *screen = CScreen::instance();
     int height = CScreen::height();
@@ -820,6 +825,70 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
      * Account for the fact we start from row one not zero.
      */
     height += 1;
+
+
+    /**
+     * If we're in simple-mode we can just draw the lines directly
+     * and return - we don't need to worry about the selection-handler
+     * or the calculation of the scroll-point.
+     */
+    if (simple)
+    {
+        for (int i = 0; i < height; i++)
+        {
+            if ((i + selected)  < (int)lines.size())
+            {
+                std::string buf = lines.at(i + selected);
+
+                /**
+                 * Look for a colour-string
+                 */
+                if ((buf.size() > 3) && (buf.at(0) == '$'))
+                {
+                    std::size_t start = buf.find("[");
+                    std::size_t end   = buf.find("]");
+
+                    if ((start != std::string::npos) &&
+                            (end != std::string::npos))
+                    {
+                        std::string colour;
+                        colour   = buf.substr(start + 1, end - start - 1);
+                        buf    = buf.substr(end + 1);
+
+                        wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
+                    }
+                }
+
+                /**
+                 * Ensure we draw a complete line.
+                 */
+                while ((int)buf.length() < CScreen::width())
+                    buf += " ";
+
+                /**
+                 * Ensure the line isn't too long, so we don't wrap around.
+                 */
+                if ((int)buf.length() >  CScreen::width())
+                    buf = buf.substr(0, CScreen::width() - 1);
+
+                /**
+                 *  Draw the line, and reset any changed-colour.
+                 */
+                mvprintw(i, 0, "%s", buf.c_str());
+                wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
+            }
+        }
+
+        return;
+    }
+
+
+    /**
+     * This is complex/smooth-scrolling mode.
+     *
+     * We'll draw a highlighted bar, and that'll move "nicely".
+     */
+
 
     int middle = (height) / 2;
     int rowToHighlight = 0;
@@ -848,12 +917,8 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
     }
 
 
-    int row = 0;
-
-    for (row = 0; row < height; row++)
+    for (int row = 0; row < height; row++)
     {
-        move(row, 0);
-
         /**
          * The current object.
          */
@@ -889,7 +954,6 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         if (buf.empty())
             continue;
 
-
         if (row == rowToHighlight)
             wattron(stdscr, A_REVERSE | A_STANDOUT);
         else
@@ -898,9 +962,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         /**
          * Look for a colour-string
          */
-        std::string colour = "";
-
-        if (buf.at(0) == '$')
+        if ((buf.size() > 3) && (buf.at(0) == '$'))
         {
             std::size_t start = buf.find("[");
             std::size_t end   = buf.find("]");
@@ -908,14 +970,18 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
             if ((start != std::string::npos) &&
                     (end != std::string::npos))
             {
-                colour = buf.substr(start + 1, end - start - 1);
+                std::string colour;
+                colour   = buf.substr(start + 1, end - start - 1);
                 buf    = buf.substr(end + 1);
+
+                wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
             }
         }
 
         /**
          * Ensure we draw a complete line - so that we cover
-         * any old text.
+         * any old text - and make sure that our highlight covers a complete
+         * line.
          */
         while ((int)buf.length() < CScreen::width())
             buf += " ";
@@ -928,15 +994,10 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
             buf = buf.substr(0, CScreen::width() - 1);
 
         /**
-         *  Change to the colour in `colour`.
+         * Show the line, and reset the colours to known-good.
          */
-        if (!colour.empty())
-            wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
-
-        printw("%s", buf.c_str());
-
-        if (! colour.empty())
-            wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
+        mvprintw(row, 0, "%s", buf.c_str());
+        wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
     }
 
     /**

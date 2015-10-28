@@ -151,7 +151,7 @@ public:
     /**
      * Draw a list of text, with a current entry highlighted.
      */
-    void draw_text_lines(std::vector<std::string> lines, int selected, int max);
+    void draw_text_lines(std::vector<std::string> lines, int selected, int max, bool simple = false);
 
 private:
     void redraw_status_bar();

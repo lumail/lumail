@@ -190,7 +190,7 @@ void CMessageView::draw()
      * Draw the text, via our base-class.
      */
     CScreen *screen = CScreen::instance();
-    screen->draw_text_lines(lines, cur, max);
+    screen->draw_text_lines(lines, cur, max, true);
 }
 
 /**
