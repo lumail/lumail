@@ -57,15 +57,4 @@ private:
      */
     std::vector<std::string> get_message(std::shared_ptr<CMessage> msg);
 
-    /**
-     * The segment of the screen the highlighted row is within.
-     */
-    enum vectorPosition
-    {
-        TOP,
-        MIDDLE,
-        BOTTOM,
-        NONE
-    };
-
 };

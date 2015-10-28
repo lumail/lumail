@@ -58,15 +58,4 @@ private:
      */
     std::string format(std::shared_ptr<CMaildir> cur);
 
-    /**
-     * The segment of the screen the highlighted row is within.
-     */
-    enum vectorPosition
-    {
-        TOP,
-        MIDDLE,
-        BOTTOM,
-        NONE
-    };
-
 };

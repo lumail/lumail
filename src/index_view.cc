@@ -111,8 +111,6 @@ std::string CIndexView::format(std::shared_ptr<CMessage> cur)
  */
 void CIndexView::draw()
 {
-    CScreen *screen = CScreen::instance();
-
     CGlobalState *state = CGlobalState::instance();
     std::shared_ptr<CMaildir> folder = state->current_maildir();
 
@@ -125,13 +123,9 @@ void CIndexView::draw()
     }
 
     /**
-     * Get the global-state.
-     */
-    CGlobalState *global = CGlobalState::instance();
-
-    /**
      * Get the message-list.
      */
+    CGlobalState *global = CGlobalState::instance();
     CMessageList *messages = global->get_messages();
 
     /**
@@ -142,18 +136,32 @@ void CIndexView::draw()
 
 
     /**
-     * Draw them
+     * Build up an array of lines to display.
      */
-    CConfig *config = CConfig::instance();
-    std::string max = config->get_string("index.max");
+    std::vector<std::string> display;
 
-    if (max.empty())
-        max = "0";
+    for (std::vector<std::shared_ptr<CMessage>>::iterator it = messages->begin(); it != messages->end(); it++)
+    {
+        display.push_back(format(*(it)));
+    }
+
 
     /**
-     * Get the item under the cursor.
+     * Now handle our offsets/etc.
+     */
+    CConfig *config = CConfig::instance();
+
+    /**
+     * Get the currently-selected item, and the size of the lines.
      */
     std::string current = config->get_string("index.current");
+    std::string max_line = config->get_string("index.max");
+
+    if (max_line.empty())
+    {
+        config->set("index.max", "0", false);
+        max_line = "0";
+    }
 
     if (current.empty())
     {
@@ -162,162 +170,30 @@ void CIndexView::draw()
     }
 
     /**
-     * Now we have:
+     * Now we should have, as integers:
      *
-     *  max   -> The max number of messages.
-     *  cur   -> The current message.
-     * height -> The screen height.
+     *  max   -> The max number of lines to display.
+     *  cur   -> The current line.
      */
     std::string::size_type sz;
-    size_t max_message = std::stoi(max, &sz);
-    size_t cur_message = std::stoi(current, &sz);
-    int    height      = CScreen::height();
+    size_t max = std::stoi(max_line, &sz);
+    size_t cur = std::stoi(current, &sz);
 
     /**
      * Ensure we highlight the correct line.
      */
-    if (cur_message > max_message)
+    if (cur > max)
     {
-        config->set("index.current", "0" , false);
-        cur_message = 0;
-    }
-
-    int middle = (height) / 2;
-    int rowToHighlight = 0;
-    vectorPosition topBottomOrMiddle = NONE;
-
-    // TODO - Remove
-    int count = max_message;
-    int selected = cur_message;
-
-    /**
-     * default to TOP if our list is shorter then the screen height
-     */
-    if (selected < middle || count <= height)
-    {
-        topBottomOrMiddle = TOP;
-        rowToHighlight = selected;
-        /**
-         * if height is uneven we have to switch to the BOTTOM case on row earlier
-         */
-    }
-    else if ((count - selected <= middle) || (height % 2 == 1 && count - selected <= middle + 1))
-    {
-        topBottomOrMiddle = BOTTOM;
-        rowToHighlight =  height - count + selected - 1 ;
-    }
-    else
-    {
-        topBottomOrMiddle = MIDDLE;
-        rowToHighlight = middle;
-    }
-
-
-    /**
-     * OK so we have (at least one) selected maildir and we have messages.
-     */
-    int row = 0;
-
-    for (row = 0; row < height; row++)
-    {
-        move(row, 0);
-
-        /**
-         * The current object.
-         */
-        std::shared_ptr<CMessage> msg = NULL;
-        int mailIndex = count;
-
-        if (topBottomOrMiddle == TOP)
-        {
-            /**
-             * we start at the top of the list so just use row
-             */
-            mailIndex = row;
-        }
-        else if (topBottomOrMiddle == BOTTOM)
-        {
-            /**
-             * when we reached the end of the list mailIndex can maximally be
-             * count-1, that this is given can easily be shown
-             * row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
-             */
-            mailIndex = count - height + row + 1;
-        }
-        else if (topBottomOrMiddle == MIDDLE)
-        {
-            mailIndex = row + selected - middle;
-        }
-
-        if ((mailIndex < count) && (mailIndex < (int)messages->size()))
-            msg = messages->at(mailIndex);
-
-        if (! msg)
-            continue;
-
-        //
-        // TODO fix this
-        //
-        if (row == rowToHighlight)
-            wattron(stdscr, A_REVERSE | A_STANDOUT);
-        else
-            wattroff(stdscr, A_REVERSE | A_STANDOUT);
-
-        std::string buf;
-
-        if (msg != NULL)
-            buf = format(msg);
-
-        /**
-         * Look for a colour-string
-         */
-        std::string colour = "";
-
-        if (buf.at(0) == '$')
-        {
-            std::size_t start = buf.find("[");
-            std::size_t end   = buf.find("]");
-
-            if ((start != std::string::npos) &&
-                    (end != std::string::npos))
-            {
-                colour = buf.substr(start + 1, end - start - 1);
-                buf    = buf.substr(end + 1);
-            }
-        }
-
-        /**
-         * Ensure we draw a complete line - so that we cover
-         * any old text.
-         */
-        while ((int)buf.length() < CScreen::width())
-            buf += " ";
-
-        /**
-         * Ensure the line isn't too long, so we don't
-         * wrap around.
-         */
-        if ((int)buf.length() >  CScreen::width())
-            buf = buf.substr(0, CScreen::width() - 1);
-
-        /**
-         * TODO: Change to the colour in `colour`.
-         */
-        if (!colour.empty())
-            wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
-
-        printw("%s", buf.c_str());
-
-        if (! colour.empty())
-            wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
+        config->set("index.current", std::to_string(max) , false);
+        cur = max;
     }
 
     /**
-     * Ensure we turn off the attribute on the last line - so that
-     * any blank lines are "normal".
+     * Draw the text, via our base-class.
      */
-    wattroff(stdscr, A_REVERSE | A_STANDOUT);
-    wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
+    CScreen *screen = CScreen::instance();
+    screen->draw_text_lines(display, cur, max);
+
 
 }
 

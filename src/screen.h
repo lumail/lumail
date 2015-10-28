@@ -57,6 +57,7 @@ public:
      * an idle function to update things.
      */
     virtual void on_idle() = 0;
+
 };
 
 
@@ -141,6 +142,12 @@ public:
      */
     int get_colour(std::string name);
 
+
+    /**
+     * Draw a list of text, with a current entry highlighted.
+     */
+    void draw_text_lines(std::vector<std::string> lines, int selected, int max);
+
 private:
     void redraw_status_bar();
     void init_status_bar();
@@ -156,4 +163,19 @@ private:
      * Colour-pairs
      */
     std::unordered_map < std::string, int >m_colours;
+
+private:
+
+    /**
+     * The segment of the screen the highlighted row is within.
+     *
+     * Used by `draw_text_lines`.
+     */
+    enum vectorPosition
+    {
+        TOP,
+        MIDDLE,
+        BOTTOM,
+        NONE
+    };
 };

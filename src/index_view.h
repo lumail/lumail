@@ -60,16 +60,4 @@ private:
      * Call Message.to_index().
      */
     std::string format(std::shared_ptr<CMessage> cur);
-
-    /**
-     * The segment of the screen the highlighted row is within.
-     */
-    enum vectorPosition
-    {
-        TOP,
-        MIDDLE,
-        BOTTOM,
-        NONE
-    };
-
 };

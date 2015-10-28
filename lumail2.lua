@@ -306,6 +306,9 @@ function next( offset )
    else
       cur = max-1
    end
+
+   if ( cur >= max ) then cur = max end
+   
    Config:set( mode .. ".current", cur )
 end
 

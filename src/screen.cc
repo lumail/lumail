@@ -749,3 +749,153 @@ int CScreen::get_colour(std::string name)
     std::transform(name.begin(), name.end(), name.begin(), ::tolower);
     return (m_colours[name]);
 }
+
+
+
+/**
+ * Draw an array of lines to the screen, highlighting the current line.
+ *
+ * This is used by our view-classes, as a helper.
+ */
+void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int max)
+{
+    CScreen *screen = CScreen::instance();
+    int height = CScreen::height();
+
+    /**
+     * Take off the panel, if visible.
+     */
+    if (screen->status_panel_visible())
+        height -= screen->status_panel_height();
+
+    /**
+     * Account for the fact we start from row one not zero.
+     */
+    height += 1;
+
+    int middle = (height) / 2;
+    int rowToHighlight = 0;
+    vectorPosition topBottomOrMiddle = NONE;
+
+    /**
+     * default to TOP if our list is shorter then the screen height
+     */
+    if (selected < middle || max <= height)
+    {
+        topBottomOrMiddle = TOP;
+        rowToHighlight = selected;
+        /**
+         * if height is uneven we have to switch to the BOTTOM case on row earlier
+         */
+    }
+    else if ((max - selected <= middle) || (height % 2 == 1 && max - selected <= middle + 1))
+    {
+        topBottomOrMiddle = BOTTOM;
+        rowToHighlight =  height - max + selected - 1 ;
+    }
+    else
+    {
+        topBottomOrMiddle = MIDDLE;
+        rowToHighlight = middle;
+    }
+
+
+    int row = 0;
+
+    for (row = 0; row < height; row++)
+    {
+        move(row, 0);
+
+        /**
+         * The current object.
+         */
+        int mailIndex = max;
+
+        if (topBottomOrMiddle == TOP)
+        {
+            /**
+             * we start at the top of the list so just use row
+             */
+            mailIndex = row;
+        }
+        else if (topBottomOrMiddle == BOTTOM)
+        {
+            /**
+             * when we reached the end of the list mailIndex can maximally be
+             * count-1, that this is given can easily be shown
+             * row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
+             */
+            mailIndex = max - height + row + 1;
+        }
+        else if (topBottomOrMiddle == MIDDLE)
+        {
+            mailIndex = row + selected - middle;
+        }
+
+
+        std::string buf;
+
+        if ((mailIndex < max) && (mailIndex < (int)lines.size()))
+            buf = lines.at(mailIndex);
+
+        if (buf.empty())
+            continue;
+
+
+        if (row == rowToHighlight)
+            wattron(stdscr, A_REVERSE | A_STANDOUT);
+        else
+            wattroff(stdscr, A_REVERSE | A_STANDOUT);
+
+        /**
+         * Look for a colour-string
+         */
+        std::string colour = "";
+
+        if (buf.at(0) == '$')
+        {
+            std::size_t start = buf.find("[");
+            std::size_t end   = buf.find("]");
+
+            if ((start != std::string::npos) &&
+                    (end != std::string::npos))
+            {
+                colour = buf.substr(start + 1, end - start - 1);
+                buf    = buf.substr(end + 1);
+            }
+        }
+
+        /**
+         * Ensure we draw a complete line - so that we cover
+         * any old text.
+         */
+        while ((int)buf.length() < CScreen::width())
+            buf += " ";
+
+        /**
+         * Ensure the line isn't too long, so we don't
+         * wrap around.
+         */
+        if ((int)buf.length() >  CScreen::width())
+            buf = buf.substr(0, CScreen::width() - 1);
+
+        /**
+         *  Change to the colour in `colour`.
+         */
+        if (!colour.empty())
+            wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
+
+        printw("%s", buf.c_str());
+
+        if (! colour.empty())
+            wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
+    }
+
+    /**
+     * Ensure we turn off the attribute on the last line - so that
+     * any blank lines are "normal".
+     */
+    wattroff(stdscr, A_REVERSE | A_STANDOUT);
+    wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
+
+}
