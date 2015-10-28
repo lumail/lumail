@@ -66,6 +66,8 @@ The Config method is registered automatically and doesn't need to be constructed
 
 The following methods are available:
 
+* keys()
+    * Return all the configuration-keys which have been set.
 * get(key)
     * Return the value of a given key.
     * The value might be a string or an array (table of strings with integer indexes).
@@ -156,6 +158,8 @@ Sample code:
 
 The screen also has an associated status-panel, hereby referred to as "Panel".  The Panel object has the following methods:
 
+* height()
+     * Returns the size of the panel, in lines.
 * hide()
      * Hide the panel, if visible.
 * show()
