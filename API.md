@@ -27,6 +27,8 @@ We have a number of variables which are special, the most important ones are:
     * The email address to send messages from.
 * `global.history`
     * The name of the file to write input-history to.
+* `global.horizontal`
+    * The horizontal-offset used to implement left/right scrolling.
 * `global.mode`
     * This holds the name of the currently active display-mode
 
