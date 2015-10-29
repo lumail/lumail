@@ -84,12 +84,22 @@ void CGlobalState::config_key_changed(std::string name)
         CConfig *config = CConfig::instance();
         std::string new_mode = config->get_string("global.mode");
 
+        /**
+         * Update our cached list of messages in this maildir.
+         */
         if (! new_mode.empty() && (new_mode == "index"))
             update_messages();
 
+        /**
+         * Update the list of maildirs.
+         */
         if (!new_mode.empty() && (new_mode == "maildir"))
             update_maildirs();
 
+        /**
+         * Reset the horizontal scroll to be zero.
+         */
+        config->set("global.horizontal", "0", false);
     }
 
     /**

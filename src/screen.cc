@@ -826,6 +826,19 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
      */
     height += 1;
 
+    /**
+     * Get the horizontal scroll-position.
+     */
+    CConfig *config = CConfig::instance();
+    std::string horizontal = config->get_string("global.horizontal");
+
+    if (horizontal.empty())
+        horizontal = "0";
+
+    /**
+     * Now as an integer.
+     */
+    int x = atoi(horizontal.c_str());
 
     /**
      * If we're in simple-mode we can just draw the lines directly
@@ -858,6 +871,15 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
                         wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
                     }
                 }
+
+                /**
+                 * "Scroll" by starting from the middle of the string.
+                 */
+                if (x < (int)buf.length())
+                    buf = buf.substr(x);
+                else
+                    buf = "";
+
 
                 /**
                  * Ensure we draw a complete line.
@@ -977,6 +999,14 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
                 wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
             }
         }
+
+        /**
+         * "Scroll" by starting from the middle of the string.
+         */
+        if (x < (int)buf.length())
+            buf = buf.substr(x);
+        else
+            buf = "";
 
         /**
          * Ensure we draw a complete line - so that we cover

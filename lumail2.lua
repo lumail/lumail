@@ -294,6 +294,39 @@ end
 
 
 --
+-- Left/Right scrolling
+--
+function left()
+   local x = Config:get("global.horizontal")
+   if ( not x ) then
+      x = 0
+   else
+      x = tonumber( x )
+   end
+
+   if ( x > 0 ) then
+      x = x - 1
+   end
+
+   Config:set( "global.horizontal", x )
+end
+
+function right()
+   local x = Config:get("global.horizontal")
+   if ( not x ) then
+      x = 0
+   else
+      x = tonumber( x )
+   end
+
+   if ( x < Screen:width() ) then
+      x = x + 1
+   end
+   Config:set( "global.horizontal", x )
+end
+
+
+--
 -- Allow navigation - Scroll down a maildir, or index.
 --
 function next( offset )
@@ -448,6 +481,12 @@ keymap['global']['>'] = "last()"
 keymap['global']['K'] = "prev(10)"
 keymap['global']['J'] = "next(10)"
 keymap['global']['\n'] = "select()"
+
+--
+-- Left/Right scrolling.  (Global)
+--
+keymap['global']['h'] = "left()";
+keymap['global']['l'] = "right()";
 
 --
 -- Change the display-limits
