@@ -47,7 +47,6 @@ int main(int argc, char *argv[])
      */
     int c;
 
-
     /**
      * Flags/things set by the command-line arguments.
      */
@@ -117,15 +116,13 @@ int main(int argc, char *argv[])
         }
     }
 
+    CScreen *screen = CScreen::instance();
 
     /**
-     * If we're supposed to use curses then do so.
+     * If we're supposed to use curses then set it up.
      */
     if (curses == true)
-    {
-        CScreen *screen = CScreen::instance();
         screen->setup();
-    }
 
 
     /**
@@ -137,26 +134,23 @@ int main(int argc, char *argv[])
 
         for (std::string filename : load)
         {
-            instance->load_file(filename);
+            if (! instance->load_file(filename))
+            {
+                screen->teardown();
+                std::cerr << "Error loading " << filename << std::endl;
+                return -1;
+            }
         }
     }
 
-    if (curses == true)
-    {
-        CScreen *screen = CScreen::instance();
-        screen->run_main_loop();
-    }
-
-
     /**
-     * If we're using Curses then tear it down.
+     * Run the event-loop and terminate once that finishes.
      */
     if (curses == true)
     {
-        CScreen *screen = CScreen::instance();
+        screen->run_main_loop();
         screen->teardown();
     }
-
 
     /**
      * Close GMime.
