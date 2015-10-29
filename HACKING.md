@@ -2,6 +2,25 @@
 Overview
 --------
 
+`CScreen` implements the main user-interface, and runs the event loop:
+
+* Creates each of the view-modes, in a map.
+* Polling for key-presses.
+    * When they timeout, redraw the screen.
+
+`CGlobalState` is responsible for maintaining the current list of Maildirs,
+the current list of Messages, and getting/setting the current message.
+
+The different modal-modes are implemented in `src/*_view.cc`, and each
+is instantiated in the `CScreen` setup phase.  Views each have a name,
+and routines for drawing the display.
+
+Configuration values are handled via `CConfig`, and when changes are
+made these are broadcast to:
+
+* The `CGlobalState` object, such that state-changes can happen.
+* The Lua function `Config:key_changed` if it is defined, so user-actions can occur.
+
 
 
 Wrapping C++ to Lua
@@ -32,7 +51,7 @@ the `CModeView` class. To write a new mode:
 * Implement `on_idle()` if you need timed-events to happen.
 
 The `draw` method may draw to the screen with standard curses functions,
-or it might send a vector of text-lines to `CScreen::draw_text_lines`.  
+or it might send a vector of text-lines to `CScreen::draw_text_lines`.
 
 Using the `draw_text_lines` method ensure there is little duplication
 between modes.
