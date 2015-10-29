@@ -140,7 +140,7 @@ public:
     /**
      * Execute a function from the global keymap.
      */
-    bool on_keypress(char *key);
+    bool on_keypress(const char *key);
 
     /**
      * Get the colour-pair for the given name.
@@ -157,13 +157,18 @@ private:
     void redraw_status_bar();
     void init_status_bar();
 
+
+    /**
+     * Convert ^I -> TAB, etc.
+     */
+    const char *lookup_key( int c );
+
 private:
 
     /**
      * Are we in the event-loop?
      */
     bool m_running;
-
 
     /**
      * This contains the mapping of "global.mode" -> drawing routines.

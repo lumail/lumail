@@ -174,12 +174,14 @@ void CScreen::run_main_loop()
         }
         else
         {
-            /**
-             * Fake a string, and call our handler.
-             */
-            char input[] = { '\0', '\0' };
-            input[0] = ch;
-            on_keypress(input);
+          /**
+           * Convert the key-press to a key-name, which means that
+           * "down" will be "KEY_DOWN", for example.
+           */
+          const char *key = lookup_key(ch);
+
+          if ( key != NULL )
+            on_keypress(key);
         }
 
         /**
@@ -203,6 +205,22 @@ void CScreen::run_main_loop()
 void CScreen::exit_main_loop()
 {
     m_running = false;
+}
+
+
+/**
+ * Convert "^I" -> "TAB", etc.
+ */
+const char *CScreen::lookup_key( int c )
+{
+    if ( c == '\n' )
+        return( "ENTER" );
+    if ( c == '\t' )
+        return( "TAB" );
+    if ( c == ' ' )
+        return ( "SPACE" );
+
+    return( keyname( c ) );
 }
 
 
@@ -739,13 +757,12 @@ CScreen::status_panel_text(std::vector < std::string > new_text)
  *
  * If the result is a string then execute it as a function.
  */
-bool CScreen::on_keypress(char *key)
+bool CScreen::on_keypress(const char *key)
 {
     /**
      * The result of the lookup.
      */
-    char *
-    result = NULL;
+    char *result = NULL;
 
     /**
      * Get the current global-mode.
@@ -767,8 +784,7 @@ bool CScreen::on_keypress(char *key)
     /**
      * Lookup the keypress in the current-mode-keymap.
      */
-    CLua *
-    lua = CLua::instance();
+    CLua *lua = CLua::instance();
     result = lua->get_nested_table("keymap", mode.c_str(), key);
 
 

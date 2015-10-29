@@ -461,7 +461,7 @@ keymap['message'] = {}
 -- Global Mode
 --
 keymap['global'][':'] = "read_eval()"
-keymap['global']['\t'] = "Panel:toggle()"
+keymap['global']['TAB'] = "Panel:toggle()"
 
 
 keymap['global']['M'] = "change_mode( 'maildir' );"
@@ -473,14 +473,21 @@ keymap['global']['L'] = "change_mode( 'lua' );"
 --
 -- Next/Previous navigation for different modes
 --
-keymap['global']['k'] = "prev(1)"
-keymap['global']['j'] = "next(1)"
+keymap['global']['KEY_UP']   = "prev(1)"
+keymap['global']['k']        = "prev(1)"
+keymap['global']['j']        = "next(1)"
+keymap['global']['KEY_DOWN'] = "next(1)"
+
+keymap['global']['K'] = "prev(10)"
+keymap['global']['KEY_PPAGE'] = "prev(10)"
+keymap['global']['J'] = "next(10)"
+keymap['global']['KEY_NPAGE'] = "next(10)"
+
 keymap['global']['*'] = "last()"
 keymap['global']['<'] = "first()"
 keymap['global']['>'] = "last()"
-keymap['global']['K'] = "prev(10)"
-keymap['global']['J'] = "next(10)"
-keymap['global']['\n'] = "select()"
+
+keymap['global']['ENTER'] = "select()"
 
 --
 -- Left/Right scrolling.  (Global)
