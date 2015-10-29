@@ -174,14 +174,14 @@ void CScreen::run_main_loop()
         }
         else
         {
-          /**
-           * Convert the key-press to a key-name, which means that
-           * "down" will be "KEY_DOWN", for example.
-           */
-          const char *key = lookup_key(ch);
+            /**
+             * Convert the key-press to a key-name, which means that
+             * "down" will be "KEY_DOWN", for example.
+             */
+            const char *key = lookup_key(ch);
 
-          if ( key != NULL )
-            on_keypress(key);
+            if (key != NULL)
+                on_keypress(key);
         }
 
         /**
@@ -211,16 +211,18 @@ void CScreen::exit_main_loop()
 /**
  * Convert "^I" -> "TAB", etc.
  */
-const char *CScreen::lookup_key( int c )
+const char *CScreen::lookup_key(int c)
 {
-    if ( c == '\n' )
-        return( "ENTER" );
-    if ( c == '\t' )
-        return( "TAB" );
-    if ( c == ' ' )
-        return ( "SPACE" );
+    if (c == '\n')
+        return ("ENTER");
 
-    return( keyname( c ) );
+    if (c == '\t')
+        return ("TAB");
+
+    if (c == ' ')
+        return ("SPACE");
+
+    return (keyname(c));
 }
 
 

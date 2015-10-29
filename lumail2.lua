@@ -492,8 +492,10 @@ keymap['global']['ENTER'] = "select()"
 --
 -- Left/Right scrolling.  (Global)
 --
-keymap['global']['h'] = "left()";
-keymap['global']['l'] = "right()";
+keymap['global']['h']         = "left()";
+keymap['global']['KEY_LEFT']  = "left()";
+keymap['global']['l']         = "right()";
+keymap['global']['KEY_RIGHT'] = "right()";
 
 --
 -- Change the display-limits

@@ -161,7 +161,7 @@ private:
     /**
      * Convert ^I -> TAB, etc.
      */
-    const char *lookup_key( int c );
+    const char *lookup_key(int c);
 
 private:
 
