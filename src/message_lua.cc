@@ -1,5 +1,5 @@
 /**
- * $FILENAME - $TITLE
+ * message_lua.cc - Bindings for the CMessage C++ object.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -52,22 +52,24 @@ int l_CMessage_constructor(lua_State * l)
 {
     const char *name = luaL_checkstring(l, 1);
 
-    CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
-    *udata = new CMessage(name);
+    /**
+     * Allocate a new object.
+     */
+    std::shared_ptr<CMessage> *udata = (std::shared_ptr<CMessage> *)lua_newuserdata(l, sizeof(std::shared_ptr<CMessage>*));
+    *udata = std::shared_ptr<CMessage>(new CMessage(name));
 
     luaL_getmetatable(l, "luaL_CMessage");
-
     lua_setmetatable(l, -2);
 
     return 1;
 }
 
 /**
- * Test that the object is a CMessage.
+ * Test that the object is a std::shared_ptr<CMessage>.
  */
-CMessage * l_CheckCMessage(lua_State * l, int n)
+std::shared_ptr<CMessage> *l_CheckCMessage(lua_State * l, int n)
 {
-    return *(CMessage **) luaL_checkudata(l, n, "luaL_CMessage");
+    return (std::shared_ptr<CMessage>*) luaL_checkudata(l, n, "luaL_CMessage");
 }
 
 /**
@@ -75,9 +77,8 @@ CMessage * l_CheckCMessage(lua_State * l, int n)
  */
 int l_CMessage_path(lua_State * l)
 {
-    CMessage *foo = l_CheckCMessage(l, 1);
-
-    lua_pushstring(l, foo->path().c_str());
+    std::shared_ptr<CMessage> *foo = l_CheckCMessage(l, 1);
+    lua_pushstring(l, (*foo)->path().c_str());
     return 1;
 }
 
@@ -86,11 +87,11 @@ int l_CMessage_path(lua_State * l)
  */
 int l_CMessage_header(lua_State * l)
 {
-    CMessage *foo = l_CheckCMessage(l, 1);
+    std::shared_ptr<CMessage> *foo = l_CheckCMessage(l, 1);
 
     /* Get the header. */
     const char *str = luaL_checkstring(l, 2);
-    std::string result = foo->header(str);
+    std::string result = (*foo)->header(str);
 
     /* set the retulr */
     lua_pushstring(l, result.c_str());
@@ -106,8 +107,8 @@ int l_CMessage_headers(lua_State * l)
     /**
      * Get the headers.
      */
-    CMessage *foo = l_CheckCMessage(l, 1);
-    std::unordered_map < std::string, std::string > headers = foo->headers();
+    std::shared_ptr<CMessage> *foo = l_CheckCMessage(l, 1);
+    std::unordered_map < std::string, std::string > headers = (*foo)->headers();
 
 
     /**
@@ -142,12 +143,12 @@ int l_CMessage_headers(lua_State * l)
  */
 int l_CMessage_parts(lua_State * l)
 {
-    CMessage *foo = l_CheckCMessage(l, 1);
+    std::shared_ptr<CMessage> *foo = l_CheckCMessage(l, 1);
 
     /**
      * Get the parts, and count.
      */
-    std::vector < CMessagePart * >parts = foo->get_parts();
+    std::vector < CMessagePart * >parts = (*foo)->get_parts();
 
     lua_createtable(l, parts.size(), 0);
     int i = 0;
@@ -173,7 +174,7 @@ int l_CMessage_parts(lua_State * l)
  */
 int l_CMessage_flags(lua_State * l)
 {
-    CMessage *foo = l_CheckCMessage(l, 1);
+    std::shared_ptr<CMessage> *foo = l_CheckCMessage(l, 1);
 
     /**
      * Are we setting the flags?
@@ -183,13 +184,13 @@ int l_CMessage_flags(lua_State * l)
     if (n > 1)
     {
         const char *update = luaL_checkstring(l, 1);
-        foo->set_flags(update);
+        (*foo)->set_flags(update);
     }
 
     /**
      * Now get the flags
      */
-    lua_pushstring(l, foo->get_flags().c_str());
+    lua_pushstring(l, (*foo)->get_flags().c_str());
     return 1;
 }
 
@@ -198,9 +199,8 @@ int l_CMessage_flags(lua_State * l)
  */
 int l_CMessage_destructor(lua_State * l)
 {
-    CMessage *foo = l_CheckCMessage(l, 1);
-    delete foo;
-
+  //    std::shared_ptr<CMessage> *foo = l_CheckCMessage(l, 1);
+  //    delete(foo);
     return 0;
 }
 
