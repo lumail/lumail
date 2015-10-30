@@ -22,6 +22,7 @@
 #include "config.h"
 #include "lua.h"
 #include "index_view.h"
+#include "message_lua.h"
 #include "global_state.h"
 #include "screen.h"
 
@@ -76,11 +77,7 @@ std::string CIndexView::format(std::shared_ptr<CMessage> cur)
     // TODO: Fix this properly - we need to use a shared_ptr for the
     // maildir_object.
     //
-    CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
-    *udata = new CMessage(cur->path());
-    luaL_getmetatable(l, "luaL_CMessage");
-    lua_setmetatable(l, -2);
-
+    push_cmessage(l, cur);
 
     /**
      * Now call "to_string"

@@ -46,12 +46,10 @@ extern "C"
 
 
 /**
- * Binding for CMessage
+ * Push a CMessage pointer onto the Lua stack.
  */
-int l_CMessage_constructor(lua_State * l)
+void push_cmessage(lua_State * l, std::shared_ptr<CMessage> message)
 {
-    const char *name = luaL_checkstring(l, 1);
-
     /**
      * Allocate a new object.
      */
@@ -59,7 +57,7 @@ int l_CMessage_constructor(lua_State * l)
     if (!ud)
     {
         /* Error - couldn't allocate the memory */
-        return 0;
+        return;
     }
     /* We can't just do *(shared_ptr<...> *)ud = shared_ptr<>... since
      * it will try to call the assignment operator on the object at *ud,
@@ -74,10 +72,20 @@ int l_CMessage_constructor(lua_State * l)
      * Now that we have a valid shared_ptr pointing to nothing, we can
      * assign the final value to it.
      */
-    *udata = std::shared_ptr<CMessage>(new CMessage(name));
+    *udata = message;
 
     luaL_getmetatable(l, "luaL_CMessage");
     lua_setmetatable(l, -2);
+}
+
+/**
+ * Binding for CMessage
+ */
+int l_CMessage_constructor(lua_State * l)
+{
+    const char *name = luaL_checkstring(l, 1);
+
+    push_cmessage(l, std::shared_ptr<CMessage>(new CMessage(name)));
 
     return 1;
 }
