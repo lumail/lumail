@@ -30,6 +30,7 @@ extern "C"
 #include <lualib.h>
 }
 
+#include <vector>
 #include <string>
 
 
@@ -67,9 +68,12 @@ public:
     /**
      * Lookup a key in a nested table structure - used for keyboard lookups.
      */
-    char *get_nested_table(std::string table, const char *key,
-                           const char *subkey);
+    char *get_nested_table(std::string table, const char *key, const char *subkey);
 
+    /**
+     * Call `on_complete` to complete a string.
+     */
+    std::vector<std::string> get_completions(std::string token);
 
     /**
      * HACK - TODO - FIx

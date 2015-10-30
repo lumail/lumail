@@ -526,6 +526,141 @@ void CScreen::redraw_status_bar()
 
 
 /**
+ * Choose a single item from a small selection.
+ *
+ * (This is used to resolve ambiguity in TAB-completion.)
+ */
+std::string CScreen::choose_string(std::vector<std::string> choices)
+{
+    /**
+     * We don't need to resolve ambiguity unless there is more than
+     * one choice to choose from.
+     */
+    assert(choices.size() > 0);
+
+    /**
+     * Find longest/widest entry.
+     */
+    size_t max = 0;
+
+    for (std::string choice : choices)
+    {
+        if (choice.size() > max)
+            max = choice.size();
+    }
+
+    /**
+     * Get the dimensions.
+     */
+    int height = CScreen::height() - 4;
+    int width = CScreen::width() - 4;
+    size_t cols = 1;
+
+    WINDOW *childwin = newwin(height, width, 2, 2);
+    box(childwin, 0, 0);
+
+    /**
+     * How many columns to draw?
+     */
+    for (int i = 1; i < 12; i++)
+    {
+        if (max < (size_t(width) / i))
+            cols = i;
+    }
+
+    /**
+     * We'll be careful to not draw more columns than we have items.
+     */
+    if (cols > choices.size())
+        cols = choices.size();
+
+
+    int selected  = 0;
+    bool done     = false;
+    int col_width = width / cols;
+
+    timeout(0);
+
+    while (!done)
+    {
+        refresh();
+
+        int count = 0;
+
+        /**
+         * Drawing of each item.
+         */
+        int x = 0;
+        int y = 2;
+
+        for (std::string choice : choices)
+        {
+
+            /**
+             * Calculate the column.
+             */
+            x = 2 + ((count % cols) * col_width);
+            y = 1 + (count / cols);
+
+
+            if (count == selected)
+                wattron(childwin, A_UNDERLINE | A_STANDOUT);
+            else
+                wattroff(childwin, A_UNDERLINE | A_STANDOUT);
+
+            mvwaddstr(childwin, y, x,  choice.c_str());
+            count += 1;
+        }
+
+        wrefresh(childwin);
+
+        int c = getch();
+
+        if (c == '\n')
+            done = true;
+
+        if (c == 27)
+        {
+            delwin(childwin);
+            ::clear();
+            timeout(1000);
+            return "";
+        }
+
+        if (c == '\t')
+        {
+            selected += 1;
+
+            if (selected >= (int)choices.size())
+                selected = 0;
+        }
+
+        if (c == KEY_RIGHT)
+        {
+            selected += 1;
+
+            if (selected >= (int)choices.size())
+                selected = 0;
+        }
+
+        if (c == KEY_LEFT)
+        {
+            selected -= 1;
+
+            if (selected < 0)
+                selected = (int)(choices.size() - 1);
+
+        }
+    }
+
+    delwin(childwin);
+    ::clear();
+    timeout(1000);
+    return (choices.at(selected));
+}
+
+
+/**
  * Read a line of input via the status-line.
  */
 std::string CScreen::get_line()
@@ -664,6 +799,96 @@ std::string CScreen::get_line()
             if (pos < (int) buffer.size())
             {
                 buffer.erase(pos, 1);
+            }
+        }
+        else if ((c == '\t') && (! buffer.empty()))      /* TAB-completion */
+        {
+            /**
+             * We're going to find the token to complete against
+             * by searching backwards for a position to start from.
+             *
+             * This string comes from lua, and includes things like: ( " ' space
+             *
+             */
+            size_t toke = buffer.find_last_of("(\"' ", pos);
+
+            std::string prefix = "";
+            std::string token  = buffer;
+
+            /**
+             * If we found one of the split-characters then we have
+             * a token to complete, and the prefix to ignore.
+             *
+             * If we didn't then the prefix is empty, and the buffer is
+             * the token; i.e. we're completing the sole token on the line.
+             *
+             * NOTE:  This implies you cannot complete in the middle of a line.
+             * Just at the end.  Or start.
+             *
+             */
+            if (toke != std::string::npos)
+            {
+                prefix = buffer.substr(0, toke + 1);
+                token = token.substr(toke + 1);
+            }
+
+
+            /**
+             * The token length - because we want to update the cursor position, post-completion.
+             */
+            int toke_len = token.size();
+
+            /**
+             * Get the completions.
+             */
+            CLua *lua = CLua::instance();
+            std::vector<std::string> matches = lua->get_completions(token);
+
+            if (matches.size() == 0)
+            {
+                /**
+                 * No completion possible.
+                 */
+                beep();
+            }
+            else
+            {
+                /**
+                 * Single completion == match.
+                 */
+                if (matches.size() == 1)
+                {
+                    buffer = prefix + matches.at(0).c_str();
+                    pos += (matches.at(0).size() - toke_len);
+                }
+                else
+                {
+                    /**
+                     * Disable echoing before showing the menu.
+                     */
+                    noecho();
+                    curs_set(0);
+
+                    /**
+                     * Prompt for clarification in the multiple-matches.
+                     */
+                    std::string choice = choose_string(matches);
+
+                    /**
+                     * Reset the cursor.
+                     */
+                    curs_set(1);
+                    echo();
+
+                    /**
+                     * If the user did make a specific choice, then use it.
+                     */
+                    if (! choice.empty())
+                    {
+                        buffer = prefix + choice.c_str();
+                        pos += (choice.size() - toke_len);
+                    }
+                }
             }
         }
         else if (isprint(c))

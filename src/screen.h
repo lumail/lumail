@@ -120,6 +120,13 @@ public:
     void sleep(int seconds);
 
     /**
+     * Choose a single item from a small selection.
+     *
+     * Used by TAB-completion.
+     */
+    std::string choose_string(std::vector<std::string> choices);
+
+    /**
      * Read a line of input via the status-line.
      */
     std::string get_line();

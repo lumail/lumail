@@ -161,3 +161,30 @@ char * CLua::get_nested_table(std::string table, const char *key, const char *su
 
     return result;
 }
+
+
+/**
+ * Call `on_complete` to complete a string.
+ */
+std::vector<std::string> CLua::get_completions(std::string token)
+{
+    std::vector<std::string> result;
+
+    lua_getglobal(m_lua, "on_complete");
+    lua_pushstring(m_lua, token.c_str());
+
+    if (lua_pcall(m_lua, 1, 1, 0) != 0)
+        return result;
+
+    lua_pushnil(m_lua);
+
+    while (lua_next(m_lua, -2))
+    {
+        const char *entry = lua_tostring(m_lua, -1);
+        result.push_back(entry);
+        lua_pop(m_lua, 1);
+
+    }
+
+    return (result);
+}

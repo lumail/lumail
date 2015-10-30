@@ -380,6 +380,45 @@ end
 
 
 --
+-- This function is called to generate tab-completions
+--
+function on_complete( token )
+
+   --
+   -- Some fixed things that we should be able to complete upon.
+   --
+   tmp = {
+      "Panel:title", "Panel:text", "Screen:exit"
+   }
+
+   --
+   -- The values we'll return to the caller.
+   ret = { }
+
+   --
+   -- Add in all user-defined functions.
+   --
+   for k,v in pairs(_G) do
+      tmp[k] = k
+   end
+
+   --
+   -- Do we have a match?
+   --
+   for k,v in pairs(tmp) do
+      if ( string.match( v, "^" .. token ) ) then
+         ret[k] = v
+      end
+   end
+
+   --
+   -- Return the value(s).
+   --
+   return(ret)
+end
+
+
+--
 -- This animates the title of the display-panel, which is an interesting
 -- effect.  Or an annoyance, depending on which you prefer.
 --
