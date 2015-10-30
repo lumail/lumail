@@ -48,6 +48,8 @@ Callbacks
 
 The global function `on_idle` is invoked between screen-refreshes.
 
+The global function `on_complete` is called to handle TAB-completion.
+
 Otherwise the most important user-definable functions are:
 
 * Message.to_string()
