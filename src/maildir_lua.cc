@@ -41,6 +41,7 @@ extern "C"
 
 
 #include "file.h"
+#include "global_state.h"
 #include "maildir.h"
 #include "message.h"
 #include "message_lua.h"
@@ -233,25 +234,24 @@ int l_CMaildir_destructor(lua_State * l)
 
 
 /**
- * Get all maildirs beneath a given prefix.
+ * Get the current maildirs, paying attention to the `maildir.limit`
+ * setting.
  */
-int get_maildirs(lua_State * L)
+int current_maildirs(lua_State * L)
 {
-    const char *prefix = luaL_checkstring(L, 1);
+    CGlobalState *global = CGlobalState::instance();
+    std::vector<std::shared_ptr<CMaildir>> maildirs = global->get_maildirs();
 
-    std::vector < std::string > tmp = CFile::get_all_maildirs(prefix);
-
-    lua_createtable(L, tmp.size(), 0);
+    lua_createtable(L, maildirs.size(), 0);
     int i = 0;
 
-    for (std::vector < std::string >::iterator it = tmp.begin();
-            it != tmp.end(); ++it)
+    for (std::vector<std::shared_ptr<CMaildir>>::iterator it = maildirs.begin();
+            it != maildirs.end(); ++it)
     {
-        std::string path = (*it);
-        push_cmaildir(L, std::shared_ptr<CMaildir>(new CMaildir(path)));
+        std::shared_ptr<CMaildir> cur = (*it);
+        push_cmaildir(L, cur);
 
         lua_rawseti(L, -2, i + 1);
-
         i++;
     }
 
@@ -293,6 +293,6 @@ void InitMaildir(lua_State * l)
     /**
      * Now add in the static method.
      */
-    lua_pushcfunction(l, get_maildirs);
-    lua_setglobal(l, "get_maildirs");
+    lua_pushcfunction(l, current_maildirs);
+    lua_setglobal(l, "current_maildirs");
 }

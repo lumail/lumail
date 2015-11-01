@@ -54,8 +54,8 @@ public:
 private:
 
     /**
-     * Format a single Maildir.
+     * Get the output of calling `maildir_view`, which is the text we'll display.
      */
-    std::string format(std::shared_ptr<CMaildir> cur);
+    std::vector<std::string> get_text();
 
 };

@@ -41,6 +41,65 @@ CMaildirView::~CMaildirView()
 {
 }
 
+
+
+/**
+ * Get the output of calling `maildir_view`, which is the text we'll display.
+ */
+std::vector<std::string> CMaildirView::get_text()
+{
+    std::vector<std::string> result;
+
+    /**
+     * Get the lua state.
+     */
+    CLua *lua = CLua::instance();
+    lua_State * l = lua->state();
+
+    /**
+     * If there is a maildir_mode() function, then call it.
+     */
+    lua_getglobal(l, "maildir_view");
+
+    if (lua_isnil(l, -1))
+        return (result);
+
+    /**
+     * Call the function.
+     */
+    lua_pcall(l, 0, 1, 0);
+
+    /**
+     * Now get the table we expected.
+     */
+    if (lua_istable(l, 1))
+    {
+        lua_pushnil(l);
+
+        while (lua_next(l, -2))
+        {
+            const char *entry = lua_tostring(l, -1);
+            result.push_back(entry);
+            lua_pop(l, 1);
+        }
+    }
+
+    /**
+     * Store the number of lines we've retrieved.
+     */
+    CConfig *config = CConfig::instance();
+    int max = result.size();
+
+    if (max > 0)
+        max -= 1;
+
+    config->set("maildir.max", std::to_string(max));
+
+    return (result);
+
+}
+
+
 /**
  * This is the virtual function which is called to refresh the display
  * when the global.mode == "maildir"
@@ -54,15 +113,20 @@ void CMaildirView::draw()
     std::vector<std::shared_ptr<CMaildir> > maildirs = state->get_maildirs();
 
     /**
-     * For each maildir format it.
+     * If there is nothing present then we're done.
      */
-    std::vector<std::string> display;
-
-    for (std::vector < std::shared_ptr<CMaildir> >::iterator it = maildirs.begin(); it != maildirs.end(); it++)
+    if (maildirs.size() < 1 )
     {
-        display.push_back(format(*(it)));
+        mvprintw(10, 10, "This is 'maildir' mode.");
+        mvprintw(12, 10, "No maildirs are currently visible.");
+        return;
     }
 
+    /**
+     * Get the lines of the message, as an array of lines, such that
+     * we can draw it.
+     */
+    std::vector<std::string> lines = get_text();
 
     /**
      * Now handle our offsets/etc.
@@ -110,7 +174,7 @@ void CMaildirView::draw()
      * Draw the text, via our base-class.
      */
     CScreen *screen = CScreen::instance();
-    screen->draw_text_lines(display, cur, max);
+    screen->draw_text_lines(lines, cur, max);
 
 }
 
@@ -119,50 +183,4 @@ void CMaildirView::draw()
  */
 void CMaildirView::on_idle()
 {
-}
-
-/**
- * Call Maildir.to_string() against the maildir.
- */
-std::string CMaildirView::format(std::shared_ptr<CMaildir> cur)
-{
-    /**
-     * Get access to our lua-magic.
-     */
-    CLua *lua = CLua::instance();
-    lua_State * l = lua->state();
-
-    /**
-     * The function we're going to call...
-     */
-    lua_getglobal(l, "Maildir");
-    lua_getfield(l, -1, "to_string");
-
-    /**
-     * Push the Maildir object to the lua-stack, which relates to
-     * this message.
-     */
-    push_cmaildir(l, cur);
-
-
-    /**
-     * Now call "to_string"
-     */
-    if (lua_pcall(l, 1, 1, 0) != 0)
-    {
-        std::cerr << "Error calling CMaildir:to_string - " << lua_tostring(l, -1);
-        return "";
-    }
-
-    /**
-     * Fingers crossed we now have output.
-     */
-    if (lua_tostring(l, -1) == NULL)
-    {
-        std::cerr << "NULL OUTPUT!!!1!! " << std::endl;
-        return "";
-    }
-
-    std::string output = lua_tostring(l, -1);
-    return output;
 }
