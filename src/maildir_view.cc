@@ -115,7 +115,7 @@ void CMaildirView::draw()
     /**
      * If there is nothing present then we're done.
      */
-    if (maildirs.size() < 1 )
+    if (maildirs.size() < 1)
     {
         mvprintw(10, 10, "This is 'maildir' mode.");
         mvprintw(12, 10, "No maildirs are currently visible.");
