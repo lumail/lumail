@@ -23,6 +23,7 @@
 #include "global_state.h"
 #include "lua.h"
 #include "maildir.h"
+#include "maildir_lua.h"
 #include "maildir_view.h"
 
 
@@ -154,10 +155,7 @@ std::string CMaildirView::format(std::shared_ptr<CMaildir> cur)
     // TODO: Fix this properly - we need to use a shared_ptr for the
     // maildir_object.
     //
-    CMaildir **udata = (CMaildir **) lua_newuserdata(l, sizeof(CMaildir *));
-    *udata = new CMaildir(cur->path());
-    luaL_getmetatable(l, "luaL_CMaildir");
-    lua_setmetatable(l, -2);
+    push_cmaildir(l, cur);
 
 
     /**

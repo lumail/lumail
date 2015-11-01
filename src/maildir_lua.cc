@@ -47,19 +47,51 @@ extern "C"
 
 
 
+
+/**
+ * Push a CMaildr pointer onto the Lua stack.
+ */
+void push_cmaildir(lua_State * l, std::shared_ptr<CMaildir> maildir)
+{
+    /**
+     * Allocate a new object.
+     */
+    void *ud = lua_newuserdata(l, sizeof(std::shared_ptr<CMaildir>*));
+
+    if (!ud)
+    {
+        /* Error - couldn't allocate the memory */
+        return;
+    }
+
+    /* We can't just do *(shared_ptr<...> *)ud = shared_ptr<>... since
+     * it will try to call the assignment operator on the object at *ud,
+     * but there isn't one (so it tries to free random junk).
+     *
+     * Instead, construct the new shared pointer in the memory we've just
+     * allocated.
+     */
+    std::shared_ptr<CMaildir> *udata = new(ud) std::shared_ptr<CMaildir>();
+
+    /*
+     * Now that we have a valid shared_ptr pointing to nothing, we can
+     * assign the final value to it.
+     */
+    *udata = maildir;
+
+    luaL_getmetatable(l, "luaL_CMaildir");
+    lua_setmetatable(l, -2);
+}
+
+
 /**
  * Binding for CMaildir
  */
 int l_CMaildir_constructor(lua_State * l)
 {
-    const char *name = luaL_checkstring(l, 1);
+    const char *path = luaL_checkstring(l, 1);
 
-    CMaildir **udata = (CMaildir **) lua_newuserdata(l, sizeof(CMaildir *));
-    *udata = new CMaildir(name);
-
-    luaL_getmetatable(l, "luaL_CMaildir");
-
-    lua_setmetatable(l, -2);
+    push_cmaildir(l, std::shared_ptr<CMaildir>(new CMaildir(path)));
 
     return 1;
 }
@@ -67,11 +99,25 @@ int l_CMaildir_constructor(lua_State * l)
 
 
 /**
- * Is the object a CMaildir object?
+ * Test that the object is a std::shared_ptr<CMaildir>.
  */
-CMaildir * l_CheckCMaildir(lua_State * l, int n)
+std::shared_ptr<CMaildir> l_CheckCMaildir(lua_State * l, int n)
 {
-    return *(CMaildir **) luaL_checkudata(l, n, "luaL_CMaildir");
+    void *ud = luaL_checkudata(l, 1, "luaL_CMaildir");
+
+    if (ud)
+    {
+        /* Get a pointer to the shared_ptr object */
+        std::shared_ptr<CMaildir> *ud_msg = static_cast<std::shared_ptr<CMaildir> *>(ud);
+
+        /* Return a copy (of the pointer) */
+        return *ud_msg;
+    }
+    else
+    {
+        /* otherwise a null pointer */
+        return std::shared_ptr<CMaildir>();
+    }
 }
 
 
@@ -81,8 +127,7 @@ CMaildir * l_CheckCMaildir(lua_State * l, int n)
  */
 int l_CMaildir_path(lua_State * l)
 {
-    CMaildir *foo = l_CheckCMaildir(l, 1);
-
+    std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
     lua_pushstring(l, foo->path().c_str());
     return 1;
 }
@@ -94,7 +139,7 @@ int l_CMaildir_path(lua_State * l)
  */
 int l_CMaildir_total_messages(lua_State * l)
 {
-    CMaildir *foo = l_CheckCMaildir(l, 1);
+    std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
     lua_pushinteger(l, foo->total_messages());
     return 1;
 }
@@ -106,7 +151,7 @@ int l_CMaildir_total_messages(lua_State * l)
  */
 int l_CMaildir_unread_messages(lua_State * l)
 {
-    CMaildir *foo = l_CheckCMaildir(l, 1);
+    std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
     lua_pushinteger(l, foo->unread_messages());
     return 1;
 }
@@ -118,8 +163,7 @@ int l_CMaildir_unread_messages(lua_State * l)
  */
 int l_CMaildir_exists(lua_State * l)
 {
-    CMaildir *foo = l_CheckCMaildir(l, 1);
-
+    std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
 
     int n = lua_gettop(l);
 
@@ -145,9 +189,9 @@ int l_CMaildir_exists(lua_State * l)
  */
 int l_CMaildir_messages(lua_State * l)
 {
-    CMaildir *m = l_CheckCMaildir(l, 1);
+    std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
 
-    std::vector < std::string > tmp = m->messages();
+    std::vector < std::string > tmp = foo->messages();
 
     lua_createtable(l, tmp.size(), 0);
     int i = 0;
@@ -171,8 +215,18 @@ int l_CMaildir_messages(lua_State * l)
  */
 int l_CMaildir_destructor(lua_State * l)
 {
-    CMaildir *foo = l_CheckCMaildir(l, 1);
-    delete foo;
+    void *ud = luaL_checkudata(l, 1, "luaL_CMaildir");
+
+    if (ud)
+    {
+        /* Get a pointer to the shared_ptr object */
+        std::shared_ptr<CMaildir> *ud_msg = static_cast<std::shared_ptr<CMaildir> *>(ud);
+
+        /* We need to destruct the pointer in place; it will decrement
+         * the reference count as usual.  After this the user data object
+         * becomes just plain memory again. */
+        ud_msg->~shared_ptr<CMaildir>();
+    }
 
     return 0;
 }
@@ -193,11 +247,9 @@ int get_maildirs(lua_State * L)
     for (std::vector < std::string >::iterator it = tmp.begin();
             it != tmp.end(); ++it)
     {
-        CMaildir **udata =
-            (CMaildir **) lua_newuserdata(L, sizeof(CMaildir *));
-        *udata = new CMaildir(*it);
-        luaL_getmetatable(L, "luaL_CMaildir");
-        lua_setmetatable(L, -2);
+        std::string path = (*it);
+        push_cmaildir(L, std::shared_ptr<CMaildir>(new CMaildir(path)));
+
         lua_rawseti(L, -2, i + 1);
 
         i++;

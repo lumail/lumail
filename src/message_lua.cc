@@ -54,11 +54,13 @@ void push_cmessage(lua_State * l, std::shared_ptr<CMessage> message)
      * Allocate a new object.
      */
     void *ud = lua_newuserdata(l, sizeof(std::shared_ptr<CMessage>*));
+
     if (!ud)
     {
         /* Error - couldn't allocate the memory */
         return;
     }
+
     /* We can't just do *(shared_ptr<...> *)ud = shared_ptr<>... since
      * it will try to call the assignment operator on the object at *ud,
      * but there isn't one (so it tries to free random junk).
@@ -66,7 +68,7 @@ void push_cmessage(lua_State * l, std::shared_ptr<CMessage> message)
      * Instead, construct the new shared pointer in the memory we've just
      * allocated.
      */
-    std::shared_ptr<CMessage> *udata = new (ud) std::shared_ptr<CMessage>();
+    std::shared_ptr<CMessage> *udata = new(ud) std::shared_ptr<CMessage>();
 
     /*
      * Now that we have a valid shared_ptr pointing to nothing, we can
@@ -96,6 +98,7 @@ int l_CMessage_constructor(lua_State * l)
 std::shared_ptr<CMessage> l_CheckCMessage(lua_State * l, int n)
 {
     void *ud = luaL_checkudata(l, 1, "luaL_CMessage");
+
     if (ud)
     {
         /* Get a pointer to the shared_ptr object */
@@ -239,6 +242,7 @@ int l_CMessage_flags(lua_State * l)
 int l_CMessage_destructor(lua_State * l)
 {
     void *ud = luaL_checkudata(l, 1, "luaL_CMessage");
+
     if (ud)
     {
         /* Get a pointer to the shared_ptr object */
@@ -249,6 +253,7 @@ int l_CMessage_destructor(lua_State * l)
          * becomes just plain memory again. */
         ud_msg->~shared_ptr<CMessage>();
     }
+
     return 0;
 }
 

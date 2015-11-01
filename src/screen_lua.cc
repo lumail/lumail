@@ -27,6 +27,7 @@ extern "C"
 
 
 #include "message_lua.h"
+#include "maildir_lua.h"
 #include "global_state.h"
 #include "screen.h"
 
@@ -68,11 +69,7 @@ int l_CScreen_maildir(lua_State * l)
     if (! current)
         return 0;
 
-    CMaildir **udata = (CMaildir **) lua_newuserdata(l, sizeof(CMaildir *));
-    *udata = new CMaildir(current->path());
-    luaL_getmetatable(l, "luaL_CMaildir");
-    lua_setmetatable(l, -2);
-
+    push_cmaildir(l, current);
     return 1;
 }
 
