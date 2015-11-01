@@ -41,6 +41,7 @@ extern "C"
 #include <vector>
 #include <gmime/gmime.h>
 
+#include "global_state.h"
 #include "message.h"
 #include "message_part.h"
 
@@ -112,6 +113,18 @@ std::shared_ptr<CMessage> l_CheckCMessage(lua_State * l, int n)
         /* otherwise a null pointer */
         return std::shared_ptr<CMessage>();
     }
+}
+
+
+/**
+ * Get the current-message object.  Uesful in maildir-view
+ */
+int l_current_message(lua_State *l)
+{
+    CGlobalState *global = CGlobalState::instance();
+    std::shared_ptr<CMessage> cur = global->current_message();
+    push_cmessage(l, cur);
+    return 1;
 }
 
 /**
@@ -283,4 +296,10 @@ void InitMessage(lua_State * l)
     lua_pushvalue(l, -1);
     lua_setfield(l, -1, "__index");
     lua_setglobal(l, "Message");
+
+    /**
+     * Add the static `current_message` function.
+     */
+    lua_pushcfunction(l, l_current_message);
+    lua_setglobal(l, "current_message");
 }

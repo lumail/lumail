@@ -42,7 +42,7 @@ CLuaView::~CLuaView()
 
 
 /**
- * Get the output of calling `lua_mode`, which is the text we'll display.
+ * Get the output of calling `lua_view`, which is the text we'll display.
  */
 std::vector<std::string> CLuaView::get_text()
 {
@@ -57,7 +57,7 @@ std::vector<std::string> CLuaView::get_text()
     /**
      * If there is a lua_mode() function, then call it.
      */
-    lua_getglobal(l, "lua_mode");
+    lua_getglobal(l, "lua_view");
 
     if (lua_isnil(l, -1))
         return (result);

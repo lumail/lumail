@@ -132,16 +132,21 @@ Constructor:
 
      message = Message.new( "path/to/message" )
 
-Header access can be achived via `header` to read a single header, or `headers` to return a table of all present headers, and their values.
+Alternative:
 
-Flags can be accessed via the `flags()` method, which also allows them to be updated.
+*  If you're in `message`-mode the current message can be found via `current_message()`.
 
-The `parts()` method allow a message to be examined, for MIME-parts.
+Message methods:
 
-    parts = message:parts()
+* `header`
+   * Return the content of the named header, e.g. "Subject".
+* `flags`
+   * Get/Set the flags for the message.
+* `parts()`
+   * Get the MIME-parts of the message, as a table.
 
-This returns an array of `MessagePart` objects.  The `MessagePart` object
-contains methods:
+MessagePart objects are returned from the `parts()` method.  The `MessagePart`
+object contains the following methods:
 
 * type()
     * Returns the content-type of the MIME-part

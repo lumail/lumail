@@ -55,6 +55,6 @@ private:
      * Return an array of lines of the message we're to draw,
      * via the `Message.to_string()` lua function.
      */
-    std::vector<std::string> get_message(std::shared_ptr<CMessage> msg);
+    std::vector<std::string> get_text();
 
 };

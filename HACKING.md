@@ -56,6 +56,15 @@ or it might send a vector of text-lines to `CScreen::draw_text_lines`.
 Using the `draw_text_lines` method ensure there is little duplication
 between modes.
 
+Currently the following modes are implemented via Lua display-functions:
+
+* maildir-mode
+* index-mode
+* lua-mode
+    Via drawing the result of the Lua function `lua_view()`
+* message-mode
+    Via drawing the result of the Lua function `message_view()`
+
 
 Navigation
 ----------

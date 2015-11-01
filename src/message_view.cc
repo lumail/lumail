@@ -1,5 +1,5 @@
 /**
- * $FILENAME - $TITLE
+ * message_vew.cc - Draw the currently selected message, via Lua.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -46,40 +46,33 @@ CMessageView::~CMessageView()
 
 
 /**
- * Return an array of lines of the message we're to draw,
- * via the `Message.to_string()` lua function.
+ * Get the output of calling `message_view`, which is the text we'll display.
+ *
+ * The `message_view` lua function should return a table of arrays to dipslay
+ * having formatted the message as it sees fit.
  */
-std::vector<std::string> CMessageView::get_message(std::shared_ptr<CMessage> msg)
+std::vector<std::string> CMessageView::get_text()
 {
-    std::vector<std::string> results;
-
+    std::vector<std::string> result;
 
     /**
-     * Get access to our lua-magic.
+     * Get the lua state.
      */
     CLua *lua = CLua::instance();
     lua_State * l = lua->state();
 
     /**
-     * The function we're going to call.
+     * If there is a message_view() function, then call it.
      */
-    lua_getglobal(l, "Message");
-    lua_getfield(l, -1, "to_string");
+    lua_getglobal(l, "message_view");
+
+    if (lua_isnil(l, -1))
+        return (result);
 
     /**
-     * Push the message onto the stack.
+     * Call the function.
      */
-    push_cmessage(l, msg);
-
-
-    /**
-     * Now call "to_string"
-     */
-    if (lua_pcall(l, 1, 1, 0) != 0)
-    {
-        std::cerr << "Error calling CMessage:to_string - " << lua_tostring(l, -1);
-        return results;
-    }
+    lua_pcall(l, 0, 1, 0);
 
     /**
      * Now get the table we expected.
@@ -91,22 +84,30 @@ std::vector<std::string> CMessageView::get_message(std::shared_ptr<CMessage> msg
         while (lua_next(l, -2))
         {
             const char *entry = lua_tostring(l, -1);
-            results.push_back(entry);
+            result.push_back(entry);
             lua_pop(l, 1);
         }
     }
 
+    /**
+     * Store the number of lines we've retrieved.
+     */
+    int max = result.size();
+
+    if (max > 0)
+        max -= 1;
+
     CConfig *config = CConfig::instance();
-    config->set("message.max", std::to_string(results.size()));
+    config->set("message.max", std::to_string(max));
 
-    return (results);
+    return (result);
+
 }
-
 
 
 /**
  * This is the virtual function which is called to refresh the display
- * when the global.mode == "index"
+ * when the global.mode == "message"
  */
 void CMessageView::draw()
 {
@@ -130,7 +131,7 @@ void CMessageView::draw()
      * Get the lines of the message, as an array of lines, such that
      * we can draw it.
      */
-    std::vector<std::string> lines = get_message(message);
+    std::vector<std::string> lines = get_text();
 
     CConfig *config = CConfig::instance();
 

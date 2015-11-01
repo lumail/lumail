@@ -47,15 +47,20 @@ end
 
 
 --
--- This method is CRUCIAL to our operation.
---
 -- This method returns the text which is displayed when a specific
 -- message-object is displayed.
 --
 -- If you want to perform HTML->Text conversion, apply filters, or do
 -- other such things you must override this method.
 --
-function Message.to_string(self)
+function message_view()
+
+   --
+   -- The current message
+   --
+   msg = current_message()
+
+   print(msg:path())
    local output = ""
 
    --
@@ -67,7 +72,7 @@ function Message.to_string(self)
    -- For each header, get it, and the value.
    --
    for i,header in ipairs( headers ) do
-      value = self:header(header) or "[unset]"
+      value = msg:header(header) or "[unset]"
       if ( value  ) then
          output = output ..  header .. ": " .. value .. "\n"
       end
@@ -81,7 +86,7 @@ function Message.to_string(self)
    --
    -- Now look for the first text/* content-type
    --
-   parts = self:parts()
+   parts = msg:parts()
 
    local found = false
    for i,part in ipairs( parts ) do
@@ -218,7 +223,7 @@ end
 --
 -- Get output for Lua-mode
 --
-function lua_mode()
+function lua_view()
    --
    -- We show this first
    --
