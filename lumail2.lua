@@ -16,6 +16,8 @@ end
 --
 -- Split a string on newlines, and return the result as a table.
 --
+-- This is used in some drawing modes.
+--
 function string_to_table(str)
   local t = {}
   local function helper(line) table.insert(t, line) return "" end
@@ -25,10 +27,14 @@ end
 
 
 --
--- Remove a colour-string from the given string
+-- Remove a colour-prefix from the given string
 --
--- A colour-string is something like "$[BLUE]" at the
--- start of a line.
+-- Our drawing code allows lines to be different coloured based upon
+-- a prefix.  So for example the text "$[RED]I like Helsinki" would be
+-- drawn as "I like Helsinki", in the colour red.
+--
+-- This function removes any existing prefix, to avoid blind additions
+-- that might end up like "$[RED]$[YELLOW]I like cakes".
 --
 function strip_colour( input )
    while( string.find(input, "^$[^]]+]" ) ) do
@@ -36,8 +42,6 @@ function strip_colour( input )
    end
    return input
 end
-
-
 
 
 
@@ -115,7 +119,7 @@ end
 -- This method returns the index-entry for a message in `index`-mode.
 --
 function Message.to_index(self)
-   local flags = self:flags()
+   local flags   = self:flags()
    local subject = self:header( "Subject" )
    local sender  = self:header( "From" )
 
@@ -148,7 +152,7 @@ end
 -- to be show in maildir-mode.
 --
 function Maildir.to_string(self)
-   local total = self:total_messages()
+   local total  = self:total_messages()
    local unread = self:unread_messages()
    local path   = self:path()
 
@@ -388,7 +392,21 @@ function on_complete( token )
    -- Some fixed things that we should be able to complete upon.
    --
    tmp = {
-      "Panel:title", "Panel:text", "Screen:exit"
+      "Panel:height",
+      "Panel:hide",
+      "Panel:show",
+      "Panel:text",
+      "Panel:title",
+      "Panel:toggle",
+      "Panel:visible",
+      "Screen:clear",
+      "Screen:exit",
+      "Screen:get_line",
+      "Screen:height",
+      "Screen:maildir",
+      "Screen:message",
+      "Screen:sleep",
+      "Screen:width",
    }
 
    --
@@ -551,6 +569,7 @@ keymap['index']['n'] = 'Config:set( "index.limit", "new" )'
 --
 -- Exit out of modes
 --
+keymap['maildir']['q'] = "os.exit()"
 keymap['index']['q']   = "change_mode('maildir')"
 keymap['message']['q'] = "change_mode('index')"
 
@@ -563,12 +582,20 @@ keymap['demo']['h' ] = "hostname()"
 
 
 --
+-- Now that we've defined some utility functions, some functions
+-- that are used for handling the various display modes, we can
+-- actually set the configuration of the client itself.
+--
+-- The following lines do that.
+--
+
+--
 -- Setup the prefix to our maildir hierarchy.
 --
 Config:set( "maildir.prefix", os.getenv( "HOME" ) .. "/Maildir" )
 
 --
--- Setup our default editor.  Not used.
+-- Setup our default editor.  Not used at this time.
 --
 Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )
 
