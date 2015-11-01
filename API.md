@@ -50,21 +50,6 @@ The global function `on_idle` is invoked between screen-refreshes.
 
 The global function `on_complete` is called to handle TAB-completion.
 
-Otherwise the most important user-definable functions are:
-
-* Message.to_string()
-      * Called to convert a message to something we can display.
-* Maildir.to_string()
-      * Called to format a Maildir object.
-* Message.to_index()
-      * Called t format a message for the index-mode.
-
-The latter two functions can return lines with colour settings via:
-
-    $[RED]TEXT TO DISPLAY
-
-Colours include `red`, `blue`, `yellow`, `green`, etc.
-
 
 Config
 ------
@@ -122,6 +107,7 @@ The Maildir object has the following methods:
 * `exists`
 	* Returns `true` if the Maildir exists.
 
+The currently visible maildirs can be retrieved via `current_maildirs()`.
 
 
 
@@ -205,6 +191,40 @@ The screen also has an associated status-panel, hereby referred to as "Panel".  
 Sample code:
 
      lumail2 --load-file ./panel.lua
+
+
+
+Views
+-----
+
+Each of the major modes is implemented in a combination of Lua and C++.
+
+On the C++ side there is a virtual class instantiated which has the following
+two methods:
+
+* draw()
+   * Draw the text.
+* on_idle()
+   * Called to make updates, if required.
+
+On the Lua side each mode will call a method like:
+
+* lua_view()
+    * Get the text to display in lua-mode
+* message_view()
+    * Get the text to display in message-mode
+* maildir_view()
+    * Get the text to display in maildir-mode
+
+**TODO** index_view
+
+These methods must return a table of lines, which will then be displayed.  The lines
+may contain a prefix containing colour information.  For example:
+
+    local r = { "$[RED]This is red",
+                "$[YELLOW]This is yelloW!" }
+    return r
+
 
 
 
