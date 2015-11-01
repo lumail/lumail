@@ -118,9 +118,11 @@ Constructor:
 
      message = Message.new( "path/to/message" )
 
-Alternative:
+Alternatively there are two other ways of getting hold of message-objects:
 
-*  If you're in `message`-mode the current message can be found via `current_message()`.
+* If you're in `message`-mode the current message can be found via `current_message()`.
+* If you're in `maildir`-mode the list of available messages may be retrieved via `messages()`.
+
 
 Message methods:
 
