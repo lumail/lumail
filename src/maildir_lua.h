@@ -1,5 +1,5 @@
 /**
- * maildir_lua.cc - Bindings for the CMaildir C++ object.
+ * maildir_lua.h - Bindings for the CMaildir C++ object.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -22,6 +22,5 @@ extern "C"
 }
 
 #include "maildir.h"
-#include <memory>
 
 extern void push_cmaildir(lua_State * l, std::shared_ptr<CMaildir> maildir);

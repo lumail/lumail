@@ -35,8 +35,7 @@ extern "C"
 
 
 /**
- * A singleton class holding a Lua interpreter.
- *
+ * A singleton class holding our Lua interpreter state.
  */
 class CLua
 {
@@ -76,7 +75,7 @@ public:
     std::vector<std::string> get_completions(std::string token);
 
     /**
-     * HACK - TODO - FIx
+     * HACK - TODO - Fix
      */
     lua_State *state()
     {

@@ -20,10 +20,10 @@
 #include <cursesw.h>
 
 #include "config.h"
-#include "lua.h"
-#include "index_view.h"
-#include "message_lua.h"
 #include "global_state.h"
+#include "index_view.h"
+#include "lua.h"
+#include "message_lua.h"
 #include "screen.h"
 
 
@@ -55,28 +55,15 @@ std::string CIndexView::format(std::shared_ptr<CMessage> cur)
 
 
     /**
-     * Push a new Message object to the lua-stack, which relates to
-     * this message.
-     *
-     * We do this so that we can call "to_index" on the Message object
-     * and use that for display.
+     * The function we're going to call ..
      */
     lua_getglobal(l, "Message");
     lua_getfield(l, -1, "to_index");
 
-    //
-    // This is buggy because the message is freed.
-    //
-    //  CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
-    //  *udata = m.get()
-    //
-    // We can fix it temporarily by re-creating the current-message, thusly:
-    //
-    //  *udate = new CMessage( m->path() );
-    //
-    // TODO: Fix this properly - we need to use a shared_ptr for the
-    // maildir_object.
-    //
+    /**
+     * Push the message object to the lua-stack, so we can call "to_index"
+     * on it.
+     */
     push_cmessage(l, cur);
 
     /**
@@ -89,7 +76,7 @@ std::string CIndexView::format(std::shared_ptr<CMessage> cur)
     }
 
     /**
-     * Fingers crossed we now have the message.
+     * Fingers crossed we now have output.
      */
     if (lua_tostring(l, -1) == NULL)
     {

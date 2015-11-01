@@ -61,27 +61,14 @@ std::vector<std::string> CMessageView::get_message(std::shared_ptr<CMessage> msg
     lua_State * l = lua->state();
 
     /**
-     * Push a new Message object to the lua-stack, which relates to
-     * this message.
-     *
-     * We do this so that we can call "to_string" on the Message object
-     * and use that for display.
+     * The function we're going to call.
      */
     lua_getglobal(l, "Message");
     lua_getfield(l, -1, "to_string");
 
-    //
-    // This is buggy because the message is freed.
-    //
-    //  CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
-    //  *udata = message
-    //
-    // We can fix it temporarily by re-creating the current-message, thusly:
-    //
-    //  *udate = new CMessage( message->path() );
-    //
-    // TODO: Fix this properly
-    //
+    /**
+     * Push the message onto the stack.
+     */
     push_cmessage(l, msg);
 
 

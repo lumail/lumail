@@ -1,5 +1,5 @@
 /**
- * message_lua.cc - Bindings for the CMessage C++ object.
+ * message_lua.h - Bindings for the CMessage C++ object.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -21,6 +21,5 @@ extern "C"
 #include <lua.h>
 }
 #include "message.h"
-#include <memory>
 
 extern void push_cmessage(lua_State * l, std::shared_ptr<CMessage> message);

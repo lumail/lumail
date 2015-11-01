@@ -133,28 +133,15 @@ std::string CMaildirView::format(std::shared_ptr<CMaildir> cur)
     lua_State * l = lua->state();
 
     /**
-     * Push a new Message object to the lua-stack, which relates to
-     * this message.
-     *
-     * We do this so that we can call "to_string" on the Message object
-     * and use that for display.
+     * The function we're going to call...
      */
     lua_getglobal(l, "Maildir");
     lua_getfield(l, -1, "to_string");
 
-    //
-    // This is buggy because the maildir is freed.
-    //
-    //  CMaildir **udata = (CMaildir **) lua_newuserdata(l, sizeof(CMaildir *));
-    //  *udata = m.get()
-    //
-    // We can fix it temporarily by re-creating the current-maildir, thusly:
-    //
-    //  *udate = new CMaildir( m->path() );
-    //
-    // TODO: Fix this properly - we need to use a shared_ptr for the
-    // maildir_object.
-    //
+    /**
+     * Push the Maildir object to the lua-stack, which relates to
+     * this message.
+     */
     push_cmaildir(l, cur);
 
 
@@ -168,7 +155,7 @@ std::string CMaildirView::format(std::shared_ptr<CMaildir> cur)
     }
 
     /**
-     * Fingers crossed we now have the message.
+     * Fingers crossed we now have output.
      */
     if (lua_tostring(l, -1) == NULL)
     {

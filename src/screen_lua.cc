@@ -26,9 +26,9 @@ extern "C"
 
 
 
-#include "message_lua.h"
-#include "maildir_lua.h"
 #include "global_state.h"
+#include "maildir_lua.h"
+#include "message_lua.h"
 #include "screen.h"
 
 
