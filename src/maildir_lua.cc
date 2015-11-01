@@ -43,6 +43,7 @@ extern "C"
 #include "file.h"
 #include "maildir.h"
 #include "message.h"
+#include "message_lua.h"
 
 
 
@@ -154,11 +155,7 @@ int l_CMaildir_messages(lua_State * l)
     for (std::vector < std::string >::iterator it = tmp.begin();
             it != tmp.end(); ++it)
     {
-        CMessage **udata =
-            (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
-        *udata = new CMessage(*it);
-        luaL_getmetatable(l, "luaL_CMessage");
-        lua_setmetatable(l, -2);
+        push_cmessage(l, std::shared_ptr<CMessage>(new CMessage(*it)));
         lua_rawseti(l, -2, i + 1);
 
         i++;

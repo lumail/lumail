@@ -25,6 +25,7 @@
 #include "global_state.h"
 #include "lua.h"
 #include "message.h"
+#include "message_lua.h"
 #include "message_view.h"
 #include "screen.h"
 
@@ -81,10 +82,7 @@ std::vector<std::string> CMessageView::get_message(std::shared_ptr<CMessage> msg
     //
     // TODO: Fix this properly
     //
-    CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
-    *udata = new CMessage(msg->path());
-    luaL_getmetatable(l, "luaL_CMessage");
-    lua_setmetatable(l, -2);
+    push_cmessage(l, msg);
 
 
     /**

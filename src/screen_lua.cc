@@ -26,6 +26,7 @@ extern "C"
 
 
 
+#include "message_lua.h"
 #include "global_state.h"
 #include "screen.h"
 
@@ -87,10 +88,7 @@ int l_CScreen_message(lua_State * l)
     CGlobalState *state = CGlobalState::instance();
     std::shared_ptr<CMessage> m = state->current_message();
 
-    CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
-    *udata = new CMessage(m->path());
-    luaL_getmetatable(l, "luaL_CMessage");
-    lua_setmetatable(l, -2);
+    push_cmessage(l, m);
 
     return 1;
 }

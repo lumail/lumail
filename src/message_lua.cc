@@ -1,5 +1,5 @@
 /**
- * $FILENAME - $TITLE
+ * message_lua.cc - Bindings for the CMessage C++ object.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -46,28 +46,69 @@ extern "C"
 
 
 /**
+ * Push a CMessage pointer onto the Lua stack.
+ */
+void push_cmessage(lua_State * l, std::shared_ptr<CMessage> message)
+{
+    /**
+     * Allocate a new object.
+     */
+    void *ud = lua_newuserdata(l, sizeof(std::shared_ptr<CMessage>*));
+    if (!ud)
+    {
+        /* Error - couldn't allocate the memory */
+        return;
+    }
+    /* We can't just do *(shared_ptr<...> *)ud = shared_ptr<>... since
+     * it will try to call the assignment operator on the object at *ud,
+     * but there isn't one (so it tries to free random junk).
+     *
+     * Instead, construct the new shared pointer in the memory we've just
+     * allocated.
+     */
+    std::shared_ptr<CMessage> *udata = new (ud) std::shared_ptr<CMessage>();
+
+    /*
+     * Now that we have a valid shared_ptr pointing to nothing, we can
+     * assign the final value to it.
+     */
+    *udata = message;
+
+    luaL_getmetatable(l, "luaL_CMessage");
+    lua_setmetatable(l, -2);
+}
+
+/**
  * Binding for CMessage
  */
 int l_CMessage_constructor(lua_State * l)
 {
     const char *name = luaL_checkstring(l, 1);
 
-    CMessage **udata = (CMessage **) lua_newuserdata(l, sizeof(CMessage *));
-    *udata = new CMessage(name);
-
-    luaL_getmetatable(l, "luaL_CMessage");
-
-    lua_setmetatable(l, -2);
+    push_cmessage(l, std::shared_ptr<CMessage>(new CMessage(name)));
 
     return 1;
 }
 
 /**
- * Test that the object is a CMessage.
+ * Test that the object is a std::shared_ptr<CMessage>.
  */
-CMessage * l_CheckCMessage(lua_State * l, int n)
+std::shared_ptr<CMessage> l_CheckCMessage(lua_State * l, int n)
 {
-    return *(CMessage **) luaL_checkudata(l, n, "luaL_CMessage");
+    void *ud = luaL_checkudata(l, 1, "luaL_CMessage");
+    if (ud)
+    {
+        /* Get a pointer to the shared_ptr object */
+        std::shared_ptr<CMessage> *ud_msg = static_cast<std::shared_ptr<CMessage> *>(ud);
+
+        /* Return a copy (of the pointer) */
+        return *ud_msg;
+    }
+    else
+    {
+        /* otherwise a null pointer */
+        return std::shared_ptr<CMessage>();
+    }
 }
 
 /**
@@ -75,8 +116,7 @@ CMessage * l_CheckCMessage(lua_State * l, int n)
  */
 int l_CMessage_path(lua_State * l)
 {
-    CMessage *foo = l_CheckCMessage(l, 1);
-
+    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
     lua_pushstring(l, foo->path().c_str());
     return 1;
 }
@@ -86,7 +126,7 @@ int l_CMessage_path(lua_State * l)
  */
 int l_CMessage_header(lua_State * l)
 {
-    CMessage *foo = l_CheckCMessage(l, 1);
+    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
 
     /* Get the header. */
     const char *str = luaL_checkstring(l, 2);
@@ -106,7 +146,7 @@ int l_CMessage_headers(lua_State * l)
     /**
      * Get the headers.
      */
-    CMessage *foo = l_CheckCMessage(l, 1);
+    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
     std::unordered_map < std::string, std::string > headers = foo->headers();
 
 
@@ -142,7 +182,7 @@ int l_CMessage_headers(lua_State * l)
  */
 int l_CMessage_parts(lua_State * l)
 {
-    CMessage *foo = l_CheckCMessage(l, 1);
+    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
 
     /**
      * Get the parts, and count.
@@ -173,7 +213,7 @@ int l_CMessage_parts(lua_State * l)
  */
 int l_CMessage_flags(lua_State * l)
 {
-    CMessage *foo = l_CheckCMessage(l, 1);
+    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
 
     /**
      * Are we setting the flags?
@@ -198,9 +238,17 @@ int l_CMessage_flags(lua_State * l)
  */
 int l_CMessage_destructor(lua_State * l)
 {
-    CMessage *foo = l_CheckCMessage(l, 1);
-    delete foo;
+    void *ud = luaL_checkudata(l, 1, "luaL_CMessage");
+    if (ud)
+    {
+        /* Get a pointer to the shared_ptr object */
+        std::shared_ptr<CMessage> *ud_msg = static_cast<std::shared_ptr<CMessage> *>(ud);
 
+        /* We need to destruct the pointer in place; it will decrement
+         * the reference count as usual.  After this the user data object
+         * becomes just plain memory again. */
+        ud_msg->~shared_ptr<CMessage>();
+    }
     return 0;
 }
 
