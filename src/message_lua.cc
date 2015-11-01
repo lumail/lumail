@@ -116,6 +116,30 @@ std::shared_ptr<CMessage> l_CheckCMessage(lua_State * l, int n)
 }
 
 
+
+/**
+ * Get the current message-list.  Uesful in maildirindex-view
+ */
+int l_messages(lua_State *l)
+{
+    CGlobalState *global = CGlobalState::instance();
+    std::vector<std::shared_ptr<CMessage> > *msgs = global->get_messages();
+
+    lua_createtable(l, msgs->size(), 0);
+    int i = 0;
+
+    for (std::vector <std::shared_ptr<CMessage>>::iterator it = msgs->begin();
+            it != msgs->end(); ++it)
+    {
+        std::shared_ptr<CMessage> m = (*it);
+        push_cmessage(l, m);
+        lua_rawseti(l, -2, i + 1);
+        i++;
+    }
+
+    return 1;
+}
+
 /**
  * Get the current-message object.  Uesful in maildir-view
  */
@@ -126,6 +150,7 @@ int l_current_message(lua_State *l)
     push_cmessage(l, cur);
     return 1;
 }
+
 
 /**
  * Get the path to the message, on-disk.
@@ -302,4 +327,10 @@ void InitMessage(lua_State * l)
      */
     lua_pushcfunction(l, l_current_message);
     lua_setglobal(l, "current_message");
+
+    /**
+     * Add the static `messages` function.
+     */
+    lua_pushcfunction(l, l_messages);
+    lua_setglobal(l, "messages");
 }

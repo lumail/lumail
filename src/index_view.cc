@@ -42,52 +42,62 @@ CIndexView::~CIndexView()
 }
 
 
+
 /**
- * Call Message.to_index()
+ * Get the output of calling `index_view`, which is the text we'll display.
  */
-std::string CIndexView::format(std::shared_ptr<CMessage> cur)
+std::vector<std::string> CIndexView::get_text()
 {
+    std::vector<std::string> result;
+
     /**
-     * Get access to our lua-magic.
+     * Get the lua state.
      */
     CLua *lua = CLua::instance();
     lua_State * l = lua->state();
 
+    /**
+     * If there is a index_view() function, then call it.
+     */
+    lua_getglobal(l, "index_view");
+
+    if (lua_isnil(l, -1))
+        return (result);
 
     /**
-     * The function we're going to call ..
+     * Call the function.
      */
-    lua_getglobal(l, "Message");
-    lua_getfield(l, -1, "to_index");
+    lua_pcall(l, 0, 1, 0);
 
     /**
-     * Push the message object to the lua-stack, so we can call "to_index"
-     * on it.
+     * Now get the table we expected.
      */
-    push_cmessage(l, cur);
-
-    /**
-     * Now call "to_string"
-     */
-    if (lua_pcall(l, 1, 1, 0) != 0)
+    if (lua_istable(l, 1))
     {
-        std::cerr << "Error calling CMessage:to_index - " << lua_tostring(l, -1);
-        return "";
+        lua_pushnil(l);
+
+        while (lua_next(l, -2))
+        {
+            const char *entry = lua_tostring(l, -1);
+            result.push_back(entry);
+            lua_pop(l, 1);
+        }
     }
 
     /**
-     * Fingers crossed we now have output.
+     * Store the number of lines we've retrieved.
      */
-    if (lua_tostring(l, -1) == NULL)
-    {
-        std::cerr << "NULL OUTPUT!!!1!! " << std::endl;
-        return "";
-    }
+    CConfig *config = CConfig::instance();
+    int max = result.size();
 
-    std::string output = lua_tostring(l, -1);
-    return (output);
+    if (max > 0)
+        max -= 1;
+
+    config->set("index.max", std::to_string(max));
+
+    return (result);
+
 }
-
 
 /**
  * This is the virtual function which is called to refresh the display
@@ -101,34 +111,14 @@ void CIndexView::draw()
     if (!folder)
     {
         mvprintw(10, 10, "This is 'index' mode");
-        mvprintw(12, 10, "This should draw a list of messages");
-        mvprintw(14, 10, "No Maildir selected");
+        mvprintw(12, 10, "This should draw a list of messages, but no Maildir is selected.");
         return;
     }
 
     /**
-     * Get the message-list.
+     * Get the formatted list of text to draw.
      */
-    CGlobalState *global = CGlobalState::instance();
-    CMessageList *messages = global->get_messages();
-
-    /**
-     * If empty we're done.
-     */
-    if (messages->size() < 1)
-        return;
-
-
-    /**
-     * Build up an array of lines to display.
-     */
-    std::vector<std::string> display;
-
-    for (std::vector<std::shared_ptr<CMessage>>::iterator it = messages->begin(); it != messages->end(); it++)
-    {
-        display.push_back(format(*(it)));
-    }
-
+    std::vector<std::string> display = get_text();
 
     /**
      * Now handle our offsets/etc.

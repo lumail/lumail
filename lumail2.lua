@@ -62,6 +62,59 @@ end
 
 
 --
+-- This function formats a single message for display in index-mode,
+-- it is called by the `index_view()` function defined next.
+--
+function Message:format(msg)
+   local flags   = msg:flags()
+   local subject = msg:header( "Subject" )
+   local sender  = msg:header( "From" )
+
+   local output = string.format( "[%4s] - %s - %s", flags, sender, subject )
+
+   --
+   -- If the message is unread then show it in RED
+   --
+   if ( string.find( msg:flags(), "N" ) ) then
+      output = "$[RED]" .. output
+   end
+
+   --
+   -- If the message contains the word "STEVE" - show it in blue
+   --
+   if ( string.find( output, "steve" )  ) then
+      output = strip_colour( output )
+      output = "$[BLUE]" .. output
+   end
+   return( output )
+end
+
+
+--
+-- This function displays the screen when in `index`-mode.
+--
+-- It fetches the list of current messages, and calls `Message:format()`
+-- on each one.
+--
+function index_view()
+   local result = {}
+
+   -- Get the messages in the maildir
+   local messages = messages()
+
+
+   -- For each one add the output
+   for index,object in ipairs( messages ) do
+      local str = Message:format(object)
+      table.insert(result,str)
+   end
+
+   return result
+end
+
+
+
+--
 -- This function returns the output which is displayed in `lua`-mode.
 --
 function lua_view()
@@ -137,7 +190,7 @@ end
 --
 -- This method returns the text which is displayed in maildir-view
 --
--- It retrieves the list of Maildirs, an calls Maildir:format on
+-- It retrieves the list of Maildirs, and calls `Maildir:format` on
 -- each one.
 --
 function maildir_view()
@@ -153,7 +206,6 @@ function maildir_view()
    end
 
    return result
-   --]]
 end
 
 
@@ -229,43 +281,6 @@ function message_view()
    --
    return( string_to_table( output ) )
 end
-
-
---
--- This method is CRUCIAL to our operation.
---
--- This method returns the index-entry for a message in `index`-mode.
---
-function Message.to_index(self)
-   local flags   = self:flags()
-   local subject = self:header( "Subject" )
-   local sender  = self:header( "From" )
-
-   local output = string.format( "[%4s] - %s - %s", flags, sender, subject )
-
-   --
-   -- If the message is unread then show it in RED
-   --
-   if ( string.find( self:flags(), "N" ) ) then
-      output = "$[RED]" .. output
-   end
-
-   --
-   -- If the message contains the word "STEVE" - show it in blue
-   --
-   if ( string.find( output, "steve" )  ) then
-      output = strip_colour( output )
-      output = "$[BLUE]" .. output
-   end
-
-
-   return( output );
-end
-
-
-
-
-
 
 
 

@@ -57,7 +57,7 @@ public:
 private:
 
     /**
-     * Call Message.to_index().
+     * Get the output of calling `index_view`, which is the text we'll display.
      */
-    std::string format(std::shared_ptr<CMessage> cur);
+    std::vector<std::string> get_text();
 };
