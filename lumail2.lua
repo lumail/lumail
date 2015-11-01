@@ -1,7 +1,9 @@
 
 --
--- Define some utility functions
+-- 1. Define some utility functions
 --
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
 
 --
@@ -44,14 +46,71 @@ function strip_colour( input )
 end
 
 
+--
+-- Change the mode - and update the panel-title, if we have one.
+--
+function change_mode( new_mode )
+   Config:set( "global.mode", new_mode )
+   Panel:title( "Mode is now " .. new_mode )
+end
 
 
 --
--- This method returns the text which is displayed when a specific
--- message-object is displayed.
+-- 2. Define our views
 --
--- If you want to perform HTML->Text conversion, apply filters, or do
--- other such things you must override this method.
+-----------------------------------------------------------------------------
+
+
+--
+-- This function returns the output which is displayed in `lua`-mode.
+--
+function lua_view()
+   --
+   -- We show this first
+   --
+   a = {
+      "$[RED]This is a red line",
+      "$[BLUE]This is a blue line",
+      "$[GREEN]This is a green line",
+   }
+
+   --
+   -- Now we get some text from running a command.
+   --
+   local handle = io.popen("cat /etc/passwd")
+   local result = handle:read("*a")
+   handle:close()
+
+   --
+   -- The command output is now split into rows.
+   --
+   result = string_to_table( result )
+
+   --
+   -- Add the command output to the original table.
+   --
+   for k,v in ipairs( result ) do
+      if ( string.find( v, "root" ) or
+	   string.find( v, "nobody" ) ) then
+	 v = "$[CYAN]" .. v
+	 end
+      table.insert( a, v )
+   end
+
+   --
+   -- And return the text.
+   --
+   return( a )
+end
+
+
+--
+-- This method returns the text which is displayed in mode-mode.
+--
+-- First of all the current-message is retrieved, then that is
+-- formatted into an array of lines which are displayed to the user.
+--
+-- The scrolling is handled on the C++ side.
 --
 function message_view()
 
@@ -179,6 +238,10 @@ function Maildir.to_string(self)
 end
 
 
+
+
+
+
 --
 -- This is utility-function for showing some output in the status-panel.
 --
@@ -220,48 +283,12 @@ end
 
 
 
+
+
 --
--- Get output for Lua-mode
+-- 3. Define some navigational-functions.
 --
-function lua_view()
-   --
-   -- We show this first
-   --
-   a = {
-      "$[RED]This is a red line",
-      "$[BLUE]This is a blue line",
-      "$[GREEN]This is a green line",
-   }
-
-   --
-   -- Now we get some text from running a command.
-   --
-   local handle = io.popen("cat /etc/passwd")
-   local result = handle:read("*a")
-   handle:close()
-
-   --
-   -- The command output is now split into rows.
-   --
-   result = string_to_table( result )
-
-   --
-   -- Add the command output to the original table.
-   --
-   for k,v in ipairs( result ) do
-      if ( string.find( v, "root" ) or
-	   string.find( v, "nobody" ) ) then
-	 v = "$[CYAN]" .. v
-	 end
-      table.insert( a, v )
-   end
-
-   --
-   -- And return the text.
-   --
-   return( a )
-end
-
+-----------------------------------------------------------------------------
 
 
 -- Allow navigation - Selection of a maildir, or message.
@@ -281,7 +308,6 @@ function select()
       return
    end
 end
-
 
 
 --
@@ -319,6 +345,7 @@ function left()
 
    Config:set( "global.horizontal", x )
 end
+
 
 function right()
    local x = Config:get("global.horizontal")
@@ -388,6 +415,16 @@ function prev( offset )
 end
 
 
+
+
+
+
+--
+-- 4. Define some call-backs which are implemented at various times.
+--
+-----------------------------------------------------------------------------
+
+
 --
 -- This function is called to generate tab-completions
 --
@@ -442,45 +479,9 @@ end
 
 
 --
--- This animates the title of the display-panel, which is an interesting
--- effect.  Or an annoyance, depending on which you prefer.
+-- Update the status-bar on-idle.
 --
 function on_idle()
---[[
-   --
-   -- Get the title, shift it once byte, and set it
-   --
-   title = Panel:title()
-   local tmp = string.sub(title, 2 )
-   tmp = tmp .. string.sub(title,1,1)
-   Panel:title(tmp)
-
-   --
-   --  Show some information in the panel.
-   --
-   local mode = Config:get("global.mode")
-   local cur  = Config:get(mode .. ".current")
-   if not cur  then
-      cur = "UNSET"
-   end
-   local max  = Config:get(mode .. ".max" )
-   if not max  then
-      max = "UNSET"
-   end
-
-   local text  = "Current mode "..mode.." Current offset:".. cur .." Max offset:".. max
-   local text2 =  "$[YELLOW]This is lumail2, by Steve Kemp"
-
-   if ( mode == "index" ) then
-      local md = Screen:maildir()
-      text2 = "Current maildir : " .. md:path()
-   end
-   if ( mode == "message" ) then
-      local md = Screen:message()
-      text2 = "Current message : " .. md:path()
-   end
-   Panel:text( { text, text2 } )
---]]
    Panel:title( "$[RED]Red title here. This must be serious!" )
    Panel:text( { "$[YELLOW]Yellow line here.", "$[GREEN]Green line here!" } )
 end
@@ -500,13 +501,13 @@ end
 --]]
 
 
+
+
 --
--- Change the mode - and update the panel-title, if we have one.
+-- 5. Define our key-bindings.
 --
-function change_mode( new_mode )
-   Config:set( "global.mode", new_mode )
-   Panel:title( "Mode is now " .. new_mode )
-end
+-----------------------------------------------------------------------------
+
 
 
 --
@@ -586,13 +587,13 @@ keymap['demo']['h' ] = "hostname()"
 
 
 
+
+
+
 --
--- Now that we've defined some utility functions, some functions
--- that are used for handling the various display modes, we can
--- actually set the configuration of the client itself.
+-- 6. Configure the mail-client.
 --
--- The following lines do that.
---
+-----------------------------------------------------------------------------
 
 --
 -- Setup the prefix to our maildir hierarchy.
