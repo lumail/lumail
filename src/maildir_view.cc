@@ -57,7 +57,7 @@ std::vector<std::string> CMaildirView::get_text()
     lua_State * l = lua->state();
 
     /**
-     * If there is a maildir_mode() function, then call it.
+     * If there is a maildir_view() function, then call it.
      */
     lua_getglobal(l, "maildir_view");
 
