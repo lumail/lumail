@@ -32,7 +32,6 @@
 /**
  * Views.
  */
-#include "demo_view.h"
 #include "history.h"
 #include "index_view.h"
 #include "lua_view.h"
@@ -73,7 +72,6 @@ CScreen::CScreen()
     /**
      * Register our view-modes.
      */
-    m_views["demo"]    = new CDemoView();
     m_views["index"]   = new CIndexView();
     m_views["lua"]     = new CLuaView();
     m_views["maildir"] = new CMaildirView();

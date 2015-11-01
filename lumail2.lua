@@ -102,9 +102,8 @@ function index_view()
    -- Get the messages in the maildir
    local messages = messages()
 
-
    -- For each one add the output
-   for index,object in ipairs( messages ) do
+   for offset,object in ipairs( messages ) do
       local str = Message:format(object)
       table.insert(result,str)
    end
@@ -282,37 +281,6 @@ function message_view()
    return( string_to_table( output ) )
 end
 
-
-
---
--- This is utility-function for showing some output in the status-panel.
---
-function show_command_output( title, cmd )
-   Panel:title("Command Output");
-
-   local handle = io.popen(cmd)
-   local result = handle:read("*a")
-   handle:close()
-
-   Panel:text( { title, "\t" .. result } )
-   if ( Panel:visible() == false ) then
-      Panel:show()
-   end
-end
-
---
--- Show the date in the panel
---
-function date()
-   show_command_output( "The date is", "date" );
-end
-
---
--- Show our hostname in the panel.
---
-function hostname()
-   show_command_output( "The host is", "hostname" );
-end
 
 --
 -- Read input, and evaluate it.
@@ -557,7 +525,6 @@ end
 --
 keymap = {}
 keymap['global']  = {}
-keymap['demo']    = {}
 keymap['maildir'] = {}
 keymap['index']   = {}
 keymap['message'] = {}
@@ -571,7 +538,6 @@ keymap['global']['TAB'] = "Panel:toggle()"
 
 keymap['global']['M'] = "change_mode( 'maildir' );"
 keymap['global']['I'] = "change_mode( 'index' );"
-keymap['global']['D'] = "change_mode( 'demo' );"
 keymap['global']['L'] = "change_mode( 'lua' );"
 
 
@@ -621,11 +587,6 @@ keymap['maildir']['q'] = "os.exit()"
 keymap['index']['q']   = "change_mode('maildir')"
 keymap['message']['q'] = "change_mode('index')"
 
---
--- Demo Mode-specific bindings
---
-keymap['demo']['d' ] = "date()"
-keymap['demo']['h' ] = "hostname()"
 
 
 

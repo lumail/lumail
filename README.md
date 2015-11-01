@@ -26,6 +26,9 @@ The user-interface will be familiar to users of lumail 1.x, the only obvious
 changes is the status-panel which can display persistent output, under the control of Lua,
 and the addition of new display-modes.
 
+It should be noted that all of the display-modes are created/maintained by Lua code,
+which means it is possible to create very flexible and customized output.
+
 Because this is a modal-application you're always in one of a fixed number of modes:
 
 * `maildir`-mode
@@ -34,8 +37,6 @@ Because this is a modal-application you're always in one of a fixed number of mo
     * Allows viewing a list of messages, i.e. the contents of a Maildir.
 * `message`-mode
     * Allows you to view a single message.
-* `demo`-mode.
-    * Shows some simple animation.
 * `lua`-mode.
     * Is a mode that displays output created by Lua.
     * This is the way that we allow you to write custom output.
@@ -68,7 +69,6 @@ For a quick-start you can use the following bindings:
 * `M` - Maildir mode
 * `I` - Index mode
 * `L` - Lua-mode.
-* `D` - Demo-mode.
 * `Q` - Exit
 
 
