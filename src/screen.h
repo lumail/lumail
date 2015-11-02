@@ -132,6 +132,11 @@ public:
     std::string get_line(std::string prompt);
 
     /**
+     * Execute a program, resetting the screen first.
+     */
+    void execute(std::string program);
+
+    /**
      * Panel-related functions.
      */
     bool status_panel_visible();

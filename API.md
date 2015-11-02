@@ -155,6 +155,8 @@ The Screen object is registered automatically and doesn't need to be constructed
 
 * `clear()`
     * Clear the screan-area.
+* `execute(cmd)`
+    * Execute the given command, resetting the screen first.
 * `exit()`
     * Exit the main event-loop, and terminate the program.
 * `get_line( prompt-string )`

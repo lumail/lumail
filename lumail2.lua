@@ -294,8 +294,8 @@ end
 -- Read a line of text and execute the result as a command
 --
 function read_execute()
-   local txt = Screen:get_line("!");
-   os.execute(txt )
+   local cmd = Screen:get_line("!");
+   os.execute(cmd)
 end
 
 

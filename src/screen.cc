@@ -206,6 +206,26 @@ void CScreen::exit_main_loop()
 }
 
 
+
+void CScreen::execute(std::string prog)
+{
+    /**
+     * Save the current state of the TTY
+     */
+    refresh();
+    def_prog_mode();
+    endwin();
+
+    /* Run the command */
+    system(prog.c_str());
+
+    /**
+     * Reset + redraw
+     */
+    reset_prog_mode();
+    refresh();
+}
+
 /**
  * Convert "^I" -> "TAB", etc.
  */

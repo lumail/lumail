@@ -45,6 +45,18 @@ int l_CScreen_clear(lua_State * l)
 }
 
 
+int l_CScreen_execute(lua_State *l)
+{
+    const char *prog = luaL_checkstring(l, 2);
+
+    CScreen *foo = CScreen::instance();
+    foo->execute(prog);
+    return 0;
+
+
+}
+
+
 /**
  * Exit our main event-loop.
  */
@@ -60,16 +72,14 @@ int l_CScreen_exit(lua_State * l)
  */
 int l_CScreen_maildir(lua_State * l)
 {
-    /**
-     * Get all maildirs.
-     */
     CGlobalState *state = CGlobalState::instance();
     std::shared_ptr<CMaildir > current = state->current_maildir();
 
-    if (! current)
-        return 0;
+    if (current)
+        push_cmaildir(l, current);
+    else
+        lua_pushnil(l);
 
-    push_cmaildir(l, current);
     return 1;
 }
 
@@ -79,9 +89,6 @@ int l_CScreen_maildir(lua_State * l)
  */
 int l_CScreen_message(lua_State * l)
 {
-    /**
-     * Get all maildirs.
-     */
     CGlobalState *state = CGlobalState::instance();
     std::shared_ptr<CMessage> m = state->current_message();
 
@@ -90,7 +97,9 @@ int l_CScreen_message(lua_State * l)
     return 1;
 }
 
-
+/**
+ * Select a maildir, by index.
+ */
 int l_CScreen_select_maildir(lua_State * l)
 {
     const int offset = luaL_checkinteger(l, 2);
@@ -113,6 +122,9 @@ int l_CScreen_select_maildir(lua_State * l)
     return 0;
 }
 
+/**
+ * Select a message by index.
+ */
 int l_CScreen_select_message(lua_State * l)
 {
     const int offset = luaL_checkinteger(l, 2);
@@ -136,8 +148,10 @@ int l_CScreen_select_message(lua_State * l)
 }
 
 
-int
-l_CScreen_get_line(lua_State * l)
+/**
+ * Read a line of input from the user, with history and TAB-completion
+ */
+int l_CScreen_get_line(lua_State * l)
 {
     /**
      * Get the have a prompt?
@@ -155,16 +169,20 @@ l_CScreen_get_line(lua_State * l)
     return 1;
 }
 
-int
-l_CScreen_height(lua_State * l)
+/**
+ * Get the screen height.
+ */
+int l_CScreen_height(lua_State * l)
 {
     CScreen *foo = CScreen::instance();
     lua_pushinteger(l, foo->height());
     return 1;
 }
 
-int
-l_CScreen_sleep(lua_State * l)
+/**
+ * Delay execution for the given period, in seconds.
+ */
+int l_CScreen_sleep(lua_State * l)
 {
     const int delay = luaL_checkinteger(l, 2);
     CScreen *foo = CScreen::instance();
@@ -172,8 +190,10 @@ l_CScreen_sleep(lua_State * l)
     return 0;
 }
 
-int
-l_CScreen_width(lua_State * l)
+/**
+ * Get the screen width.
+ */
+int l_CScreen_width(lua_State * l)
 {
     CScreen *foo = CScreen::instance();
     lua_pushinteger(l, foo->width());
@@ -186,6 +206,7 @@ InitScreen(lua_State * l)
     luaL_Reg sFooRegs[] =
     {
         {"clear", l_CScreen_clear},
+        {"execute",  l_CScreen_execute},
         {"exit",  l_CScreen_exit},
         {"get_line", l_CScreen_get_line},
         {"height", l_CScreen_height},
