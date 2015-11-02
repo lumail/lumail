@@ -661,7 +661,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
 /**
  * Read a line of input via the status-line.
  */
-std::string CScreen::get_line()
+std::string CScreen::get_line(std::string prompt)
 {
     std::string buffer;
 
@@ -693,9 +693,11 @@ std::string CScreen::get_line()
         y -= PANEL_HEIGHT;
     }
 
-    mvaddnstr(y, x, ":", 1);
-
-    x = 2;
+    /**
+     * Draw the prompt, and make sure we place the cursor at a suitable spot.
+     */
+    mvaddnstr(y, x, prompt.c_str(), prompt.length());
+    x += prompt.length();
 
     while (true)
     {

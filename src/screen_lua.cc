@@ -139,8 +139,13 @@ int l_CScreen_select_message(lua_State * l)
 int
 l_CScreen_get_line(lua_State * l)
 {
+    /**
+     * Get the have a prompt?
+     */
+    const char *prompt = luaL_checkstring(l, 2);
+
     CScreen *foo = CScreen::instance();
-    std::string received = foo->get_line();
+    std::string received = foo->get_line(prompt);
 
     if (received.empty())
         lua_pushnil(l);

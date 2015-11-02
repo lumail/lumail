@@ -286,8 +286,16 @@ end
 -- Read input, and evaluate it.
 --
 function read_eval()
-   local txt = Screen:get_line();
+   local txt = Screen:get_line(":");
    loadstring( txt )()
+end
+
+--
+-- Read a line of text and execute the result as a command
+--
+function read_execute()
+   local txt = Screen:get_line("!");
+   os.execute(txt )
 end
 
 
@@ -530,15 +538,14 @@ keymap['index']   = {}
 keymap['message'] = {}
 
 --
--- Global Mode
+-- Global keybindings, which work in all modes.
 --
-keymap['global'][':'] = "read_eval()"
+keymap['global'][':']   = "read_eval()"
+keymap['global']['!']   = "read_execute()"
 keymap['global']['TAB'] = "Panel:toggle()"
-
-
-keymap['global']['M'] = "change_mode( 'maildir' );"
-keymap['global']['I'] = "change_mode( 'index' );"
-keymap['global']['L'] = "change_mode( 'lua' );"
+keymap['global']['M']   = "change_mode( 'maildir' );"
+keymap['global']['I']   = "change_mode( 'index' );"
+keymap['global']['L']   = "change_mode( 'lua' );"
 
 
 --

@@ -129,7 +129,7 @@ public:
     /**
      * Read a line of input via the status-line.
      */
-    std::string get_line();
+    std::string get_line(std::string prompt);
 
     /**
      * Panel-related functions.
