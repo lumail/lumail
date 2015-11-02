@@ -114,34 +114,41 @@ The currently visible maildirs can be retrieved via `current_maildirs()`.
 Message
 -------
 
-Constructor:
+Teh Message object represents a single message, contained within a maildir.
 
-     message = Message.new( "path/to/message" )
+You can get access to message objects in three ways:
 
-Alternatively there are two other ways of getting hold of message-objects:
-
+* Construct it manually via `Message.new( path/to/message )`.
 * If you're in `message`-mode the current message can be found via `current_message()`.
 * If you're in `maildir`-mode the list of available messages may be retrieved via `messages()`.
 
 
 Message methods:
 
-* `header`
-   * Return the content of the named header, e.g. "Subject".
 * `flags`
    * Get/Set the flags for the message.
+* `header`
+   * Return the content of the named header, e.g. "Subject".
+* `headers()`
+   * Return the names and values of every known-header, as a table.
+* `mark_read()`
+   * Mark the message as having been read.
+* `mark_unread()`
+   * Mark the message as not having been read.
 * `parts()`
    * Get the MIME-parts of the message, as a table.
+* `path()`
+   * Return the path to the message, on-disk.
 
 MessagePart objects are returned from the `parts()` method.  The `MessagePart`
 object contains the following methods:
 
 * type()
-    * Returns the content-type of the MIME-part
+    * Returns the content-type of the MIME-part.
 * content()
 	* Returns the content of the part.
 * is_attachment()
-	* Returns `true` if the part represents an attachment, false otherwise
+	* Returns `true` if the part represents an attachment, false otherwise.
 * filename()
 	* Returns the name of the attachment, if `is_attachment` returned true.
 
@@ -213,6 +220,8 @@ two methods:
 
 On the Lua side each mode will call a method like:
 
+* index_view()
+    * Get the text to display in index-mode
 * lua_view()
     * Get the text to display in lua-mode
 * message_view()
@@ -220,15 +229,15 @@ On the Lua side each mode will call a method like:
 * maildir_view()
     * Get the text to display in maildir-mode
 
-**TODO** index_view
 
-These methods must return a table of lines, which will then be displayed.  The lines
-may contain a prefix containing colour information.  For example:
+These methods must return a table of lines, which will then be displayed.
+The lines may contain a prefix containing colour information.  For example:
 
-    local r = { "$[RED]This is red",
-                "$[YELLOW]This is yelloW!" }
-    return r
-
+    function lua_view()
+      local r = { "$[RED]This is red",
+                  "$[YELLOW]This is yelloW!" }
+      return r
+    end
 
 
 
