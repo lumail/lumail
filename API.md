@@ -7,6 +7,7 @@ the version one project, is that everything is an object.
 At the moment we have objects for working with:
 
 * Configuration variables.
+* Directories
 * Files.
 * Maildirs.
 * Messages.
@@ -75,6 +76,21 @@ Sample code:
 
 
 
+Directories
+-----------
+
+The following (static) methods exist:
+
+* Directory:entries(path)
+   * Return a table of file-entries, present beneath the named directory.
+* Directory:exists(path)
+   * Return `true` if the given directory exists.
+
+Sample code:
+
+     lumail2 --no-curses --load-file ./file.lua
+
+
 Files
 -----
 
@@ -84,7 +100,12 @@ The following (static) methods exist:
    * Return a boolean based on whether the named file exists.
 * File:stat(path)
    * Return a table of information about the named target.
-   * Returns `nil` on fialure.
+   * Returns `nil` on failure.
+
+
+Sample code:
+
+     lumail2 --no-curses --load-file ./file.lua
 
 
 Maildir
