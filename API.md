@@ -164,14 +164,16 @@ Message methods:
 MessagePart objects are returned from the `parts()` method.  The `MessagePart`
 object contains the following methods:
 
-* type()
-    * Returns the content-type of the MIME-part.
 * content()
 	* Returns the content of the part.
 * is_attachment()
 	* Returns `true` if the part represents an attachment, false otherwise.
 * filename()
 	* Returns the name of the attachment, if `is_attachment` returned true.
+* size()
+    * Return the size of the content.
+* type()
+    * Returns the content-type of the MIME-part.
 
 See [show_message.lua](show_message.lua) for an example use-case of this method.
 
