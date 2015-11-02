@@ -57,12 +57,10 @@ public:
      */
     std::string path();
 
-
     /**
      * Update the path to the message.
      */
     void path(std::string new_path);
-
 
     /**
      * Get the value of the given header.
@@ -104,6 +102,15 @@ public:
      */
     bool is_new();
 
+    /**
+     * Mark a message as unread.
+     */
+    void mark_unread();
+
+    /**
+     * Mark a message as read.
+     */
+    void mark_read();
 
     /**
      * Get message-parts

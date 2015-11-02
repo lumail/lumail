@@ -214,6 +214,27 @@ int l_CMessage_headers(lua_State * l)
     return (1);
 }
 
+
+/**
+ * Mark the message as read.
+ */
+int l_CMessage_mark_read(lua_State *l)
+{
+    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
+    foo->mark_read();
+    return 0;
+}
+
+/**
+ * Mark the message as unread.
+ */
+int l_CMessage_mark_unread(lua_State *l)
+{
+    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
+    foo->mark_unread();
+    return 0;
+}
+
 /**
  * Return an array of CMessagePart objects to Lua.  These can be inspected
  * as the user wishes.
@@ -299,13 +320,15 @@ void InitMessage(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
     {
-        {"new", l_CMessage_constructor},
-        {"path", l_CMessage_path},
-        {"parts", l_CMessage_parts},
+        {"__gc", l_CMessage_destructor},
+        {"flags", l_CMessage_flags},
         {"header", l_CMessage_header},
         {"headers", l_CMessage_headers},
-        {"flags", l_CMessage_flags},
-        {"__gc", l_CMessage_destructor},
+        {"mark_read", l_CMessage_mark_read},
+        {"mark_unread", l_CMessage_mark_unread},
+        {"new", l_CMessage_constructor},
+        {"parts", l_CMessage_parts},
+        {"path", l_CMessage_path},
         {NULL, NULL}
     };
     luaL_newmetatable(l, "luaL_CMessage");

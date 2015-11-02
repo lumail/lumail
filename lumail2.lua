@@ -56,6 +56,27 @@ end
 
 
 --
+-- Simple utility function to test if the given message is
+-- new, or unread.
+--
+function Message:is_new(msg)
+   local flags = msg:flags()
+
+   -- If it has the [S]een-flag then it is not new.
+   if ( string.find( flags, "S" ) ) then
+      return false;
+   end
+
+   -- If it has the [N]ew-flag then it is new.
+   if ( string.find( flags, "N" ) ) then
+      return true
+   end
+
+   return false
+end
+
+
+--
 -- 2. Define our views
 --
 -----------------------------------------------------------------------------
@@ -224,7 +245,13 @@ function message_view()
    --
    msg = current_message()
 
-   print(msg:path())
+   --
+   -- Change the message to being read, if it is new.
+   --
+   if ( Message:is_new( msg ) ) then
+      msg:mark_read()
+   end
+
    local output = ""
 
    --

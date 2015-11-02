@@ -339,6 +339,63 @@ bool CMessage::is_new()
 
 
 /**
+ * Mark a message as unread.
+ */
+void CMessage::mark_unread()
+{
+    if (has_flag('S'))
+        remove_flag('S');
+
+}
+
+/**
+ * Mark a message as read.
+ */
+void CMessage::mark_read()
+{
+    /*
+     * Get the current path, and build a new one.
+     */
+    std::string c_path = path();
+    std::string n_path = "";
+
+    size_t offset = std::string::npos;
+
+    /**
+     * If we find /new/ in the path then rename to be /cur/
+     */
+    if ((offset = c_path.find("/new/")) != std::string::npos)
+    {
+        /**
+         * Path component before /new/ + after it.
+         */
+        std::string before = c_path.substr(0, offset);
+        std::string after  = c_path.substr(offset + strlen("/new/"));
+
+        n_path = before + "/cur/" + after;
+
+        if (rename(c_path.c_str(), n_path.c_str())  == 0)
+        {
+            path(n_path);
+            add_flag('S');
+        }
+    }
+    else
+    {
+        /**
+         * The file is new, but not in the new folder.
+         *
+         * That means we need to remove "N" from the flag-component of the path.
+         *
+         */
+        remove_flag('N');
+        add_flag('S');
+    }
+}
+
+
+
+/**
  * Parse the message into MIME-parts, if we've not already done so.
  */
 std::vector < CMessagePart * >CMessage::get_parts()
