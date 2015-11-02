@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * message.h - A class for handling a single message.
  *
  * This file is part of lumail - http://lumail.org/
  *

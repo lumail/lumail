@@ -1,4 +1,4 @@
-/**
+/*
  * maildir_view.h - Draw a list of Maildirs.
  *
  * This file is part of lumail - http://lumail.org/

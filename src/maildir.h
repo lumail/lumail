@@ -1,4 +1,4 @@
-/**
+/*
  * $FILENAME - $TITLE
  *
  * This file is part of lumail - http://lumail.org/

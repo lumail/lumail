@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * message_view.h - A class for drawing a single message.
  *
  * This file is part of lumail - http://lumail.org/
  *

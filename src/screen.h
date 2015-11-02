@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * screen.h - Our main application class.
  *
  * This file is part of lumail - http://lumail.org/
  *

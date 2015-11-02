@@ -1,4 +1,4 @@
-/**
+/*
  * maildir_lua.h - Bindings for the CMaildir C++ object.
  *
  * This file is part of lumail - http://lumail.org/

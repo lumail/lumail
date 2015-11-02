@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * message_part.h - A class for dealing with MIME parts.
  *
  * This file is part of lumail - http://lumail.org/
  *

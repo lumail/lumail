@@ -1,5 +1,5 @@
 /*
- * file.cc - Simple file-handling functions.
+ * file.h - Simple file-handling functions.
  *
  * This file is part of lumail - http://lumail.org/
  *

@@ -1,4 +1,4 @@
-/**
+/*
  * attachment_view.h - Draw a list of attachments
  *
  * This file is part of lumail - http://lumail.org/
