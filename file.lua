@@ -17,3 +17,15 @@ end
 --
 show_file( "/etc/passwd" )
 show_file( "/bin/ls" )
+
+
+
+--
+-- Now let us look at the filesystem beneath /tmp
+--
+entries = Directory:entries( "/tmp" )
+
+for k,v in ipairs(entries) do
+   data = File:stat( v )
+   print( string.format( "%10s %s", data.type, v) )
+end
