@@ -1,4 +1,5 @@
 obj.debug/
 obj.release/
-lumail
-lumail-debug
+lumail2
+lumail2-debug
+docs/
