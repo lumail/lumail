@@ -2,11 +2,13 @@
 lumail2
 =======
 
-This repository contains a very primitive "email client".  This is in quotes because right now the only thing that works is :
+This repository contains a very primitive "email client".  This is in quotes
+because right now the only thing that works is :
 
 * Listing Maildirs.
 * Listing Messages within a particular Maildir.
 * Viewing a single email-message.
+   * Viewing the attachments associated with that message.
 
 There is zero support for:
 
@@ -31,12 +33,15 @@ which means it is possible to create very flexible and customized output.
 
 Because this is a modal-application you're always in one of a fixed number of modes:
 
+
 * `maildir`-mode
     * Allows viewing mail folders.
 * `index`-mode
     * Allows viewing a list of messages, i.e. the contents of a Maildir.
 * `message`-mode
     * Allows you to view a single message.
+* `attachment`-mode
+    * Which lets you view the attachments associated with a message.
 * `lua`-mode.
     * Is a mode that displays output created by Lua.
     * This is the way that we allow you to write custom output.
