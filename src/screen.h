@@ -132,6 +132,11 @@ public:
     std::string get_line(std::string prompt);
 
     /**
+     * Show a message and return only a valid keypress from a given set.
+     */
+    std::string prompt_chars(std::string prompt, std::string valid);
+
+    /**
      * Execute a program, resetting the screen first.
      */
     void execute(std::string program);

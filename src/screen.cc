@@ -934,6 +934,60 @@ std::string CScreen::get_line(std::string prompt)
 }
 
 
+/**
+ * Show a message and return only a valid keypress from a given set.
+ */
+std::string CScreen::prompt_chars(std::string prompt, std::string valid)
+{
+    int orig_x, x;
+    int orig_y, y;
+
+    /**
+     * Get the cursor position
+     */
+    getyx(stdscr, orig_y, orig_x);
+
+    /**
+     * Ensure we draw a complete line.
+     */
+    while ((int)prompt.length() < CScreen::width())
+        prompt += " ";
+
+    /**
+     * Determine where to move the cursor to.  If the panel is visible it'll
+     * be above that.
+     */
+    x = 0;
+    y = height() - 1;
+
+    if (g_status_bar_data.hide == FALSE)
+    {
+        y -= PANEL_HEIGHT;
+    }
+
+
+    while (true)
+    {
+        int  c;
+
+
+        mvaddnstr(y, x, prompt.c_str(), prompt.length());
+
+        c = getch();
+
+        for (unsigned int i = 0; i < valid.size(); i++)
+        {
+            if (valid[i] == c)
+            {
+                std::string result = "x";
+                result[0] = c;
+                return (result);
+            }
+        }
+    }
+}
+
+
 void
 CScreen::show_status_panel()
 {

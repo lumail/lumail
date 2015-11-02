@@ -169,6 +169,23 @@ int l_CScreen_get_line(lua_State * l)
     return 1;
 }
 
+
+/**
+ * Show a message and return only a valid keypress from a given set.
+ */
+int l_CScreen_prompt_chars(lua_State * l)
+{
+    const char *prompt = luaL_checkstring(l, 2);
+    const char *chars  = luaL_checkstring(l, 3);
+
+    CScreen *foo = CScreen::instance();
+    std::string out  = foo->prompt_chars(prompt, chars);
+
+    lua_pushstring(l, out.c_str());
+
+    return 1;
+}
+
 /**
  * Get the screen height.
  */
@@ -212,6 +229,7 @@ InitScreen(lua_State * l)
         {"height", l_CScreen_height},
         {"maildir", l_CScreen_maildir},
         {"message", l_CScreen_message},
+        {"prompt", l_CScreen_prompt_chars},
         {"select_maildir", l_CScreen_select_maildir},
         {"select_message", l_CScreen_select_message},
         {"sleep", l_CScreen_sleep},
