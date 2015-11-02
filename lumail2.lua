@@ -112,6 +112,35 @@ end
 
 
 --
+-- This function returns the output which is displayed in attachment-mode
+--
+function attachment_view()
+   local result = {}
+
+   --
+   -- Get the parts from within the current message
+   --
+   local msg   = current_message()
+   local parts = msg:parts()
+
+   --
+   -- For each one - add it in
+   --
+   for k,v in ipairs( parts ) do
+      if ( v:is_attachment() ) then
+         local tmp = string.format( "%06d - %32s [%32s]",
+                                     v:size(), v:filename(), v:type() )
+         table.insert( result, tmp )
+      end
+   end
+
+   return( result )
+
+end
+
+
+
+--
 -- This function displays the screen when in `index`-mode.
 --
 -- It fetches the list of current messages, and calls `Message:format()`
@@ -559,10 +588,11 @@ end
 -- Setup our KeyMaps
 --
 keymap = {}
-keymap['global']  = {}
-keymap['maildir'] = {}
-keymap['index']   = {}
-keymap['message'] = {}
+keymap['attachment'] = {}
+keymap['global']     = {}
+keymap['maildir']    = {}
+keymap['index']      = {}
+keymap['message']    = {}
 
 --
 -- Global keybindings, which work in all modes.
@@ -621,6 +651,12 @@ keymap['maildir']['q'] = "os.exit()"
 keymap['index']['q']   = "change_mode('maildir')"
 keymap['message']['q'] = "change_mode('index')"
 
+
+--
+-- Enter/Leave attachment-mode
+--
+keymap['message']['A']    = "change_mode( 'attachment' );"
+keymap['attachment']['q'] = "change_mode( 'message' );"
 
 
 
