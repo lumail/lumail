@@ -1,4 +1,4 @@
-/**
+/*
  * index_view.cc - Draw a list of messages for an index.
  *
  * This file is part of lumail - http://lumail.org/

@@ -1,4 +1,4 @@
-/**
+/*
  * file_lua.cc - Export the `File` object to Lua.
  *
  * This file is part of lumail - http://lumail.org/

@@ -1,4 +1,4 @@
-/**
+/*
  * message_lua.cc - Bindings for the CMessage C++ object.
  *
  * This file is part of lumail - http://lumail.org/

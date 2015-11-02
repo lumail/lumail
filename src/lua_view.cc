@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * lua_view.cc - Draw the screen in lua-mode.
  *
  * This file is part of lumail - http://lumail.org/
  *

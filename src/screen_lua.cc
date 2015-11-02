@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * screen_lua.cc - Export our screen-object to Lua.
  *
  * This file is part of lumail - http://lumail.org/
  *

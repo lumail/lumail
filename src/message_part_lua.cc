@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * message_part_lua.cc - Export our MIME-part object to Lua.
  *
  * This file is part of lumail - http://lumail.org/
  *

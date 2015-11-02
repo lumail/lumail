@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * config_lua.cc - Export our configuration-object to Lua.
  *
  * This file is part of lumail - http://lumail.org/
  *

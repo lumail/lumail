@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * config.cc - A configuration-value holding class
  *
  * This file is part of lumail - http://lumail.org/
  *

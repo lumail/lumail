@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * screen.cc - Our main object.
  *
  * This file is part of lumail - http://lumail.org/
  *

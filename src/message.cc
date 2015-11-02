@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * message.cc - Wrapper for a single message.
  *
  * This file is part of lumail - http://lumail.org/
  *

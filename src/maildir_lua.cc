@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * maildir_lua.cc - Export our Maildir object to Lua.
  *
  * This file is part of lumail - http://lumail.org/
  *

@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * maildir.cc - Wrapper for a Maildir.
  *
  * This file is part of lumail - http://lumail.org/
  *

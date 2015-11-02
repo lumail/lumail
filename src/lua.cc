@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * lua.cc - Wrapper for the lua interpretter.
  *
  * This file is part of lumail - http://lumail.org/
  *

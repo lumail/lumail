@@ -1,4 +1,4 @@
-/**
+/*
  * history.cc - History wrapper for prompt-input
  *
  * This file is part of lumail: http://lumail.org/

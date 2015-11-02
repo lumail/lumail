@@ -1,4 +1,4 @@
-/**
+/*
  * message_vew.cc - Draw the currently selected message, via Lua.
  *
  * This file is part of lumail - http://lumail.org/

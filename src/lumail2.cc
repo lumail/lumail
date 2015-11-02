@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * lumail2.cc - Application entry-point.
  *
  * This file is part of lumail - http://lumail.org/
  *

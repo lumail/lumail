@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * message_part.cc - Wrapper for MIME-parts.
  *
  * This file is part of lumail - http://lumail.org/
  *

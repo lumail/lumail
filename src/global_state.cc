@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * global_state.cc - Maintain shared-state.
  *
  * This file is part of lumail - http://lumail.org/
  *

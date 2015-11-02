@@ -1,4 +1,4 @@
-/**
+/*
  * panel_lua.cc - Export the `Panel` object to Lua.
  *
  * This file is part of lumail - http://lumail.org/

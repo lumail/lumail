@@ -1,4 +1,4 @@
-/**
+/*
  * attachment_vew.cc - Draw a list of attachments
  *
  * This file is part of lumail - http://lumail.org/
