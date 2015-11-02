@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * file.cc - Simple file-handling functions.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -16,19 +16,13 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-#include <sstream>
+
 #include <algorithm>
-#include <iterator>
+#include <assert.h>
+#include <dirent.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <dirent.h>
-#include <unistd.h>
-#include <assert.h>
-
 
 #include "file.h"
 #include "maildir.h"

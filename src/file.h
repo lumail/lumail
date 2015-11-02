@@ -1,5 +1,5 @@
-/**
- * $FILENAME - $TITLE
+/*
+ * file.cc - Simple file-handling functions.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -29,6 +29,11 @@
 
 /**
  * A collection of file utility primitives.
+ *
+ * Each of these members are static, because these are really just utility
+ * functions which aren't used so much.  Some of these functions are wrapped
+ * to Lua, via the implementation in `file_lua.cc`.
+ *
  */
 class CFile
 {
