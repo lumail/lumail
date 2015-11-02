@@ -67,6 +67,14 @@ int l_CMessagePart_is_attachment(lua_State * l)
     return 1;
 }
 
+int l_CMessagePart_size(lua_State * l)
+{
+    CMessagePart *foo = l_CheckCMessagePart(l, 1);
+
+    lua_pushinteger(l, foo->content_size());
+    return 1;
+}
+
 int l_CMessagePart_type(lua_State * l)
 {
     CMessagePart *foo = l_CheckCMessagePart(l, 1);
@@ -89,6 +97,7 @@ void InitMessagePart(lua_State * l)
         {"content", l_CMessagePart_content},
         {"filename", l_CMessagePart_filename},
         {"is_attachment", l_CMessagePart_is_attachment},
+        {"size", l_CMessagePart_size},
         {"type", l_CMessagePart_type},
         {"__gc", l_CMessagePart_destructor},
         {NULL, NULL}
