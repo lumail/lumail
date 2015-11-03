@@ -44,7 +44,7 @@ int l_CPanel_height(lua_State * l)
 int l_CPanel_hide(lua_State * l)
 {
     CScreen *screen = CScreen::instance();
-    screen->hide_status_panel();
+    screen->status_panel_hide();
     return 0;
 }
 
@@ -55,7 +55,7 @@ int l_CPanel_hide(lua_State * l)
 int l_CPanel_show(lua_State * l)
 {
     CScreen *screen = CScreen::instance();
-    screen->show_status_panel();
+    screen->status_panel_show();
     return 0;
 }
 
@@ -137,7 +137,7 @@ int l_CPanel_title(lua_State * l)
 int l_CPanel_toggle(lua_State * l)
 {
     CScreen *screen = CScreen::instance();
-    screen->toggle_status_panel();
+    screen->status_panel_toggle();
     return 0;
 }
 

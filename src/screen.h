@@ -137,16 +137,48 @@ public:
     void execute(std::string program);
 
     /**
-     * Panel-related functions.
+     * Is the status-panel visible?
      */
     bool status_panel_visible();
+
+    /**
+     * Get the status-panel title.
+     */
     std::string status_panel_title();
+
+    /**
+     * Get the status-panel text.
+     */
     std::vector < std::string > status_panel_text();
-    void hide_status_panel();
-    void show_status_panel();
+
+    /**
+     * Hide the status-panel.
+     */
+    void status_panel_hide();
+
+    /**
+     * Show the status-panel.
+     */
+    void status_panel_show();
+
+    /**
+     * Set the status-panel text.
+     */
     void status_panel_text(std::vector < std::string >);
+
+    /**
+     * Set the status-panel title.
+     */
     void status_panel_title(std::string new_title);
-    void toggle_status_panel();
+
+    /**
+     * Toggle the visibility of the status-panel.
+     */
+    void status_panel_toggle();
+
+    /**
+     * Get the height of the status-panel.
+     */
     int status_panel_height();
 
     /**
@@ -159,16 +191,21 @@ public:
      */
     int get_colour(std::string name);
 
-
     /**
      * Draw a list of text, with a current entry highlighted.
      */
     void draw_text_lines(std::vector<std::string> lines, int selected, int max, bool simple = false);
 
 private:
-    void redraw_status_bar();
-    void init_status_bar();
+    /**
+     * Redraw the status-panel.
+     */
+    void status_panel_draw();
 
+    /**
+     * Initialize the status-panel.
+     */
+    void status_panel_init();
 
     /**
      * Convert ^I -> TAB, etc.

@@ -310,7 +310,7 @@ void CScreen::setup()
     m_colours[ "black" ] = 8;
 
     /* Create the status-bar.  Show it */
-    init_status_bar();
+    status_panel_init();
 }
 
 
@@ -378,8 +378,10 @@ int CScreen::width()
 
 
 
-/* Create the status-bar */
-void CScreen::init_status_bar()
+/**
+ *  Create the status-panel.
+ */
+void CScreen::status_panel_init()
 {
     int show = 1;
     int x, y;
@@ -408,7 +410,7 @@ void CScreen::init_status_bar()
     /**
      * Refresh the panel display.
      */
-    redraw_status_bar();
+    status_panel_draw();
 
     /* Attach the panel to the window. */
     g_status_bar = new_panel(g_status_bar_window);
@@ -431,7 +433,7 @@ void CScreen::init_status_bar()
 /**
  * Update the text in the status-bar.
  */
-void CScreen::redraw_status_bar()
+void CScreen::status_panel_draw()
 {
     int width = CScreen::width();
 
@@ -991,38 +993,33 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
 
 
 void
-CScreen::show_status_panel()
+CScreen::status_panel_show()
 {
     show_panel(g_status_bar);
     g_status_bar_data.hide = FALSE;
 }
 
 void
-CScreen::hide_status_panel()
+CScreen::status_panel_hide()
 {
     hide_panel(g_status_bar);
     g_status_bar_data.hide = TRUE;
 }
 
-void
-CScreen::toggle_status_panel()
+void CScreen::status_panel_toggle()
 {
     if (status_panel_visible())
-        hide_status_panel();
+        status_panel_hide();
     else
-        show_status_panel();
+        status_panel_show();
 }
 
 int CScreen::status_panel_height()
 {
-    /**
-     * TODO - calculate.
-     */
     return 6;
 }
 
-bool
-CScreen::status_panel_visible()
+bool CScreen::status_panel_visible()
 {
     if (g_status_bar_data.hide == FALSE)
         return true;
@@ -1030,11 +1027,10 @@ CScreen::status_panel_visible()
         return false;
 }
 
-void
-CScreen::status_panel_title(std::string new_title)
+void CScreen::status_panel_title(std::string new_title)
 {
     g_status_bar_data.title = new_title;
-    redraw_status_bar();
+    status_panel_draw();
 }
 
 std::string CScreen::status_panel_title()
@@ -1047,11 +1043,10 @@ std::vector < std::string > CScreen::status_panel_text()
     return (g_status_bar_data.text);
 }
 
-void
-CScreen::status_panel_text(std::vector < std::string > new_text)
+void CScreen::status_panel_text(std::vector < std::string > new_text)
 {
     g_status_bar_data.text = new_text;
-    redraw_status_bar();
+    status_panel_draw();
 }
 
 
