@@ -6,6 +6,7 @@ the version one project, is that everything is an object.
 
 At the moment we have objects for working with:
 
+* Command-line options
 * Configuration variables.
 * Directories
 * Files.
@@ -41,6 +42,9 @@ So if the current mode is `maildir` then:
 * `maildir.limit` contains any constraint in-use `all|new|pattern`.
 * `maildir.max` contains the (integer) count of messages.
 * `maildir.current` contains the index of the currently selected maildir.
+
+The global `ARGS` table contains all arguments passed to the command-line,
+and can be used for your own purposes.
 
 
 
