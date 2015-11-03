@@ -17,10 +17,6 @@
  */
 
 
-
-/**
- * Only include this header one time.
- */
 #pragma once
 
 #include "screen.h"

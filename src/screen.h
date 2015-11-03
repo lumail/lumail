@@ -69,10 +69,6 @@ class CScreen
 
 private:
     CScreen();
-
-    /**
-     * Destructor.  NOP.
-     */
     ~CScreen();
 
 public:
@@ -81,7 +77,6 @@ public:
      * Instance accessor - this is a singleton.
      */
     static CScreen *instance();
-
 
     /**
      * Setup/Teardown

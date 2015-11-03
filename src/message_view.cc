@@ -30,14 +30,14 @@
 #include "screen.h"
 
 /**
- * Constructor.  NOP.
+ * NOP.
  */
 CMessageView::CMessageView()
 {
 }
 
 /**
- * Destructor.  NOP.
+ * NOP.
  */
 CMessageView::~CMessageView()
 {
@@ -111,13 +111,13 @@ std::vector<std::string> CMessageView::get_text()
  */
 void CMessageView::draw()
 {
-    /**
+    /*
      * Get the current message.
      */
     CGlobalState *state = CGlobalState::instance();
     std::shared_ptr<CMessage> message = state->current_message();
 
-    /**
+    /*
      * If there is no current message then we're done.
      */
     if (!message)
@@ -127,7 +127,7 @@ void CMessageView::draw()
         return;
     }
 
-    /**
+    /*
      * Get the lines of the message, as an array of lines, such that
      * we can draw it.
      */
@@ -135,7 +135,7 @@ void CMessageView::draw()
 
     CConfig *config = CConfig::instance();
 
-    /**
+    /*
      * Get the currently-selected item, and the size of the lines.
      */
     std::string current = config->get_string("message.current");
@@ -153,7 +153,7 @@ void CMessageView::draw()
         current = "0";
     }
 
-    /**
+    /*
      * Now we should have, as integers:
      *
      *  max   -> The max number of lines to display.
@@ -163,7 +163,7 @@ void CMessageView::draw()
     size_t max = std::stoi(max_line, &sz);
     size_t cur = std::stoi(current, &sz);
 
-    /**
+    /*
      * Ensure we highlight the correct line.
      */
     if (cur > max)
@@ -172,7 +172,7 @@ void CMessageView::draw()
         cur = max;
     }
 
-    /**
+    /*
      * Draw the text, via our base-class.
      */
     CScreen *screen = CScreen::instance();

@@ -17,10 +17,6 @@
  */
 
 
-
-/**
- * Only include this header one time.
- */
 #pragma once
 
 #include <string>
@@ -38,9 +34,6 @@ class CIndexView: public CViewMode
 {
 
 public:
-    /**
-     * Constructor / Destructor.
-     */
     CIndexView();
     ~CIndexView();
 

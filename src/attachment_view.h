@@ -18,9 +18,6 @@
 
 
 
-/**
- * Only include this header one time.
- */
 #pragma once
 
 #include "screen.h"
@@ -28,20 +25,16 @@
 
 /**
  * This is a attachment-view of the screen - it shows lists of attachments.
- *
  */
 class CAttachmentView: public CViewMode
 {
 
 public:
-    /**
-     * Constructor / Destructor.
-     */
     CAttachmentView();
     ~CAttachmentView();
 
     /**
-     * Drawing routine - called when the current.mode=="message".
+     * Drawing routine.
      */
     void draw();
 
@@ -49,6 +42,7 @@ public:
      * Called when things are idle.
      */
     void on_idle();
+
 private:
 
     /**

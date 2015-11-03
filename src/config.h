@@ -17,9 +17,6 @@
  */
 
 
-/**
- * Only include this header one time.
- */
 #pragma once
 
 #include <vector>
@@ -101,7 +98,6 @@ public:
      */
     void set(std::string name, std::vector < std::string > entries, bool notify  = true);
 
-
     /**
      * Helper to get the string-value of a named key.
      */
@@ -118,8 +114,6 @@ private:
      * Remove the value of the given key.
      */
     void delete_key(std::string key);
-
-private:
 
     /**
      * The actual storage.

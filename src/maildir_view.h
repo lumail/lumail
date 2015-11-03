@@ -18,9 +18,6 @@
 
 
 
-/**
- * Only include this header one time.
- */
 #pragma once
 
 #include "screen.h"
@@ -36,9 +33,6 @@ class CMaildirView: public CViewMode
 {
 
 public:
-    /**
-     * Constructor / Destructor.
-     */
     CMaildirView();
     ~CMaildirView();
 
@@ -51,6 +45,7 @@ public:
      * Called when things are idle.
      */
     void on_idle();
+
 private:
 
     /**

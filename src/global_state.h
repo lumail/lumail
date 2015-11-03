@@ -17,9 +17,6 @@
  */
 
 
-/**
- * Only include this header one time.
- */
 #pragma once
 
 

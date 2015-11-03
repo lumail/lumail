@@ -17,9 +17,6 @@
  */
 
 
-/**
- * Only include this header one time.
- */
 #pragma once
 
 
@@ -42,14 +39,7 @@ class CMessagePart;
 class CMessage
 {
 public:
-    /**
-     * Constructor.
-     */
     CMessage(const std::string name);
-
-    /**
-     * Destructor.
-     */
     ~CMessage();
 
     /**

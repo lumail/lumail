@@ -26,7 +26,7 @@
 
 
 /**
- * Constructor.  NOP.
+ * NOP.
  */
 CLuaView::CLuaView()
 {
@@ -34,7 +34,7 @@ CLuaView::CLuaView()
 
 
 /**
- * Destructor.  NOP.
+ * NOP.
  */
 CLuaView::~CLuaView()
 {
@@ -104,7 +104,7 @@ std::vector<std::string> CLuaView::get_text()
  */
 void CLuaView::draw()
 {
-    /**
+    /*
      * Get the string(s) we're supposed to display.
      */
     std::vector<std::string> txt = get_text();
@@ -118,7 +118,7 @@ void CLuaView::draw()
 
     CConfig *config = CConfig::instance();
 
-    /**
+    /*
      * Get the currently-selected item, and the size of the lines.
      */
     std::string current = config->get_string("lua.current");
@@ -136,7 +136,7 @@ void CLuaView::draw()
         current = "0";
     }
 
-    /**
+    /*
      * Now we should have, as integers:
      *
      *  max   -> The max number of lines to display.
@@ -146,7 +146,7 @@ void CLuaView::draw()
     size_t max = std::stoi(max_line, &sz);
     size_t cur = std::stoi(current, &sz);
 
-    /**
+    /*
      * Ensure we highlight the correct line.
      */
     if (cur > max)
@@ -155,7 +155,7 @@ void CLuaView::draw()
         cur = max;
     }
 
-    /**
+    /*
      * Draw the text, via our base-class.
      */
     CScreen *screen = CScreen::instance();

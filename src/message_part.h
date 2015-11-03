@@ -17,9 +17,6 @@
  */
 
 
-/**
- * Only include this header one time.
- */
 #pragma once
 
 
@@ -31,17 +28,10 @@
  */
 class CMessagePart
 {
+
 public:
 
-    /**
-     * Constructor.
-     */
-    CMessagePart(std::string type, std::string filename, void *content,
-                 size_t content_length);
-
-    /**
-     * Destructor.
-     */
+    CMessagePart(std::string type, std::string filename, void *content, size_t content_length);
     ~CMessagePart();
 
     /**

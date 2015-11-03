@@ -17,10 +17,6 @@
  */
 
 
-
-/**
- * Only include this header one time.
- */
 #pragma once
 
 #include <vector>
@@ -35,18 +31,15 @@ class CLuaView: public CViewMode
 {
 
 public:
-    /**
-     * Constructor / Destructor.
-     */
     CLuaView();
     ~CLuaView();
 
-    /**
+    /*
      * Drawing routine - called when the current.mode=="lua".
      */
     void draw();
 
-    /**
+    /*
      * Called when things are idle.
      */
     void on_idle();
