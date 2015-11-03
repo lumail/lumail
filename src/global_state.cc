@@ -17,6 +17,7 @@
  */
 
 #include <iostream>
+#include <regex>
 
 #include "config.h"
 #include "file.h"
@@ -63,11 +64,13 @@ std::shared_ptr<CMessage>CGlobalState::current_message()
     return (m_current_message);
 }
 
+/**
+ * Change the currently selected message.
+ */
 void CGlobalState::set_message(std::shared_ptr<CMessage> update)
 {
     m_current_message = update;
 }
-
 
 
 /**
@@ -157,13 +160,16 @@ void CGlobalState::config_key_changed(std::string name)
 
 
 /**
- * Get all messages from the currently selected folders.
+ * Get all messages from the currently selected folder.
  */
 CMessageList * CGlobalState::get_messages()
 {
     return (m_messages);
 }
 
+/**
+ * Get the maildirs which are visible.
+ */
 std::vector<std::shared_ptr<CMaildir> > CGlobalState::get_maildirs()
 {
     CMaildirList display;
@@ -187,6 +193,9 @@ std::vector<std::shared_ptr<CMaildir> > CGlobalState::get_maildirs()
     return (display);
 }
 
+/**
+ * Update our cached maildir-list.
+ */
 void CGlobalState::update_maildirs()
 {
     /**
@@ -231,10 +240,15 @@ void CGlobalState::update_maildirs()
 
         if (limit == "all")
             m_maildirs->push_back(m);
-
-        if (limit == "new")
+        else  if (limit == "new")
+          {
             if (m->unread_messages() > 0)
                 m_maildirs->push_back(m);
+          }
+        else {
+          if ( std::regex_match( path, std::regex( limit ) ) )
+            m_maildirs->push_back(m);
+        }
     }
 
     /**
