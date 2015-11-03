@@ -30,6 +30,12 @@
 #include "screen.h"
 
 
+/*
+ * External flag for getopt - when set we can ignore unknown
+ * argument errors.
+ */
+extern int opterr;
+
 
 
 /**
@@ -88,6 +94,9 @@ int main(int argc, char *argv[])
 
     while (1)
     {
+        /* ignore unknown arguments. */
+        opterr = 0;
+
         static struct option long_options[] =
         {
             {"no-curses", no_argument, 0, 'n'},
@@ -116,6 +125,12 @@ int main(int argc, char *argv[])
         }
     }
 
+    /*
+     * Ensure that Lua has access to our command-line flags.
+     */
+    CLua  *instance = CLua::instance();
+    instance->set_args(argv, argc);
+
     CScreen *screen = CScreen::instance();
 
     /**
@@ -125,12 +140,11 @@ int main(int argc, char *argv[])
         screen->setup();
 
 
-    /**
-     * Load the named script file(s).
+    /*
+     * Load any named script file(s) we're supposed to load.
      */
     if (!load.empty())
     {
-        CLua *instance = CLua::instance();
 
         for (std::string filename : load)
         {
