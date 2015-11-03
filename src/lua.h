@@ -1,5 +1,5 @@
 /*
- * $FILENAME - $TITLE
+ * lua.h - Wrapper for the lua interpretter.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -46,6 +46,11 @@ public:
      * Get access to this singleton instance.
      */
     static CLua *instance();
+
+    /**
+     * Populate "args"
+     */
+    void set_args(char *argv[], int argc);
 
     /**
      * Load the specified Lua file, and evaluate it.

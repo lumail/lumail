@@ -47,6 +47,24 @@ CLua * CLua::instance()
 }
 
 
+/**
+ * Populate "args"
+ */
+void CLua::set_args(char *argv[], int argc)
+{
+    lua_newtable(m_lua);
+
+    for (int i = 0; i < argc; i++)
+    {
+        lua_pushinteger(m_lua, i + 1);
+        lua_pushstring(m_lua, argv[i]);
+        lua_settable(m_lua, -3);
+    }
+
+    lua_setglobal(m_lua, "ARGS");
+}
+
+
 
 /**
  * Constructor - This is private as this class is a singleton.
