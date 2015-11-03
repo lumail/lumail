@@ -77,6 +77,35 @@ end
 
 
 --
+-- Utility function to open the Maildir with the given name.
+--
+-- This matches against the path, and the first match wins.
+--
+function Maildir.select( desired )
+
+   -- Get the maildirs
+   local folders = current_maildirs()
+
+   -- For each one .. see if it matches
+   for index,object in ipairs( folders ) do
+      local path = object:path()
+      if ( string.find( path, desired ) ) then
+
+         -- update the selection for when we return
+         Config:set("maildir.current", index -1)
+
+         -- select the maildir
+         Screen:select_maildir( index -1 )
+
+         -- change the mode
+         Config:set("global.mode", "index")
+         return
+      end
+   end
+end
+
+
+--
 -- 2. Define our views
 --
 -----------------------------------------------------------------------------
@@ -345,7 +374,6 @@ function read_eval()
    local txt = Screen:get_line(":");
    loadstring( txt )()
 end
-
 --
 -- Read a line of text and execute the result as a command
 --
@@ -556,7 +584,7 @@ end
 -- Update the status-bar on-idle.
 --
 function on_idle()
-   Panel:title( "$[RED]Red title here. This must be serious!" )
+--   Panel:title( "$[RED]Red title here. This must be serious!" )
    Panel:text( { "$[YELLOW]Yellow line here.", "$[GREEN]Green line here!" } )
 end
 
@@ -682,3 +710,31 @@ Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )
 -- Save persistant history of our input in the named file.
 --
 Config:set( "global.history", os.getenv( "HOME" ) .. "/.lumail2.history" )
+
+
+
+--
+-- 7.  Handle any command-line argumenst
+--
+for index,arg in ipairs(ARGS) do
+
+   --
+   -- Look for --folder=foo
+   --
+   local folder = string.match(arg, "--folder=(.*)" )
+   if ( folder ) then
+     Maildir.select( folder )
+   end
+
+   --
+   -- Look for --eval=bar()
+   --
+   -- TODO: See why this doesn't work.  Outside the amin loop?
+   --
+   local txt = string.match(arg, "--eval=(.*)" )
+   if ( txt ) then
+      Panel:title(txt)
+      f = loadstring( txt )
+      f()
+   end
+end
