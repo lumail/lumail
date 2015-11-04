@@ -759,9 +759,15 @@ keymap['message']['f'] = 'Message:forward()'
 Config:set( "maildir.prefix", os.getenv( "HOME" ) .. "/Maildir" )
 
 --
--- Setup our default editor.  Not used at this time.
+-- Setup our default editor, for compose/reply/forward operations.
 --
 Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )
+
+--
+-- Setup our MTA
+--
+Config:set( "global.mailer", "/usr/lib/sendmail -t" )
+
 
 --
 -- Save persistant history of our input in the named file.
