@@ -733,16 +733,20 @@ keymap['global']['k']        = "prev(1)"
 keymap['global']['j']        = "next(1)"
 keymap['global']['KEY_DOWN'] = "next(1)"
 
-keymap['global']['K'] = "prev(10)"
+keymap['global']['K']         = "prev(10)"
 keymap['global']['KEY_PPAGE'] = "prev(10)"
-keymap['global']['J'] = "next(10)"
+keymap['global']['J']         = "next(10)"
 keymap['global']['KEY_NPAGE'] = "next(10)"
 
-keymap['global']['*'] = "last()"
-keymap['global']['<'] = "first()"
-keymap['global']['>'] = "last()"
+keymap['global']['<']        = "first()"
+keymap['global']['KEY_HOME'] = "first()"
+keymap['global']['*']        = "last()"
+keymap['global']['>']        = "last()"
+keymap['global']['KEY_END']  = "last()"
+
 
 keymap['global']['ENTER'] = "select()"
+keymap['global']['SPACE'] = "select()"
 
 --
 -- Left/Right scrolling.  (Global)
