@@ -46,6 +46,9 @@ extern "C"
 #include "message_part.h"
 
 
+int l_CNet_hostname(lua_State * L);
+
+
 /**
  * Push a CMessage pointer onto the Lua stack.
  */
@@ -166,6 +169,35 @@ int l_CMessage_path(lua_State * l)
     lua_pushstring(l, foo->path().c_str());
     return 1;
 }
+
+/**
+ * Generate and return a suitable Message-ID
+ */
+int l_CMessage_generate_message_id(lua_State *L)
+{
+    char *name = (char *)"example.org";
+
+    /*
+     * Defined in net_lua.cc
+     */
+    if ( l_CNet_hostname(L) == 1 )
+    {
+        name = (char *)lua_tostring(L,-1);
+    }
+
+    /*
+     * Generate a new ID.
+     */
+    char *message_id = g_mime_utils_generate_message_id(name);
+    std::string result( message_id );
+    result = "<" + result + ">";
+    g_free(message_id);
+
+    lua_pushstring(L,result.c_str());
+    return 1;
+
+}
+
 
 /**
  * Get the value of a specific header.
@@ -327,6 +359,7 @@ void InitMessage(lua_State * l)
     {
         {"__gc", l_CMessage_destructor},
         {"flags", l_CMessage_flags},
+        {"generate_message_id", l_CMessage_generate_message_id},
         {"header", l_CMessage_header},
         {"headers", l_CMessage_headers},
         {"mark_read", l_CMessage_mark_read},

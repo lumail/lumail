@@ -153,6 +153,8 @@ Message methods:
 
 * `flags`
    * Get/Set the flags for the message.
+* `generate_message_id`
+   * Generate a random message-ID suitable for use in an email.
 * `header`
    * Return the content of the named header, e.g. "Subject".
 * `headers()`
