@@ -242,44 +242,46 @@ end
 --
 function lua_view()
    --
-   -- We show this first
+   -- The output we'll display.
    --
-   a = {
-      "$[RED]This is a red line",
-      "$[BLUE]This is a blue line",
-      "$[GREEN]This is a green line",
-   }
+   output = { }
 
    --
-   -- Now we get some text from running a command.
+   -- Now show the current maildir, message, etc.
    --
-   result = {}
+   local mode = Config:get("global.mode")
+   table.insert(output, "The current mode is" )
+   table.insert(output, "$[YELLOW]\t" .. mode )
 
-   if ( File:exists( "/etc/passwd" ) ) then
-      local handle = io.popen("cat /etc/passwd")
-      local output = handle:read("*a")
-      handle:close()
-      result = string_to_table( output )
+   table.insert(output, "The currently selected maildir is" )
+   table.insert(output, "$[RED]\t" .. "TODO" )
+   -- missing primitive: current_maildir
+
+   table.insert(output, "The currently selected message is" )
+   local msg = current_message()
+   if ( msg ) then
+      table.insert(output, "$[RED]\t" .. msg:path() )
    else
-      result = { "", "$[YELLOW]/etc/passwd not found!" }
+      table.insert(output, "$[RED]\tUNSET" )
    end
 
-
    --
-   -- Add the command output to the original table.
+   -- Now add all the current keys
    --
-   for k,v in ipairs( result ) do
-      if ( string.find( v, "root" ) or
-	   string.find( v, "nobody" ) ) then
-	 v = "$[CYAN]" .. v
-	 end
-      table.insert( a, v )
+   table.insert(output, "" )
+   table.insert(output, "The following (string) configuration-values have been set:")
+   for k,v in ipairs( Config:keys() ) do
+      val = Config:get( v )
+      if ( type(val) == "string" ) then
+         table.insert(output, "\t" .. v )
+         table.insert(output, "$[YELLOW]\t\t" .. val )
+      end
    end
 
    --
    -- And return the text.
    --
-   return( a )
+   return( output )
 end
 
 
