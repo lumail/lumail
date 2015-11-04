@@ -77,6 +77,51 @@ end
 
 
 --
+-- Reply to the current message
+--
+function Message:reply()
+end
+
+
+--
+-- Forward the current message
+--
+function Message:forward()
+
+   -- Get the text of a message.
+   local txt = message_view()
+
+   -- Write it out to to a temporary file
+   local tmp  = os.tmpname()
+   local file = assert(io.open(tmp, "w"))
+
+   -- Write out a header
+   file:write( "To: xx@example.com\n" )
+   file:write( "From: xx@example.com\n" )
+   file:write( "Subject: Fwd: \n" )
+   file:write( "\n\n" )
+   file:write( "Forwarded message ..\n" )
+
+   for i,l in ipairs(txt) do
+      file:write( "> " .. l .. "\n")
+   end
+   file:close()
+
+   -- Open the editor
+   Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
+
+   -- Once the editor quits ask for actions?
+   local a = Screen:prompt( "Forward message: (y)es or (n)o?", "yYnN" );
+   if ( a == "y" ) or ( "a" == "Y" ) then
+      Panel:title( "Sending message" )
+   else
+      Panel:title("Sending aborted" )
+   end
+end
+
+
+
+--
 -- Utility function to open the Maildir with the given name.
 --
 -- This matches against the path, and the first match wins.
@@ -153,7 +198,7 @@ function attachment_view()
    local parts = msg:parts()
 
    --
-   -- For each one - add it in
+   -- For each one - add it to the display, if it is an attachment.
    --
    for k,v in ipairs( parts ) do
       if ( v:is_attachment() ) then
@@ -208,14 +253,17 @@ function lua_view()
    --
    -- Now we get some text from running a command.
    --
-   local handle = io.popen("cat /etc/passwd")
-   local result = handle:read("*a")
-   handle:close()
+   result = {}
 
-   --
-   -- The command output is now split into rows.
-   --
-   result = string_to_table( result )
+   if ( File:exists( "/etc/passwd" ) ) then
+      local handle = io.popen("cat /etc/passwd")
+      local output = handle:read("*a")
+      handle:close()
+      result = string_to_table( output )
+   else
+      result = { "", "$[YELLOW]/etc/passwd not found!" }
+   end
+
 
    --
    -- Add the command output to the original table.
@@ -685,6 +733,13 @@ keymap['message']['q'] = "change_mode('index')"
 --
 keymap['message']['A']    = "change_mode( 'attachment' );"
 keymap['attachment']['q'] = "change_mode( 'message' );"
+
+
+--
+-- Actions relating to messages.
+--
+keymap['message']['r'] = 'Message:reply()'
+keymap['message']['f'] = 'Message:forward()'
 
 
 
