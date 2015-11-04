@@ -12,6 +12,7 @@ At the moment we have objects for working with:
 * Files.
 * Maildirs.
 * Messages.
+* Networking.
 * The screen.
     * The status-panel, which is optionally displayed upon the screen.
 
@@ -180,6 +181,17 @@ object contains the following methods:
     * Returns the content-type of the MIME-part.
 
 See [show_message.lua](show_message.lua) for an example use-case of this method.
+
+
+Networking
+----------
+
+There is only a single networking method:
+
+* `Net:hostname()`
+* Return the FQDN of the current system.
+
+See `net.lua` for an example.
 
 
 Screen

@@ -31,6 +31,7 @@ extern void InitFile(lua_State * l);
 extern void InitMaildir(lua_State * l);
 extern void InitMessage(lua_State * l);
 extern void InitMessagePart(lua_State * l);
+extern void InitNet(lua_State * l);
 extern void InitPanel(lua_State * l);
 extern void InitScreen(lua_State * l);
 
@@ -93,6 +94,7 @@ CLua::CLua()
     InitMaildir(m_lua);
     InitMessage(m_lua);
     InitMessagePart(m_lua);
+    InitNet(m_lua);
     InitPanel(m_lua);
     InitScreen(m_lua);
 }
