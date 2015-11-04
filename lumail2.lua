@@ -88,8 +88,33 @@ end
 --
 function Message:forward()
 
+   --
+   -- If we're in message-mode then we can get the current-message
+   -- directly.
+   --
+   -- If instead we're in index-mode then we'll need to select the message
+   -- under the cursor to proceed.
+   --
+   msg = nil
+
+   local mode = Config:get("global.mode")
+
+   if ( mode == "message" ) then
+      msg = current_message()
+   end
+   if ( mode == "index" ) then
+      local offset = Config:get( "index.current" )
+      local entry  = Screen:select_message( offset )
+      msg = current_message()
+   end
+
+   -- Failed to find a mesage?
+   if ( not msg ) then
+      return
+   end
+
    -- Get the text of a message.
-   local txt = message_view()
+   local txt = message_view(msg)
 
    -- Write it out to to a temporary file
    local tmp  = os.tmpname()
@@ -97,10 +122,13 @@ function Message:forward()
 
    -- Write out a header
    file:write( "To: xx@example.com\n" )
-   file:write( "From: xx@example.com\n" )
-   file:write( "Subject: Fwd: \n" )
+   file:write( "From: " .. Config:get( "global.sender" ) .. "\n" )
+   file:write( "Subject: Fwd: " .. msg:header( "Subject") .. "\n" )
+
+   -- TODO: Write MSG-ID.
+
    file:write( "\n\n" )
-   file:write( "Forwarded message ..\n" )
+   file:write( "Begin forwarded message ..\n" )
 
    for i,l in ipairs(txt) do
       file:write( "> " .. l .. "\n")
@@ -110,12 +138,23 @@ function Message:forward()
    -- Open the editor
    Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
 
-   -- Once the editor quits ask for actions?
+   -- Once the editor quits ask for an action
    local a = Screen:prompt( "Forward message: (y)es or (n)o?", "yYnN" );
+
    if ( a == "y" ) or ( "a" == "Y" ) then
-      Panel:title( "Sending message" )
+      -- Send the mail.
+      os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
+      Panel:title("Message sent" )
    else
-      Panel:title("Sending aborted" )
+      -- Abort
+      Panel:title("Sending aborted!" )
+   end
+
+   --
+   -- Remove the temporary-file
+   --
+   if ( File:exists(tmp ) ) then
+      os.remove(tmp)
    end
 end
 
@@ -346,12 +385,15 @@ end
 --
 -- The scrolling is handled on the C++ side.
 --
-function message_view()
+function message_view( msg )
 
    --
-   -- The current message
+   -- If we're called in `message`-mode then we'll not have an
+   -- argument, so we need to find the message.
    --
-   msg = current_message()
+   if ( not msg ) then
+      msg = current_message()
+   end
 
    --
    -- Change the message to being read, if it is new.
@@ -741,7 +783,9 @@ keymap['attachment']['q'] = "change_mode( 'message' );"
 -- Actions relating to messages.
 --
 keymap['message']['r'] = 'Message:reply()'
+keymap['index']['r'] = 'Message:reply()'
 keymap['message']['f'] = 'Message:forward()'
+keymap['index']['f']   = 'Message:forward()'
 
 
 
@@ -768,6 +812,11 @@ Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )
 --
 Config:set( "global.mailer", "/usr/lib/sendmail -t" )
 
+
+--
+-- Setup our default From: address.
+--
+Config:set( "global.sender", "Steve Kemp <steve@steve.org.uk>" )
 
 --
 -- Save persistant history of our input in the named file.
