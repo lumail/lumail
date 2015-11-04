@@ -6,6 +6,21 @@
 -----------------------------------------------------------------------------
 
 
+
+--
+-- String interopolation function, taken from the Lua wiki:
+--
+--   http://lua-users.org/wiki/StringInterpolation
+--
+-- Usage:
+--
+--   print( interp( "Hello $(name)", { name = "World" } )
+--
+function interp(s, tab)
+   return (s:gsub('($%b{})', function(w) return tab[w:sub(3, -2)] or w end))
+end
+
+
 --
 -- Helper function to ensure that if anything calls `os.exit`
 -- we reset the screen neatly, etc.
@@ -137,13 +152,21 @@ function Message:reply()
    subject ="Re: " .. subject
 
    -- Write out a header
-   file:write( "To: " .. to .. "\n" )
-   file:write( "From: " .. Config:get( "global.sender" ) .. "\n" )
-   file:write( "Subject: " .. subject .. "\n" )
+   header = [[To: ${to}
+From: ${from}
+Subject: ${subject}
+Message-ID: ${msgid}
+Date: ${date}
 
-   -- TODO: Write MSG-ID.
+]]
 
-   file:write( "\n\n" )
+   file:write( interp( header, { to      = to,
+                                 from    = Config:get("global.sender" ),
+                                 subject = subject,
+                                 msgid   = "foo@bar",
+                                 date    = "today"
+                               } ) )
+
 
    for i,l in ipairs(txt) do
       file:write( "> " .. l .. "\n")
@@ -215,14 +238,26 @@ function Message:forward()
    local file = assert(io.open(tmp, "w"))
 
    -- Write out a header
-   file:write( "To: xx@example.com\n" )
-   file:write( "From: " .. Config:get( "global.sender" ) .. "\n" )
-   file:write( "Subject: Fwd: " .. msg:header( "Subject") .. "\n" )
+   -- Write out a header
+   header = [[To: xx@example.com
+From: ${from}
+Subject: Fwd: ${subject}
+Message-ID: ${msgid}
+Date: ${date}
 
-   -- TODO: Write MSG-ID.
+Begin forwarded message.
 
-   file:write( "\n\n" )
-   file:write( "Begin forwarded message ..\n" )
+]]
+
+   local from = Config:get("global.sender" )
+   local subject = msg:header("Subject")
+
+   file:write( interp( header, { from    = from,
+                                 subject = subject,
+                                 msgid   = "foo@bar",
+                                 date    = "today"
+                               } ) )
+
 
    for i,l in ipairs(txt) do
       file:write( "> " .. l .. "\n")
