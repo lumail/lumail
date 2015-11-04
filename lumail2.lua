@@ -80,6 +80,100 @@ end
 -- Reply to the current message
 --
 function Message:reply()
+
+   --
+   -- If we're in message-mode then we can get the current-message
+   -- directly.
+   --
+   -- If instead we're in index-mode then we'll need to select the message
+   -- under the cursor to proceed.
+   --
+   msg = nil
+
+   local mode = Config:get("global.mode")
+
+   if ( mode == "message" ) then
+      msg = current_message()
+   end
+   if ( mode == "index" ) then
+      local offset = Config:get( "index.current" )
+      local entry  = Screen:select_message( offset )
+      msg = current_message()
+   end
+
+   -- Failed to find a mesage?
+   if ( not msg ) then
+      return
+   end
+
+   -- Get the text of a message.
+   local txt = message_view(msg)
+
+   -- Get a temporary file, and opening it for writing
+   local tmp  = os.tmpname()
+   local file = assert(io.open(tmp, "w"))
+
+   --
+   -- Work out who we should be replying to.
+   --
+   local to = msg:header( "Reply-To" )
+   if ( not to ) then
+      to = msg:header( "From" )
+   end
+
+   --
+   -- Build up the subject
+   --
+   local subject = msg:header( "Subject" )
+
+   --
+   -- Remove any (repeated) "Re:" from the start of string.
+   --
+   while( string.find(subject, "^[rR][eE]:" ) ) do
+      subject = string.gsub( subject, "^[rR][eE]:[ \t]+", "" )
+   end
+
+   -- Add prefix to the subject.
+   subject ="Re: " .. subject
+
+   -- Write out a header
+   file:write( "To: " .. to .. "\n" )
+   file:write( "From: " .. Config:get( "global.sender" ) .. "\n" )
+   file:write( "Subject: " .. subject .. "\n" )
+
+   -- TODO: Write MSG-ID.
+
+   file:write( "\n\n" )
+
+   for i,l in ipairs(txt) do
+      file:write( "> " .. l .. "\n")
+   end
+
+   file:close()
+
+   -- TODO: append a signature
+
+   -- Open the editor
+   Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
+
+   -- Once the editor quits ask for an action
+   local a = Screen:prompt( "Send message: (y)es or (n)o?", "yYnN" );
+
+   if ( a == "y" ) or ( "a" == "Y" ) then
+      -- Send the mail.
+      os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
+      Panel:title("Message sent" )
+   else
+      -- Abort
+      Panel:title("Sending aborted!" )
+   end
+
+   --
+   -- Remove the temporary-file
+   --
+   if ( File:exists(tmp ) ) then
+      os.remove(tmp)
+   end
 end
 
 
@@ -760,13 +854,9 @@ keymap['global']['KEY_RIGHT'] = "right()";
 -- Change the display-limits
 --
 keymap['maildir']['a'] = 'Config:set( "maildir.limit", "all" )'
+keymap['index']['a']   = 'Config:set( "index.limit", "all" )'
 keymap['maildir']['n'] = 'Config:set( "maildir.limit", "new" )'
-
---
--- Change the display-limits
---
-keymap['index']['a'] = 'Config:set( "index.limit", "all" )'
-keymap['index']['n'] = 'Config:set( "index.limit", "new" )'
+keymap['index']['n']   = 'Config:set( "index.limit", "new" )'
 
 --
 -- Exit out of modes
@@ -787,7 +877,7 @@ keymap['attachment']['q'] = "change_mode( 'message' );"
 -- Actions relating to messages.
 --
 keymap['message']['r'] = 'Message:reply()'
-keymap['index']['r'] = 'Message:reply()'
+keymap['index']['r']   = 'Message:reply()'
 keymap['message']['f'] = 'Message:forward()'
 keymap['index']['f']   = 'Message:forward()'
 
