@@ -241,13 +241,14 @@ void CGlobalState::update_maildirs()
         if (limit == "all")
             m_maildirs->push_back(m);
         else  if (limit == "new")
-          {
+        {
             if (m->unread_messages() > 0)
                 m_maildirs->push_back(m);
-          }
-        else {
-          if ( std::regex_match( path, std::regex( limit ) ) )
-            m_maildirs->push_back(m);
+        }
+        else
+        {
+            if (std::regex_match(path, std::regex(limit)))
+                m_maildirs->push_back(m);
         }
     }
 

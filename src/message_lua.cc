@@ -147,10 +147,12 @@ int l_current_message(lua_State *l)
 {
     CGlobalState *global = CGlobalState::instance();
     std::shared_ptr<CMessage> cur = global->current_message();
-    if ( cur )
-      push_cmessage(l, cur);
+
+    if (cur)
+        push_cmessage(l, cur);
     else
-      lua_pushnil(l);
+        lua_pushnil(l);
+
     return 1;
 }
 
