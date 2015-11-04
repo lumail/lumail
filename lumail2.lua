@@ -198,7 +198,7 @@ function attachment_view()
    local parts = msg:parts()
 
    --
-   -- For each one - add it in
+   -- For each one - add it to the display, if it is an attachment.
    --
    for k,v in ipairs( parts ) do
       if ( v:is_attachment() ) then
@@ -253,14 +253,17 @@ function lua_view()
    --
    -- Now we get some text from running a command.
    --
-   local handle = io.popen("cat /etc/passwd")
-   local result = handle:read("*a")
-   handle:close()
+   result = {}
 
-   --
-   -- The command output is now split into rows.
-   --
-   result = string_to_table( result )
+   if ( File:exists( "/etc/passwd" ) ) then
+      local handle = io.popen("cat /etc/passwd")
+      local output = handle:read("*a")
+      handle:close()
+      result = string_to_table( output )
+   else
+      result = { "", "$[YELLOW]/etc/passwd not found!" }
+   end
+
 
    --
    -- Add the command output to the original table.
