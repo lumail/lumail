@@ -88,9 +88,6 @@ std::vector<std::string> CLuaView::get_text()
     CConfig *config = CConfig::instance();
     int max = result.size();
 
-    if (max > 0)
-        max -= 1;
-
     config->set("lua.max", std::to_string(max));
 
     return (result);

@@ -91,9 +91,6 @@ std::vector<std::string> CAttachmentView::get_text()
      */
     int max = result.size();
 
-    if (max > 0)
-        max -= 1;
-
     CConfig *config = CConfig::instance();
     config->set("attachment.max", std::to_string(max));
 

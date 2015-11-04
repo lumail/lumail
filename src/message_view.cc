@@ -94,9 +94,6 @@ std::vector<std::string> CMessageView::get_text()
      */
     int max = result.size();
 
-    if (max > 0)
-        max -= 1;
-
     CConfig *config = CConfig::instance();
     config->set("message.max", std::to_string(max));
 
