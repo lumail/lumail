@@ -171,7 +171,7 @@ int l_CMessage_path(lua_State * l)
 }
 
 /**
- * Generate and return a suitable Message-ID
+ * Generate and return a suitable Message-ID.
  */
 int l_CMessage_generate_message_id(lua_State *L)
 {
@@ -180,20 +180,20 @@ int l_CMessage_generate_message_id(lua_State *L)
     /*
      * Defined in net_lua.cc
      */
-    if ( l_CNet_hostname(L) == 1 )
+    if (l_CNet_hostname(L) == 1)
     {
-        name = (char *)lua_tostring(L,-1);
+        name = (char *)lua_tostring(L, -1);
     }
 
     /*
      * Generate a new ID.
      */
     char *message_id = g_mime_utils_generate_message_id(name);
-    std::string result( message_id );
+    std::string result(message_id);
     result = "<" + result + ">";
     g_free(message_id);
 
-    lua_pushstring(L,result.c_str());
+    lua_pushstring(L, result.c_str());
     return 1;
 
 }
