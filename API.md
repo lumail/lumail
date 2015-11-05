@@ -140,7 +140,7 @@ The currently visible maildirs can be retrieved via `current_maildirs()`.
 Message
 -------
 
-Teh Message object represents a single message, contained within a maildir.
+The Message object represents a single message, contained within a maildir.
 
 You can get access to message objects in three ways:
 
@@ -191,7 +191,7 @@ Networking
 There is only a single networking method:
 
 * `Net:hostname()`
-* Return the FQDN of the current system.
+     * Return the FQDN of the current system.
 
 See `net.lua` for an example.
 
