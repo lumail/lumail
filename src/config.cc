@@ -42,6 +42,9 @@ CConfig::CConfig()
 
     set("maildir.limit", "all", false);
     set("maildir.max", "0", false);
+
+    set("global.mailer", "/usr/lib/sendmail -t", false );
+    set("global.version", LUMAIL_VERSION );
 }
 
 

@@ -1,10 +1,11 @@
 #
-# Features which can be compiled in/out
+# The version of our code.
 #
-FEATURES=
+VERSION=$(shell git describe --abbrev=4 --dirty --always --long)
+
 
 #
-# We've tested compilation with Lua 5.1 and 5.2.
+# We've tested compilation with Lua 5.2 only
 #
 LUA_VERSION=5.2
 
@@ -43,7 +44,7 @@ endif
 #
 # Compilation flags and libraries we use.
 #
-CPPFLAGS+=-std=gnu++0x -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw)
+CPPFLAGS+=-std=gnu++0x -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) -DLUMAIL_VERSION="\"${VERSION}\""
 LDLIBS+=$(shell pkg-config --libs ${LVER}) $(shell pkg-config --libs ncursesw) $(shell pkg-config --libs panelw) -lpcrecpp
 
 #
