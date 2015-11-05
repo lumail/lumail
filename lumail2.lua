@@ -256,6 +256,16 @@ Date: ${date}
       -- Send the mail.
       os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
       Panel:title("Message sent" )
+
+      --
+      -- Since we've sent the message we need to add the "(R)eplied"
+      -- flag on the source message.
+      --
+      local cf = msg:flags()
+      if ( not string.find( cf, "R" ) ) then
+         cf = cf .. "R"
+         msg:flags(cf)
+      end
    else
       -- Abort
       Panel:title("Sending aborted!" )
