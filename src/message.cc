@@ -398,7 +398,7 @@ void CMessage::mark_read()
 /**
  * Parse the message into MIME-parts, if we've not already done so.
  */
-std::vector < CMessagePart * >CMessage::get_parts()
+std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
 {
 
     /**
@@ -495,15 +495,12 @@ std::vector < CMessagePart * >CMessage::get_parts()
              */
             if (filename)
             {
-                CMessagePart *
-                attach =
-                    new CMessagePart(type, filename, data, data_len);
+                std::shared_ptr<CMessagePart> attach = std::shared_ptr<CMessagePart> (new CMessagePart(type, filename, data, data_len));
                 m_parts.push_back(attach);
             }
             else
             {
-                CMessagePart *
-                part = new CMessagePart(type, "", data, data_len);
+                std::shared_ptr<CMessagePart> part = std::shared_ptr<CMessagePart> (new CMessagePart(type, "", data, data_len));
                 m_parts.push_back(part);
             }
         }

@@ -19,8 +19,9 @@
 
 #pragma once
 
-
+#include <memory>
 #include <string>
+
 
 /**
  * This is the C++ object which represents a MIME-part from a message.

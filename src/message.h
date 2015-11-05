@@ -20,8 +20,9 @@
 #pragma once
 
 
-#include <unordered_map>
+#include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 /**
@@ -105,7 +106,7 @@ public:
     /**
      * Get message-parts
      */
-    std::vector < CMessagePart * >get_parts();
+    std::vector<std::shared_ptr<CMessagePart>> get_parts();
 
 private:
 
@@ -117,6 +118,6 @@ private:
     /**
      * Cached MIME-parts to this message.
      */
-    std::vector < CMessagePart * >m_parts;
+    std::vector<std::shared_ptr<CMessagePart>> m_parts;
 
 };

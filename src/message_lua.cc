@@ -44,6 +44,7 @@ extern "C"
 #include "global_state.h"
 #include "message.h"
 #include "message_part.h"
+#include "message_part_lua.h"
 
 
 int l_CNet_hostname(lua_State * L);
@@ -286,21 +287,17 @@ int l_CMessage_parts(lua_State * l)
     /**
      * Get the parts, and count.
      */
-    std::vector < CMessagePart * >parts = foo->get_parts();
+    std::vector<std::shared_ptr<CMessagePart>> parts = foo->get_parts();
 
     lua_createtable(l, parts.size(), 0);
     int i = 0;
 
-    for (std::vector < CMessagePart * >::iterator it = parts.begin();
+    for (std::vector<std::shared_ptr<CMessagePart>>::iterator it = parts.begin();
             it != parts.end(); ++it)
     {
-        CMessagePart **udata =
-            (CMessagePart **) lua_newuserdata(l, sizeof(CMessagePart *));
-        *udata = (*it);
-        luaL_getmetatable(l, "luaL_CMessagePart");
-        lua_setmetatable(l, -2);
+        std::shared_ptr<CMessagePart> cur = (*it);
+        push_cmessagepart(l, cur);
         lua_rawseti(l, -2, i + 1);
-
         i++;
     }
 
