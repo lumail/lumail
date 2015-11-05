@@ -36,10 +36,10 @@ end
 -- This is used in some drawing modes.
 --
 function string_to_table(str)
-  local t = {}
-  local function helper(line) table.insert(t, line) return "" end
-  helper((str:gsub("(.-)\r?\n", helper)))
-  return t
+   local t = {}
+   local function helper(line) table.insert(t, line) return "" end
+   helper((str:gsub("(.-)\r?\n", helper)))
+   return t
 end
 
 
@@ -65,14 +65,14 @@ end
 -- Return the contents of the named file.
 --
 function read_file( path )
-    local f = io.open(path, "rb")
-    if ( f ) then
-       local content = f:read("*all")
-       f:close()
-       return( content )
-    else
-       return( "Error reading file: " .. file )
-    end
+   local f = io.open(path, "rb")
+   if ( f ) then
+      local content = f:read("*all")
+      f:close()
+      return( content )
+   else
+      return( "Error reading file: " .. file )
+   end
 end
 
 
@@ -144,7 +144,7 @@ function Message:generate_signature()
    -- Look for the domain-file beneath ~/.sigs/
    file = home .. "/.sigs/" .. domain
    if ( File:exists( file ) ) then
-         return( read_file( file ) )
+      return( read_file( file ) )
    end
 
    --
@@ -564,7 +564,7 @@ function attachment_view()
    for k,v in ipairs( parts ) do
       if ( v:is_attachment() ) then
          local tmp = string.format( "%06d - %32s [%32s]",
-                                     v:size(), v:filename(), v:type() )
+                                    v:size(), v:filename(), v:type() )
          table.insert( result, tmp )
       end
    end
@@ -863,6 +863,9 @@ function left()
 end
 
 
+--
+-- Left/Right scrolling.
+--
 function right()
    local x = Config:get("global.horizontal")
    if ( not x ) then
@@ -876,6 +879,76 @@ function right()
    end
    Config:set( "global.horizontal", x )
 end
+
+
+--
+-- Allow searching for the next line containing a match.
+--
+-- This function might need some explaination:
+--
+--  * The mail-client is a modal editor.
+--  * You're always in one mode, stored in "Config:get("global.mode")".
+--  * Each mode displays the output of the lua-function $mode_view()
+--  * This function returns a table of lines.
+--  * There are also "current-offset" and "max-size" variables for these tables.
+--  * We can use this to dynamically invoke the right mode, and iterate.
+--
+--
+function find()
+
+   -- Get the thing we're searching for
+   local pattern = Screen:get_line( "/:" )
+
+   -- Get the global mode.
+   local mode = Config:get("global.mode")
+
+   -- Use that to get the lines we're currently displaying
+   loadstring( "out = " .. mode .. "_view()" )()
+
+   --
+   -- We know the current offset is stored in
+   -- the variable $mode.current
+   --
+   -- We know the maximum offset is stored in the
+   -- variable $mode.max
+   --
+   local cur = tonumber(Config:get(mode .. ".current"))
+   local max = tonumber(Config:get(mode .. ".max"))
+
+   --
+   -- Start searching from the current-position
+   --
+   local i = cur
+   i = cur + 1
+   if ( cur > max ) then cur = 0 end
+
+   --
+   -- Loop until we wrap.
+   --
+   while( cur ~= i ) do
+
+      --
+      -- Get the current entry
+      --
+      local line = out[i]
+
+      --
+      -- Does it match?
+      --
+      if ( string.match( line, pattern ) ) then
+         Config:set(mode .. ".current", (i-1))
+         return
+      end
+
+      --
+      -- Loop
+      --
+      i = i + 1
+      if ( i > max ) then i = 1 end
+   end
+
+end
+
 
 
 --
@@ -998,7 +1071,7 @@ end
 -- Update the status-bar on-idle.
 --
 function on_idle()
---   Panel:title( "$[RED]Red title here. This must be serious!" )
+   --   Panel:title( "$[RED]Red title here. This must be serious!" )
    Panel:text( { "$[YELLOW]Yellow line here.", "$[GREEN]Green line here!" } )
 end
 
@@ -1011,9 +1084,9 @@ end
 -- been updated - the value can be retrieved via Config:get
 --
 --[[
-function Config.key_changed( name )
+   function Config.key_changed( name )
    print( "Key changed: " .. name)
-end
+   end
 --]]
 
 
@@ -1077,6 +1150,12 @@ keymap['global']['h']         = "left()"
 keymap['global']['KEY_LEFT']  = "left()"
 keymap['global']['l']         = "right()"
 keymap['global']['KEY_RIGHT'] = "right()"
+
+--
+-- Find function (Global)
+--
+keymap['global']['/'] = 'find()'
+
 
 --
 -- Change the display-limits
@@ -1158,7 +1237,7 @@ for index,arg in ipairs(ARGS) do
    --
    local folder = string.match(arg, "--folder=(.*)" )
    if ( folder ) then
-     Maildir.select( folder )
+      Maildir.select( folder )
    end
 
    --
