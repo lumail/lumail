@@ -233,7 +233,7 @@ Date: ${date}
    file:write( interp( header, { to      = to,
                                  from    = Config:get("global.sender" ),
                                  subject = subject,
-                                 msgid   = "foo@bar",
+                                 msgid   = Message:generate_message_id(),
                                  date    = "today"
                                } ) )
 
@@ -324,7 +324,7 @@ Begin forwarded message.
 
    file:write( interp( header, { from    = from,
                                  subject = subject,
-                                 msgid   = "foo@bar",
+                                 msgid   = Message:generate_message_id(),
                                  date    = "today"
                                } ) )
 
