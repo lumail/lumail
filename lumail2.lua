@@ -894,7 +894,7 @@ end
 --  * We can use this to dynamically invoke the right mode, and iterate.
 --
 --
-function find()
+function find( offset )
 
    -- Get the thing we're searching for
    local pattern = Screen:get_line( "/:" )
@@ -919,8 +919,9 @@ function find()
    -- Start searching from the current-position
    --
    local i = cur
-   i = cur + 1
-   if ( cur > max ) then cur = 0 end
+   i = cur + offset
+   if ( cur > max ) then cur = 1 end
+   if ( cur < 1 )   then cur = max end
 
    --
    -- Loop until we wrap.
@@ -943,8 +944,9 @@ function find()
       --
       -- Loop
       --
-      i = i + 1
+      i = i + offset
       if ( i > max ) then i = 1 end
+      if ( i < 1 ) then i = max end
    end
 
 end
@@ -1154,7 +1156,8 @@ keymap['global']['KEY_RIGHT'] = "right()"
 --
 -- Find function (Global)
 --
-keymap['global']['/'] = 'find()'
+keymap['global']['/'] = 'find(1)'
+keymap['global']['?'] = 'find(-1)'
 
 
 --
