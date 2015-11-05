@@ -62,6 +62,21 @@ end
 
 
 --
+-- Return the contents of the named file.
+--
+function read_file( path )
+    local f = io.open(path, "rb")
+    if ( f ) then
+       local content = f:read("*all")
+       f:close()
+       return( content )
+    else
+       return( "Error reading file: " .. file )
+    end
+end
+
+
+--
 -- Change the mode - and update the panel-title, if we have one.
 --
 function change_mode( new_mode )
@@ -101,6 +116,48 @@ end
 
 
 --
+-- Return the signature to use for the outgoing mail.
+--
+function Message:generate_signature()
+   --
+   -- The sender of our mail.
+   --
+   local sender = Config:get("global.sender")
+
+   --
+   -- Get the home directory, if this fails we'll return
+   -- an empty string.
+   --
+   home = os.getenv( "HOME" )
+   if ( not home ) then
+      return ""
+   end
+
+   -- strip anything except the address, by looking between: <>
+   -- i.e. "Steve Kemp" <steve@example.com> becomes steve@example.com
+   sender = string.match(sender, "<(.*)>" ) or addr
+
+   -- get the domain, lowercase it.
+   domain = string.sub( sender, string.find( sender, "@" )+1 )
+   domain = string.lower(domain)
+
+   -- Look for the domain-file beneath ~/.sigs/
+   file = home .. "/.sigs/" .. domain
+   if ( File:exists( file ) ) then
+         return( read_file( file ) )
+   end
+
+   --
+   -- Fallback to ~/.signature if present
+   --
+   if ( File:exists( home .. "/.signature" ) ) then
+      return( read_file( home .. "/.signature" ) )
+   end
+
+   return ""
+end
+
+--
 -- Compose a new message.
 --
 function Message:compose()
@@ -133,18 +190,19 @@ Subject: ${subject}
 Message-ID: ${msgid}
 Date: ${date}
 
+${sig}
 ]]
 
    file:write( interp( header, { to      = to,
                                  from    = from,
                                  subject = subject,
                                  msgid   = msgid,
-                                 date    = date
+                                 date    = date,
+                                 sig     = Message:generate_signature()
                                } ) )
 
    file:close()
 
-   -- TODO: append a signature
 
    -- Open the editor
    Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
@@ -251,9 +309,10 @@ Date: ${date}
       file:write( "> " .. l .. "\n")
    end
 
+   -- Append a signature
+   file:write( "\n" )
+   file:write( Message:generate_signature() )
    file:close()
-
-   -- TODO: append a signature
 
    -- Open the editor
    Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
@@ -351,6 +410,11 @@ Begin forwarded message.
    for i,l in ipairs(txt) do
       file:write( "> " .. l .. "\n")
    end
+
+   -- Append the signature
+   file:write( "\n" )
+   file:write( Message:generate_signature() )
+
    file:close()
 
    -- Open the editor
