@@ -1042,9 +1042,9 @@ keymap['message']    = {}
 keymap['global'][':']   = "read_eval()"
 keymap['global']['!']   = "read_execute()"
 keymap['global']['TAB'] = "Panel:toggle()"
-keymap['global']['M']   = "change_mode( 'maildir' );"
-keymap['global']['I']   = "change_mode( 'index' );"
-keymap['global']['L']   = "change_mode( 'lua' );"
+keymap['global']['M']   = "change_mode( 'maildir' )"
+keymap['global']['I']   = "change_mode( 'index' )"
+keymap['global']['L']   = "change_mode( 'lua' )"
 
 
 --
@@ -1097,8 +1097,8 @@ keymap['message']['q'] = "change_mode('index')"
 --
 -- Enter/Leave attachment-mode
 --
-keymap['message']['A']    = "change_mode( 'attachment' );"
-keymap['attachment']['q'] = "change_mode( 'message' );"
+keymap['message']['A']    = "change_mode( 'attachment' )"
+keymap['attachment']['q'] = "change_mode( 'message' )"
 
 
 --
