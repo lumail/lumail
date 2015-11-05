@@ -92,6 +92,15 @@ end
 
 
 --
+-- Get the current date - used to set the Date: header when
+-- we reply, compose, or forward an email.
+--
+function Message:generate_date()
+   return( os.date( "%a, %d %b %Y %H:%M:%S %z" ) )
+end
+
+
+--
 -- Compose a new message.
 --
 function Message:compose()
@@ -114,8 +123,8 @@ function Message:compose()
    -- Populate the header variables
    --
    local from  = Config:get("global.sender" )
-   local msgid =  Message:generate_message_id()
-   local date  = "today"
+   local msgid = Message:generate_message_id()
+   local date  = Message:generate_date()
 
    -- Write out a header
    header = [[To: ${to}
@@ -234,7 +243,7 @@ Date: ${date}
                                  from    = Config:get("global.sender" ),
                                  subject = subject,
                                  msgid   = Message:generate_message_id(),
-                                 date    = "today"
+                                 date    = Message:generate_date()
                                } ) )
 
 
@@ -335,7 +344,7 @@ Begin forwarded message.
    file:write( interp( header, { from    = from,
                                  subject = subject,
                                  msgid   = Message:generate_message_id(),
-                                 date    = "today"
+                                 date    = Message:generate_date()
                                } ) )
 
 
