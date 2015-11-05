@@ -94,7 +94,7 @@ function Message:is_new(msg)
 
    -- If it has the [S]een-flag then it is not new.
    if ( string.find( flags, "S" ) ) then
-      return false;
+      return false
    end
 
    -- If it has the [N]ew-flag then it is new.
@@ -203,20 +203,32 @@ ${sig}
 
    file:close()
 
+   local run = true
 
-   -- Open the editor
-   Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
+   while( run ) do
 
-   -- Once the editor quits ask for an action
-   local a = Screen:prompt( "Send message: (y)es or (n)o?", "yYnN" );
+      -- Open the editor
+      Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
 
-   if ( a == "y" ) or ( "a" == "Y" ) then
-      -- Send the mail.
-      os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
-      Panel:title("Message sent" )
-   else
-      -- Abort
-      Panel:title("Sending aborted!" )
+      -- Once the editor quits ask for an action
+      local a = Screen:prompt( "Send message: re(e)dit, (s)end or (c)ancel?", "escESC" )
+
+      if ( a == "s" ) or ( "a" == "S" ) then
+         -- Send the mail.
+         os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
+         Panel:title("Message sent" )
+         run = false
+      end
+
+      if ( a == 'c' ) or ( a == 'C' ) then
+         -- Abort
+         Panel:title("Sending aborted!" )
+         run = false
+      end
+
+      --
+      -- a == 'e' is implicit
+      --
    end
 
    --
@@ -314,29 +326,44 @@ Date: ${date}
    file:write( Message:generate_signature() )
    file:close()
 
-   -- Open the editor
-   Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
 
-   -- Once the editor quits ask for an action
-   local a = Screen:prompt( "Send message: (y)es or (n)o?", "yYnN" );
+   local run = true
 
-   if ( a == "y" ) or ( "a" == "Y" ) then
-      -- Send the mail.
-      os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
-      Panel:title("Message sent" )
+   while( run ) do
 
-      --
-      -- Since we've sent the message we need to add the "(R)eplied"
-      -- flag on the source message.
-      --
-      local cf = msg:flags()
-      if ( not string.find( cf, "R" ) ) then
-         cf = cf .. "R"
-         msg:flags(cf)
+      -- Open the editor
+      Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
+
+      -- Once the editor quits ask for an action
+      local a = Screen:prompt( "Send message: re(e)dit, (s)end or (c)ancel?", "escESC" )
+
+      if ( a == "s" ) or ( a == "S" ) then
+         -- Send the mail.
+         os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
+         Panel:title("Message sent" )
+
+         --
+         -- Since we've sent the message we need to add the "(R)eplied"
+         -- flag on the source message.
+         --
+         local cf = msg:flags()
+         if ( not string.find( cf, "R" ) ) then
+            cf = cf .. "R"
+            msg:flags(cf)
+         end
+
+         run = false
       end
-   else
-      -- Abort
-      Panel:title("Sending aborted!" )
+
+      if ( a == "c" ) or ( a == "C" ) then
+         -- Abort
+         Panel:title("Sending aborted!" )
+         run = false
+      end
+
+      --
+      -- Re-edit is implicit
+      --
    end
 
    --
@@ -417,19 +444,32 @@ Begin forwarded message.
 
    file:close()
 
-   -- Open the editor
-   Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
+   local run = true
 
-   -- Once the editor quits ask for an action
-   local a = Screen:prompt( "Forward message: (y)es or (n)o?", "yYnN" );
+   while( run ) do
 
-   if ( a == "y" ) or ( "a" == "Y" ) then
-      -- Send the mail.
-      os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
-      Panel:title("Message sent" )
-   else
-      -- Abort
-      Panel:title("Sending aborted!" )
+      -- Open the editor
+      Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
+
+      -- Once the editor quits ask for an action
+      local a = Screen:prompt( "Forward message: re(e)dit, (s)end or (c)ancel?", "escESC" )
+
+      if ( a == "s" ) or ( a == "S" ) then
+
+         -- Send the mail.
+         os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
+         Panel:title("Message sent" )
+         run = false
+      end
+
+      if ( a == "c" ) or ( a == "C" ) then
+         -- Abort
+         Panel:title("Sending aborted!" )
+         run = false
+      end
+
+
+      -- re-edit is implicit
    end
 
    --
@@ -619,7 +659,7 @@ function Maildir:format(obj)
    local unread = obj:unread_messages()
    local path   = obj:path()
 
-   local output = string.format( "[%05d / %05d] - %s", unread, total, path );
+   local output = string.format( "[%05d / %05d] - %s", unread, total, path )
 
    if ( unread > 0 ) then
       output = "$[RED]" .. output
@@ -745,14 +785,14 @@ end
 -- Read input, and evaluate it.
 --
 function read_eval()
-   local txt = Screen:get_line(":");
+   local txt = Screen:get_line(":")
    loadstring( txt )()
 end
 --
 -- Read a line of text and execute the result as a command
 --
 function read_execute()
-   local cmd = Screen:get_line("!");
+   local cmd = Screen:get_line("!")
    os.execute(cmd)
 end
 
@@ -1033,10 +1073,10 @@ keymap['global']['SPACE'] = "select()"
 --
 -- Left/Right scrolling.  (Global)
 --
-keymap['global']['h']         = "left()";
-keymap['global']['KEY_LEFT']  = "left()";
-keymap['global']['l']         = "right()";
-keymap['global']['KEY_RIGHT'] = "right()";
+keymap['global']['h']         = "left()"
+keymap['global']['KEY_LEFT']  = "left()"
+keymap['global']['l']         = "right()"
+keymap['global']['KEY_RIGHT'] = "right()"
 
 --
 -- Change the display-limits
