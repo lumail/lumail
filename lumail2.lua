@@ -92,6 +92,76 @@ end
 
 
 --
+-- Compose a new message.
+--
+function Message:compose()
+
+   -- Get some details
+   local to = Screen:get_line("To:")
+   if ( not to ) then
+      return
+   end
+   local subject = Screen:get_line("Subject:" )
+   if ( not subject ) then
+      subject = "No subject"
+   end
+
+   -- Get a temporary file, and opening it for writing
+   local tmp   = os.tmpname()
+   local file  = assert(io.open(tmp, "w"))
+
+   --
+   -- Populate the header variables
+   --
+   local from  = Config:get("global.sender" )
+   local msgid =  Message:generate_message_id()
+   local date  = "today"
+
+   -- Write out a header
+   header = [[To: ${to}
+From: ${from}
+Subject: ${subject}
+Message-ID: ${msgid}
+Date: ${date}
+
+]]
+
+   file:write( interp( header, { to      = to,
+                                 from    = from,
+                                 subject = subject,
+                                 msgid   = msgid,
+                                 date    = date
+                               } ) )
+
+   file:close()
+
+   -- TODO: append a signature
+
+   -- Open the editor
+   Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
+
+   -- Once the editor quits ask for an action
+   local a = Screen:prompt( "Send message: (y)es or (n)o?", "yYnN" );
+
+   if ( a == "y" ) or ( "a" == "Y" ) then
+      -- Send the mail.
+      os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
+      Panel:title("Message sent" )
+   else
+      -- Abort
+      Panel:title("Sending aborted!" )
+   end
+
+   --
+   -- Remove the temporary-file
+   --
+   if ( File:exists(tmp ) ) then
+      os.remove(tmp)
+   end
+end
+
+
+--
 -- Reply to the current message
 --
 function Message:reply()
@@ -911,6 +981,7 @@ keymap['attachment']['q'] = "change_mode( 'message' );"
 --
 -- Actions relating to messages.
 --
+keymap['global']['c']  = 'Message:compose()'
 keymap['message']['r'] = 'Message:reply()'
 keymap['index']['r']   = 'Message:reply()'
 keymap['message']['f'] = 'Message:forward()'
