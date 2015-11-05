@@ -2,31 +2,34 @@
 lumail2
 =======
 
-This repository contains a very primitive "email client".  This is in quotes
-because right now the only thing that works is :
+This repository contains a work-in-progress email client, designed for console use,
+with fully integrated Lua scripting support.
 
-* Listing Maildirs.
-* Listing Messages within a particular Maildir.
-* Viewing a single email-message.
-   * Viewing the attachments associated with that message.
+This project is a reimaginging of the previous [Lumail client](https://github.com/lumail/lumail/),
+which was initiated to improve both the core code and the user-presentation of that code:
 
-There is zero support for:
+* The C++ core is much more consistent.
+* The Lua extension support is much more consistent.
+* The more things that can be pusehd to Lua the better. 
+    * To allow customization.
+    * To allow flexibility.
 
-* Forwarding emails.
-* Replying to emails.
-* Sending emails.
+The current status of the project is that navigation works across various modes (as `lumail` is
+a modal client), and there are primitives for composing mail, replying to mail, and forwarding
+mail.
+
+Missing support at the moment is for things like:
+
 * Deleting emails.
-
-If you're familiar with the original [lumail project](http://lumail.org/) it should make sense, otherwise it might not.
-
+* Sorting emails.
 
 
 User-Interface
 --------------
 
 The user-interface will be familiar to users of lumail 1.x, the only obvious
-changes is the status-panel which can display persistent output, under the control of Lua,
-and the addition of new display-modes.
+change is the addition of the status-panel which can display persistent output,
+under the control of Lua, and the addition of new display-modes.
 
 It should be noted that all of the display-modes are created/maintained by Lua code,
 which means it is possible to create very flexible and customized output.
@@ -40,11 +43,10 @@ Because this is a modal-application you're always in one of a fixed number of mo
     * Allows viewing a list of messages, i.e. the contents of a Maildir.
 * `message`-mode
     * Allows you to view a single message.
-* `attachment`-mode
-    * Which lets you view the attachments associated with a message.
+    * `attachment`-mode is a submode, and allows you to view attachments associated with a message.
 * `lua`-mode.
-    * Is a mode that displays output created by Lua.
-    * This is the way that we allow you to write custom output.
+    * This mode displays output created by Lua.
+    * By default it dumps configuration values, & etc.
 
 
 
@@ -66,7 +68,7 @@ if they exit:
      * This will be removed before the first release - it is a security-hole.
 
 Once you've done that you'll be in the `maildir`-mode, and you can
-navigate with `j`/`k`, and view the contents of a maildir via `return`.
+navigate with `j`/`k`, and select items with `enter`.
 
 For a quick-start you can use the following bindings:
 
