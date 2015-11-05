@@ -317,11 +317,9 @@ int l_CMessage_flags(lua_State * l)
     /**
      * Are we setting the flags?
      */
-    int n = lua_gettop(l);
-
-    if (n > 1)
+    if (lua_gettop(l) >= 2)
     {
-        const char *update = luaL_checkstring(l, 1);
+        const char *update = luaL_checkstring(l, 2);
         foo->set_flags(update);
     }
 
