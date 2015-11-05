@@ -376,6 +376,49 @@ end
 
 
 --
+-- Delete the current message.
+--
+function Message:unlink()
+
+   --
+   -- If we're in message-mode then we can get the current-message
+   -- directly.
+   --
+   -- If instead we're in index-mode then we'll need to select the message
+   -- under the cursor to proceed.
+   --
+   local mode = Config:get("global.mode")
+
+   if ( mode == "message" ) then
+      local msg = current_message()
+      -- msg:unlink()
+      Panel:title( msg:path() )
+      change_mode("index")
+      return
+   end
+
+   if ( mode == "index" ) then
+
+      -- Get the message under the cursor.
+      local offset = Config:get( "index.current" )
+      local entry  = Screen:select_message( offset )
+      local msg = current_message()
+
+      -- delete it
+--      msg:unlink()
+
+      -- now select the previous message.
+      offset = offset - 1
+      if ( offset < 0 ) then offset = 0 end
+      Config:set( "index.current", offset )
+
+      -- Is this redundent?
+      Screen:select_message( offset )
+   end
+end
+
+
+--
 -- Forward the current message
 --
 function Message:forward()
@@ -1191,6 +1234,8 @@ keymap['message']['r'] = 'Message:reply()'
 keymap['index']['r']   = 'Message:reply()'
 keymap['message']['f'] = 'Message:forward()'
 keymap['index']['f']   = 'Message:forward()'
+keymap['message']['d'] = 'Message:unlink()'
+keymap['index']['d']   = 'Message:unlink()'
 
 
 

@@ -489,7 +489,6 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
             memcpy(data, b, len);
 
 
-
             /**
              * OK this is an attachment.
              */
@@ -514,4 +513,13 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
 
 
     return (m_parts);
+}
+
+
+/**
+ * Delete this message from the disk.
+ */
+bool CMessage::unlink()
+{
+  return(CFile::delete_file( path() ));
 }

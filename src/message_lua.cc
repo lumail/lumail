@@ -348,6 +348,19 @@ int l_CMessage_destructor(lua_State * l)
     return 0;
 }
 
+
+/**
+ * Delete the message.
+ */
+int l_CMessage_unlink(lua_State * l)
+{
+    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
+    if ( foo )
+      foo->unlink();
+
+    return 0;
+}
+
 void InitMessage(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
@@ -362,6 +375,7 @@ void InitMessage(lua_State * l)
         {"new", l_CMessage_constructor},
         {"parts", l_CMessage_parts},
         {"path", l_CMessage_path},
+        {"unlink", l_CMessage_unlink},
         {NULL, NULL}
     };
     luaL_newmetatable(l, "luaL_CMessage");

@@ -23,6 +23,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #include "file.h"
 #include "maildir.h"
@@ -152,4 +153,11 @@ std::vector < std::string > CFile::get_all_maildirs(std::string prefix)
     }
 
     return result;
+}
+
+
+bool CFile::delete_file(std::string path)
+{
+    bool result = ::unlink(path.c_str());
+    return (result);
 }

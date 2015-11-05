@@ -104,6 +104,11 @@ public:
     void mark_read();
 
     /**
+     * Remove this message from disk.
+     */
+    bool unlink();
+
+    /**
      * Get message-parts
      */
     std::vector<std::shared_ptr<CMessagePart>> get_parts();
