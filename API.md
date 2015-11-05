@@ -75,9 +75,8 @@ The following methods are available:
 
 If the function `Config.key_changed` is defined it will be invoked whenever a key has a value updated.
 
-Sample code:
+Sample code is available in `sample.lua/config.lua`.
 
-     lumail2 --no-curses --load-file ./config.lua
 
 
 
@@ -91,9 +90,8 @@ The following (static) methods exist:
 * Directory:exists(path)
    * Return `true` if the given directory exists.
 
-Sample code:
+Sample code is available in `sample.lua/file.lua`.
 
-     lumail2 --no-curses --load-file ./file.lua
 
 
 Files
@@ -107,10 +105,8 @@ The following (static) methods exist:
    * Return a table of information about the named target.
    * Returns `nil` on failure.
 
+Sample code is available in `sample.lua/file.lua`.
 
-Sample code:
-
-     lumail2 --no-curses --load-file ./file.lua
 
 
 Maildir
@@ -182,7 +178,8 @@ object contains the following methods:
 * type()
     * Returns the content-type of the MIME-part.
 
-See [show_message.lua](show_message.lua) for an example use-case of this method.
+Sample code is available in `sample.lua/show_message.lua`.
+
 
 
 Networking
@@ -193,7 +190,7 @@ There is only a single networking method:
 * `Net:hostname()`
      * Return the FQDN of the current system.
 
-See `net.lua` for an example.
+Sample code is available in `sample.lua/net.lua`.
 
 
 Screen
@@ -218,9 +215,7 @@ The Screen object is registered automatically and doesn't need to be constructed
 * `width()`
     * Return the width of the screen.
 
-Sample code:
-
-     lumail2 --no-curses --load-file ./screen.lua
+Sample code is available in `sample.lua/screen.lua`.
 
 
 The screen also has an associated status-panel, hereby referred to as "Panel".  The Panel object has the following methods:
@@ -242,9 +237,7 @@ The screen also has an associated status-panel, hereby referred to as "Panel".  
 * toggle()
      * Toggle the visibility of the panel.
 
-Sample code:
-
-     lumail2 --load-file ./panel.lua
+Sample code is available in `sample.lua/panel.lua`.
 
 
 
