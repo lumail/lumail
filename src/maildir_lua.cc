@@ -50,7 +50,7 @@ extern "C"
 
 
 /**
- * Push a CMaildr pointer onto the Lua stack.
+ * Push a CMaildir pointer onto the Lua stack.
  */
 void push_cmaildir(lua_State * l, std::shared_ptr<CMaildir> maildir)
 {
@@ -136,7 +136,7 @@ int l_CMaildir_path(lua_State * l)
 
 
 /**
- * Count the messages in the directory.
+ * Count the messages in the maildir-directory
  */
 int l_CMaildir_total_messages(lua_State * l)
 {
@@ -184,9 +184,7 @@ int l_CMaildir_exists(lua_State * l)
 
 
 /**
- * Return a C++ CMessage object for each message.
- *
- * Suspect this is broken - but it seems to work.
+ * Return a Lua CMessage object for each message.
  */
 int l_CMaildir_messages(lua_State * l)
 {
