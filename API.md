@@ -211,6 +211,8 @@ The Screen object is registered automatically and doesn't need to be constructed
     * Receive a line of input, from the prompt.
 * `height()`
     * Return the height of the screen.
+* `prompt("Text", "chars" )`
+    * Accept input from a small list of characters, used for showing menus, etc.
 * `sleep(N)`
     * Sleep for N-seconds.
 * `width()`
