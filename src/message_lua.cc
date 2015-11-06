@@ -355,15 +355,18 @@ int l_CMessage_destructor(lua_State * l)
 int l_CMessage_unlink(lua_State * l)
 {
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
-    if ( foo )
-      foo->unlink();
+
+    if (foo)
+        foo->unlink();
 
     /**
-     * Update our global-state
+     * Update our global-state to reflect the fact that
+     * a message has been deleted.
      */
     CGlobalState *global = CGlobalState::instance();
-    global->update_maildirs();
     global->update_messages();
+    global->set_message(NULL);
+
     return 0;
 }
 
