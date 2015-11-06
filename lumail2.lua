@@ -1090,8 +1090,6 @@ function on_complete( token )
       "Screen:exit",
       "Screen:get_line",
       "Screen:height",
-      "Screen:maildir",
-      "Screen:message",
       "Screen:sleep",
       "Screen:width",
    }

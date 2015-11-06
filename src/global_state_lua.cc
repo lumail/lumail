@@ -28,6 +28,7 @@ extern "C"
 
 #include "global_state.h"
 #include "maildir_lua.h"
+#include "message_lua.h"
 
 
 
@@ -73,11 +74,28 @@ int l_CGlobalState_current_maildir(lua_State * L)
 }
 
 
+
+
+
+/**
+ * Get the current message
+ */
+int l_CGlobalState_current_message(lua_State * l)
+{
+    CGlobalState *state = CGlobalState::instance();
+    std::shared_ptr<CMessage> m = state->current_message();
+
+    push_cmessage(l, m);
+
+    return 1;
+}
+
 void InitGlobalState(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
     {
         {"maildirs", l_CGlobalState_maildirs},
+        {"current_message", l_CGlobalState_current_message},
         {"current_maildir", l_CGlobalState_current_maildir},
         {NULL, NULL}
     };

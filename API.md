@@ -124,16 +124,20 @@ The following API methods are available to help you with this:
      * Retrieve the list of available maildirs.
 * `Global:current_maildir()`
      * Retrieve the currently-selected maildir.
-* `Global:select_maildir(obj)`
+* `Global:current_message()`
+     * Retrieve the currently-selected message.
 
 
-* Select the specified maildir.
+
+
 Maildir
 -------
 
-Constructor:
+You can gain access to Maildir objects several ways:
 
-    maildir = Maildir.new( "./Maildir" )
+* Constructing it manually: `m = Maildir.new( "./Maildir" )`.
+* Calling `Global:maildirs()` to get a list of all available Maildirs.
+* Calling `Global:current_maildir()` to return the currently selected maildir.
 
 The Maildir object has the following methods:
 
@@ -158,8 +162,8 @@ The Message object represents a single message, contained within a maildir.
 You can get access to message objects in three ways:
 
 * Construct it manually via `Message.new( path/to/message )`.
-* If you're in `message`-mode the current message can be found via `current_message()`.
-* If you're in `maildir`-mode the list of available messages may be retrieved via `messages()`.
+* Call the `messages()` method on the currently-selected Maildir.
+* Call the `Global:current_message()` method.
 
 
 Message methods:

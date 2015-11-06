@@ -67,35 +67,6 @@ int l_CScreen_exit(lua_State * l)
     return 0;
 }
 
-/**
- * Get the current maildir.
- */
-int l_CScreen_maildir(lua_State * l)
-{
-    CGlobalState *state = CGlobalState::instance();
-    std::shared_ptr<CMaildir > current = state->current_maildir();
-
-    if (current)
-        push_cmaildir(l, current);
-    else
-        lua_pushnil(l);
-
-    return 1;
-}
-
-
-/**
- * Get the current message
- */
-int l_CScreen_message(lua_State * l)
-{
-    CGlobalState *state = CGlobalState::instance();
-    std::shared_ptr<CMessage> m = state->current_message();
-
-    push_cmessage(l, m);
-
-    return 1;
-}
 
 /**
  * Select a maildir, by index.
@@ -227,8 +198,6 @@ InitScreen(lua_State * l)
         {"exit",  l_CScreen_exit},
         {"get_line", l_CScreen_get_line},
         {"height", l_CScreen_height},
-        {"maildir", l_CScreen_maildir},
-        {"message", l_CScreen_message},
         {"prompt", l_CScreen_prompt_chars},
         {"select_maildir", l_CScreen_select_maildir},
         {"select_message", l_CScreen_select_message},
