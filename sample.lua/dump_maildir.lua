@@ -3,7 +3,7 @@
 --
 -- Usage:
 --
---     ./lumail2 --no-curses --load-file ./dump_maildir.lua
+--     lumail2 --no-curses --load-file ./dump_maildir.lua
 --
 
 function show_folder( path )
@@ -11,56 +11,35 @@ function show_folder( path )
    print( "Looking for the folder:"  .. path )
 
    --
-   -- Get the max folders
+   -- Get all known Maildirs
    --
-   local cur = 0
-   local max = tonumber(Config:get( "maildir.max" ))
+   local mdirs = Global:maildirs()
 
-  
-   while( cur < tonumber(max) ) do
-      -- Select the maildir - and get it
-      Screen:select_maildir( cur) 
-      local m = Screen:maildir()
+   --
+   -- For each one, does the patch match?
+   --
+   for i,m in ipairs(mdirs) do
 
-      -- Does this path match waht we wanted?
-      if ( string.find( m:path(),  path )  ) then
-	 found = cur
+      if ( string.match(m:path(), path ) ) then
+         print( "Found maildir " .. m:path() )
+         print( "\tThere are " .. m:total_messages() .. " total messages." )
+         print( "\tThere are " .. m:unread_messages() .. " unread messages." )
+
+         -- Now get the messages
+         local msgs = m:messages()
+
+         for j,o in ipairs(msgs) do
+            print( "\t\t" .. o:header("Subject" ) )
+         end
+
+         return
       end
-
-      -- Loop again.
-      cur = cur + 1
-   end
-
-   -- Failed to find it.
-   if ( found == -1 ) then
-      print( "Failed to find folder with name:" .. path )
-      return
    end
 
    --
-   -- Select the maildir
+   -- Failed to find Maildir
    --
-   Screen:select_maildir(found)
-
-   --
-   -- Count the messages
-   --
-   Config:set( "global.mode", "index" )
-   max = Config:get( "index.max" )
-   cur = 0
-   print(" There are " .. max .. " messages" )
-
-   while( cur < tonumber(max) ) do
-      -- Select the maildir - and get it
-      Screen:select_message( cur) 
-      local m = Screen:message()
-
-      print( "\tMessage " .. cur .. " has Subject:" ..  m:header( "Subject" ) )
-      -- Loop again.
-      cur = cur + 1
-   end
-   
-   
+   print("Failed to find Maildir matching " .. path )
 end
 
 
