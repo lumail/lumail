@@ -199,8 +199,8 @@ InitScreen(lua_State * l)
         {"get_line", l_CScreen_get_line},
         {"height", l_CScreen_height},
         {"prompt", l_CScreen_prompt_chars},
-        {"select_maildir", l_CScreen_select_maildir},
-        {"select_message", l_CScreen_select_message},
+        {"select_maildir", l_CScreen_select_maildir}, // TODO - move:Global
+        {"select_message", l_CScreen_select_message}, // TODO - move:Global
         {"sleep", l_CScreen_sleep},
         {"width", l_CScreen_width},
         {NULL, NULL}
