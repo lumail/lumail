@@ -358,6 +358,12 @@ int l_CMessage_unlink(lua_State * l)
     if ( foo )
       foo->unlink();
 
+    /**
+     * Update our global-state
+     */
+    CGlobalState *global = CGlobalState::instance();
+    global->update_maildirs();
+    global->update_messages();
     return 0;
 }
 

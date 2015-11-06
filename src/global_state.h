@@ -78,7 +78,7 @@ public:
      */
     void config_key_changed(std::string name);
 
-private:
+public:
     void update_maildirs();
     void update_messages();
 

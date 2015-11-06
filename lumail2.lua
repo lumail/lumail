@@ -378,7 +378,7 @@ end
 --
 -- Delete the current message.
 --
-function Message:unlink()
+function Message:delete()
 
    --
    -- If we're in message-mode then we can get the current-message
@@ -391,8 +391,7 @@ function Message:unlink()
 
    if ( mode == "message" ) then
       local msg = current_message()
-      -- msg:unlink()
-      Panel:title( msg:path() )
+      msg:unlink()
       change_mode("index")
       return
    end
@@ -405,7 +404,7 @@ function Message:unlink()
       local msg = current_message()
 
       -- delete it
---      msg:unlink()
+      msg:unlink()
 
       -- now select the previous message.
       offset = offset - 1
@@ -565,6 +564,7 @@ end
 -- it is called by the `index_view()` function defined next.
 --
 function Message:format(msg)
+
    local flags   = msg:flags()
    local subject = msg:header( "Subject" )
    local sender  = msg:header( "From" )
@@ -1234,8 +1234,8 @@ keymap['message']['r'] = 'Message:reply()'
 keymap['index']['r']   = 'Message:reply()'
 keymap['message']['f'] = 'Message:forward()'
 keymap['index']['f']   = 'Message:forward()'
-keymap['message']['d'] = 'Message:unlink()'
-keymap['index']['d']   = 'Message:unlink()'
+keymap['message']['d'] = 'Message:delete()'
+keymap['index']['d']   = 'Message:delete()'
 
 
 
