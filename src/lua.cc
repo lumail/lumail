@@ -28,6 +28,7 @@
 extern void InitConfig(lua_State * l);
 extern void InitDirectory(lua_State * l);
 extern void InitFile(lua_State * l);
+extern void InitGlobalState(lua_State * l);
 extern void InitMaildir(lua_State * l);
 extern void InitMessage(lua_State * l);
 extern void InitMessagePart(lua_State * l);
@@ -91,6 +92,7 @@ CLua::CLua()
     InitConfig(m_lua);
     InitDirectory(m_lua);
     InitFile(m_lua);
+    InitGlobalState(m_lua);
     InitMaildir(m_lua);
     InitMessage(m_lua);
     InitMessagePart(m_lua);

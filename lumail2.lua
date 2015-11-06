@@ -532,7 +532,7 @@ end
 function Maildir.select( desired )
 
    -- Get the maildirs
-   local folders = current_maildirs()
+   local folders = Global:maildirs()
 
    -- For each one .. see if it matches
    for index,object in ipairs( folders ) do
@@ -658,8 +658,12 @@ function lua_view()
    table.insert(output, "$[YELLOW]\t" .. mode )
 
    table.insert(output, "The currently selected maildir is" )
-   table.insert(output, "$[RED]\t" .. "TODO" )
-   -- missing primitive: current_maildir
+   local md = Global:current_maildir()
+   if ( md ) then
+      table.insert(output, "$[RED]\t" .. md:path() )
+   else
+      table.insert(output, "$[RED]\tUNSET" )
+   end
 
    table.insert(output, "The currently selected message is" )
    local msg = current_message()
@@ -729,7 +733,7 @@ function maildir_view()
    local result = {}
 
    -- Get the maildirs
-   local folders = current_maildirs()
+   local folders = Global:maildirs()
 
    -- For each one add the output
    for index,object in ipairs( folders ) do

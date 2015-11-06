@@ -109,6 +109,25 @@ Sample code is available in `sample.lua/file.lua`.
 
 
 
+Global State
+------------
+
+There are some things which are global, and these largely revolve around
+available maildirs, and messages.
+
+There is the notion that a message might be selected, and similarly a
+maildir.
+
+The following API methods are available to help you with this:
+
+* `Global:maildirs()`
+     * Retrieve the list of available maildirs.
+* `Global:current_maildir()`
+     * Retrieve the currently-selected maildir.
+* `Global:select_maildir(obj)`
+
+
+* Select the specified maildir.
 Maildir
 -------
 
@@ -128,8 +147,6 @@ The Maildir object has the following methods:
 	* Returns the count of unread/new messages in the maildir.
 * `exists`
 	* Returns `true` if the Maildir exists.
-
-The currently visible maildirs can be retrieved via `current_maildirs()`.
 
 
 

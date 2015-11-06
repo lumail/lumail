@@ -232,32 +232,6 @@ int l_CMaildir_destructor(lua_State * l)
 
 
 /**
- * Get the current maildirs, paying attention to the `maildir.limit`
- * setting.
- */
-int current_maildirs(lua_State * L)
-{
-    CGlobalState *global = CGlobalState::instance();
-    std::vector<std::shared_ptr<CMaildir>> maildirs = global->get_maildirs();
-
-    lua_createtable(L, maildirs.size(), 0);
-    int i = 0;
-
-    for (std::vector<std::shared_ptr<CMaildir>>::iterator it = maildirs.begin();
-            it != maildirs.end(); ++it)
-    {
-        std::shared_ptr<CMaildir> cur = (*it);
-        push_cmaildir(L, cur);
-
-        lua_rawseti(L, -2, i + 1);
-        i++;
-    }
-
-    return 1;
-
-}
-
-/**
  * Somebody set us up the mapping.
  */
 void InitMaildir(lua_State * l)
@@ -287,10 +261,4 @@ void InitMaildir(lua_State * l)
     lua_setfield(l, -1, "__index");
     lua_setglobal(l, "Maildir");
 
-
-    /**
-     * Now add in the static method.
-     */
-    lua_pushcfunction(l, current_maildirs);
-    lua_setglobal(l, "current_maildirs");
 }
