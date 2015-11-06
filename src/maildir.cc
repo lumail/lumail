@@ -274,11 +274,6 @@ CMessageList CMaildir::getMessages()
     dirs.push_back(m_path + "/cur/");
     dirs.push_back(m_path + "/new/");
 
-#ifdef LUMAIL_DEBUG
-    std::string dm = "CMessage::getMessages()";
-    DEBUG_LOG(dm);
-#endif
-
     /**
      * For each directory.
      */
@@ -309,20 +304,6 @@ CMessageList CMaildir::getMessages()
                             (new CMessage(std::string(path + de->d_name)));
                         result.push_back(t);
 
-#ifdef LUMAIL_DEBUG
-                        std::string dm = "CMessage::getMessages() - found ";
-                        dm += path + de->d_name;
-                        DEBUG_LOG(dm);
-#endif
-                    }
-                    else
-                    {
-#ifdef LUMAIL_DEBUG
-                        std::string dm =
-                            "CMessage::getMessages() - ignoring dotfile ";
-                        dm += path + de->d_name;
-                        DEBUG_LOG(dm);
-#endif
                     }
                 }
             }
