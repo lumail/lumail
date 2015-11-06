@@ -257,16 +257,30 @@ function Message:reply()
    local mode = Config:get("global.mode")
 
    if ( mode == "message" ) then
-      msg = current_message()
+      msg = Global:current_message()
    end
    if ( mode == "index" ) then
-      local offset = Config:get( "index.current" )
-      local entry  = Screen:select_message( offset )
-      msg = current_message()
+
+      -- Get the list of messages, and the current offset
+      -- that'll let us find the message.
+      local offset  = Config:get( "index.current" )
+      local maildir = Global:current_maildir()
+      if ( not maildir ) then
+         Panel:title( "No maildir is selected!")
+         return
+      end
+      local msgs = maildir:messages()
+      if ( not msgs ) then
+         Panel:title( "There are no messages!")
+      end
+      Panel:title( "Mesages is " .. #msgs .. " entries long" )
+
+      msg = msgs[tonumber(offset)+1]
    end
 
    -- Failed to find a mesage?
    if ( not msg ) then
+      Panel:title("Failed to find message!")
       return
    end
 
@@ -390,7 +404,7 @@ function Message:delete()
    local mode = Config:get("global.mode")
 
    if ( mode == "message" ) then
-      local msg = current_message()
+      local msg = Global:current_message()
       msg:unlink()
       change_mode("index")
       return
@@ -398,10 +412,21 @@ function Message:delete()
 
    if ( mode == "index" ) then
 
-      -- Get the message under the cursor.
-      local offset = Config:get( "index.current" )
-      local entry  = Screen:select_message( offset )
-      local msg = current_message()
+      -- Get the list of messages, and the current offset
+      -- that'll let us find the message.
+      local offset  = Config:get( "index.current" )
+      local maildir = Global:current_maildir()
+      if ( not maildir ) then
+         Panel:title( "No maildir is selected!")
+         return
+      end
+      local msgs = maildir:messages()
+      if ( not msgs ) then
+         Panel:title( "There are no messages!")
+      end
+      Panel:title( "Mesages is " .. #msgs .. " entries long" )
+
+      msg = msgs[tonumber(offset)+1]
 
       -- delete it
       msg:unlink()
@@ -434,12 +459,25 @@ function Message:forward()
    local mode = Config:get("global.mode")
 
    if ( mode == "message" ) then
-      msg = current_message()
+      msg = Global:current_message()
    end
    if ( mode == "index" ) then
-      local offset = Config:get( "index.current" )
-      local entry  = Screen:select_message( offset )
-      msg = current_message()
+
+      -- Get the list of messages, and the current offset
+      -- that'll let us find the message.
+      local offset  = Config:get( "index.current" )
+      local maildir = Global:current_maildir()
+      if ( not maildir ) then
+         Panel:title( "No maildir is selected!")
+         return
+      end
+      local msgs = maildir:messages()
+      if ( not msgs ) then
+         Panel:title( "There are no messages!")
+      end
+      Panel:title( "Mesages is " .. #msgs .. " entries long" )
+
+      msg = msgs[tonumber(offset)+1]
    end
 
    -- Failed to find a mesage?
@@ -598,7 +636,11 @@ function attachment_view()
    --
    -- Get the parts from within the current message
    --
-   local msg   = current_message()
+   local msg   = Global:current_message()
+   if ( not msg ) then
+      return( { "No message selected!" } )
+   end
+
    local parts = msg:parts()
 
    --
@@ -627,8 +669,15 @@ end
 function index_view()
    local result = {}
 
+   -- Get the currently selected Maildir.
+   local maildir = Global:current_maildir()
+   if ( not maildir ) then
+      table.insert(result, "There are no messages")
+      return
+   end
+
    -- Get the messages in the maildir
-   local messages = messages()
+   local messages = maildir:messages()
 
    -- For each one add the output
    for offset,object in ipairs( messages ) do
@@ -666,7 +715,7 @@ function lua_view()
    end
 
    table.insert(output, "The currently selected message is" )
-   local msg = current_message()
+   local msg = Global:current_message()
    if ( msg ) then
       table.insert(output, "$[RED]\t" .. msg:path() )
    else
@@ -761,7 +810,11 @@ function message_view( msg )
    -- argument, so we need to find the message.
    --
    if ( not msg ) then
-      msg = current_message()
+      msg = Global:current_message()
+   end
+
+   if ( not msg ) then
+      return({"No message selected!"})
    end
 
    --

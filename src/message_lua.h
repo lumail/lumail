@@ -20,6 +20,9 @@ extern "C"
 {
 #include <lua.h>
 }
+#include <memory>
+
 #include "message.h"
 
 extern void push_cmessage(lua_State * l, std::shared_ptr<CMessage> message);
+extern std::shared_ptr<CMessage> l_CheckCMessage(lua_State * l, int n);

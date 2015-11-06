@@ -74,21 +74,35 @@ int l_CGlobalState_current_maildir(lua_State * L)
 }
 
 
-
-
-
 /**
- * Get the current message
+ * Get the currently selected message
  */
 int l_CGlobalState_current_message(lua_State * l)
 {
     CGlobalState *state = CGlobalState::instance();
     std::shared_ptr<CMessage> m = state->current_message();
 
-    push_cmessage(l, m);
+    if ( m )
+      push_cmessage(l, m);
+    else
+      lua_pushnil(l);
 
     return 1;
 }
+
+/**
+ * Update the currently selected message
+ */
+int l_CGlobalState_select_message(lua_State * l)
+{
+    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
+
+    CGlobalState *global = CGlobalState::instance();
+    global->set_message(foo);
+
+    return 0;
+}
+
 
 void InitGlobalState(lua_State * l)
 {
@@ -96,6 +110,7 @@ void InitGlobalState(lua_State * l)
     {
         {"maildirs", l_CGlobalState_maildirs},
         {"current_message", l_CGlobalState_current_message},
+        {"select_message", l_CGlobalState_select_message},
         {"current_maildir", l_CGlobalState_current_maildir},
         {NULL, NULL}
     };
