@@ -40,8 +40,10 @@ bool CDirectory::exists(std::string path)
 /**
  * Filter for std::erase - to remove duplicate slash-characters.
  */
-struct both_slashes {
-    bool operator()(char a, char b) const {
+struct both_slashes
+{
+    bool operator()(char a, char b) const
+    {
         return a == '/' && b == '/';
     }
 };
@@ -63,14 +65,14 @@ std::vector < std::string > CDirectory::entries(std::string prefix)
 
         while ((de = readdir(dp)) != NULL)
         {
-          /*
-           * Build up a string - removing duplicate "/" characters.
-           */
-          std::string r = prefix + "/" + de->d_name;
-          r.erase(std::unique(r.begin(), r.end(), both_slashes()), r.end());
+            /*
+             * Build up a string - removing duplicate "/" characters.
+             */
+            std::string r = prefix + "/" + de->d_name;
+            r.erase(std::unique(r.begin(), r.end(), both_slashes()), r.end());
 
 
-          result.push_back(r);
+            result.push_back(r);
         }
     }
 

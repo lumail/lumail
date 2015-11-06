@@ -521,5 +521,5 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
  */
 bool CMessage::unlink()
 {
-  return(CFile::delete_file( path() ));
+    return (CFile::delete_file(path()));
 }
