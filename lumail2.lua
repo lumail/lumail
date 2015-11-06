@@ -1062,10 +1062,17 @@ end
 --
 -- This function is called to generate tab-completions
 --
+-- Given a token the user has entered it should return a table
+-- containing all possible matches.  The user-interface will
+-- complete precisely if there is a single entry in the table, if not
+-- it will prompt the user to choose from the available selection.
+--
 function on_complete( token )
 
    --
    -- Some fixed things that we should be able to complete upon.
+   --
+   -- TODO: Introspection?
    --
    tmp = {
       "Panel:height",
@@ -1087,6 +1094,7 @@ function on_complete( token )
 
    --
    -- The values we'll return to the caller.
+   --
    ret = { }
 
    --
@@ -1094,6 +1102,30 @@ function on_complete( token )
    --
    for k,v in pairs(_G) do
       tmp[k] = k
+   end
+
+   --
+   -- Is the user attempting to complete on a file-path?
+   --
+   if ( string.match( token, "^/" ) ) then
+
+      --
+      -- Get the directory this is from.
+      --
+      -- Default to / if we found no match.
+      --
+      dir = string.match(token, "^(.*)/" )
+      if ( dir == "" ) then dir = "/" end
+
+      --
+      -- If the directory exists then add all the entries to the completion-set.
+      --
+      if ( File:exists( dir ) ) then
+         entries = Directory:entries( dir )
+         for i,v in ipairs(entries) do
+            tmp[v] = v
+         end
+      end
    end
 
    --
