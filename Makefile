@@ -45,19 +45,13 @@ endif
 # Compilation flags and libraries we use.
 #
 CPPFLAGS+=-std=gnu++0x -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) -DLUMAIL_VERSION="\"${VERSION}\""
-LDLIBS+=$(shell pkg-config --libs ${LVER}) $(shell pkg-config --libs ncursesw) $(shell pkg-config --libs panelw) -lpcrecpp
+LDLIBS+=$(shell pkg-config --libs ${LVER}) $(shell pkg-config --libs ncursesw) $(shell pkg-config --libs panelw)
 
 #
 #  GMime is used for MIME handling.
 #
 GMIME_LIBS=$(shell pkg-config --libs  gmime-2.6)
 GMIME_INC=$(shell pkg-config --cflags gmime-2.6)
-
-#
-# UTF-8-aware string handling.
-#
-GLIBMM_LIBS=$(shell pkg-config --libs  glibmm-2.4)
-GLIBMM_INC=$(shell pkg-config --cflags glibmm-2.4)
 
 #
 #  Build both targets by default, along with the helper.
