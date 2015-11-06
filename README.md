@@ -2,64 +2,88 @@
 lumail2
 =======
 
-This repository contains a work-in-progress email client, designed for console use,
-with fully integrated Lua scripting support.
+This repository contains the `lumail2` application, a console-based email
+client with fully integrated scripting provided by Lua.
 
-This project is a reimaginging of the previous [Lumail client](https://github.com/lumail/lumail/),
-which was initiated to improve both the core code and the user-presentation of that code:
+This project is built upon of the previous [Lumail client](https://github.com/lumail/lumail/), and was initiated to improve both the core code and the user-presentation of that code:
 
 * The C++ core is much more consistent.
 * The Lua extension support is much more consistent.
-* The more things that can be pusehd to Lua the better. 
+* The more things that can be pusehd to Lua the better.
     * To allow customization.
     * To allow flexibility.
 
-The current status of the project is that navigation works across various modes (as `lumail` is
-a modal client), and there are primitives for composing mail, replying to mail, and forwarding
-mail.
+The current status of the project is that of a work in-progress, but the
+core of the project is complete:
 
-Missing support at the moment is for things like:
+* Navigation around the various modes is complete.
+* Basic operations may be carried out against email:
+     * Viewing Maildir hierarchies.
+     * Viewing message-lists.
+     * Reading emails.
+     * Replying to emails.
+     * Forwarding emails.
 
-* Deleting emails.
-* Sorting emails.
+The missing facilities include:
+
+* Lack of support for GPG/PGP.
+* Lack of support for adding attachments to outgoing emails.
+* Lack of real documentation.
 
 
 User-Interface
 --------------
 
-The user-interface will be familiar to users of lumail 1.x, the only obvious
-change is the addition of the status-panel which can display persistent output,
-under the control of Lua, and the addition of new display-modes.
+The user-interface will be familiar to users of prior `lumail` release.
 
-It should be noted that all of the display-modes are created/maintained by Lua code,
-which means it is possible to create very flexible and customized output.
+The only obvious change, in terms of visual appearance, is the addition of
+the status-panel which can display persistent output, under the control of
+Lua, and the updated display-modes.
 
-Because this is a modal-application you're always in one of a fixed number of modes:
+It should be noted that all of the display-modes are created/maintained by
+Lua code, which means it is possible to create very flexible and
+customized output.
+
+Because this is a modal-application you're always in one of a fixed number
+of modes:
 
 
 * `maildir`-mode
-    * Allows viewing mail folders.
+    * Allows viewing lists of Maildir folders.
 * `index`-mode
     * Allows viewing a list of messages, i.e. the contents of a Maildir.
 * `message`-mode
     * Allows you to view a single message.
-    * `attachment`-mode is a submode, and allows you to view attachments associated with a message.
+    * `attachment`-mode is a submode, and allows you to view the attachments associated with a particular message.
 * `lua`-mode.
     * This mode displays output created by Lua.
     * By default it dumps configuration values, & etc.
 
 
+Building Lumail2
+----------------
+
+The code relies upon a small number of libraries:
+
+* lua 5.2 is also supported, but is not yet the default.
+* libncursesw - The console input/graphics library.
+* libgmime-2.6  - The MIME-library.
+
+Upon a Debian GNU/Linux host, running the Jessie (stable), release the following two commands are sufficient to install the dependencies:
+
+    apt-get install build-essential make pkg-config
+
+    apt-get install liblua5.2-dev libgmime-2.6-dev libncursesw5-dev
+
+With the dependencies installed you should ind the code builds cleanly with:
+
+    make
+
 
 Using Lumail
 ------------
 
-The first step is obviously to compile the code, and then execute the
-client itself:
-
-    make
-    ./lumail2
-
-When the program starts it will load each of the following files, in order,
+When `lumaile` starts it will load each of the following files, in order,
 if they exit:
 
 * `/etc/lumail2/lumail2.lua`
