@@ -1105,6 +1105,16 @@ function on_complete( token )
    end
 
    --
+   -- If the token starts with "~" then replace that with
+   -- the users' home-directory
+   --
+   if ( string.sub( token, 0, 1 ) == "~" ) then
+      token = string.sub( token, 2 )
+      token = os.getenv("HOME") .. token
+   end
+
+
+   --
    -- Is the user attempting to complete on a file-path?
    --
    if ( string.match( token, "^/" ) ) then
