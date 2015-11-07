@@ -389,7 +389,7 @@ void CScreen::status_panel_init()
     /**
      * Size of panel
      */
-    int rows = 10;
+    int rows = 6;
     int cols = CScreen::width();
 
     /**
