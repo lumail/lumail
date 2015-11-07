@@ -478,13 +478,13 @@ void CScreen::status_panel_draw()
             colour = "white";
 
         while ((int)title.length() < CScreen::width() - 2)
-          title += " ";
+            title += " ";
 
         /**
          * Ensure the line isn't too long, so we don't wrap around.
          */
-        if ((int)title.length() >  CScreen::width()-2)
-          title = title.substr(0, CScreen::width() - 2);
+        if ((int)title.length() >  CScreen::width() - 2)
+            title = title.substr(0, CScreen::width() - 2);
 
 
         wattron(g_status_bar_window, COLOR_PAIR(get_colour(colour)));
@@ -536,13 +536,13 @@ void CScreen::status_panel_draw()
              * Ensure we draw a complete line.
              */
             while ((int)text.length() < CScreen::width() - 2)
-              text += " ";
+                text += " ";
 
             /**
              * Ensure the line isn't too long, so we don't wrap around.
              */
-            if ((int)text.length() >  CScreen::width()-2)
-              text = text.substr(0, CScreen::width() - 2);
+            if ((int)text.length() >  CScreen::width() - 2)
+                text = text.substr(0, CScreen::width() - 2);
 
             wattron(g_status_bar_window, COLOR_PAIR(get_colour(colour)));
             mvwprintw(g_status_bar_window, (height - 2 - i), 1, text.c_str());
@@ -1089,8 +1089,8 @@ void CScreen::status_panel_append(std::string display)
  */
 void CScreen::status_panel_clear()
 {
-  g_status_bar_data.text.clear();
-  status_panel_draw();
+    g_status_bar_data.text.clear();
+    status_panel_draw();
 }
 
 /**
