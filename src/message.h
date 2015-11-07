@@ -44,6 +44,11 @@ public:
     ~CMessage();
 
     /**
+     * Copy the message to a new maildir - which must exist.
+     */
+    bool copy(std::string maildir);
+
+    /**
      * Get the path of this message.
      */
     std::string path();

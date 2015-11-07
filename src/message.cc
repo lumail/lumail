@@ -523,3 +523,23 @@ bool CMessage::unlink()
 {
     return (CFile::delete_file(path()));
 }
+
+
+/**
+ * Copy the message to a new maildir - which must exist.
+ */
+bool CMessage::copy(std::string maildir)
+{
+    std::string src  = path();
+    std::string file = CFile::basename(src);
+    std::string dest = maildir;
+
+    if (is_new())
+        dest += "/new/";
+    else
+        dest += "/cur/";
+
+    dest += file;
+
+    return (CFile::copy(src, dest));
+}
