@@ -615,37 +615,9 @@ end
 
 
 --
--- This function formats a single message for display in index-mode,
--- it is called by the `index_view()` function defined next.
---
-function Message:format(msg)
-
-   local flags   = msg:flags()
-   local subject = msg:header( "Subject" )
-   local sender  = msg:header( "From" )
-
-   local output = string.format( "[%4s] - %s - %s", flags, sender, subject )
-
-   --
-   -- If the message is unread then show it in RED
-   --
-   if ( string.find( msg:flags(), "N" ) ) then
-      output = "$[RED]" .. output
-   end
-
-   --
-   -- If the message contains the word "STEVE" - show it in blue
-   --
-   if ( string.find( output, "steve" )  ) then
-      output = strip_colour( output )
-      output = "$[BLUE]" .. output
-   end
-   return( output )
-end
-
-
---
 -- This function returns the output which is displayed in attachment-mode
+--
+-- Attachment mode is entered by pressing `A` when a message is open.
 --
 function attachment_view()
    local result = {}
@@ -678,6 +650,37 @@ end
 
 
 --
+-- This function formats a single message for display in index-mode,
+-- it is called by the `index_view()` function defined next.
+--
+function Message:format(msg)
+
+   local flags   = msg:flags()
+   local subject = msg:header( "Subject" )
+   local sender  = msg:header( "From" )
+
+   local output = string.format( "[%4s] - %s - %s", flags, sender, subject )
+
+   --
+   -- If the message is unread then show it in RED
+   --
+   if ( string.find( msg:flags(), "N" ) ) then
+      output = "$[RED]" .. output
+   end
+
+   --
+   -- If the message contains the word "STEVE" - show it in blue
+   --
+   if ( string.find( output, "steve" )  ) then
+      output = strip_colour( output )
+      output = "$[BLUE]" .. output
+   end
+   return( output )
+end
+
+
+
+--
 -- This function displays the screen when in `index`-mode.
 --
 -- It fetches the list of current messages, and calls `Message:format()`
@@ -689,7 +692,7 @@ function index_view()
    -- Get the currently selected Maildir.
    local maildir = Global:current_maildir()
    if ( not maildir ) then
-      table.insert(result, "There are no messages")
+      table.insert(result, "There are no messages visible.")
       return
    end
 
@@ -796,6 +799,7 @@ function Maildir:format(obj)
    return output
 end
 
+
 --
 -- This method returns the text which is displayed in maildir-view
 --
@@ -820,7 +824,7 @@ end
 
 
 --
--- This method returns the text which is displayed in mode-mode.
+-- This method returns the text which is displayed in message-mode.
 --
 -- First of all the current-message is retrieved, then that is
 -- formatted into an array of lines which are displayed to the user.
@@ -905,30 +909,31 @@ function message_view( msg )
 end
 
 
+
+
 --
--- Read input, and evaluate it.
+-- 3. Define some functions which are bound to keys, to move around, etc.
+--
+-----------------------------------------------------------------------------
+
+
+--
+-- Read input, and evaluate it as lua.
 --
 function read_eval()
    local txt = Screen:get_line(":")
    loadstring( txt )()
 end
+
+
 --
--- Read a line of text and execute the result as a command
+-- Read input, and evaluate it as a shell-command.
 --
 function read_execute()
    local cmd = Screen:get_line("!")
    os.execute(cmd)
 end
 
-
-
-
-
-
---
--- 3. Define some navigational-functions.
---
------------------------------------------------------------------------------
 
 
 -- Allow navigation - Selection of a maildir, or message.
@@ -952,15 +957,18 @@ end
 
 
 --
--- Jump to first/last entries.
+-- Jump to the first entry in the current-mode.
 --
 function first()
    local mode = Config:get("global.mode")
    Config:set( mode .. ".current", "0" )
 end
 
-function last()
 
+--
+-- Jump to the last entry in the current-mode.
+--
+function last()
    local mode = Config:get("global.mode")
    local max  = Config:get(mode .. ".max" )
 
@@ -1009,7 +1017,7 @@ end
 --
 -- Allow searching for the next line containing a match.
 --
--- This function might need some explaination:
+-- This function might need some care to understand:
 --
 --  * The mail-client is a modal editor.
 --  * You're always in one mode, stored in "Config:get("global.mode")".
@@ -1079,7 +1087,8 @@ end
 
 
 --
--- Allow navigation - Scroll down a maildir, or index.
+-- Scroll the current mode down - by manipulating the "current" offset
+-- for the current mode.
 --
 function next( offset )
 
@@ -1108,7 +1117,8 @@ end
 
 
 --
--- Allow navigation - Scroll up a maildir, or index.
+-- Scroll the current mode up - by manipulating the "current" offset
+-- for the current mode.
 --
 function prev( offset )
    local mode = Config:get("global.mode")
@@ -1142,7 +1152,7 @@ end
 
 
 --
--- This function is called to generate tab-completions
+-- This function is called to generate TAB-completion results.
 --
 -- Given a token the user has entered it should return a table
 -- containing all possible matches.  The user-interface will
@@ -1235,11 +1245,10 @@ end
 
 
 --
--- Update the status-bar on-idle.
+-- This function is called when the main-loop timesout, which is roughly
+-- once per second.
 --
 function on_idle()
-   --   Panel:title( "$[RED]Red title here. This must be serious!" )
-   Panel:text( { "$[YELLOW]Yellow line here.", "$[GREEN]Green line here!" } )
 end
 
 
@@ -1248,13 +1257,11 @@ end
 -- a configuration-key has its value changed.
 --
 -- The single argument will be the name of the key which has
--- been updated - the value can be retrieved via Config:get
+-- been updated - the value can be retrieved via Config:get, but
+-- remember that the value might be a string or a table.
 --
---[[
-   function Config.key_changed( name )
-   print( "Key changed: " .. name)
-   end
---]]
+function Config.key_changed( name )
+end
 
 
 
@@ -1263,8 +1270,6 @@ end
 -- 5. Define our key-bindings.
 --
 -----------------------------------------------------------------------------
-
-
 
 --
 -- Setup our KeyMaps
@@ -1306,7 +1311,6 @@ keymap['global']['*']        = "last()"
 keymap['global']['>']        = "last()"
 keymap['global']['KEY_END']  = "last()"
 
-
 keymap['global']['ENTER'] = "select()"
 keymap['global']['SPACE'] = "select()"
 
@@ -1319,11 +1323,10 @@ keymap['global']['l']         = "right()"
 keymap['global']['KEY_RIGHT'] = "right()"
 
 --
--- Find function (Global)
+-- Forward/backward-searching (Global)
 --
 keymap['global']['/'] = 'find(1)'
 keymap['global']['?'] = 'find(-1)'
-
 
 --
 -- Change the display-limits
@@ -1336,16 +1339,15 @@ keymap['index']['n']   = 'Config:set( "index.limit", "new" )'
 --
 -- Exit out of modes
 --
-keymap['maildir']['q'] = "os.exit()"
-keymap['index']['q']   = "change_mode('maildir')"
-keymap['message']['q'] = "change_mode('index')"
-
+keymap['maildir']['q']    = "os.exit()"
+keymap['index']['q']      = "change_mode('maildir')"
+keymap['message']['q']    = "change_mode('index')"
+keymap['attachment']['q'] = "change_mode( 'message' )"
 
 --
--- Enter/Leave attachment-mode
+-- Enter attachment-mode
 --
 keymap['message']['A']    = "change_mode( 'attachment' )"
-keymap['attachment']['q'] = "change_mode( 'message' )"
 
 
 --
@@ -1387,7 +1389,6 @@ Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )
 --
 Config:set( "global.mailer", "/usr/lib/sendmail -t" )
 
-
 --
 -- Setup our default From: address.
 --
@@ -1403,6 +1404,8 @@ Config:set( "global.history", os.getenv( "HOME" ) .. "/.lumail2.history" )
 --
 -- 7.  Handle any command-line argumenst
 --
+-----------------------------------------------------------------------------
+
 for index,arg in ipairs(ARGS) do
 
    --
@@ -1416,7 +1419,7 @@ for index,arg in ipairs(ARGS) do
    --
    -- Look for --eval=bar()
    --
-   -- TODO: See why this doesn't work.  Outside the amin loop?
+   -- TODO: See why this doesn't work.  Outside the main loop?
    --
    local txt = string.match(arg, "--eval=(.*)" )
    if ( txt ) then
