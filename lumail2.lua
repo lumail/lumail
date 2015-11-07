@@ -1114,7 +1114,20 @@ function prev( offset )
 end
 
 
+--
+-- Toggle the panel height between "small" and "large".
+--
+function panel_size_toggle()
+   local h = Panel:height()
 
+   if ( h == 6  ) then
+      h = 16
+   else
+      h = 6
+   end
+
+   Panel:height(h)
+end
 
 
 
@@ -1222,7 +1235,7 @@ end
 -- once per second.
 --
 function on_idle()
-   Panel:append("The date is " .. Message:generate_date())
+   -- Panel:append("The date is " .. Message:generate_date())
 end
 
 
@@ -1340,6 +1353,10 @@ keymap['index']['d']   = 'Message:delete()'
 --
 keymap['maildir']['p'] = 'toggle_variable( "truncate.maildir" )'
 
+--
+-- Toggle the size of the panel
+--
+keymap['global']['P'] = 'panel_size_toggle()'
 
 
 
