@@ -556,6 +556,51 @@ Begin forwarded message.
 end
 
 
+--
+-- Save a copy of the current message elsehwere.
+--
+function Message:save()
+
+   --
+   -- If we're in message-mode then we can get the current-message
+   -- directly.
+   --
+   -- If instead we're in index-mode then we'll need to select the message
+   -- under the cursor to proceed.
+   --
+   local mode = Config:get("global.mode")
+   local msg = nil
+
+   if ( mode == "message" ) then
+      msg = Global:current_message()
+   end
+   if ( mode == "index" ) then
+
+      -- Get the list of messages, and the current offset
+      -- that'll let us find the message.
+      local offset  = Config:get( "index.current" )
+      local msgs    = Global:current_messages()
+      if ( not msgs ) then
+         Panel:append( "There are no messages!")
+      end
+      msg = msgs[tonumber(offset)+1]
+   end
+
+   if ( not msg ) then
+      Panel:append( "Failed to find a message" )
+      return
+   end
+
+   --
+   -- Prompt for destination
+   --
+   local dest = Screen:get_line( "Copy to maildir:" )
+   if ( msg:copy( dest ) ) then
+      Panel:append( "Message copied to " .. dest )
+   else
+      Panel:append( "Message copy failed" )
+   end
+end
 
 --
 -- Utility function to open the Maildir with the given name.
@@ -1353,6 +1398,8 @@ keymap['message']['f'] = 'Message:forward()'
 keymap['index']['f']   = 'Message:forward()'
 keymap['message']['d'] = 'Message:delete()'
 keymap['index']['d']   = 'Message:delete()'
+keymap['message']['s'] = 'Message:save()'
+keymap['index']['s']   = 'Message:save()'
 
 --
 -- Toggle display of full maildir paths

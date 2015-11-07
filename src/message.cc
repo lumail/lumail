@@ -525,6 +525,19 @@ bool CMessage::unlink()
 }
 
 
+
+/**
+ * Filter for std::erase - to remove duplicate slash-characters.
+ */
+struct both_slashes
+{
+    bool operator()(char a, char b) const
+    {
+        return a == '/' && b == '/';
+    }
+};
+
+
 /**
  * Copy the message to a new maildir - which must exist.
  */
@@ -540,6 +553,8 @@ bool CMessage::copy(std::string maildir)
         dest += "/cur/";
 
     dest += file;
+
+    dest.erase(std::unique(dest.begin(), dest.end(), both_slashes()), dest.end());
 
     return (CFile::copy(src, dest));
 }
