@@ -1,5 +1,5 @@
 /*
- * global_state.cc - Maintain shared-state.
+ * global_state.cc - Access our shared/global message/maildir state.
  *
  * This file is part of lumail - http://lumail.org/
  *

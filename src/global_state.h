@@ -1,5 +1,5 @@
 /*
- * $FILENAME - $TITLE
+ * global_state.h - Access our shared/global message/maildir state.
  *
  * This file is part of lumail - http://lumail.org/
  *
