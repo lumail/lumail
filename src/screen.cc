@@ -1084,6 +1084,14 @@ void CScreen::status_panel_append(std::string display)
     status_panel_draw();
 }
 
+/**
+ * Clear the status-panel text.
+ */
+void CScreen::status_panel_clear()
+{
+  g_status_bar_data.text.clear();
+  status_panel_draw();
+}
 
 /**
  * Look up the binding for the named keystroke in our keymap(s).

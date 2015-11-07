@@ -253,10 +253,18 @@ The Screen object is registered automatically and doesn't need to be constructed
 Sample code is available in `sample.lua/screen.lua`.
 
 
-The screen also has an associated status-panel, hereby referred to as "Panel".  The Panel object has the following methods:
+The screen has an associated status-panel, hereby referred to as "Panel".
 
-* `append(string)`
-     * Add a line of text to the panel.
+The panel is designed to collect & contain output messages for the user.
+New entries may be appended to it at any time, and the most recent N entries
+are displayed - the number being dependent upon the height of the panel.
+
+The Panel object has the following methods:
+
+* `append(str)`
+     * Append the specified string to the panel area.
+* `clear()`
+     * Remove all prior output.
 * `height()`
      * Get or set the size of the panel, in lines.
      * The panel will always be at least six lines tall.

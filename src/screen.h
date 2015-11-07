@@ -167,6 +167,11 @@ public:
     void status_panel_append(std::string display);
 
     /**
+     * Clear the status-panel text.
+     */
+    void status_panel_clear();
+
+    /**
      * Set the status-panel title.
      */
     void status_panel_title(std::string new_title);

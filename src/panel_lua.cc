@@ -41,6 +41,17 @@ int l_CPanel_append(lua_State * l)
 
 
 /**
+ * Clear the text.
+ */
+int l_CPanel_clear(lua_State * l)
+{
+    CScreen *screen = CScreen::instance();
+    screen->status_panel_clear();
+    return 0;
+}
+
+
+/**
  * Get/set the height of the panel.
  */
 int l_CPanel_height(lua_State * l)
@@ -170,6 +181,7 @@ void InitPanel(lua_State * l)
     luaL_Reg sFooRegs[] =
     {
         {"append",  l_CPanel_append},
+        {"clear",   l_CPanel_clear},
         {"height",  l_CPanel_height},
         {"hide",    l_CPanel_hide},
         {"show",    l_CPanel_show},
