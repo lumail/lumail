@@ -1235,7 +1235,7 @@ end
 -- once per second.
 --
 function on_idle()
-   -- Panel:append("The date is " .. Message:generate_date())
+   Panel:append("The date is " .. Message:generate_date())
 end
 
 

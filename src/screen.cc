@@ -448,23 +448,6 @@ void CScreen::status_panel_draw()
     mvwaddch(g_status_bar_window, 2, width - 1, ACS_RTEE);
 
     /**
-     * Create a blank string that will ensure shorter/updated
-     * titles/lines don't get orphaned on the screen.
-     *
-     * The width of the screen is the max-length of the string
-     * we need to construct - but note that we subtract two:
-     *
-     *  One for the trailing NULL.
-     *  One for the border-character at the end of the line.
-     */
-    char *blank = (char *) malloc(width);
-
-    for (int i = 0; i < width - 2; i++)
-        blank[i] = ' ';
-
-    blank[width - 1] = '\0';
-
-    /**
      * Show the title, and the last two lines of the text.
      */
     PANEL_DATA x = g_status_bar_data;
@@ -494,8 +477,17 @@ void CScreen::status_panel_draw()
         if (colour.empty())
             colour = "white";
 
+        while ((int)title.length() < CScreen::width() - 2)
+          title += " ";
+
+        /**
+         * Ensure the line isn't too long, so we don't wrap around.
+         */
+        if ((int)title.length() >  CScreen::width()-2)
+          title = title.substr(0, CScreen::width() - 2);
+
+
         wattron(g_status_bar_window, COLOR_PAIR(get_colour(colour)));
-        mvwprintw(g_status_bar_window, 1, 1, blank);
         mvwprintw(g_status_bar_window, 1, 1, title.c_str());
     }
 
@@ -539,17 +531,25 @@ void CScreen::status_panel_draw()
             if (colour.empty())
                 colour = "white";
 
+
+            /**
+             * Ensure we draw a complete line.
+             */
+            while ((int)text.length() < CScreen::width() - 2)
+              text += " ";
+
+            /**
+             * Ensure the line isn't too long, so we don't wrap around.
+             */
+            if ((int)text.length() >  CScreen::width()-2)
+              text = text.substr(0, CScreen::width() - 2);
+
             wattron(g_status_bar_window, COLOR_PAIR(get_colour(colour)));
-            mvwprintw(g_status_bar_window, (height - 2 - i), 1, blank);
             mvwprintw(g_status_bar_window, (height - 2 - i), 1, text.c_str());
             i++;
         }
     }
 
-    /**
-     * Avoid a leak.
-     */
-    free(blank);
 }
 
 
@@ -1049,6 +1049,8 @@ void CScreen::status_panel_height(int new_size)
         g_status_bar_window = newwin(new_size, cols, y, x);
         g_status_bar = new_panel(g_status_bar_window);
         set_panel_userptr(g_status_bar, &g_status_bar_data);
+
+        status_panel_draw();
     }
 }
 
