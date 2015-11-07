@@ -75,6 +75,23 @@ function read_file( path )
    end
 end
 
+--
+-- Given a key toggle the setting of that key from
+-- true -> false, and vice-versa.
+--
+function toggle_variable( name )
+
+   local current = Config:get( name )
+   if ( current == nil ) then current = 1 end
+
+   if ( current == 1 ) or ( current == "1" )  then
+      current = 0
+   else
+      current = 1
+   end
+
+   Config:set( name, current )
+end
 
 --
 -- Change the mode - and update the panel-title, if we have one.
@@ -755,6 +772,13 @@ function Maildir:format(obj)
    local unread = obj:unread_messages()
    local path   = obj:path()
 
+   --
+   -- Path might be truncated, via "p".
+   --
+   if ( Config:get( "truncate.maildir" ) == "0" ) then
+      path = File:basename(path)
+   end
+
    local output = string.format( "[%05d / %05d] - %s", unread, total, path )
 
    if ( unread > 0 ) then
@@ -1335,7 +1359,10 @@ keymap['index']['f']   = 'Message:forward()'
 keymap['message']['d'] = 'Message:delete()'
 keymap['index']['d']   = 'Message:delete()'
 
-
+--
+-- Toggle display of full maildir paths
+--
+keymap['maildir']['p'] = 'toggle_variable( "truncate.maildir" )'
 
 
 
