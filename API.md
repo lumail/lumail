@@ -255,21 +255,22 @@ Sample code is available in `sample.lua/screen.lua`.
 
 The screen also has an associated status-panel, hereby referred to as "Panel".  The Panel object has the following methods:
 
-* height()
-     * Returns the size of the panel, in lines.
-* hide()
+* `append(string)`
+     * Add a line of text to the panel.
+* `height()`
+     * Get or set the size of the panel, in lines.
+     * The panel will always be at least six lines tall.
+* `hide()`
      * Hide the panel, if visible.
-* show()
+* `show()`
      * Show the panel, if hidden.
-* text( { "Some text to display", "Goes here" } )
-     * Update the text to display.
-* text()
-     * Retrieve the current text.
-* title( "New Title" )
+* `text()`
+     * Retrieve the current text in the panel, as a table.
+* `title( "New Title" )`
      * Set the title of the panel
-* title()
+* `title()`
      * Get the title of the panel.
-* toggle()
+* `toggle()`
      * Toggle the visibility of the panel.
 
 Sample code is available in `sample.lua/panel.lua`.

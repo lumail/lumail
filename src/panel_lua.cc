@@ -28,13 +28,37 @@ extern "C"
 
 
 /**
- * Return the height of the panel.
+ * Append a line of text to that being displayed.
+ */
+int l_CPanel_append(lua_State * l)
+{
+    const char *str = lua_tostring(l, 2);
+
+    CScreen *screen = CScreen::instance();
+    screen->status_panel_append(str);
+    return 0;
+}
+
+
+/**
+ * Get/set the height of the panel.
  */
 int l_CPanel_height(lua_State * l)
 {
+    int new_height = lua_tointeger(l, 2);
+
     CScreen *screen = CScreen::instance();
-    lua_pushinteger(l, screen->status_panel_height());
-    return 1;
+
+    if (new_height)
+    {
+        screen->status_panel_height(new_height);
+        return 0;
+    }
+    else
+    {
+        lua_pushinteger(l, screen->status_panel_height());
+        return 1;
+    }
 }
 
 
@@ -61,33 +85,11 @@ int l_CPanel_show(lua_State * l)
 
 
 /**
- * Get/Set the (array) of text which is displayed.
+ * Get the array of text which is displayed.
  */
 int l_CPanel_text(lua_State * l)
 {
     CScreen *screen = CScreen::instance();
-
-    if (lua_istable(l, 2))
-    {
-        std::vector < std::string > vals;
-
-        lua_pushnil(l);
-
-        while (lua_next(l, -2))
-        {
-            const char *entry = lua_tostring(l, -1);
-            vals.push_back(entry);
-            lua_pop(l, 1);
-        }
-
-        screen->status_panel_text(vals);
-
-        return 0;
-    }
-
-    /**
-     * Return the text.
-     */
     std::vector < std::string > cur = screen->status_panel_text();
 
     lua_newtable(l);
@@ -167,6 +169,7 @@ void InitPanel(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
     {
+        {"append",  l_CPanel_append},
         {"height",  l_CPanel_height},
         {"hide",    l_CPanel_hide},
         {"show",    l_CPanel_show},

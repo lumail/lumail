@@ -98,7 +98,7 @@ end
 --
 function change_mode( new_mode )
    Config:set( "global.mode", new_mode )
-   Panel:title( "Mode is now " .. new_mode )
+   Panel:append( "Mode is now " .. new_mode )
 end
 
 
@@ -233,13 +233,13 @@ ${sig}
       if ( a == "s" ) or ( "a" == "S" ) then
          -- Send the mail.
          os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
-         Panel:title("Message sent" )
+         Panel:append("Message sent" )
          run = false
       end
 
       if ( a == 'c' ) or ( a == 'C' ) then
          -- Abort
-         Panel:title("Sending aborted!" )
+         Panel:append("Sending aborted!" )
          run = false
       end
 
@@ -284,14 +284,14 @@ function Message:reply()
       local msgs    = Global:current_messages()
 
       if ( not msgs ) then
-         Panel:title( "There are no messages!")
+         Panel:append( "There are no messages!")
       end
       msg = msgs[tonumber(offset)+1]
    end
 
    -- Failed to find a mesage?
    if ( not msg ) then
-      Panel:title("Failed to find message!")
+      Panel:append("Failed to find message!")
       return
    end
 
@@ -365,7 +365,7 @@ Date: ${date}
       if ( a == "s" ) or ( a == "S" ) then
          -- Send the mail.
          os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
-         Panel:title("Message sent" )
+         Panel:append("Message sent" )
 
          --
          -- Since we've sent the message we need to add the "(R)eplied"
@@ -382,7 +382,7 @@ Date: ${date}
 
       if ( a == "c" ) or ( a == "C" ) then
          -- Abort
-         Panel:title("Sending aborted!" )
+         Panel:append("Sending aborted!" )
          run = false
       end
 
@@ -428,7 +428,7 @@ function Message:delete()
       local offset  = Config:get( "index.current" )
       local msgs    = Global:current_messages()
       if ( not msgs ) then
-         Panel:title( "There are no messages!")
+         Panel:append( "There are no messages!")
       end
       msg = msgs[tonumber(offset)+1]
 
@@ -470,7 +470,7 @@ function Message:forward()
       local offset  = Config:get( "index.current" )
       local msgs    = Global:current_messages()
       if ( not msgs ) then
-         Panel:title( "There are no messages!")
+         Panel:append( "There are no messages!")
       end
       msg = msgs[tonumber(offset)+1]
    end
@@ -533,13 +533,13 @@ Begin forwarded message.
 
          -- Send the mail.
          os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
-         Panel:title("Message sent" )
+         Panel:append("Message sent" )
          run = false
       end
 
       if ( a == "c" ) or ( a == "C" ) then
          -- Abort
-         Panel:title("Sending aborted!" )
+         Panel:append("Sending aborted!" )
          run = false
       end
 
@@ -1222,6 +1222,7 @@ end
 -- once per second.
 --
 function on_idle()
+   Panel:append("The date is " .. Message:generate_date())
 end
 
 
@@ -1396,7 +1397,7 @@ for index,arg in ipairs(ARGS) do
    --
    local txt = string.match(arg, "--eval=(.*)" )
    if ( txt ) then
-      Panel:title(txt)
+      Panel:append(txt)
       f = loadstring( txt )
       f()
    end

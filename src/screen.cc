@@ -50,6 +50,7 @@
 typedef struct _PANEL_DATA
 {
     int hide;
+    int height;
     std::string title;
     std::vector < std::string > text;
 } PANEL_DATA;
@@ -62,7 +63,6 @@ WINDOW *g_status_bar_window;
 PANEL *g_status_bar;
 PANEL_DATA g_status_bar_data;
 
-#define PANEL_HEIGHT 6
 
 
 /**
@@ -389,7 +389,7 @@ void CScreen::status_panel_init()
     /**
      * Size of panel
      */
-    int rows = PANEL_HEIGHT;
+    int rows = 10;
     int cols = CScreen::width();
 
     /**
@@ -402,9 +402,10 @@ void CScreen::status_panel_init()
     /**
      * Set the content of the status-bar
      */
+    g_status_bar_data.height = rows;
     g_status_bar_data.title = std::string("Status Panel");
     g_status_bar_data.text.push_back
-    ("Lumail v2 UI demo - Toggle panel via 'tab'.  Exit via 'q'.  Eval via ':'.");
+    ("Lumail v2 - Toggle panel via 'TAB'.  Exit via 'Q'.  Eval via ':'.");
     g_status_bar_data.text.push_back("by Steve Kemp");
 
     /**
@@ -464,7 +465,7 @@ void CScreen::status_panel_draw()
     blank[width - 1] = '\0';
 
     /**
-     * Show the title, and the two lines of text we might have.
+     * Show the title, and the last two lines of the text.
      */
     PANEL_DATA x = g_status_bar_data;
 
@@ -500,23 +501,29 @@ void CScreen::status_panel_draw()
 
     if (x.text.size() > 0)
     {
-        /**
-         * Starting offset of text-drawing, because we have:
-         *
-         *  [0] ---
-         *  [1] Title goes here
-         *  [2] ----
-         *
-         */
-        int line = 3;
+        int height = g_status_bar_data.height;
 
-        for (std::vector < std::string >::iterator it = x.text.begin();
-                it != x.text.end(); it++)
+        /*
+         * Reverse the lines of text, and draw until we've exceeded
+         * our height.
+         */
+        std::vector<std::string> tmp = x.text;
+        std::reverse(tmp.begin(), tmp.end());
+
+        int i = 0;
+
+        while (i < (height - 3 - 1))
         {
-            std::string text   = (*it);
+            std::string text;
             std::string colour = "";
 
-            if (text.at(0) == '$')
+            if (i < (int)tmp.size())
+                text = tmp.at(i);
+            else
+                text = "";
+
+
+            if ((text.size() > 1) && (text.at(0) == '$'))
             {
                 std::size_t start = text.find("[");
                 std::size_t end   = text.find("]");
@@ -533,10 +540,9 @@ void CScreen::status_panel_draw()
                 colour = "white";
 
             wattron(g_status_bar_window, COLOR_PAIR(get_colour(colour)));
-            mvwprintw(g_status_bar_window, line, 1, blank);
-            mvwprintw(g_status_bar_window, line, 1, text.c_str());
-
-            line += 1;
+            mvwprintw(g_status_bar_window, (height - 2 - i), 1, blank);
+            mvwprintw(g_status_bar_window, (height - 2 - i), 1, text.c_str());
+            i++;
         }
     }
 
@@ -714,7 +720,7 @@ std::string CScreen::get_line(std::string prompt)
 
     if (g_status_bar_data.hide == FALSE)
     {
-        y -= PANEL_HEIGHT;
+        y -= g_status_bar_data.height;
     }
 
     /**
@@ -966,7 +972,7 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
 
     if (g_status_bar_data.hide == FALSE)
     {
-        y -= PANEL_HEIGHT;
+        y -= g_status_bar_data.height;
     }
 
 
@@ -992,15 +998,13 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
 }
 
 
-void
-CScreen::status_panel_show()
+void CScreen::status_panel_show()
 {
     show_panel(g_status_bar);
     g_status_bar_data.hide = FALSE;
 }
 
-void
-CScreen::status_panel_hide()
+void CScreen::status_panel_hide()
 {
     hide_panel(g_status_bar);
     g_status_bar_data.hide = TRUE;
@@ -1016,7 +1020,36 @@ void CScreen::status_panel_toggle()
 
 int CScreen::status_panel_height()
 {
-    return 6;
+    return (g_status_bar_data.height);
+}
+
+
+/**
+ * Set the height of the status-panel - minimum size is six.
+ */
+void CScreen::status_panel_height(int new_size)
+{
+    if (new_size >= 6)
+    {
+        g_status_bar_data.height = new_size;
+
+        int x = 0;
+        int y = CScreen::height() - new_size;
+        int cols = CScreen::width();
+
+        /*
+         * Remove old panel/window - in the correct order.
+         */
+        del_panel(g_status_bar);
+        delwin(g_status_bar_window);
+
+        /*
+         * Create new ones of the correct size.
+         */
+        g_status_bar_window = newwin(new_size, cols, y, x);
+        g_status_bar = new_panel(g_status_bar_window);
+        set_panel_userptr(g_status_bar, &g_status_bar_data);
+    }
 }
 
 bool CScreen::status_panel_visible()
@@ -1043,9 +1076,9 @@ std::vector < std::string > CScreen::status_panel_text()
     return (g_status_bar_data.text);
 }
 
-void CScreen::status_panel_text(std::vector < std::string > new_text)
+void CScreen::status_panel_append(std::string display)
 {
-    g_status_bar_data.text = new_text;
+    g_status_bar_data.text.push_back(display);
     status_panel_draw();
 }
 

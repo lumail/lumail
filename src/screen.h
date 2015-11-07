@@ -162,9 +162,9 @@ public:
     void status_panel_show();
 
     /**
-     * Set the status-panel text.
+     * Append to the status-panel text.
      */
-    void status_panel_text(std::vector < std::string >);
+    void status_panel_append(std::string display);
 
     /**
      * Set the status-panel title.
@@ -180,6 +180,11 @@ public:
      * Get the height of the status-panel.
      */
     int status_panel_height();
+
+    /**
+     * Set the height of the status-panel - minimum size is six.
+     */
+    void status_panel_height(int new_size);
 
     /**
      * Execute a function from the global keymap.

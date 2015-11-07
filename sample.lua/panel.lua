@@ -2,7 +2,7 @@
 --
 -- Usage:
 --
---     ./lumail2 --load-file ./panel.lua
+--     lumail2 --load-file ./panel.lua
 --
 --
 -- Once loaded execute the lua-prompt by typing ":" and enter
@@ -11,13 +11,15 @@
 
 
 function show_command_output( title, cmd )
-   Panel:title("Command Output");
+   Panel:title("Output of running '" .. cmd .. "'")
 
    local handle = io.popen(cmd)
    local result = handle:read("*a")
    handle:close()
 
-   Panel:text( { title, "\t" .. result } )
+   Panel:append(title)
+   Panel:append("\t" .. result)
+
    if ( Panel:visible() == false ) then
       Panel:show()
    end
@@ -25,15 +27,9 @@ end
 
 
 function date()
-   show_command_output( "The date is", "date" );
-end
-function d()
-   date()
+   show_command_output( "The date is:", "date" );
 end
 
 function hostname()
-   show_command_output( "The host is", "hostname" );
-end
-function h()
-   hostname()
+   show_command_output( "This host has hostname:", "hostname" );
 end
