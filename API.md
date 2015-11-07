@@ -99,6 +99,8 @@ Files
 
 The following (static) methods exist:
 
+* File:basename(path)
+   * Return the basename of the given path.
 * File:exists(path)
    * Return a boolean based on whether the named file exists.
 * File:stat(path)

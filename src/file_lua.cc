@@ -30,6 +30,20 @@ extern "C"
 
 
 /**
+ * Get the basename of the given file.
+ */
+int l_CFile_basename(lua_State * l)
+{
+    const char *str = lua_tostring(l, 2);
+
+    std::string result = CFile::basename(str);
+
+    lua_pushstring(l , result.c_str());
+    return 1;
+}
+
+
+/**
  * Does the given file exist?
  */
 int l_CFile_exists(lua_State * l)
@@ -136,6 +150,7 @@ void InitFile(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
     {
+        {"basename",  l_CFile_basename},
         {"exists",  l_CFile_exists},
         {"stat",    l_CFile_stat},
         {NULL,      NULL}
