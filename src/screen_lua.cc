@@ -69,57 +69,6 @@ int l_CScreen_exit(lua_State * l)
 
 
 /**
- * Select a maildir, by index.
- */
-int l_CScreen_select_maildir(lua_State * l)
-{
-    const int offset = luaL_checkinteger(l, 2);
-
-    /**
-     * Get all maildirs.
-     */
-    CGlobalState *state = CGlobalState::instance();
-    std::vector<std::shared_ptr<CMaildir> > maildirs = state->get_maildirs();
-
-    /**
-     * Get the one at the index.
-     */
-    std::shared_ptr<CMaildir> m = maildirs.at(offset);
-
-    /**
-     * Update the global-state
-     */
-    state->set_maildir(m);
-    return 0;
-}
-
-/**
- * Select a message by index.
- */
-int l_CScreen_select_message(lua_State * l)
-{
-    const int offset = luaL_checkinteger(l, 2);
-
-    /**
-     * Get the messages
-     */
-    CGlobalState *global   = CGlobalState::instance();
-    CMessageList *messages = global->get_messages();
-
-    /**
-     * Get the one at the index.
-     */
-    std::shared_ptr<CMessage> m = messages->at(offset);
-
-    /**
-     * Update the global-state
-     */
-    global->set_message(m);
-    return 0;
-}
-
-
-/**
  * Read a line of input from the user, with history and TAB-completion
  */
 int l_CScreen_get_line(lua_State * l)
@@ -199,8 +148,6 @@ InitScreen(lua_State * l)
         {"get_line", l_CScreen_get_line},
         {"height", l_CScreen_height},
         {"prompt", l_CScreen_prompt_chars},
-        {"select_maildir", l_CScreen_select_maildir}, // TODO - move:Global
-        {"select_message", l_CScreen_select_message}, // TODO - move:Global
         {"sleep", l_CScreen_sleep},
         {"width", l_CScreen_width},
         {NULL, NULL}

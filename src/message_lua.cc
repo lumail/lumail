@@ -323,7 +323,6 @@ int l_CMessage_unlink(lua_State * l)
      * a message has been deleted.
      */
     CGlobalState *global = CGlobalState::instance();
-    global->update_messages();
     global->set_message(NULL);
 
     return 0;

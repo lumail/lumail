@@ -24,3 +24,4 @@ extern "C"
 #include "maildir.h"
 
 extern void push_cmaildir(lua_State * l, std::shared_ptr<CMaildir> maildir);
+extern std::shared_ptr<CMaildir> l_CheckCMaildir(lua_State * l, int n);

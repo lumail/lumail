@@ -152,6 +152,7 @@ int main(int argc, char *argv[])
             {
                 screen->teardown();
                 std::cerr << "Error loading " << filename << std::endl;
+
                 return -1;
             }
         }

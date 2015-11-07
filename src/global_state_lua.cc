@@ -24,7 +24,7 @@ extern "C"
 #include <lualib.h>
 }
 
-
+#include <iostream>
 
 #include "global_state.h"
 #include "maildir_lua.h"
@@ -74,6 +74,39 @@ int l_CGlobalState_current_maildir(lua_State * L)
 }
 
 
+
+/**
+ * Update the currently-selected maildir - BY INDEX
+ */
+int l_CGlobalState_select_maildir(lua_State * L)
+{
+    const int offset = luaL_checkinteger(L, 2);
+
+    /**
+     * Get all maildirs.
+     */
+    CGlobalState *state = CGlobalState::instance();
+    std::vector<std::shared_ptr<CMaildir> > maildirs = state->get_maildirs();
+
+    /**
+     * Get the one at the index.
+     */
+    std::shared_ptr<CMaildir> m = maildirs.at(offset);
+
+    /**
+     * Update the global-state
+     */
+    state->set_maildir(m);
+    return 0;
+
+    std::shared_ptr<CMaildir> foo = l_CheckCMaildir(L, 2);
+    CGlobalState *global = CGlobalState::instance();
+
+    global->set_maildir(foo);
+    return 0;
+}
+
+
 /**
  * Get the currently selected message
  */
@@ -82,24 +115,36 @@ int l_CGlobalState_current_message(lua_State * l)
     CGlobalState *state = CGlobalState::instance();
     std::shared_ptr<CMessage> m = state->current_message();
 
-    if ( m )
-      push_cmessage(l, m);
+    if (m)
+        push_cmessage(l, m);
     else
-      lua_pushnil(l);
+        lua_pushnil(l);
 
     return 1;
 }
 
 /**
- * Update the currently selected message
+ * Update the currently selected message - BY INDEX
  */
 int l_CGlobalState_select_message(lua_State * l)
 {
-    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
+    const int offset = luaL_checkinteger(l, 2);
 
-    CGlobalState *global = CGlobalState::instance();
-    global->set_message(foo);
+    /**
+     * Get the messages
+     */
+    CGlobalState *global   = CGlobalState::instance();
+    CMessageList *messages = global->get_messages();
 
+    /**
+     * Get the one at the index.
+     */
+    std::shared_ptr<CMessage> m = messages->at(offset);
+
+    /**
+    * Update the global-state
+    */
+    global->set_message(m);
     return 0;
 }
 
@@ -112,6 +157,7 @@ void InitGlobalState(lua_State * l)
         {"current_message", l_CGlobalState_current_message},
         {"select_message", l_CGlobalState_select_message},
         {"current_maildir", l_CGlobalState_current_maildir},
+        {"select_maildir", l_CGlobalState_select_maildir},
         {NULL, NULL}
     };
     luaL_newmetatable(l, "luaL_CGlobalState");

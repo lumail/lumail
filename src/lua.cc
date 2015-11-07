@@ -18,6 +18,7 @@
 
 
 #include <cstdlib>
+#include <iostream>
 
 #include "lua.h"
 
@@ -122,7 +123,10 @@ bool CLua::load_file(std::string filename)
     int erred = luaL_dofile(m_lua, filename.c_str());
 
     if (erred)
+    {
+        std::cerr << "ERROR " << luaL_checkstring(m_lua, 1);
         return false;
+    }
     else
         return true;
 }

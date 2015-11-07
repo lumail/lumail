@@ -124,12 +124,12 @@ The following API methods are available to help you with this:
      * Retrieve the list of available maildirs.
 * `Global:current_maildir()`
      * Retrieve the currently-selected maildir.
-* `Global:select_maildir(obj)`
-     * Select the specified Maildir object.
+* `Global:select_maildir(index)`
+     * Select the specified Maildir as current, by index.
 * `Global:current_message()`
      * Retrieve the currently-selected message.
-* `Global:select_message(obj)`
-     * Select the specified Message object.
+* `Global:select_message(index)`
+     * Select the specified Message as current, by index.
 
 
 

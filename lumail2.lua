@@ -436,8 +436,6 @@ function Message:delete()
       if ( offset < 0 ) then offset = 0 end
       Config:set( "index.current", offset )
 
-      -- Is this redundent?
-      Screen:select_message( offset )
    end
 end
 
@@ -574,17 +572,19 @@ function Maildir.select( desired )
 
    -- For each one .. see if it matches
    for index,object in ipairs( folders ) do
+
       local path = object:path()
       if ( string.find( path, desired ) ) then
 
-         -- update the selection for when we return
-         Config:set("maildir.current", index -1)
+         -- Select the maildir, to make it current.
+         Global:select_maildir(index-1)
 
-         -- select the maildir
-         Screen:select_maildir( index -1 )
-
-         -- change the mode
+         -- change the mode, to make it work
          Config:set("global.mode", "index")
+
+         -- And update the current selection for when
+         -- we return to Maildir-mode.
+         Config:set("maildir.current", index -1)
          return
       end
    end
@@ -914,12 +914,13 @@ function select()
    local cur  = Config:get(mode .. ".current")
 
    if ( mode == "maildir" ) then
-      Screen:select_maildir( cur )
+      Global:select_maildir( tonumber(cur) )
       Config:set("global.mode", "index" )
       return
    end
+
    if ( mode == "index" ) then
-      Screen:select_message( cur )
+      Global:select_message( tonumber(cur) )
       Config:set("global.mode", "message" )
       return
    end
