@@ -1150,28 +1150,34 @@ function on_complete( token )
    --
    -- Some fixed things that we should be able to complete upon.
    --
-   -- TODO: Introspection?
-   --
-   tmp = {
-      "Panel:height",
-      "Panel:hide",
-      "Panel:show",
-      "Panel:text",
-      "Panel:title",
-      "Panel:toggle",
-      "Panel:visible",
-      "Screen:clear",
-      "Screen:exit",
-      "Screen:get_line",
-      "Screen:height",
-      "Screen:sleep",
-      "Screen:width",
-   }
+   tmp = {}
 
    --
    -- The values we'll return to the caller.
    --
    ret = { }
+
+   --
+   -- Add in our local objects.
+   --
+   local objs = {}
+   objs["Config:"]    = Config
+   objs["Directory:"] = Directory
+   objs["File:"]      = File
+   objs["Global:"]    = Global
+   objs["Maildir:"]   = Maildir
+   objs["Message:"]   = Message
+   objs["Net:"]       = Net
+   objs["Panel:" ]    = Panel
+   objs["Screen:" ]   = Screen
+
+   for name, object in pairs(objs) do
+      for key,value in pairs(object) do
+         if ( not string.match( key, "^_" ) ) then
+            tmp[ name .. key ] = name .. key
+         end
+      end
+   end
 
    --
    -- Add in all user-defined functions.
