@@ -141,7 +141,7 @@ The following API methods are available to help you with this:
 Maildir
 -------
 
-You can gain access to Maildir objects several ways:
+You can gain access to Maildir objects in several ways:
 
 * Constructing it manually: `m = Maildir.new( "./Maildir" )`.
 * Calling `Global:maildirs()` to get a list of all available Maildirs.
