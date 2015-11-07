@@ -281,17 +281,11 @@ function Message:reply()
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
       local offset  = Config:get( "index.current" )
-      local maildir = Global:current_maildir()
-      if ( not maildir ) then
-         Panel:title( "No maildir is selected!")
-         return
-      end
-      local msgs = maildir:messages()
+      local msgs    = Global:current_messages()
+
       if ( not msgs ) then
          Panel:title( "There are no messages!")
       end
-      Panel:title( "Mesages is " .. #msgs .. " entries long" )
-
       msg = msgs[tonumber(offset)+1]
    end
 
@@ -432,17 +426,10 @@ function Message:delete()
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
       local offset  = Config:get( "index.current" )
-      local maildir = Global:current_maildir()
-      if ( not maildir ) then
-         Panel:title( "No maildir is selected!")
-         return
-      end
-      local msgs = maildir:messages()
+      local msgs    = Global:current_messages()
       if ( not msgs ) then
          Panel:title( "There are no messages!")
       end
-      Panel:title( "Mesages is " .. #msgs .. " entries long" )
-
       msg = msgs[tonumber(offset)+1]
 
       -- delete it
@@ -481,17 +468,10 @@ function Message:forward()
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
       local offset  = Config:get( "index.current" )
-      local maildir = Global:current_maildir()
-      if ( not maildir ) then
-         Panel:title( "No maildir is selected!")
-         return
-      end
-      local msgs = maildir:messages()
+      local msgs    = Global:current_messages()
       if ( not msgs ) then
          Panel:title( "There are no messages!")
       end
-      Panel:title( "Mesages is " .. #msgs .. " entries long" )
-
       msg = msgs[tonumber(offset)+1]
    end
 
@@ -689,15 +669,8 @@ end
 function index_view()
    local result = {}
 
-   -- Get the currently selected Maildir.
-   local maildir = Global:current_maildir()
-   if ( not maildir ) then
-      table.insert(result, "There are no messages visible.")
-      return
-   end
-
-   -- Get the messages in the maildir
-   local messages = maildir:messages()
+   -- Get the currently available messages.
+   local messages = Global:current_messages()
 
    -- For each one add the output
    for offset,object in ipairs( messages ) do

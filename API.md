@@ -130,6 +130,9 @@ The following API methods are available to help you with this:
      * Select the specified Maildir as current, by index.
 * `Global:current_message()`
      * Retrieve the currently-selected message.
+* `Global:current_messages()`
+     * Retrieve the currently-available messages.
+     * This pays attention to the `index.limit` variable.
 * `Global:select_message(index)`
      * Select the specified Message as current, by index.
 
@@ -164,11 +167,17 @@ Message
 
 The Message object represents a single message, contained within a maildir.
 
-You can get access to message objects in three ways:
+You can get access to message objects in several ways:
 
-* Construct it manually via `Message.new( path/to/message )`.
+* Construct one manually via `Message.new( path/to/message )`.
 * Call the `messages()` method on the currently-selected Maildir.
+    * This will return all messages in the given maildir, whether new, old or so
+mething else.
 * Call the `Global:current_message()` method.
+    * This returns the single currently-selected message, if any.
+* Call the `Global:current_messages()` method.
+    * This returns the currently available messages.
+    * This pays attention to the `index.limit` variable.
 
 
 Message methods:

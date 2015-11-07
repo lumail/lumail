@@ -123,6 +123,31 @@ int l_CGlobalState_current_message(lua_State * l)
     return 1;
 }
 
+
+/**
+ * Get the currently available messages.
+ */
+int l_CGlobalState_current_messages(lua_State * l)
+{
+    CGlobalState *global = CGlobalState::instance();
+    std::vector<std::shared_ptr<CMessage> > *msgs = global->get_messages();
+
+    lua_createtable(l, msgs->size(), 0);
+    int i = 0;
+
+    for (std::vector <std::shared_ptr<CMessage>>::iterator it = msgs->begin();
+            it != msgs->end(); ++it)
+    {
+        std::shared_ptr<CMessage> m = (*it);
+        push_cmessage(l, m);
+        lua_rawseti(l, -2, i + 1);
+        i++;
+    }
+
+    return 1;
+}
+
+
 /**
  * Update the currently selected message - BY INDEX
  */
@@ -155,6 +180,7 @@ void InitGlobalState(lua_State * l)
     {
         {"maildirs", l_CGlobalState_maildirs},
         {"current_message", l_CGlobalState_current_message},
+        {"current_messages", l_CGlobalState_current_messages},
         {"select_message", l_CGlobalState_select_message},
         {"current_maildir", l_CGlobalState_current_maildir},
         {"select_maildir", l_CGlobalState_select_maildir},
