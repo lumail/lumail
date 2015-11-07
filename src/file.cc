@@ -20,6 +20,8 @@
 #include <algorithm>
 #include <assert.h>
 #include <dirent.h>
+#include <fstream>
+#include <iostream>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -75,6 +77,27 @@ std::string CFile::basename(std::string path)
         return (path.substr(offset + 1));
     else
         return (path);
+}
+
+
+/**
+ * Copy a file.
+ */
+bool CFile::copy(std::string src, std::string dst)
+{
+    std::ifstream isrc(src, std::ios::binary);
+    std::ofstream odst(dst, std::ios::binary);
+
+    std::istreambuf_iterator<char> begin_source(isrc);
+    std::istreambuf_iterator<char> end_source;
+    std::ostreambuf_iterator<char> begin_dest(odst);
+
+    std::copy(begin_source, end_source, begin_dest);
+
+    isrc.close();
+    odst.close();
+
+    return (CFile::exists(dst));
 }
 
 

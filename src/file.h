@@ -58,6 +58,11 @@ public:
     static std::string basename(std::string path);
 
     /**
+     * Copy a file.
+     */
+    static bool copy(std::string src, std::string dst);
+
+    /**
      * Move a file.
      */
     static bool move(std::string src, std::string dst);
