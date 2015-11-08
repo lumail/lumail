@@ -30,14 +30,14 @@
 #include "screen.h"
 
 /**
- * Constructor.  NOP.
+ * Constructor.
  */
 CAttachmentView::CAttachmentView()
 {
 }
 
 /**
- * Destructor.  NOP.
+ * Destructor.
  */
 CAttachmentView::~CAttachmentView()
 {
@@ -52,13 +52,13 @@ std::vector<std::string> CAttachmentView::get_text()
 {
     std::vector<std::string> result;
 
-    /**
+    /*
      * Get the lua state.
      */
     CLua *lua = CLua::instance();
     lua_State * l = lua->state();
 
-    /**
+    /*
      * If there is a message_view() function, then call it.
      */
     lua_getglobal(l, "attachment_view");
@@ -66,12 +66,12 @@ std::vector<std::string> CAttachmentView::get_text()
     if (lua_isnil(l, -1))
         return (result);
 
-    /**
+    /*
      * Call the function.
      */
     lua_pcall(l, 0, 1, 0);
 
-    /**
+    /*
      * Now get the table we expected.
      */
     if (lua_istable(l, 1))
@@ -86,7 +86,7 @@ std::vector<std::string> CAttachmentView::get_text()
         }
     }
 
-    /**
+    /*
      * Store the number of lines we've retrieved.
      */
     int max = result.size();
@@ -101,17 +101,17 @@ std::vector<std::string> CAttachmentView::get_text()
 
 /**
  * This is the virtual function which is called to refresh the display
- * when the global.mode == "attachment"
+ * when the global.mode == "attachment".
  */
 void CAttachmentView::draw()
 {
-    /**
+    /*
      * Get the current message.
      */
     CGlobalState *state = CGlobalState::instance();
     std::shared_ptr<CMessage> message = state->current_message();
 
-    /**
+    /*
      * If there is no current message then we're done.
      */
     if (!message)
@@ -121,7 +121,7 @@ void CAttachmentView::draw()
         return;
     }
 
-    /**
+    /*
      * Get the lines of the message, as an array of lines, such that
      * we can draw it.
      */
@@ -129,7 +129,7 @@ void CAttachmentView::draw()
 
     CConfig *config = CConfig::instance();
 
-    /**
+    /*
      * Get the currently-selected item, and the size of the lines.
      */
     std::string current = config->get_string("attachment.current");
@@ -147,7 +147,7 @@ void CAttachmentView::draw()
         current = "0";
     }
 
-    /**
+    /*
      * Now we should have, as integers:
      *
      *  max   -> The max number of lines to display.
@@ -157,7 +157,7 @@ void CAttachmentView::draw()
     size_t max = std::stoi(max_line, &sz);
     size_t cur = std::stoi(current, &sz);
 
-    /**
+    /*
      * Ensure we highlight the correct line.
      */
     if (cur > max)
@@ -166,7 +166,7 @@ void CAttachmentView::draw()
         cur = max;
     }
 
-    /**
+    /*
      * Draw the text, via our base-class.
      */
     CScreen *screen = CScreen::instance();

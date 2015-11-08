@@ -30,7 +30,8 @@
 #include "singleton.h"
 
 
-/*
+/**
+ *
  * This is the base-class for our virtual views.
  *
  * In the future this will be more advanced, based on the observation

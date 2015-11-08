@@ -28,14 +28,14 @@
 
 
 /**
- * Constructor.  NOP.
+ * Constructor.
  */
 CMaildirView::CMaildirView()
 {
 }
 
 /**
- * Destructor.  NOP.
+ * Destructor.
  */
 CMaildirView::~CMaildirView()
 {
@@ -44,7 +44,10 @@ CMaildirView::~CMaildirView()
 
 
 /**
- * Get the output of calling `maildir_view`, which is the text we'll display.
+ * Get the output of calling the Lua function `maildir_view`, which is the text we'll display.
+ *
+ * If this function doesn't exist we'll draw nothing.
+ *
  */
 std::vector<std::string> CMaildirView::get_text()
 {
@@ -56,7 +59,7 @@ std::vector<std::string> CMaildirView::get_text()
     CLua *lua = CLua::instance();
     lua_State * l = lua->state();
 
-    /**
+    /*
      * If there is a maildir_view() function, then call it.
      */
     lua_getglobal(l, "maildir_view");
@@ -64,12 +67,12 @@ std::vector<std::string> CMaildirView::get_text()
     if (lua_isnil(l, -1))
         return (result);
 
-    /**
+    /*
      * Call the function.
      */
     lua_pcall(l, 0, 1, 0);
 
-    /**
+    /*
      * Now get the table we expected.
      */
     if (lua_istable(l, 1))
@@ -84,7 +87,7 @@ std::vector<std::string> CMaildirView::get_text()
         }
     }
 
-    /**
+    /*
      * Store the number of lines we've retrieved.
      */
     CConfig *config = CConfig::instance();
@@ -99,17 +102,17 @@ std::vector<std::string> CMaildirView::get_text()
 
 /**
  * This is the virtual function which is called to refresh the display
- * when the global.mode == "maildir"
+ * when the global.mode == "maildir".
  */
 void CMaildirView::draw()
 {
-    /**
+    /*
      * Get all maildirs.
      */
     CGlobalState *state = CGlobalState::instance();
     std::vector<std::shared_ptr<CMaildir> > maildirs = state->get_maildirs();
 
-    /**
+    /*
      * If there is nothing present then we're done.
      */
     if (maildirs.size() < 1)
@@ -119,18 +122,18 @@ void CMaildirView::draw()
         return;
     }
 
-    /**
+    /*
      * Get the lines of the message, as an array of lines, such that
      * we can draw it.
      */
     std::vector<std::string> lines = get_text();
 
-    /**
+    /*
      * Now handle our offsets/etc.
      */
     CConfig *config = CConfig::instance();
 
-    /**
+    /*
      * Get the currently-selected item, and the size of the lines.
      */
     std::string current = config->get_string("maildir.current");
@@ -148,7 +151,7 @@ void CMaildirView::draw()
         current = "0";
     }
 
-    /**
+    /*
      * Now we should have, as integers:
      *
      *  max   -> The max number of lines to display.
@@ -158,7 +161,7 @@ void CMaildirView::draw()
     size_t max = std::stoi(max_line, &sz);
     size_t cur = std::stoi(current, &sz);
 
-    /**
+    /*
      * Ensure we highlight the correct line.
      */
     if (cur > max)
@@ -167,7 +170,7 @@ void CMaildirView::draw()
         cur = max;
     }
 
-    /**
+    /*
      * Draw the text, via our base-class.
      */
     CScreen *screen = CScreen::instance();
@@ -176,7 +179,7 @@ void CMaildirView::draw()
 }
 
 /**
- * Called when things are idle.  NOP.
+ * Called when things are idle.
  */
 void CMaildirView::on_idle()
 {

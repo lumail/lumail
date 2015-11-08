@@ -30,14 +30,14 @@
 #include "screen.h"
 
 /**
- * NOP.
+ * Constructor
  */
 CMessageView::CMessageView()
 {
 }
 
 /**
- * NOP.
+ * Destructor.
  */
 CMessageView::~CMessageView()
 {
@@ -48,20 +48,20 @@ CMessageView::~CMessageView()
 /**
  * Get the output of calling `message_view`, which is the text we'll display.
  *
- * The `message_view` lua function should return a table of arrays to dipslay
+ * The `message_view` Lua function should return a table of arrays to dipslay
  * having formatted the message as it sees fit.
  */
 std::vector<std::string> CMessageView::get_text()
 {
     std::vector<std::string> result;
 
-    /**
+    /*
      * Get the lua state.
      */
     CLua *lua = CLua::instance();
     lua_State * l = lua->state();
 
-    /**
+    /*
      * If there is a message_view() function, then call it.
      */
     lua_getglobal(l, "message_view");
@@ -69,12 +69,12 @@ std::vector<std::string> CMessageView::get_text()
     if (lua_isnil(l, -1))
         return (result);
 
-    /**
+    /*
      * Call the function.
      */
     lua_pcall(l, 0, 1, 0);
 
-    /**
+    /*
      * Now get the table we expected.
      */
     if (lua_istable(l, 1))
@@ -89,7 +89,7 @@ std::vector<std::string> CMessageView::get_text()
         }
     }
 
-    /**
+    /*
      * Store the number of lines we've retrieved.
      */
     int max = result.size();
@@ -104,7 +104,7 @@ std::vector<std::string> CMessageView::get_text()
 
 /**
  * This is the virtual function which is called to refresh the display
- * when the global.mode == "message"
+ * when the global.mode == "message".
  */
 void CMessageView::draw()
 {
@@ -177,7 +177,7 @@ void CMessageView::draw()
 }
 
 /**
- * Called when things are idle.  NOP.
+ * Called when things are idle.
  */
 void CMessageView::on_idle()
 {
