@@ -1257,6 +1257,37 @@ function panel_size_toggle()
 end
 
 
+--
+-- This function jumps to the previous message, if possible.
+--
+-- It is only called when viewing a single message.
+--
+function prev_message()
+   -- Get the current offset
+   local cur = tonumber(Config:get("index.current" ))
+   if ( cur > 0 ) then
+      cur = cur - 1
+      Global:select_message( cur )
+      Config:set("index.current",cur)
+   end
+end
+
+--
+-- This function jumps to the next message, if possible.
+--
+-- It is only called when viewing a single message.
+--
+function next_message()
+   -- Get the current offset
+   local cur = tonumber(Config:get("index.current" ))
+   local max = tonumber(Config:get("index.max" ))
+   if ( cur < (max-1) ) then
+      cur = cur + 1
+      Global:select_message( cur )
+      Config:set("index.current",cur)
+   end
+end
+
 
 --
 -- 4. Define some call-backs which are implemented at various times.
@@ -1439,6 +1470,12 @@ keymap['global']['KEY_END']  = "last()"
 
 keymap['global']['ENTER'] = "select()"
 keymap['global']['SPACE'] = "select()"
+
+--
+-- Message-mode allows J/K to move to next/prev message
+--
+keymap['message']['J'] = 'next_message()'
+keymap['message']['K'] = 'prev_message()'
 
 --
 -- Left/Right scrolling.  (Global)
