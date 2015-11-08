@@ -1,3 +1,40 @@
+--
+-- 0. Lumail2 configuration-file
+--
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+--
+-- This is the configuration file for the Lumail 2.x command-line email
+-- client.
+--
+-- The configuration is carried out solely by Lua.
+--
+-- The client will load two files at startup if they exist:
+--
+--    /etc/lumail2/lumail2.lua
+--
+--    ~/.lumail2/lumail2.lua
+--
+-- If you wish to load additional files please specify them on the
+-- command-line:
+--
+--    lumail2 --load-file /path/to/code.lua
+--
+--
+-- For reference please see the API documentation:
+--
+--    API.md
+--
+-- or online:
+--
+--    http://lumail.org/api/
+--
+--
+-- Steve
+-- --
+--
+--
+
 
 --
 -- 1. Define some utility functions
