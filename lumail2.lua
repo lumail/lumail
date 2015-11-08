@@ -1044,6 +1044,15 @@ function select()
 
    if ( mode == "maildir" ) then
       Global:select_maildir( tonumber(cur) )
+
+      -- Log the change of maildir.
+      local md = Global:current_maildir()
+      Panel:append( "Selected maildir " .. md:path() )
+
+      --
+      -- Change to the index-mode, so we can see the messages in
+      -- the folder.
+      --
       Config:set("global.mode", "index" )
       return
    end
