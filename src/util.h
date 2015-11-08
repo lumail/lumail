@@ -8,10 +8,10 @@
  */
 struct both_slashes
 {
-  /**
-   * This implements the filter process, returning true if both
-   * characters "a" and "b" are "/".
-   */
+    /**
+     * This implements the filter process, returning true if both
+     * characters "a" and "b" are "/".
+     */
     bool operator()(char a, char b) const
     {
         return a == '/' && b == '/';
