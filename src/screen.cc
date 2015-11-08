@@ -729,9 +729,36 @@ std::string CScreen::get_line(std::string prompt)
     mvaddnstr(y, x, prompt.c_str(), prompt.length());
     x += prompt.length();
 
+    /**
+     * Get the mode so we can update the display mid-input.
+     */
+    CConfig *config   = CConfig::instance();
+    std::string mode  = config->get_string("global.mode");
+
+    if (mode.empty())
+        mode = "maildir";
+
+    CViewMode *view = m_views[mode];
+
+    /**
+     * We'll call our idle function too.
+     */
+    CLua *lua = CLua::instance();
+
     while (true)
     {
         int  c;
+
+        /*
+         * Redraw the main display.
+         */
+        if (view)
+            view->draw();
+
+        /*
+         * Call the Lua on_idle() function.
+         */
+        lua->execute("on_idle()");
 
         mvaddnstr(y, x, buffer.c_str(), buffer.size());
 
@@ -976,10 +1003,38 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
     }
 
 
+    /**
+     * Get the mode so we can update the display mid-input.
+     */
+    CConfig *config   = CConfig::instance();
+    std::string mode  = config->get_string("global.mode");
+
+    if (mode.empty())
+        mode = "maildir";
+
+    CViewMode *view = m_views[mode];
+
+    /**
+     * We'll call our idle function too.
+     */
+    CLua *lua = CLua::instance();
+
+
+
     while (true)
     {
         int  c;
 
+        /*
+         * Redraw the main display.
+         */
+        if (view)
+            view->draw();
+
+        /*
+         * Call the Lua on_idle() function.
+         */
+        lua->execute("on_idle()");
 
         mvaddnstr(y, x, prompt.c_str(), prompt.length());
 
