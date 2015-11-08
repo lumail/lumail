@@ -114,3 +114,11 @@ $(DEBUG_OBJECTS): $(DEBUG_OBJDIR)/%.o : $(SRCDIR)/%.cc
 .PHONY: indent
 indent:
 	astyle --style=allman -A1 --indent=spaces=4   --break-blocks --pad-oper --pad-header --unpad-paren --max-code-length=200 $(SRCDIR)/*.cc $(SRCDIR)/*.h
+
+
+#
+# rebuild our (code) documentation
+#
+.PHONY: docs
+docs:
+	doxygen
