@@ -74,78 +74,27 @@ bool CMaildir::is_maildir()
 }
 
 
+/**
+ * Does the given path represent a Maildir?
+ */
 bool CMaildir::is_maildir(std::string path)
 {
     CMaildir tmp(path);
     return (tmp.is_maildir());
 }
 
+
 /**
- * This method is bogus.  Ideally we'd cache C++ objects
- * on the mtime of the directory and return a vector of CMessage
- * objects.
- *
- * Instead we're returning a vector of paths.
+ * Return the path we represent.
  */
-std::vector < std::string > CMaildir::messages()
-{
-    std::vector < std::string > tmp;
-
-    dirent *de;
-    DIR *dp;
-
-    /**
-     * Directories we search.
-     */
-    std::vector < std::string > dirs;
-    dirs.push_back(m_path + "/cur/");
-    dirs.push_back(m_path + "/new/");
-
-    /**
-     * For each directory.
-     */
-    for (std::vector < std::string >::iterator it = dirs.begin();
-            it != dirs.end(); ++it)
-    {
-        std::string path = *it;
-        dp = opendir(path.c_str());
-
-        if (dp)
-        {
-            while (true)
-            {
-                de = readdir(dp);
-
-                if (de == NULL)
-                    break;
-
-                /** Maybe we should check for DT_REG || DT_LNK ? */
-                if ((de->d_type != DT_DIR)
-                        || (de->d_type == DT_UNKNOWN
-                            && !CFile::is_directory(std::string(path +
-                                                       de->d_name))))
-                {
-
-                    if (de->d_name[0] != '.')
-                    {
-                        tmp.push_back(path + de->d_name);
-                    }
-                }
-            }
-
-            closedir(dp);
-        }
-    }
-
-    return tmp;
-}
-
 std::string CMaildir::path()
 {
     return (m_path);
 }
 
-
+/**
+ * Destructor.
+ */
 CMaildir::~CMaildir()
 {
 }

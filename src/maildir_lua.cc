@@ -190,15 +190,14 @@ int l_CMaildir_messages(lua_State * l)
 {
     std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
 
-    std::vector < std::string > tmp = foo->messages();
+    CMessageList tmp = foo->getMessages();
 
     lua_createtable(l, tmp.size(), 0);
     int i = 0;
 
-    for (std::vector < std::string >::iterator it = tmp.begin();
-            it != tmp.end(); ++it)
+    for (CMessageList::iterator it = tmp.begin(); it != tmp.end(); ++it)
     {
-        push_cmessage(l, std::shared_ptr<CMessage>(new CMessage(*it)));
+        push_cmessage(l, (*it));
         lua_rawseti(l, -2, i + 1);
 
         i++;

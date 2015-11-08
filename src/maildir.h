@@ -63,17 +63,6 @@ public:
      */
     static bool is_maildir(std::string path);
 
-
-    /**
-     * This method is bogus.  Ideally we'd cache C++ objects
-     * on the mtime of the directory and return a vector of CMessage
-     * objects.
-     *
-     * Instead we're returning a vector of paths.
-     */
-    std::vector < std::string > messages();
-
-
     /**
      * Return the path we represent.
      */
@@ -93,7 +82,7 @@ public:
 
 
     /**
-     * Get all messages in the folder.
+     * Get all messages in this maildir.
      */
     CMessageList getMessages();
 
