@@ -63,6 +63,7 @@ default: lumail2
 #  Cleanup
 #
 clean:
+	test -d docs/              && rm -rf docs              || true
 	test -d $(RELEASE_OBJDIR)  && rm -rf $(RELEASE_OBJDIR) || true
 	test -d $(DEBUG_OBJDIR)    && rm -rf $(DEBUG_OBJDIR)   || true
 	rm -f gmon.out lumail2 lumail2-debug core              || true
