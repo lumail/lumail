@@ -359,6 +359,7 @@ int l_CMessage_unlink(lua_State * l)
      */
     CGlobalState *global = CGlobalState::instance();
     global->set_message(NULL);
+    global->update_messages();
 
     return 0;
 }
