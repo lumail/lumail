@@ -88,9 +88,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (CFile::exists("./lumail2.lua"))
-        load.push_back("./lumail2.lua");
-
 
     while (1)
     {
