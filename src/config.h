@@ -42,19 +42,19 @@ typedef enum
  */
 struct CConfigEntry
 {
-  /**
-     * The name of this configuration-option.
-     */
+    /**
+       * The name of this configuration-option.
+       */
     std::string * name;
 
-   /**
-     * The type of the configuration-option: STRING vs ARRAY
-     */
+    /**
+      * The type of the configuration-option: STRING vs ARRAY
+      */
     configType type;
 
-   /**
-     * The actual value of this entry, stored as a union.
-     */
+    /**
+      * The actual value of this entry, stored as a union.
+      */
     union
     {
         std::string * str;

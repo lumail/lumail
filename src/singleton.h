@@ -55,10 +55,11 @@ public:
      */
     static void destroy_instance()
     {
-      if ( m_instance) {
-        delete m_instance;
-        m_instance = nullptr;
-      }
+        if (m_instance)
+        {
+            delete m_instance;
+            m_instance = nullptr;
+        }
     };
 
 private:
