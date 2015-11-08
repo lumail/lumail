@@ -1286,7 +1286,13 @@ end
 -- once per second.
 --
 function on_idle()
-   Panel:append("The date is " .. Message:generate_date())
+
+   --
+   -- This shows the way that we can append messages constantly
+   -- to the panel.
+   --
+   -- Panel:append("The date is " .. Message:generate_date())
+   --
 end
 
 
@@ -1463,12 +1469,10 @@ for index,arg in ipairs(ARGS) do
    --
    -- Look for --eval=bar()
    --
-   -- TODO: See why this doesn't work.  Outside the main loop?
-   --
    local txt = string.match(arg, "--eval=(.*)" )
    if ( txt ) then
-      Panel:append(txt)
       f = loadstring( txt )
       f()
    end
+
 end
