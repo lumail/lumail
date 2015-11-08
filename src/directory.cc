@@ -16,12 +16,12 @@
  * General Public License can be found in `/usr/share/common-licenses/GPL-2'
  */
 
-#include <algorithm>
+
 #include <sys/stat.h>
 #include <dirent.h>
 
 #include "directory.h"
-
+#include "util.h"
 
 /**
  * Does the directory exist?
@@ -35,18 +35,6 @@ bool CDirectory::exists(std::string path)
     else
         return false;
 }
-
-
-/**
- * Filter for std::erase - to remove duplicate slash-characters.
- */
-struct both_slashes
-{
-    bool operator()(char a, char b) const
-    {
-        return a == '/' && b == '/';
-    }
-};
 
 
 /**

@@ -52,21 +52,14 @@ public:
     CMaildir(const std::string name);
     ~CMaildir();
 
-
     /**
-     * Is the given path a directory?
-     */
-    static bool is_directory(std::string path);
-
-
-    /**
-     * Does the given path contain a maildir ?
+     * Do we represent a valid Maildir?
      */
     bool is_maildir();
 
 
     /**
-     * Same again - Does the given path contain a maildir ?
+     * Does the given path represent a valid maildir ?
      */
     static bool is_maildir(std::string path);
 
@@ -82,7 +75,7 @@ public:
 
 
     /**
-     * Return the path.
+     * Return the path we represent.
      */
     std::string path();
 
@@ -107,23 +100,24 @@ public:
 
 private:
 
-
     /**
      * The path we represent.
      */
     std::string m_path;
-
 
     /**
      * Cached time/date object.
      */
     time_t m_modified;
 
-
     /**
-     * Cached unread-count + cached total count.
+     * Cached count of unread messages in this maildir.
      */
     int m_unread;
+
+    /**
+     * Cached count of messages in this maildir.
+     */
     int m_total;
 
 
@@ -141,4 +135,8 @@ private:
 
 };
 
+
+/**
+ * Helper for working with message-lists.
+ */
 typedef std::vector<std::shared_ptr<CMaildir> > CMaildirList;

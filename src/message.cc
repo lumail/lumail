@@ -34,7 +34,7 @@
 #include "file.h"
 #include "message.h"
 #include "message_part.h"
-
+#include "util.h"
 
 
 /**
@@ -523,19 +523,6 @@ bool CMessage::unlink()
 {
     return (CFile::delete_file(path()));
 }
-
-
-
-/**
- * Filter for std::erase - to remove duplicate slash-characters.
- */
-struct both_slashes
-{
-    bool operator()(char a, char b) const
-    {
-        return a == '/' && b == '/';
-    }
-};
 
 
 /**

@@ -49,9 +49,24 @@
  */
 typedef struct _PANEL_DATA
 {
+  /**
+   * If this is true then the panel is hidden.
+   */
     int hide;
+
+  /**
+   * The total height of the panel, in number of lines.
+   */
     int height;
+
+  /**
+   * The title of the panel.
+   */
     std::string title;
+
+  /**
+   * The text the panel contains.
+   */
     std::vector < std::string > text;
 } PANEL_DATA;
 

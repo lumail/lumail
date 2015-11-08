@@ -42,23 +42,19 @@
 
 
 
+/**
+ * Constructor.  Create an object to encapsulate the given path.
+ */
 CMaildir::CMaildir(const std::string name)
 {
     m_path = name;
 }
 
 
-bool CMaildir::is_directory(std::string path)
-{
-    struct stat sb;
 
-    if (stat(path.c_str(), &sb) < 0)
-        return false;
-
-    return (S_ISDIR(sb.st_mode));
-}
-
-
+/**
+ * Does this directory represent a Maildir?
+ */
 bool CMaildir::is_maildir()
 {
     std::vector < std::string > dirs;
@@ -70,7 +66,7 @@ bool CMaildir::is_maildir()
     for (std::vector < std::string >::iterator it = dirs.begin();
             it != dirs.end(); ++it)
     {
-        if (!CMaildir::is_directory(*it))
+        if (!CFile::is_directory(*it))
             return false;
     }
 
@@ -95,10 +91,8 @@ std::vector < std::string > CMaildir::messages()
 {
     std::vector < std::string > tmp;
 
-    dirent *
-    de;
-    DIR *
-    dp;
+    dirent *de;
+    DIR *dp;
 
     /**
      * Directories we search.
@@ -128,7 +122,7 @@ std::vector < std::string > CMaildir::messages()
                 /** Maybe we should check for DT_REG || DT_LNK ? */
                 if ((de->d_type != DT_DIR)
                         || (de->d_type == DT_UNKNOWN
-                            && !CMaildir::is_directory(std::string(path +
+                            && !CFile::is_directory(std::string(path +
                                                        de->d_name))))
                 {
 
