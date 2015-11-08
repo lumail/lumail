@@ -759,20 +759,23 @@ std::string CScreen::get_line(std::string prompt, std::string input)
         /*
          * Redraw the main display.
          */
-        if (view)
+        if (view) {
             view->draw();
+            update_panels();
+        }
 
         /*
          * Call the Lua on_idle() function.
          */
         lua->execute("on_idle()");
 
+        mvaddnstr(y, 0, prompt.c_str(), prompt.length());
         mvaddnstr(y, x, buffer.c_str(), buffer.size());
 
         /**
           * Clear the line- the "-2" comes from the size of the prompt.
           */
-        for (int padding = buffer.size(); padding < (width() - 2); padding++)
+        for (int padding = buffer.size(); padding < (width() - 1 - (int)prompt.length() ); padding++)
             printw(" ");
 
         /**
@@ -1035,8 +1038,10 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
         /*
          * Redraw the main display.
          */
-        if (view)
+        if (view) {
             view->draw();
+            update_panels();
+        }
 
         /*
          * Call the Lua on_idle() function.
