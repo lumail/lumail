@@ -124,7 +124,7 @@ public:
     /**
      * Read a line of input via the status-line.
      */
-    std::string get_line(std::string prompt);
+    std::string get_line(std::string prompt, std::string input = "");
 
     /**
      * Show a message and return only a valid keypress from a given set.

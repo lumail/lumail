@@ -691,14 +691,21 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
 /**
  * Read a line of input via the status-line.
  */
-std::string CScreen::get_line(std::string prompt)
+std::string CScreen::get_line(std::string prompt, std::string input)
 {
     std::string buffer;
+
 
     int old_curs = curs_set(1);
     int pos = 0;
     int x, y;
     int orig_x, orig_y;
+
+    if (! input.empty())
+    {
+        buffer = input;
+        pos = input.size();
+    }
 
     /**
      * Gain access to any past history.

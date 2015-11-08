@@ -239,7 +239,7 @@ The Screen object is registered automatically and doesn't need to be constructed
     * Execute the given command, resetting the screen first.
 * `exit()`
     * Exit the main event-loop, and terminate the program.
-* `get_line( prompt-string )`
+* `get_line( prompt-string, default-input )`
     * Receive a line of input, from the prompt.
 * `height()`
     * Return the height of the screen.
