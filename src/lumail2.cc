@@ -101,13 +101,14 @@ int main(int argc, char *argv[])
         {
             {"no-curses", no_argument, 0, 'n'},
             {"load-file", required_argument, 0, 'l'},
+            {"version", no_argument, 0, 'v'},
             {0, 0, 0, 0}
         };
 
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "l:n", long_options, &option_index);
+        c = getopt_long(argc, argv, "l:nv", long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
@@ -121,6 +122,11 @@ int main(int argc, char *argv[])
 
         case 'n':
             curses = false;
+            break;
+
+        case 'v':
+            std::cout << "Lumail2 " << LUMAIL_VERSION << std::endl;
+            return 0;
             break;
         }
     }
