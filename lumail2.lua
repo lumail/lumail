@@ -672,6 +672,50 @@ end
 
 
 --
+-- This function is called by pressing `s` in attachment-mode
+--
+function save_attachment()
+   --
+   -- Get the currently highlighted attachment-offset
+   --
+   local mode = Config:get("global.mode")
+   local cur  = tonumber(Config:get(mode .. ".current"))
+
+   --
+   -- Get the current message, and then the parts.
+   --
+   local msg   = Global:current_message()
+   if ( not msg ) then
+      return
+   end
+
+   local parts = msg:parts()
+
+   local i = 0
+   for k,v in ipairs( parts ) do
+      if ( v:is_attachment() ) then
+         if ( i == cur ) then
+
+            -- Prompt for local-path
+            local output = Screen:get_line( "Save to:", v:filename() )
+            -- save it
+            local f = io.open(output, "wb")
+            f:write( v:content() )
+            f:close()
+
+            Panel:append( "Wrote attachment to " .. output )
+
+            return
+         end
+
+         i = i + 1
+      end
+   end
+end
+
+
+
+--
 -- 2. Define our views
 --
 -----------------------------------------------------------------------------
@@ -1430,6 +1474,11 @@ keymap['attachment']['q'] = "change_mode( 'message' )"
 -- Enter attachment-mode
 --
 keymap['message']['A']    = "change_mode( 'attachment' )"
+
+--
+-- Save the current attachment
+--
+keymap['attachment']['s'] = "save_attachment()"
 
 
 --
