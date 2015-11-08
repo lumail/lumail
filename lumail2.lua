@@ -631,7 +631,8 @@ function Message:save()
    --
    -- Prompt for destination
    --
-   local dest = Screen:get_line( "Copy to maildir:" )
+   local dest = Screen:get_line( "Copy to maildir:",
+                                 Config:get( "maildir.prefix" ))
    if ( msg:copy( dest ) ) then
       Panel:append( "Message copied to " .. dest )
    else
