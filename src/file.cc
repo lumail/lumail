@@ -66,6 +66,28 @@ bool CFile::is_directory(std::string path)
 
 
 /**
+ * Is the given path a maildir?
+ */
+bool CFile::is_maildir(std::string path)
+{
+    std::vector < std::string > dirs;
+    dirs.push_back(path);
+    dirs.push_back(path + "/cur");
+    dirs.push_back(path + "/tmp");
+    dirs.push_back(path + "/new");
+
+    for (std::vector < std::string >::iterator it = dirs.begin();
+            it != dirs.end(); ++it)
+    {
+        if (!CFile::is_directory(*it))
+            return false;
+    }
+
+    return true;
+}
+
+
+/**
  * Get the basename of a file.
  */
 std::string CFile::basename(std::string path)
@@ -129,7 +151,7 @@ std::vector < std::string > CFile::get_all_maildirs(std::string prefix)
 
     if (dp)
     {
-        if (CMaildir::is_maildir(prefix))
+        if (CFile::is_maildir(prefix))
             result.push_back(prefix);
 
         while (true)
@@ -147,7 +169,7 @@ std::vector < std::string > CFile::get_all_maildirs(std::string prefix)
                 std::string subdir_path =
                     std::string(prefix + "/" + subdir_name);
 
-                if (CMaildir::is_maildir(subdir_path))
+                if (CFile::is_maildir(subdir_path))
                     result.push_back(subdir_path);
                 else
                 {

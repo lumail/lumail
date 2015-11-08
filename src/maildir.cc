@@ -51,39 +51,6 @@ CMaildir::CMaildir(const std::string name)
 }
 
 
-
-/**
- * Does this directory represent a Maildir?
- */
-bool CMaildir::is_maildir()
-{
-    std::vector < std::string > dirs;
-    dirs.push_back(m_path);
-    dirs.push_back(m_path + "/cur");
-    dirs.push_back(m_path + "/tmp");
-    dirs.push_back(m_path + "/new");
-
-    for (std::vector < std::string >::iterator it = dirs.begin();
-            it != dirs.end(); ++it)
-    {
-        if (!CFile::is_directory(*it))
-            return false;
-    }
-
-    return true;
-}
-
-
-/**
- * Does the given path represent a Maildir?
- */
-bool CMaildir::is_maildir(std::string path)
-{
-    CMaildir tmp(path);
-    return (tmp.is_maildir());
-}
-
-
 /**
  * Return the path we represent.
  */

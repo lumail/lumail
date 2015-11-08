@@ -53,21 +53,9 @@ public:
     ~CMaildir();
 
     /*
-     * Do we represent a valid Maildir?
-     */
-    bool is_maildir();
-
-
-    /*
-     * Does the given path represent a valid maildir ?
-     */
-    static bool is_maildir(std::string path);
-
-    /*
      * Return the path we represent.
      */
     std::string path();
-
 
     /*
      * The number of new messages for this maildir.

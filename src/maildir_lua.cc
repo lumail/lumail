@@ -158,31 +158,6 @@ int l_CMaildir_unread_messages(lua_State * l)
 }
 
 
-
-/**
- * Does the maildir exist?
- */
-int l_CMaildir_exists(lua_State * l)
-{
-    std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
-
-    int n = lua_gettop(l);
-
-    if (n != 1)
-    {
-        fprintf(stderr, "GOT A STRING?!\n");
-    }
-
-    if (foo->is_maildir())
-        lua_pushboolean(l, 1);
-    else
-        lua_pushboolean(l, 0);
-
-    return 1;
-}
-
-
-
 /**
  * Return a Lua CMessage object for each message.
  */
@@ -242,7 +217,6 @@ void InitMaildir(lua_State * l)
         {"total_messages", l_CMaildir_total_messages},
         {"unread_messages", l_CMaildir_unread_messages},
         {"messages", l_CMaildir_messages},
-        {"exists", l_CMaildir_exists},
         {"__gc", l_CMaildir_destructor},
         {NULL, NULL}
     };

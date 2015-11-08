@@ -48,6 +48,11 @@ public:
     static bool is_directory(std::string path);
 
     /*
+     * Is the given path a maildir?
+     */
+    static bool is_maildir(std::string path);
+
+    /*
      * Delete a file.
      */
     static bool delete_file(std::string path);
