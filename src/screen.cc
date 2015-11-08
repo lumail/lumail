@@ -96,14 +96,6 @@ CScreen::CScreen()
 }
 
 
-/**
- * Gain access to our singleton object.
- */
-CScreen * CScreen::instance()
-{
-    static CScreen *instance = new CScreen();
-    return (instance);
-}
 
 /**
  * Destructor.  NOP.

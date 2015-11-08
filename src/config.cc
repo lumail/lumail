@@ -20,18 +20,13 @@
 #include "global_state.h"
 
 
-/**
- * Accessor for our singleton.
- */
-CConfig * CConfig::instance()
-{
-    static CConfig *instance = new CConfig();
-    return (instance);
-}
-
 
 /**
- * Constructor - set some default variables.
+ * The constructor for the singleton CConfig class.
+ *
+ * The constructor sets up some default configuration values,
+ * which will be useful to the lua-environment we run.
+ *
  */
 CConfig::CConfig()
 {

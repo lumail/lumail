@@ -22,32 +22,32 @@
 #include "screen.h"
 
 
-/**
+/*
  * This is a message-view of the screen, it shows a single message.
  */
 class CMessageView: public CViewMode
 {
 
 public:
-    /**
+    /*
      * Constructor / Destructor.
      */
     CMessageView();
     ~CMessageView();
 
-    /**
+    /*
      * Drawing routine - called when the current.mode=="message".
      */
     void draw();
 
-    /**
+    /*
      * Called when things are idle.
      */
     void on_idle();
 
 private:
 
-    /**
+    /*
      * Return an array of lines of the message we're to draw,
      * via the `Message.to_string()` lua function.
      */

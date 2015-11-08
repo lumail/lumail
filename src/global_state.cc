@@ -29,16 +29,6 @@
 
 
 /**
- * Accessor for our singleton.
- */
-CGlobalState * CGlobalState::instance()
-{
-    static CGlobalState *instance = new CGlobalState();
-    return (instance);
-}
-
-
-/**
  * Constructor
  */
 CGlobalState::CGlobalState()

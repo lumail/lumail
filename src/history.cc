@@ -22,15 +22,6 @@
 #include "history.h"
 
 
-/**
- * Get access to our singleton-object.
- */
-CHistory *CHistory::instance()
-{
-    static CHistory *instance = new CHistory();
-    return (instance);
-}
-
 
 /**
  * Constructor - This is private as this class is a singleton.

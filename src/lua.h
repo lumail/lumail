@@ -30,53 +30,49 @@ extern "C"
 #include <vector>
 #include <string>
 
+#include "singleton.h"
 
-/**
+/*
  * A singleton class holding our Lua interpreter state.
  */
-class CLua
+class CLua : public Singleton<CLua>
 {
-private:
+public:
     CLua();
     ~CLua();
 
 public:
 
-    /**
-     * Get access to this singleton instance.
-     */
-    static CLua *instance();
-
-    /**
+    /*
      * Populate "args"
      */
     void set_args(char *argv[], int argc);
 
-    /**
+    /*
      * Load the specified Lua file, and evaluate it.
      *
      * Return true on success.  False on error.
      */
     bool load_file(std::string filename);
 
-    /**
+    /*
      * Evaluate the given string.
      *
      * Return true on success.  False on error.
      */
     bool execute(std::string lua);
 
-    /**
+    /*
      * Lookup a key in a nested table structure - used for keyboard lookups.
      */
     char *get_nested_table(std::string table, const char *key, const char *subkey);
 
-    /**
+    /*
      * Call `on_complete` to complete a string.
      */
     std::vector<std::string> get_completions(std::string token);
 
-    /**
+    /*
      * HACK - TODO - Fix
      */
     lua_State *state()
@@ -86,7 +82,7 @@ public:
 
 private:
 
-    /**
+    /*
      * The handle to the Lua interpreter.
      */
     lua_State * m_lua;

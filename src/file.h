@@ -24,7 +24,7 @@
 #include <string>
 
 
-/**
+/*
  * A collection of file utility primitives.
  *
  * Each of these members are static, because these are really just utility
@@ -37,37 +37,37 @@ class CFile
 
 public:
 
-    /**
+    /*
      * Does a file exist?
      */
     static bool exists(std::string path);
 
-    /**
+    /*
      * Is the given path a directory?
      */
     static bool is_directory(std::string path);
 
-    /**
+    /*
      * Delete a file.
      */
     static bool delete_file(std::string path);
 
-    /**
+    /*
      * Get the basename of a file.
      */
     static std::string basename(std::string path);
 
-    /**
+    /*
      * Copy a file.
      */
     static bool copy(std::string src, std::string dst);
 
-    /**
+    /*
      * Move a file.
      */
     static bool move(std::string src, std::string dst);
 
-    /**
+    /*
      * Return a sorted list of maildirs beneath the given prefix.
      */
     static std::vector < std::string > get_all_maildirs(std::string prefix);

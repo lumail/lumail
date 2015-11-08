@@ -23,7 +23,7 @@
 #include <vector>
 #include <string>
 
-/**
+/*
  * A collection of directory utility primitives.
  *
  * Each of these members are static, because these are really just utility
@@ -35,12 +35,12 @@ class CDirectory
 
 public:
 
-    /**
+    /*
      * Does the directory exist?
      */
     static bool exists(std::string path);
 
-    /**
+    /*
      * Return a sorted list of files beneath the directory.
      */
     static std::vector < std::string > entries(std::string prefix);

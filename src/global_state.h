@@ -23,10 +23,13 @@
 #include <memory>
 #include <string>
 #include <vector>
+
 #include "maildir.h"
 #include "message.h"
+#include "singleton.h"
 
-/**
+
+/*
  * This is a class to hold "global state".
  *
  * In the future it will store all Maildirs, and the currently selected one.
@@ -37,43 +40,38 @@
  * For the moment it will only be a hacky-stub.
  */
 
-class CGlobalState
+class CGlobalState : public Singleton<CGlobalState>
 {
-private:
+public:
     CGlobalState();
     ~CGlobalState();
 
 public:
 
-    /**
-     * Instance accessor - this object is a singleton.
-     */
-    static CGlobalState *instance();
-
-    /**
+    /*
      * Get all folders which match the current mode.
      */
     std::vector<std::shared_ptr<CMaildir> > get_maildirs();
 
-    /**
+    /*
      * Get all messages from the currently-selected folders.
      */
     std::vector<std::shared_ptr<CMessage> > *get_messages();
 
-    /**
+    /*
      * Get/Set the currently selected message.
      */
     std::shared_ptr<CMessage> current_message();
     void set_message(std::shared_ptr<CMessage>);
 
-    /**
+    /*
 
      * Get/Set the current-maildir.
      */
     std::shared_ptr<CMaildir > current_maildir();
     void set_maildir(std::shared_ptr<CMaildir >  folder);
 
-    /**
+    /*
      * Called when a configuration-key has changed.
      */
     void config_key_changed(std::string name);
@@ -84,27 +82,27 @@ public:
 
 private:
 
-    /**
+    /*
      * All maildirs.
      */
     std::vector<CMaildir *> m_all_maildirs;
 
-    /**
+    /*
      * The current maildir.
      */
     std::shared_ptr<CMaildir>m_current_maildir;
 
-    /**
+    /*
      * All messages.
      */
     std::vector<std::shared_ptr<CMessage> > *m_messages;
 
-    /**
+    /*
      * The list of all currently visible maildirs.
      */
     std::vector<std::shared_ptr<CMaildir> > *m_maildirs;
 
-    /**
+    /*
      * The currently selected message.
      */
     std::shared_ptr<CMessage> m_current_message;

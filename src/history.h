@@ -21,63 +21,57 @@
 #include <string>
 #include <vector>
 
+#include "singleton.h"
 
-/**
+/*
  * Singleton class to maintain a per-execution history of input
  * via the prompt.
  */
-class CHistory
+class CHistory : public Singleton<CHistory>
 {
 
 public:
 
-    /**
-     * Get access to the singleton instance.
-     */
-    static CHistory *instance();
-
-    /**
+    /*
      * Return the size of the history.
      */
     int size();
 
-    /**
+    /*
      * Get the Nth piece of history.
      */
     std::string at(size_t offset);
 
-    /**
+    /*
      * Add a new string to the history.
      */
     void add(std::string entry);
 
-    /**
+    /*
      * Clear the history.
      */
     void clear();
 
-    /**
+    /*
      * Set the file to write history from.
      */
     void set_file(std::string path);
 
-protected:
+public:
 
-    /**
-     * Protected functions to allow our singleton implementation.
+    /*
+     * Constructor.
      */
     CHistory();
-    CHistory(const CHistory &);
-    CHistory & operator=(const CHistory &);
 
 private:
 
-    /**
+    /*
      * List of history items.
      */
     std::vector<std::string> m_history;
 
-    /**
+    /*
      * The file to write to, may be unset.
      */
     std::string m_filename;

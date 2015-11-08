@@ -23,7 +23,7 @@
 #include "screen.h"
 
 
-/**
+/*
  * This is a attachment-view of the screen - it shows lists of attachments.
  */
 class CAttachmentView: public CViewMode
@@ -33,19 +33,19 @@ public:
     CAttachmentView();
     ~CAttachmentView();
 
-    /**
+    /*
      * Drawing routine.
      */
     void draw();
 
-    /**
+    /*
      * Called when things are idle.
      */
     void on_idle();
 
 private:
 
-    /**
+    /*
      * Get the output of calling `attachment_view`, which is the text we'll display.
      */
     std::vector<std::string> get_text();

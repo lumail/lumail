@@ -23,7 +23,7 @@
 #include "screen.h"
 
 
-/**
+/*
  * This is a maildir-view of the screen - it shows lists of *maildirs*.
  *
  * The list is created, and mainted, by lumail2, but the drawing is
@@ -36,19 +36,19 @@ public:
     CMaildirView();
     ~CMaildirView();
 
-    /**
+    /*
      * Drawing routine - called when the current.mode=="maildir".
      */
     void draw();
 
-    /**
+    /*
      * Called when things are idle.
      */
     void on_idle();
 
 private:
 
-    /**
+    /*
      * Get the output of calling `maildir_view`, which is the text we'll display.
      */
     std::vector<std::string> get_text();
