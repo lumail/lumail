@@ -54,7 +54,7 @@ GMIME_LIBS=$(shell pkg-config --libs  gmime-2.6)
 GMIME_INC=$(shell pkg-config --cflags gmime-2.6)
 
 #
-#  Build both targets by default, along with the helper.
+#  Only build the release-target by default.
 #
 default: lumail2
 
@@ -108,6 +108,9 @@ $(DEBUG_OBJECTS): $(DEBUG_OBJDIR)/%.o : $(SRCDIR)/%.cc
 	$(CC) $(FEATURES) -ggdb -DDEBUG=1 $(CPPFLAGS) $(GMIME_INC) $(GLIBMM_INC) -O2 -c $< -o $@
 
 
+#
+# Indent our C++ code in a consistent-style
+#
 .PHONY: indent
 indent:
 	astyle --style=allman -A1 --indent=spaces=4   --break-blocks --pad-oper --pad-header --unpad-paren --max-code-length=200 $(SRCDIR)/*.cc $(SRCDIR)/*.h
