@@ -9,7 +9,7 @@ This project is built upon of the previous [Lumail client](https://github.com/lu
 
 * The C++ core is much more consistent.
 * The Lua extension support is much more consistent.
-* The more things that can be pusehd to Lua the better.
+* The more things that can be pushed to Lua the better.
     * To allow customization.
     * To allow flexibility.
 
@@ -65,9 +65,9 @@ Building Lumail2
 
 The code relies upon a small number of libraries:
 
-* lua 5.2 is also supported, but is not yet the default.
-* libncursesw - The console input/graphics library.
-* libgmime-2.6  - The MIME-library.
+* lua 5.2.
+* libncursesw, the console input/graphics library.
+* libgmime-2.6, the MIME-library.
 
 Upon a Debian GNU/Linux host, running the Jessie (stable), release the following two commands are sufficient to install the dependencies:
 
@@ -83,13 +83,11 @@ With the dependencies installed you should ind the code builds cleanly with:
 Using Lumail
 ------------
 
-When `lumaile` starts it will load each of the following files, in order,
+When `lumail2` starts it will load each of the following files, in order,
 if they exit:
 
 * `/etc/lumail2/lumail2.lua`
 * `~/.lumail2/lumail2.lua`
-* `./lumail2.lua`
-     * This will be removed before the first release - it is a security-hole.
 
 Once you've done that you'll be in the `maildir`-mode, and you can
 navigate with `j`/`k`, and select items with `enter`.
@@ -110,3 +108,7 @@ Further Notes
    * Documents the Lua classes.
 * [Notes on implementation & structure](HACKING.md)
    * See also the [experiments repository](https://github.com/lumail/experiments) where some standalone code has been isolated for testing/learning purposes.
+
+
+Steve
+--
