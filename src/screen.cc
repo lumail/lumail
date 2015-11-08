@@ -50,9 +50,9 @@
 typedef struct _PANEL_DATA
 {
     /**
-     * If this is true then the panel is hidden.
+     * Is the panel hidden?
      */
-    int hide;
+    bool hidden;
 
     /**
      * The total height of the panel, in number of lines.
@@ -428,12 +428,12 @@ void CScreen::status_panel_init()
     if (show)
     {
         show_panel(g_status_bar);
-        g_status_bar_data.hide = FALSE;
+        g_status_bar_data.hidden = false;
     }
     else
     {
         hide_panel(g_status_bar);
-        g_status_bar_data.hide = TRUE;
+        g_status_bar_data.hidden = true;
     }
 
 }
@@ -732,7 +732,7 @@ std::string CScreen::get_line(std::string prompt, std::string input)
     x = 0;
     y = height() - 1;
 
-    if (g_status_bar_data.hide == FALSE)
+    if (!g_status_bar_data.hidden)
     {
         y -= g_status_bar_data.height;
     }
@@ -1015,7 +1015,7 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
     x = 0;
     y = height() - 1;
 
-    if (g_status_bar_data.hide == FALSE)
+    if (!g_status_bar_data.hidden)
     {
         y -= g_status_bar_data.height;
     }
@@ -1077,13 +1077,13 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
 void CScreen::status_panel_show()
 {
     show_panel(g_status_bar);
-    g_status_bar_data.hide = FALSE;
+    g_status_bar_data.hidden = false;
 }
 
 void CScreen::status_panel_hide()
 {
     hide_panel(g_status_bar);
-    g_status_bar_data.hide = TRUE;
+    g_status_bar_data.hidden = true;
 }
 
 void CScreen::status_panel_toggle()
@@ -1132,10 +1132,7 @@ void CScreen::status_panel_height(int new_size)
 
 bool CScreen::status_panel_visible()
 {
-    if (g_status_bar_data.hide == FALSE)
-        return true;
-    else
-        return false;
+    return (!g_status_bar_data.hidden);
 }
 
 void CScreen::status_panel_title(std::string new_title)
