@@ -62,23 +62,24 @@ public:
 
 private:
 
-    /*
-     * The content-type
+    /**
+     * The content-type of this part.
      */
     std::string m_type;
 
-    /*
-     * The filename - if this is an attachment.
+    /**
+     * The filename of this part, if it is an attachment.  If not it will
+     * be unset.
      */
     std::string m_filename;
 
-    /*
-     * The content of this MIME-part
+    /**
+     * The actual content of this MIME-part
      */
     void *m_content;
 
-    /*
-     * The content-length.
+    /**
+     * The length of this MIME-part's content.
      */
     size_t m_content_length;
 };

@@ -23,9 +23,9 @@
 
 #include "singleton.h"
 
-/*
- * Singleton class to maintain a per-execution history of input
- * via the prompt.
+/**
+ * Singleton class to maintain a history of input which has been
+ * entered into the prompt.
  */
 class CHistory : public Singleton<CHistory>
 {
@@ -66,12 +66,12 @@ public:
 
 private:
 
-    /*
+    /**
      * List of history items.
      */
     std::vector<std::string> m_history;
 
-    /*
+    /**
      * The file to write to, may be unset.
      */
     std::string m_filename;

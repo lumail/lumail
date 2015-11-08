@@ -30,14 +30,10 @@
 
 
 /*
- * This is a class to hold "global state".
+ * This is a class to hold "global state", which primarily means that
+ * it stores the lists of current maildirs, messages, as well as the
+ * single selected message.
  *
- * In the future it will store all Maildirs, and the currently selected one.
- *
- * Similarly it will hold all the messages in the current directory as
- * well as the current one.
- *
- * For the moment it will only be a hacky-stub.
  */
 
 class CGlobalState : public Singleton<CGlobalState>
@@ -82,27 +78,23 @@ public:
 
 private:
 
-    /*
-     * All maildirs.
-     */
-    std::vector<CMaildir *> m_all_maildirs;
 
-    /*
-     * The current maildir.
-     */
-    std::shared_ptr<CMaildir>m_current_maildir;
-
-    /*
-     * All messages.
-     */
-    std::vector<std::shared_ptr<CMessage> > *m_messages;
-
-    /*
+    /**
      * The list of all currently visible maildirs.
      */
     std::vector<std::shared_ptr<CMaildir> > *m_maildirs;
 
-    /*
+    /**
+     * The currently selected maildir.
+     */
+    std::shared_ptr<CMaildir> m_current_maildir;
+
+    /**
+     * All messages.
+     */
+    std::vector<std::shared_ptr<CMessage> > *m_messages;
+
+    /**
      * The currently selected message.
      */
     std::shared_ptr<CMessage> m_current_message;

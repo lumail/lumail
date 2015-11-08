@@ -49,7 +49,7 @@ public:
 private:
 
     /*
-     * Get the output of calling `maildir_view`, which is the text we'll display.
+     * Get the output of calling `maildir_view`, which is what we'll display.
      */
     std::vector<std::string> get_text();
 

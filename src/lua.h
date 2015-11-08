@@ -82,7 +82,7 @@ public:
 
 private:
 
-    /*
+    /**
      * The handle to the Lua interpreter.
      */
     lua_State * m_lua;

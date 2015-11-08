@@ -25,6 +25,7 @@
 
 /*
  * This is a attachment-view of the screen - it shows lists of attachments.
+ *
  */
 class CAttachmentView: public CViewMode
 {
@@ -46,7 +47,7 @@ public:
 private:
 
     /*
-     * Get the output of calling `attachment_view`, which is the text we'll display.
+     * Get the output of calling `attachment_view`.
      */
     std::vector<std::string> get_text();
 

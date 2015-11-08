@@ -89,23 +89,24 @@ public:
 
 private:
 
-    /*
+    /**
      * The path we represent.
      */
     std::string m_path;
 
-    /*
-     * Cached time/date object.
+    /**
+     * The date/time this maildir was last updated.  Used to maintain a
+     * cache that can be expired/tested easily.
      */
     time_t m_modified;
 
-    /*
-     * Cached count of unread messages in this maildir.
+    /**
+     * A cached count of the unread messages in this maildir.
      */
     int m_unread;
 
-    /*
-     * Cached count of messages in this maildir.
+    /**
+     * A cached count of messages in this maildir.
      */
     int m_total;
 
@@ -126,6 +127,6 @@ private:
 
 
 /*
- * Helper for working with message-lists.
+ * Helper-type for working with message-lists.
  */
 typedef std::vector<std::shared_ptr<CMaildir> > CMaildirList;

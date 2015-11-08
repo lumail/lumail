@@ -23,11 +23,14 @@ public:
      */
     static void destroy_instance()
     {
+      if ( m_instance) {
         delete m_instance;
         m_instance = nullptr;
+      }
     };
 
 private:
+
     /**
      * The one instance of our object.
      */

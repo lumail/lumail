@@ -1,5 +1,5 @@
 /*
- * $FILENAME - $TITLE
+ * config.h - A configuration-value holding class
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -24,16 +24,18 @@
 
 #include "singleton.h"
 
-/*
- * Our config-type can contain "string" or "array" values.
+/**
+ * The CConfig class holds configuration values, these values
+ * might be strings, or arrays.
  *
- * Setup a type for that.
+ * We use this enum to identify which type a particular entry
+ * has.
  */
 typedef enum
 { CONFIG_UNKNOWN, CONFIG_STRING, CONFIG_ARRAY } configType;
 
 
-/*
+/**
  * This is the struct which holds a single configuration value.
  *
  * The value might be a string, or an array of strings.
@@ -63,8 +65,10 @@ struct CConfigEntry
 
 
 
-/*
- * Singleton to hold configuration variables.
+/**
+ * This is a singleton class which is used to get/set configuration
+ * values.
+ *
  */
 class CConfig : public Singleton<CConfig>
 {
@@ -111,8 +115,8 @@ private:
      */
     void delete_key(std::string key);
 
-    /*
-     * The actual storage.
+    /**
+     * The actual storage of our configuration values.
      */
     std::vector < CConfigEntry * >m_entries;
 };

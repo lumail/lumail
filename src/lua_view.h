@@ -1,5 +1,5 @@
 /*
- * $FILENAME - $TITLE
+ * lua_view.h - Draw output created by Lua.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -47,7 +47,7 @@ public:
 private:
 
     /*
-     * Get the output of calling `lua_mode`, which is the text we'll display.
+     * Get the output of calling `lua_view`, which is the text we'll display.
      */
     std::vector<std::string> get_text();
 

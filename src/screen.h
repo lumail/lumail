@@ -221,24 +221,29 @@ private:
 
 private:
 
-    /*
-     * Are we in the event-loop?
+    /**
+     * Are we (still) in the event-loop?
      */
     bool m_running;
 
-    /*
-     * This contains the mapping of "global.mode" -> drawing routines.
+    /**
+     * This map contains a mapping between a given mode-name and the
+     * virtual class which implements its display.
+     *
+     * All display-classes are derived from CViewMode so that we can
+     * refer to thim in this generic/interface way.
      */
     std::unordered_map < std::string, CViewMode * >m_views;
 
-    /*
-     * Colour-pairs
+    /**
+     * A lookup-map of colour-pairs, which are used for drawing
+     * coloured text on the screen.
      */
     std::unordered_map < std::string, int >m_colours;
 
 private:
 
-    /*
+    /**
      * The segment of the screen the highlighted row is within.
      *
      * Used by `draw_text_lines`.

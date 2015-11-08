@@ -31,7 +31,8 @@
 class CMessagePart;
 
 
-/*
+/**
+ *
  * This is the C++ object which represents an email message.
  *
  * The lua binding is modeled after this class structure too.
@@ -120,12 +121,12 @@ public:
 
 private:
 
-    /*
+    /**
      * The path on-disk to the message.
      */
     std::string m_path;
 
-    /*
+    /**
      * Cached MIME-parts to this message.
      */
     std::vector<std::shared_ptr<CMessagePart>> m_parts;
