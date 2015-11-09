@@ -54,9 +54,17 @@ int l_Config_get(lua_State * l)
         lua_pushstring(l, x->value.str->c_str());
         return 1;
     }
+    else if (x->type == CONFIG_INTEGER)
+    {
+        /*
+         * Does this configuration value hold an integer?
+         */
+        lua_pushnumber(l, *x->value.value);
+        return 1;
+    }
     else if (x->type == CONFIG_ARRAY)
     {
-        /**
+        /*
          * Does this configuration value hold an array (read: table)?
          */
         lua_newtable(l);
@@ -136,6 +144,11 @@ int l_Config_set(lua_State * l)
         }
 
         foo->set(name, vals);
+    }
+    else if (lua_isnumber(l, 3))
+    {
+        int value = luaL_checkinteger(l, 3);
+        foo->set(name, value);
     }
     else if (lua_isstring(l, 3))
     {
