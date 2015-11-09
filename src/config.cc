@@ -17,7 +17,6 @@
  */
 
 #include "config.h"
-#include "global_state.h"
 
 
 
@@ -32,6 +31,9 @@ CConfig::CConfig()
 {
     set("global.mode", "maildir", false);
 
+    set("maildir.limit", "all", true);
+    set("index.limit", "all", true);
+
     set("index.limit", "all", false);
     set("index.max", "0", false);
 
@@ -39,7 +41,7 @@ CConfig::CConfig()
     set("maildir.max", "0", false);
 
     set("global.mailer", "/usr/lib/sendmail -t", false);
-    set("global.version", LUMAIL_VERSION);
+    set("global.version", LUMAIL_VERSION, false);
 }
 
 
@@ -174,8 +176,10 @@ void CConfig::set(std::string name, std::string val, bool notify)
      */
     if (notify)
     {
-        CGlobalState *global = CGlobalState::instance();
-        global->config_key_changed(name);
+        int max = views.size();
+
+        for (int i = 0; i < max; i++)
+            views[i]->update(name);
     }
 }
 
@@ -223,8 +227,10 @@ void CConfig::set(std::string name, std::vector < std::string > entries, bool no
      */
     if (notify)
     {
-        CGlobalState *global = CGlobalState::instance();
-        global->config_key_changed(name);
+        int max = views.size();
+
+        for (int i = 0; i < max; i++)
+            views[i]->update(name);
     }
 }
 

@@ -20,6 +20,8 @@
 #include <cstdlib>
 #include <iostream>
 
+
+#include "config.h"
 #include "lua.h"
 
 
@@ -61,7 +63,7 @@ void CLua::set_args(char *argv[], int argc)
 /**
  * Constructor - This is private as this class is a singleton.
  */
-CLua::CLua()
+CLua::CLua() : Observer(CConfig::instance())
 {
     /**
      * Create a new Lua object.
@@ -204,4 +206,27 @@ std::vector<std::string> CLua::get_completions(std::string token)
     }
 
     return (result);
+}
+
+
+/**
+ * This method is called when a configuration key changes,
+ * via our observer implementation.
+ */
+void CLua::update(std::string key_name)
+{
+    /**
+     * If there is a Config:key_changed() function, then call it.
+     */
+    lua_getglobal(m_lua, "Config");
+    lua_getfield(m_lua, -1, "key_changed");
+
+    if (lua_isnil(m_lua, -1))
+        return;
+
+    /**
+     * Call the function.
+     */
+    lua_pushstring(m_lua, key_name.c_str());
+    lua_pcall(m_lua, 1, 0, 0);
 }

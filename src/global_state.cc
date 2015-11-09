@@ -31,10 +31,14 @@
 /**
  * Constructor
  */
-CGlobalState::CGlobalState()
+CGlobalState::CGlobalState() : Observer(CConfig::instance())
 {
     m_maildirs = NULL;
     m_messages = NULL;
+
+    update_messages();
+    update_maildirs();
+
 }
 
 
@@ -64,15 +68,16 @@ void CGlobalState::set_message(std::shared_ptr<CMessage> update)
 
 
 /**
- * Called when a configuration-key has changed.
+ * This method is called when a configuration key changes,
+ * via our observer implementation.
  */
-void CGlobalState::config_key_changed(std::string name)
+void CGlobalState::update(std::string key_name)
 {
-    /**
+    /*
      * If we've changed global-mode then we might need to update
      * our messages/maildirs.
      */
-    if (name == "global.mode")
+    if (key_name == "global.mode")
     {
         CConfig *config = CConfig::instance();
         std::string new_mode = config->get_string("global.mode");
@@ -98,7 +103,7 @@ void CGlobalState::config_key_changed(std::string name)
     /**
      * The name of the history file.
      */
-    if (name == "global.history")
+    if (key_name == "global.history")
     {
         CConfig *config = CConfig::instance();
         std::string path = config->get_string("global.history");
@@ -113,7 +118,7 @@ void CGlobalState::config_key_changed(std::string name)
     /**
      * Otherwise if the maildir-prefix or limit has changed update things
      */
-    if ((name == "maildir.limit") || (name == "maildir.prefix"))
+    if ((key_name == "maildir.limit") || (key_name == "maildir.prefix"))
     {
         update_maildirs();
     }
@@ -121,31 +126,10 @@ void CGlobalState::config_key_changed(std::string name)
     /**
      * If the index-limit has changed update that too.
      */
-    if (name == "index.limit")
+    if (key_name == "index.limit")
     {
         update_messages();
     }
-
-    /**
-     * Get access to our Lua magic.
-     */
-    CLua *lua = CLua::instance();
-    lua_State * l = lua->state();
-
-    /**
-     * If there is a Config:key_changed() function, then call it.
-     */
-    lua_getglobal(l, "Config");
-    lua_getfield(l, -1, "key_changed");
-
-    if (lua_isnil(l, -1))
-        return;
-
-    /**
-     * Call the function.
-     */
-    lua_pushstring(l, name.c_str());
-    lua_pcall(l, 1, 0, 0);
 }
 
 

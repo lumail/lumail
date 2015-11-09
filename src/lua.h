@@ -30,12 +30,17 @@ extern "C"
 #include <vector>
 #include <string>
 
+#include "observer.h"
 #include "singleton.h"
 
-/*
+/**
  * A singleton class holding our Lua interpreter state.
+ *
+ * This class also implements the observer-pattern, responding to
+ * changes in the `CConfig` class.
+ *
  */
-class CLua : public Singleton<CLua>
+class CLua : public Singleton<CLua>, public Observer
 {
 public:
     CLua();
@@ -79,6 +84,12 @@ public:
     {
         return m_lua;
     }
+
+    /*
+     * This method is called when a configuration key changes,
+     * via our observer implementation.
+     */
+    void update(std::string key_name);
 
 private:
 

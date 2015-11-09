@@ -22,6 +22,7 @@
 #include <vector>
 #include <string>
 
+#include "observer.h"
 #include "singleton.h"
 
 /**
@@ -43,8 +44,8 @@ typedef enum
 struct CConfigEntry
 {
     /**
-       * The name of this configuration-option.
-       */
+     * The name of this configuration-option.
+     */
     std::string * name;
 
     /**
@@ -70,7 +71,7 @@ struct CConfigEntry
  * values.
  *
  */
-class CConfig : public Singleton<CConfig>
+class CConfig : public Singleton<CConfig>, public Subject
 {
 public:
     CConfig();

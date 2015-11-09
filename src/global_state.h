@@ -26,6 +26,7 @@
 
 #include "maildir.h"
 #include "message.h"
+#include "observer.h"
 #include "singleton.h"
 
 
@@ -34,9 +35,11 @@
  * it stores the lists of current maildirs, messages, as well as the
  * single selected message.
  *
+ * The class itself is both a singleton and an observer - observing
+ * changes in the `CConfig` global singleton.
  */
 
-class CGlobalState : public Singleton<CGlobalState>
+class CGlobalState : public Singleton<CGlobalState>, public Observer
 {
 public:
     CGlobalState();
@@ -75,6 +78,12 @@ public:
 public:
     void update_maildirs();
     void update_messages();
+
+    /*
+     * This method is called when a configuration key changes,
+     * via our observer implementation.
+     */
+    void update(std::string key_name);
 
 private:
 
