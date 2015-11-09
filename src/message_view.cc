@@ -92,10 +92,8 @@ std::vector<std::string> CMessageView::get_text()
     /*
      * Store the number of lines we've retrieved.
      */
-    int max = result.size();
-
     CConfig *config = CConfig::instance();
-    config->set("message.max", std::to_string(max));
+    config->set("message.max", result.size());
 
     return (result);
 
@@ -135,37 +133,15 @@ void CMessageView::draw()
     /*
      * Get the currently-selected item, and the size of the lines.
      */
-    std::string current = config->get_string("message.current");
-    std::string max_line = config->get_string("message.max");
-
-    if (max_line.empty())
-    {
-        config->set("message.max", "0", false);
-        max_line = "0";
-    }
-
-    if (current.empty())
-    {
-        config->set("message.current", "0" , false);
-        current = "0";
-    }
-
-    /*
-     * Now we should have, as integers:
-     *
-     *  max   -> The max number of lines to display.
-     *  cur   -> The current line.
-     */
-    std::string::size_type sz;
-    size_t max = std::stoi(max_line, &sz);
-    size_t cur = std::stoi(current, &sz);
+    int cur = config->get_integer("message.current");
+    int max = config->get_integer("message.max");
 
     /*
      * Ensure we highlight the correct line.
      */
     if (cur > max)
     {
-        config->set("message.current", std::to_string(max) , false);
+        config->set("message.current", max, false);
         cur = max;
     }
 

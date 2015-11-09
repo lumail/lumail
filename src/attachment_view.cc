@@ -92,7 +92,7 @@ std::vector<std::string> CAttachmentView::get_text()
     int max = result.size();
 
     CConfig *config = CConfig::instance();
-    config->set("attachment.max", std::to_string(max));
+    config->set("attachment.max", max);
 
     return (result);
 
@@ -132,37 +132,15 @@ void CAttachmentView::draw()
     /*
      * Get the currently-selected item, and the size of the lines.
      */
-    std::string current = config->get_string("attachment.current");
-    std::string max_line = config->get_string("attachment.max");
-
-    if (max_line.empty())
-    {
-        config->set("attachment.max", "0", false);
-        max_line = "0";
-    }
-
-    if (current.empty())
-    {
-        config->set("attachment.current", "0" , false);
-        current = "0";
-    }
-
-    /*
-     * Now we should have, as integers:
-     *
-     *  max   -> The max number of lines to display.
-     *  cur   -> The current line.
-     */
-    std::string::size_type sz;
-    size_t max = std::stoi(max_line, &sz);
-    size_t cur = std::stoi(current, &sz);
+    int cur = config->get_integer("attachment.current");
+    int max = config->get_integer("attachment.max");
 
     /*
      * Ensure we highlight the correct line.
      */
     if (cur > max)
     {
-        config->set("attachment.current", std::to_string(max) , false);
+        config->set("attachment.current", max , false);
         cur = max;
     }
 

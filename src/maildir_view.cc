@@ -93,7 +93,7 @@ std::vector<std::string> CMaildirView::get_text()
     CConfig *config = CConfig::instance();
     int max = result.size();
 
-    config->set("maildir.max", std::to_string(max));
+    config->set("maildir.max", max);
 
     return (result);
 
@@ -136,37 +136,15 @@ void CMaildirView::draw()
     /*
      * Get the currently-selected item, and the size of the lines.
      */
-    std::string current = config->get_string("maildir.current");
-    std::string max_line = config->get_string("maildir.max");
-
-    if (max_line.empty())
-    {
-        config->set("maildir.max", "0", false);
-        max_line = "0";
-    }
-
-    if (current.empty())
-    {
-        config->set("maildir.current", "0" , false);
-        current = "0";
-    }
-
-    /*
-     * Now we should have, as integers:
-     *
-     *  max   -> The max number of lines to display.
-     *  cur   -> The current line.
-     */
-    std::string::size_type sz;
-    size_t max = std::stoi(max_line, &sz);
-    size_t cur = std::stoi(current, &sz);
+    int cur = config->get_integer("maildir.current");
+    int max = config->get_integer("maildir.max");
 
     /*
      * Ensure we highlight the correct line.
      */
     if (cur > max)
     {
-        config->set("maildir.current", std::to_string(max) , false);
+        config->set("maildir.current", max, false);
         cur = max;
     }
 
