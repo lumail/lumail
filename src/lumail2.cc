@@ -151,11 +151,19 @@ int main(int argc, char *argv[])
 
         for (std::string filename : load)
         {
-            if (! instance->load_file(filename))
+            if (CFile::exists(filename))
+            {
+                if (! instance->load_file(filename))
+                {
+                    screen->teardown();
+                    std::cerr << "Error loading: " << filename << std::endl;
+                    return -1;
+                }
+            }
+            else
             {
                 screen->teardown();
-                std::cerr << "Error loading " << filename << std::endl;
-
+                std::cerr << "File doesn't exist: " << filename << std::endl;
                 return -1;
             }
         }
