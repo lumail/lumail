@@ -323,7 +323,7 @@ function Message:reply()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
       end
-      msg = msgs[tonumber(offset)+1]
+      msg = msgs[offset+1]
    end
 
    -- Failed to find a mesage?
@@ -467,7 +467,7 @@ function Message:delete()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
       end
-      msg = msgs[tonumber(offset)+1]
+      msg = msgs[offset+1]
 
       -- delete it
       msg:unlink()
@@ -509,7 +509,7 @@ function Message:forward()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
       end
-      msg = msgs[tonumber(offset)+1]
+      msg = msgs[offset+1]
    end
 
    -- Failed to find a mesage?
@@ -620,7 +620,7 @@ function Message:save()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
       end
-      msg = msgs[tonumber(offset)+1]
+      msg = msgs[offset+1]
    end
 
    if ( not msg ) then
@@ -679,7 +679,7 @@ function save_attachment()
    -- Get the currently highlighted attachment-offset
    --
    local mode = Config:get("global.mode")
-   local cur  = tonumber(Config:get(mode .. ".current"))
+   local cur  = Config:get(mode .. ".current")
 
    --
    -- Get the current message, and then the parts.
@@ -846,11 +846,12 @@ function lua_view()
    -- Now add all the current keys
    --
    table.insert(output, "" )
-   table.insert(output, "The following (string) configuration-values have been set:")
+   table.insert(output, "The following configuration-values have been set:")
    for k,v in ipairs( Config:keys() ) do
       val = Config:get( v )
-      if ( type(val) == "string" ) then
-         table.insert(output, "\t" .. v )
+      table.insert(output, "\t" .. v .. " <" .. type(val) .. ">" )
+
+      if ( ( type(val) == "string" ) or ( type(val) == "number" ) ) then
          table.insert(output, "$[YELLOW]\t\t" .. val )
       end
    end
@@ -1043,7 +1044,7 @@ function select()
    local cur  = Config:get(mode .. ".current")
 
    if ( mode == "maildir" ) then
-      Global:select_maildir( tonumber(cur) )
+      Global:select_maildir( cur )
 
       -- Log the change of maildir.
       local md = Global:current_maildir()
@@ -1058,7 +1059,7 @@ function select()
    end
 
    if ( mode == "index" ) then
-      Global:select_message( tonumber(cur) )
+      Global:select_message( cur )
       Config:set("global.mode", "message" )
       return
    end
@@ -1070,7 +1071,7 @@ end
 --
 function first()
    local mode = Config:get("global.mode")
-   Config:set( mode .. ".current", "0" )
+   Config:set( mode .. ".current", 0)
 end
 
 
@@ -1081,7 +1082,6 @@ function last()
    local mode = Config:get("global.mode")
    local max  = Config:get(mode .. ".max" )
 
-   max = tonumber( max )
    Config:set( mode .. ".current", max-1 )
 end
 
@@ -1093,8 +1093,6 @@ function left()
    local x = Config:get("global.horizontal")
    if ( not x ) then
       x = 0
-   else
-      x = tonumber( x )
    end
 
    if ( x > 0 ) then
@@ -1112,8 +1110,6 @@ function right()
    local x = Config:get("global.horizontal")
    if ( not x ) then
       x = 0
-   else
-      x = tonumber( x )
    end
 
    if ( x < Screen:width() ) then
@@ -1154,8 +1150,8 @@ function find( offset )
    -- We know the maximum offset is stored in the
    -- variable $mode.max
    --
-   local cur = tonumber(Config:get(mode .. ".current"))
-   local max = tonumber(Config:get(mode .. ".max"))
+   local cur = Config:get(mode .. ".current")
+   local max = Config:get(mode .. ".max")
 
    --
    -- Start searching from the current-position
@@ -1207,11 +1203,7 @@ function next( offset )
 
    if ( not cur ) then
       cur = 0
-   else
-      cur = tonumber( cur )
    end
-
-   max = tonumber( max )
 
    if ( cur + offset < (max-1) ) then
       cur = cur + offset
@@ -1235,11 +1227,7 @@ function prev( offset )
 
    if ( not cur ) then
       cur = 0
-   else
-      cur = tonumber( cur )
    end
-
-   max = tonumber( max )
 
    if ( cur - offset > 0 ) then
       cur = cur - offset
@@ -1273,7 +1261,7 @@ end
 --
 function prev_message()
    -- Get the current offset
-   local cur = tonumber(Config:get("index.current" ))
+   local cur = Config:get("index.current")
    if ( cur > 0 ) then
       cur = cur - 1
       Global:select_message( cur )
@@ -1288,8 +1276,8 @@ end
 --
 function next_message()
    -- Get the current offset
-   local cur = tonumber(Config:get("index.current" ))
-   local max = tonumber(Config:get("index.max" ))
+   local cur = Config:get("index.current")
+   local max = Config:get("index.max")
    if ( cur < (max-1) ) then
       cur = cur + 1
       Global:select_message( cur )
