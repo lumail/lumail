@@ -19,27 +19,26 @@
 
 #pragma once
 
-#include <vector>
 #include <string>
+#include <unordered_map>
 
 #include "observer.h"
 #include "singleton.h"
 
 /**
  * The CConfig class holds configuration values, these values
- * might be strings, or arrays.
+ * might be arrays, integers, or strings.
  *
- * We use this enum to identify which type a particular entry
- * has.
+ * We use this enum to identify which type a particular entry has.
  */
 typedef enum
-{ CONFIG_UNKNOWN, CONFIG_STRING, CONFIG_ARRAY } configType;
+{ CONFIG_UNKNOWN, CONFIG_STRING, CONFIG_INTEGER, CONFIG_ARRAY } configType;
 
 
 /**
  * This is the struct which holds a single configuration value.
  *
- * The value might be a string, or an array of strings.
+ * The value held might be an array of strings, an integer, or string.
  */
 struct CConfigEntry
 {
@@ -49,7 +48,7 @@ struct CConfigEntry
     std::string * name;
 
     /**
-      * The type of the configuration-option: STRING vs ARRAY
+      * The type of the configuration-option.
       */
     configType type;
 
@@ -60,6 +59,7 @@ struct CConfigEntry
     {
         std::string * str;
         std::vector < std::string > *array;
+        int *value;
     } value;
 
 };
@@ -70,54 +70,82 @@ struct CConfigEntry
  * This is a singleton class which is used to get/set configuration
  * values.
  *
+ * It also implements the Subejct interface of the Observer design-pattern,
+ * allowing other objects to listen to changes.  We broadcast change events
+ * when the value of a given key has changed - and broadcast the name of
+ * the key involved.
  */
 class CConfig : public Singleton<CConfig>, public Subject
 {
 public:
+    /**
+     * Constructor.
+     */
     CConfig();
+
+    /**
+     * Destructor - Free the memory associated with each configuration value.
+     */
     ~CConfig();
 
 public:
 
-    /*
+    /**
      * Get the value associated with a name.
      */
     CConfigEntry *get(std::string name);
 
-    /*
+    /**
      * Get all the keys we know about.
      */
     std::vector < std::string > keys();
 
-    /*
-     * Set a configuration key to contain the specified value.
+    /**
+     * Set a configuration key to contain the specified string value.
      */
     void set(std::string name, std::string value, bool notify = true);
 
-    /*
+    /**
+     * Set a configuration key to contain the specified integer value.
+     */
+    void set(std::string name, int value, bool notify = true);
+
+    /**
      * Set a configuration key to contain the specified array-value.
      */
     void set(std::string name, std::vector < std::string > entries, bool notify  = true);
 
-    /*
-     * Helper to get the string-value of a named key.
-     */
-    std::string get_string(std::string name);
-
-    /*
+    /**
      * Helper to get the array-value of a named key.
      */
     std::vector<std::string> get_array(std::string name);
 
+    /**
+     * Helper to get the integer-value of a named key.
+     */
+    int get_integer(std::string name);
+
+    /**
+     * Helper to get the string-value of a named key.
+     */
+    std::string get_string(std::string name);
+
 private:
 
-    /*
-     * Remove the value of the given key.
+    /**
+     * Remove the value of the given key, freeing the associated
+     * CConfigEntry structure.
      */
     void delete_key(std::string key);
 
     /**
-     * The actual storage of our configuration values.
+     * Notify any watchers that the value of a configuration-key
+     * has changed.  This is implemented via the Observer pattern.
      */
-    std::vector < CConfigEntry * >m_entries;
+    void notify_watchers(std::string key_name);
+
+    /**
+     * The actual map which stores our configured names & value pairs.
+     */
+    std::unordered_map <std::string, CConfigEntry * >m_entries;
 };
