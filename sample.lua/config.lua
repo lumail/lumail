@@ -2,7 +2,7 @@
 --
 -- Usage:
 --
---     ./lumail2 --no-curses --load-file ./config.lua
+--     lumail2 --no-curses --load-file ./config.lua
 --
 
 
@@ -20,8 +20,8 @@ function test_string()
       print( "Value is nil without setting it" )
    end
 
-   Config:set( "steve", "kemp" )
-   print( "Value is now set " .. Config:get( "steve" ) )
+   Config:set( "name", "Steve Kemp" )
+   print( "After setting a value retrieval works " .. Config:get( "name" ) )
 end
 
 
@@ -64,13 +64,16 @@ test_string()
 --
 function Config.key_changed( name )
    print("The value was changed of the key : " .. name )
+   print( "\tNew value: " .. Config:get(name));
 end
 print( "\n")
 
 --
--- I like a good pie.
+-- I like a good pie - note that the configuration holder stores
+-- integers only, and will truncate our float.
 --
-Config:set( "π", "3.14159265359" )
+Config:set( "π", 3.14159265359 )
+print( "π is " .. Config:get("π") .. " (truncated to integer.  Oops!)" )
 
 --
 -- I like watching the names change.
@@ -79,7 +82,7 @@ Config:set( "name", "Steve Kemp" )
 Config:set( "name", "Bob Smith" )
 
 --
--- Show all the keys we set
+-- Finally show the names of each of the keys which we set.
 --
 print( "\n")
 for k,v in ipairs( Config:keys() ) do
