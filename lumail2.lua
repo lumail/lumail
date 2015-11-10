@@ -832,11 +832,29 @@ end
 
 
 
+
+--
+-- A cache for message formatting.
+--
+-- This cache is keyed upon the name of the message, and the last
+-- modification-time, so we don't need to worry about serving stale
+-- content.
+--
+local message_fmt_cache = {}
+
 --
 -- This function formats a single message for display in index-mode,
 -- it is called by the `index_view()` function defined next.
 --
 function Message:format(msg)
+   local path   = msg:path()
+   local time   = msg:mtime()
+
+   -- Do we have this cached?  If so return it
+   if ( message_fmt_cache[time .. path] ) then
+      return(message_fmt_cache[time .. path])
+   end
+
 
    local flags   = msg:flags()
    local subject = msg:header( "Subject" )
@@ -858,6 +876,9 @@ function Message:format(msg)
       output = strip_colour( output )
       output = "$[BLUE]" .. output
    end
+
+   -- Update the cache.
+   message_fmt_cache[time .. path] = output
    return( output )
 end
 
@@ -942,6 +963,14 @@ function lua_view()
 end
 
 
+--
+-- A cache for Maildir formatting.
+--
+-- This cache is keyed upon the name of the Maildir, and the last
+-- modification-time, so we don't need to worry about serving stale
+-- content.
+--
+local maildir_fmt_cache = {}
 
 --
 -- This method returns the text which is displayed when a maildir is
@@ -951,9 +980,16 @@ end
 -- which is defined below.
 --
 function Maildir:format(obj)
+   local path   = obj:path()
+   local time   = obj:mtime()
+
+   -- Do we have this cached?  If so return it
+   if ( maildir_fmt_cache[time .. path] ) then
+      return(maildir_fmt_cache[time .. path])
+   end
+
    local total  = obj:total_messages()
    local unread = obj:unread_messages()
-   local path   = obj:path()
 
    --
    -- Path might be truncated, via "p".
@@ -976,6 +1012,10 @@ function Maildir:format(obj)
       output = strip_colour( output )
       output = "$[GREEN]" .. output
    end
+
+   -- update the cache
+   maildir_fmt_cache[time .. path] = output
+
    return output
 end
 
@@ -1596,6 +1636,7 @@ keymap['global']['?'] = 'find(-1)'
 --
 keymap['maildir']['a'] = 'Config:set( "maildir.limit", "all" )'
 keymap['index']['a']   = 'Config:set( "index.limit", "all" )'
+keymap['maildir']['e'] = 'Config:set( "maildir.limit", ".*CRM.*" )'
 keymap['maildir']['n'] = 'Config:set( "maildir.limit", "new" )'
 keymap['index']['n']   = 'Config:set( "index.limit", "new" )'
 
