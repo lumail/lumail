@@ -23,6 +23,7 @@
 
 #include "config.h"
 #include "file.h"
+#include "global_state.h"
 #include "lua.h"
 #include "maildir.h"
 #include "message.h"
@@ -143,6 +144,25 @@ int main(int argc, char *argv[])
         screen->setup();
 
 
+    /*
+     * This is annoying - we have to instantiate our singletons here.
+     *
+     * We MUST do this before we load any configuration files because
+     * otherwise our listeners will not run, which means that things
+     * like `global.history`, despite being defined in the lumail2.lua
+     * file, will not get broadcast, and the setting will be worthless.
+     *
+     */
+    {
+      CGlobalState *global = CGlobalState::instance();
+      global->update("there.is.no.match.here");
+
+      /*
+       * Launch time in seconds past the epoch.
+       */
+      CConfig *config = CConfig::instance();
+      config->set("global.launched", time(NULL) );
+    }
     /*
      * Load any named script file(s) we're supposed to load.
      */

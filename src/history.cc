@@ -28,6 +28,7 @@
  */
 CHistory::CHistory()
 {
+    m_filename = "";
 }
 
 
@@ -99,7 +100,7 @@ void CHistory::set_file(std::string filename)
     /**
      * Clear the current history.
      */
-    m_history.clear();
+      m_history.clear();
 
     /**
      * Save the filename
@@ -111,17 +112,10 @@ void CHistory::set_file(std::string filename)
      */
     std::ifstream input(m_filename);
 
-    if (input.is_open())
-    {
-        while (input.good())
-        {
-            std::string line;
-            getline(input, line);
+    for( std::string line; getline( input, line ); )
+      {
+        m_history.push_back(line);
+      }
 
-            if (! line.empty())
-                m_history.push_back(line);
-        }
-
-        input.close();
-    }
+    input.close();
 }

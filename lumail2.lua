@@ -158,7 +158,7 @@ end
 --
 function change_mode( new_mode )
    Config:set( "global.mode", new_mode )
-   Panel:append( "Mode is now " .. new_mode )
+   Panel:append( "Mode changed to:" .. new_mode )
 end
 
 
@@ -1713,7 +1713,6 @@ Config:set( "global.sender", "Steve Kemp <steve@steve.org.uk>" )
 -- Save persistant history of our input in the named file.
 --
 Config:set( "global.history", os.getenv( "HOME" ) .. "/.lumail2.history" )
-
 
 
 --
