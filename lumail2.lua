@@ -543,6 +543,10 @@ function Message:delete()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
       end
+
+      -- Sort the messages by Date-header.
+      table.sort(msgs, compare_by_date)
+
       msg = msgs[offset+1]
 
       -- delete it
@@ -585,6 +589,10 @@ function Message:forward()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
       end
+
+      -- Sort the messages by Date-header.
+      table.sort(msgs, compare_by_date)
+
       msg = msgs[offset+1]
    end
 
@@ -696,6 +704,10 @@ function Message:save()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
       end
+
+      -- Sort the messages by Date-header.
+      table.sort(msgs, compare_by_date)
+
       msg = msgs[offset+1]
    end
 
