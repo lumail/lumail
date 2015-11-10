@@ -134,11 +134,11 @@ int l_CGlobalState_current_messages(lua_State * l)
  */
 int l_CGlobalState_select_message(lua_State * l)
 {
-  std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 2);
+    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 2);
 
-  CGlobalState *global = CGlobalState::instance();
-  global->set_message(foo);
-  return 0;
+    CGlobalState *global = CGlobalState::instance();
+    global->set_message(foo);
+    return 0;
 }
 
 

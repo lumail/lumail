@@ -2,10 +2,19 @@
 --
 -- Usage:
 --
---     ./lumail --no-curses --load-file ./show_message.lua
+--     lumail2 --no-curses --load-file ./show_message.lua --msg path/to/show
 --
 
 function show_message( file )
+
+   --
+   -- Ensure the file exists
+   --
+   if ( not File:exists( file ) ) then
+      print( "File doesn't exist: " .. file )
+      return
+   end
+
    m =  Message.new( file )
 
    --
@@ -62,11 +71,24 @@ function show_message( file )
    print( "" )
    for i,part in ipairs( parts ) do
       if ( part:is_attachment() ) then
-	 print( "Attachment: " .. part:filename() )
+         print( "Attachment: " .. part:filename() )
       end
    end
 end
 
 
-show_message( "./Maildir/simple/cur/1445339679.21187_2.ssh.steve.org.uk:2,S" )
-show_message( "./Maildir/attachment/cur/1441627138.23705_2.ssh.steve.org.uk:2,S" )
+--
+-- Iterate over the command-line arguments
+--
+for i,v in ipairs(ARGS) do
+   local path = string.match(v, "--msg=(.*)" )
+   if ( path ) then
+      show_message(path)
+      os.exit(1)
+   end
+end
+
+--
+-- No exit means we had no match.
+--
+print( "Usage: luamail2 --no-curses --load-file ./show_message.lua --msg=path/to/maildir/msg" )
