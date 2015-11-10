@@ -31,11 +31,6 @@
 #include "maildir.h"
 
 
-#ifndef FILE_READ_BUFFER
-#define FILE_READ_BUFFER 16384
-#endif
-
-
 
 /**
  * Test if a file exists.
