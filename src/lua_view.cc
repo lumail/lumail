@@ -17,6 +17,7 @@
  */
 
 
+#include <cstddef>
 #include <cursesw.h>
 
 #include "config.h"
