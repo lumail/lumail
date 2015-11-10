@@ -30,6 +30,10 @@ The missing facilities include:
 * Lack of support for adding attachments to outgoing emails.
 * Lack of real documentation.
 
+**NOTE**: Lumail2 may well eat your email, corrupt your email, or
+otherwise cause data loss.  If you have no current backups of your
+Maildir hierachies you have **NO USE FOR THIS PROJECT**.
+
 
 User-Interface
 --------------
