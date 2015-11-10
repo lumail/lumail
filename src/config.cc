@@ -41,6 +41,7 @@ CConfig::CConfig()
 
     set("global.mailer", "/usr/lib/sendmail -t", false);
     set("global.version", LUMAIL_VERSION, false);
+    set("global.timeout", 750, false);
 }
 
 

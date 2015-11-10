@@ -28,6 +28,8 @@ We have a number of variables which are special, the most important ones are:
     * The user's editor.
 * `global.from`
     * The email address to send messages from.
+* `global.timeout`
+    * The timeout period (milliseconds) in our event-loop.
 * `global.history`
     * The name of the file to write input-history to.
 * `global.horizontal`

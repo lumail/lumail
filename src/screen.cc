@@ -111,9 +111,15 @@ CScreen::~CScreen()
 void CScreen::run_main_loop()
 {
     /**
-     * Timeout on input every half-second.
+     * Get our timeout period, and set it.
      */
-    timeout(750);
+    CConfig *config = CConfig::instance();
+    int tout = config->get_integer("global.timeout");
+
+    if (tout == 0)
+        tout = 750;
+
+    timeout(tout);
 
     /**
      * Now we're in our loop.
@@ -287,7 +293,17 @@ void CScreen::setup()
     crmode();
     noecho();
     curs_set(0);
-    timeout(1000);
+
+    /**
+     * Get our timeout period, and set it.
+     */
+    CConfig *config = CConfig::instance();
+    int tout = config->get_integer("global.timeout");
+
+    if (tout == 0)
+        tout = 750;
+
+    timeout(tout);
     use_default_colors();
 
 
@@ -658,7 +674,16 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
         {
             delwin(childwin);
             ::clear();
-            timeout(1000);
+            /**
+             * Get our timeout period, and set it.
+             */
+            CConfig *config = CConfig::instance();
+            int tout = config->get_integer("global.timeout");
+
+            if (tout == 0)
+                tout = 750;
+
+            timeout(tout);
             return "";
         }
 
@@ -690,7 +715,16 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
 
     delwin(childwin);
     ::clear();
-    timeout(1000);
+    /**
+     * Get our timeout period, and set it.
+     */
+    CConfig *config = CConfig::instance();
+    int tout = config->get_integer("global.timeout");
+
+    if (tout == 0)
+        tout = 750;
+
+    timeout(tout);
     return (choices.at(selected));
 }
 
