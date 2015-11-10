@@ -122,3 +122,12 @@ indent:
 .PHONY: docs
 docs:
 	doxygen
+
+
+#
+#  Install the binary, and our luarocks.d directory
+#
+install: lumail2
+	cp lumail2 /usr/bin/
+	mkdir -p /etc/lumail2/luarocks.d/  || true
+	cp luarocks.d/*.lua /etc/lumail2/luarocks.d/

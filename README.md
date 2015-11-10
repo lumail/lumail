@@ -79,6 +79,8 @@ With the dependencies installed you should ind the code builds cleanly with:
 
     make
 
+Running `make install` will install the binary and the [luarocks](https://luarocks.org/) libraries that we bundle.  If you wish to install manually copy the contents of `luarocks.d` to `/etc/lumail2/luarocks.d`.
+
 
 Using Lumail
 ------------
