@@ -1044,7 +1044,9 @@ function select()
    local cur  = Config:get(mode .. ".current")
 
    if ( mode == "maildir" ) then
-      Global:select_maildir( cur )
+      local folders = Global:maildirs()
+      local folder  = folders[cur+1]
+      Global:select_maildir( folder )
 
       -- Log the change of maildir.
       local md = Global:current_maildir()
@@ -1059,7 +1061,19 @@ function select()
    end
 
    if ( mode == "index" ) then
-      Global:select_message( cur )
+      --
+      -- Get the messages
+      --
+      local msgs = Global:current_messages()
+
+      --
+      -- Get the current offset.
+      --
+      local msg  = msgs[cur+1];
+      --
+      -- Now select
+      --
+      Global:select_message( msg )
       Config:set("global.mode", "message" )
       return
    end
