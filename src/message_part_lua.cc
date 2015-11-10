@@ -68,7 +68,7 @@ void push_cmessagepart(lua_State * l, std::shared_ptr<CMessagePart> part)
 
 std::shared_ptr<CMessagePart> l_CheckCMessagePart(lua_State * l, int n)
 {
-    void *ud = luaL_checkudata(l, 1, "luaL_CMessagePart");
+    void *ud = luaL_checkudata(l, n, "luaL_CMessagePart");
 
     if (ud)
     {
