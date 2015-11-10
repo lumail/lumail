@@ -115,6 +115,15 @@ int l_CFile_stat(lua_State * l)
     lua_pushstring(l, mode + 3);
     lua_settable(l, -3);
 
+    lua_pushstring(l, "mtime");
+    lua_pushinteger(l, sb.st_mtime);
+    lua_settable(l, -3);
+
+    lua_pushstring(l, "ctime");
+    lua_pushinteger(l, sb.st_ctime);
+    lua_settable(l, -3);
+
+
     lua_pushstring(l, "type");
 
     if (S_ISREG(sb.st_mode))
