@@ -1296,15 +1296,8 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
      * Get the horizontal scroll-position.
      */
     CConfig *config = CConfig::instance();
-    std::string horizontal = config->get_string("global.horizontal");
+    int x = config->get_integer("global.horizontal");
 
-    if (horizontal.empty())
-        horizontal = "0";
-
-    /**
-     * Now as an integer.
-     */
-    int x = atoi(horizontal.c_str());
 
     /**
      * If we're in simple-mode we can just draw the lines directly

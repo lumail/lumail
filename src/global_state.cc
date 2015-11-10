@@ -97,7 +97,7 @@ void CGlobalState::update(std::string key_name)
         /**
          * Reset the horizontal scroll to be zero.
          */
-        config->set("global.horizontal", "0", false);
+        config->set("global.horizontal", 0, false);
     }
 
     /**
