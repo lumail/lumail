@@ -224,6 +224,8 @@ void CScreen::exit_main_loop()
 
 void CScreen::execute(std::string prog)
 {
+    int result __attribute__((unused));
+
     /**
      * Save the current state of the TTY
      */
@@ -232,7 +234,7 @@ void CScreen::execute(std::string prog)
     endwin();
 
     /* Run the command */
-    system(prog.c_str());
+    result = system(prog.c_str());
 
     /**
      * Reset + redraw
