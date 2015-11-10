@@ -47,12 +47,12 @@ public:
 
 public:
 
-    /*
+    /**
      * Get all folders which match the current mode.
      */
     std::vector<std::shared_ptr<CMaildir> > get_maildirs();
 
-    /*
+    /**
      * Get all messages from the currently-selected folders.
      */
     std::vector<std::shared_ptr<CMessage> > *get_messages();
@@ -67,17 +67,11 @@ public:
      */
     void set_message(std::shared_ptr<CMessage> new_cur);
 
-    /*
-
+    /**
      * Get/Set the current-maildir.
      */
     std::shared_ptr<CMaildir > current_maildir();
     void set_maildir(std::shared_ptr<CMaildir >  folder);
-
-    /*
-     * Called when a configuration-key has changed.
-     */
-    void config_key_changed(std::string name);
 
 public:
     void update_maildirs();
