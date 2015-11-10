@@ -103,7 +103,7 @@ int l_CMessage_constructor(lua_State * l)
  */
 std::shared_ptr<CMessage> l_CheckCMessage(lua_State * l, int n)
 {
-    void *ud = luaL_checkudata(l, 1, "luaL_CMessage");
+    void *ud = luaL_checkudata(l, n, "luaL_CMessage");
 
     if (ud)
     {
