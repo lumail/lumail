@@ -1362,9 +1362,14 @@ end
 function prev_message()
    -- Get the current offset
    local cur = Config:get("index.current")
+
+   -- Get the messages, and sort.
+   local msgs = Global:current_messages()
+   table.sort(msgs, compare_by_date)
+
    if ( cur > 0 ) then
       cur = cur - 1
-      Global:select_message( cur )
+      Global:select_message( msgs[cur] )
       Config:set("index.current",cur)
    end
 end
@@ -1375,12 +1380,17 @@ end
 -- It is only called when viewing a single message.
 --
 function next_message()
-   -- Get the current offset
+   -- Get the current offset + max
    local cur = Config:get("index.current")
    local max = Config:get("index.max")
+
+   -- Get the messages, and sort.
+   local msgs = Global:current_messages()
+   table.sort(msgs, compare_by_date)
+
    if ( cur < (max-1) ) then
       cur = cur + 1
-      Global:select_message( cur )
+      Global:select_message( msgs[cur] )
       Config:set("index.current",cur)
    end
 end
