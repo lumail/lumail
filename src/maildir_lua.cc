@@ -104,7 +104,7 @@ int l_CMaildir_constructor(lua_State * l)
  */
 std::shared_ptr<CMaildir> l_CheckCMaildir(lua_State * l, int n)
 {
-    void *ud = luaL_checkudata(l, 1, "luaL_CMaildir");
+    void *ud = luaL_checkudata(l, n, "luaL_CMaildir");
 
     if (ud)
     {
