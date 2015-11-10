@@ -20,7 +20,6 @@
 --
 --    lumail2 --load-file /path/to/code.lua
 --
---
 -- For reference please see the API documentation:
 --
 --    API.md
@@ -1227,7 +1226,7 @@ end
 --  * The mail-client is a modal editor.
 --  * You're always in one mode, stored in "Config:get("global.mode")".
 --  * Each mode displays the output of the lua-function $mode_view()
---  * This function returns a table of lines.
+--  * This function returns a table of linesjj.
 --  * There are also "current-offset" and "max-size" variables for these tables.
 --  * We can use this to dynamically invoke the right mode, and iterate.
 --
@@ -1250,43 +1249,37 @@ function find( offset )
    -- We know the maximum offset is stored in the
    -- variable $mode.max
    --
-   local cur = Config:get(mode .. ".current")
+   local cur = Config:get(mode .. ".current") or 0
    local max = Config:get(mode .. ".max")
+
+   --
+   -- We'll keep track of how many times we've moved forward
+   -- to avoid looping indefinitely.
+   --
+   local count = -1
+
+   cur = cur + 1
 
    --
    -- Start searching from the current-position
    --
-   local i = cur
-   i = cur + offset
-   if ( cur > max ) then cur = 1 end
-   if ( cur < 1 )   then cur = max end
+   while( count < max ) do
 
-   --
-   -- Loop until we wrap.
-   --
-   while( cur ~= i ) do
+      cur = cur + offset
+      if ( cur > max ) then cur = 1 end
+      if ( cur < 1 )   then cur = max end
 
-      --
       -- Get the current entry
-      --
-      local line = out[i]
+      local line = out[cur]
 
-      --
       -- Does it match?
-      --
       if ( string.match( line, pattern ) ) then
-         Config:set(mode .. ".current", (i-1))
+         Config:set(mode .. ".current", (cur - 1))
          return
       end
 
-      --
-      -- Loop
-      --
-      i = i + offset
-      if ( i > max ) then i = 1 end
-      if ( i < 1 ) then i = max end
+      count = count + 1
    end
-
 end
 
 
