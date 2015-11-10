@@ -57,11 +57,15 @@ public:
      */
     std::vector<std::shared_ptr<CMessage> > *get_messages();
 
-    /*
-     * Get/Set the currently selected message.
+    /**
+     * Get the currently selected message.
      */
     std::shared_ptr<CMessage> current_message();
-    void set_message(std::shared_ptr<CMessage>);
+
+    /**
+     * Select the specified message.
+     */
+    void set_message(std::shared_ptr<CMessage> new_cur);
 
     /*
 

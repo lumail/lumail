@@ -35,7 +35,7 @@ CGlobalState::CGlobalState() : Observer(CConfig::instance())
 {
     m_maildirs = NULL;
     m_messages = NULL;
-
+    m_current_message = NULL;
     update_messages();
     update_maildirs();
 
@@ -53,7 +53,7 @@ CGlobalState::~CGlobalState()
 /**
  * Get the currently selected message.
  */
-std::shared_ptr<CMessage>CGlobalState::current_message()
+std::shared_ptr<CMessage> CGlobalState::current_message()
 {
     return (m_current_message);
 }

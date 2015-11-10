@@ -76,29 +76,10 @@ int l_CGlobalState_current_maildir(lua_State * L)
 
 
 /**
- * Update the currently-selected maildir - BY INDEX
+ * Update the currently-selected maildir, by object.
  */
 int l_CGlobalState_select_maildir(lua_State * L)
 {
-    const int offset = luaL_checkinteger(L, 2);
-
-    /**
-     * Get all maildirs.
-     */
-    CGlobalState *state = CGlobalState::instance();
-    std::vector<std::shared_ptr<CMaildir> > maildirs = state->get_maildirs();
-
-    /**
-     * Get the one at the index.
-     */
-    std::shared_ptr<CMaildir> m = maildirs.at(offset);
-
-    /**
-     * Update the global-state
-     */
-    state->set_maildir(m);
-    return 0;
-
     std::shared_ptr<CMaildir> foo = l_CheckCMaildir(L, 2);
     CGlobalState *global = CGlobalState::instance();
 
@@ -149,28 +130,15 @@ int l_CGlobalState_current_messages(lua_State * l)
 
 
 /**
- * Update the currently selected message - BY INDEX
+ * Update the currently selected message, via an object.
  */
 int l_CGlobalState_select_message(lua_State * l)
 {
-    const int offset = luaL_checkinteger(l, 2);
+  std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 2);
 
-    /**
-     * Get the messages
-     */
-    CGlobalState *global   = CGlobalState::instance();
-    CMessageList *messages = global->get_messages();
-
-    /**
-     * Get the one at the index.
-     */
-    std::shared_ptr<CMessage> m = messages->at(offset);
-
-    /**
-    * Update the global-state
-    */
-    global->set_message(m);
-    return 0;
+  CGlobalState *global = CGlobalState::instance();
+  global->set_message(foo);
+  return 0;
 }
 
 
