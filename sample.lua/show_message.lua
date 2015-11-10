@@ -91,4 +91,4 @@ end
 --
 -- No exit means we had no match.
 --
-print( "Usage: luamail2 --no-curses --load-file ./show_message.lua --msg=path/to/maildir/msg" )
+print( "Usage: lumail2 --no-curses --load-file ./show_message.lua --msg=path/to/maildir/msg" )
