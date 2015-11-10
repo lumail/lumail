@@ -37,6 +37,30 @@
 
 
 --
+-- 0. Setup a sane Lua load-path
+--
+----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
+--
+-- We have bundled at least one LuaRocks library, and so we need to
+-- make sure that is loadable.
+--
+-- We search the following two directories:
+--
+--    /etc/lumail2/luarocks.d/
+--    ~/.lumail2/luarocks.d/
+--
+package.path = package.path .. ';/etc/lumail2/luarocks.d/?.lua'
+package.path = package.path .. ';/' .. os.getenv("HOME") .. '/.lumail2/luarocks.d/?.lua'
+
+--
+-- Load the `date` library from LuaRocks
+--
+local lr_date = require 'date'
+
+
+--
 -- 1. Define some utility functions
 --
 -----------------------------------------------------------------------------
@@ -136,6 +160,45 @@ end
 function change_mode( new_mode )
    Config:set( "global.mode", new_mode )
    Panel:append( "Mode is now " .. new_mode )
+end
+
+
+--
+-- Cache of message ctime values.
+--
+ctime_cache = {}
+
+--
+-- Get the date of the message in terms of seconds past the epoch.
+--
+-- This is handled by reading the Date: header.
+--
+-- Returns zero on failure.
+--
+function Message:to_ctime(m)
+
+   local p = m:path()
+   if ( ctime_cache[p] ) then
+      return(ctime_cache[p] )
+   end
+
+   local d = m:header("Date" )
+   if ( d ) then
+      local d1 = lr_date(d)
+      local seconds = lr_date.diff(d1, lr_date.epoch()):spanseconds()
+      ctime_cache[p] = seconds
+
+      return seconds;
+   end
+   return 0
+end
+
+
+--
+-- Compare two messages, based upon their date-headers.
+--
+function compare_by_date(a,b)
+   return Message:to_ctime(a) < Message:to_ctime(b)
 end
 
 
@@ -799,6 +862,9 @@ function index_view()
    -- Get the currently available messages.
    local messages = Global:current_messages()
 
+   -- Sort the messages by Date-header.
+   table.sort(messages, compare_by_date)
+
    -- For each one add the output
    for offset,object in ipairs( messages ) do
       local str = Message:format(object)
@@ -1067,9 +1133,15 @@ function select()
       local msgs = Global:current_messages()
 
       --
+      -- Sort them.
+      --
+      table.sort(msgs, compare_by_date)
+
+      --
       -- Get the current offset.
       --
       local msg  = msgs[cur+1];
+
       --
       -- Now select
       --
