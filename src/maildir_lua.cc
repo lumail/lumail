@@ -184,6 +184,41 @@ int l_CMaildir_messages(lua_State * l)
 
 
 /**
+ * Get the mtime of the directory.
+ */
+int l_CMaildir_mtime(lua_State *l)
+{
+    /*
+     * Get the path.
+     */
+    std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
+    std::string path = foo->path();
+
+    struct stat sb;
+    time_t max = 0;
+
+    /*
+     * Test each path.  Most recent wins.
+     */
+    std::vector < std::string > dirs;
+    dirs.push_back(path);
+    dirs.push_back(path + "/cur");
+    dirs.push_back(path + "/tmp");
+    dirs.push_back(path + "/new");
+
+    for (auto it = dirs.begin(); it != dirs.end(); ++it)
+    {
+        if (stat((*it).c_str(), &sb) >= 0)
+            if (sb.st_mtime > max)
+                max = sb.st_mtime;
+    }
+
+    lua_pushinteger(l, max);
+    return 1;
+}
+
+
+/**
  * Destructor.
  */
 int l_CMaildir_destructor(lua_State * l)
@@ -217,6 +252,7 @@ void InitMaildir(lua_State * l)
         {"total_messages", l_CMaildir_total_messages},
         {"unread_messages", l_CMaildir_unread_messages},
         {"messages", l_CMaildir_messages},
+        {"mtime", l_CMaildir_mtime},
         {"__gc", l_CMaildir_destructor},
         {NULL, NULL}
     };

@@ -233,6 +233,28 @@ int l_CMessage_mark_unread(lua_State *l)
     return 0;
 }
 
+
+/**
+ * Get the mtime of the message.
+ */
+int l_CMessage_mtime(lua_State *l)
+{
+    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
+    std::string path = foo->path();
+
+    struct stat sb;
+
+    if (stat(path.c_str(), &sb) < 0)
+    {
+        lua_pushnumber(l, 0);
+        return 1;
+    }
+
+    lua_pushinteger(l, sb.st_mtime);
+    return 1;
+}
+
+
 /**
  * Return an array of CMessagePart objects to Lua.  These can be inspected
  * as the user wishes.
@@ -376,6 +398,7 @@ void InitMessage(lua_State * l)
         {"headers", l_CMessage_headers},
         {"mark_read", l_CMessage_mark_read},
         {"mark_unread", l_CMessage_mark_unread},
+        {"mtime", l_CMessage_mtime},
         {"new", l_CMessage_constructor},
         {"parts", l_CMessage_parts},
         {"path", l_CMessage_path},

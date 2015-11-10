@@ -128,15 +128,15 @@ The following API methods are available to help you with this:
      * Retrieve the list of available maildirs.
 * `Global:current_maildir()`
      * Retrieve the currently-selected maildir.
-* `Global:select_maildir(index)`
-     * Select the specified Maildir as current, by index.
+* `Global:select_maildir(mdir)`
+     * Set the specified Maildir as current.
 * `Global:current_message()`
      * Retrieve the currently-selected message.
 * `Global:current_messages()`
      * Retrieve the currently-available messages.
      * This pays attention to the `index.limit` variable.
-* `Global:select_message(index)`
-     * Select the specified Message as current, by index.
+* `Global:select_message(msg)`
+     * Set the specified Message as current.
 
 
 
@@ -155,6 +155,8 @@ The Maildir object has the following methods:
     * Returns the path to the Maildir - what it was constructed with.
 * `messages()`
 	* Returns an array of Message-objects, one for each message in the maildir.
+* `mtime()`
+    * Return the modified time of the given maildir, as seconds past the epoch.
 * `total_messages()`
 	* Returns the count of messages in the maildir.
 * `unread_messages()`
@@ -196,6 +198,8 @@ Message methods:
    * Mark the message as having been read.
 * `mark_unread()`
    * Mark the message as not having been read.
+* `mtime()`
+   * Return the modified time of the message, as seconds past the epoch.
 * `parts()`
    * Get the MIME-parts of the message, as a table.
 * `path()`
