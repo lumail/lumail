@@ -30,7 +30,7 @@
 #include "singleton.h"
 
 
-/*
+/**
  * This is a class to hold "global state", which primarily means that
  * it stores the lists of current maildirs, messages, as well as the
  * single selected message.
@@ -42,18 +42,25 @@
 class CGlobalState : public Singleton<CGlobalState>, public Observer
 {
 public:
+  /**
+   * Constructor.
+   */
     CGlobalState();
+
+    /**
+     * Destructor.
+     */
     ~CGlobalState();
 
 public:
 
     /**
-     * Get all folders which match the current mode.
+     * Get the available maildirs.
      */
-    std::vector<std::shared_ptr<CMaildir> > get_maildirs();
+    std::vector<std::shared_ptr<CMaildir>> get_maildirs();
 
     /**
-     * Get all messages from the currently-selected folders.
+     * Get the messages in the currently-selected folder.
      */
     std::vector<std::shared_ptr<CMessage> > *get_messages();
 
@@ -68,16 +75,29 @@ public:
     void set_message(std::shared_ptr<CMessage> new_cur);
 
     /**
-     * Get/Set the current-maildir.
+     * Get the currently selected maildir.
      */
     std::shared_ptr<CMaildir > current_maildir();
+
+    /**
+     * Update the currently selected maildir.
+     */
     void set_maildir(std::shared_ptr<CMaildir >  folder);
 
 public:
+
+    /**
+     * Update the list of cached maildirs.
+     */
     void update_maildirs();
+
+    /**
+     * Update our cache of messages, that cached list is returned
+     * via `get_messages`.
+     */
     void update_messages();
 
-    /*
+    /**
      * This method is called when a configuration key changes,
      * via our observer implementation.
      */

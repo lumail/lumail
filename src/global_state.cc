@@ -28,7 +28,7 @@
 #include "message.h"
 
 
-/**
+/*
  * Constructor
  */
 CGlobalState::CGlobalState() : Observer(CConfig::instance())
@@ -42,7 +42,7 @@ CGlobalState::CGlobalState() : Observer(CConfig::instance())
 }
 
 
-/**
+/*
  * Destructor
  */
 CGlobalState::~CGlobalState()
@@ -50,7 +50,7 @@ CGlobalState::~CGlobalState()
 }
 
 
-/**
+/*
  * Get the currently selected message.
  */
 std::shared_ptr<CMessage> CGlobalState::current_message()
@@ -58,7 +58,8 @@ std::shared_ptr<CMessage> CGlobalState::current_message()
     return (m_current_message);
 }
 
-/**
+
+/*
  * Change the currently selected message.
  */
 void CGlobalState::set_message(std::shared_ptr<CMessage> update)
@@ -67,7 +68,7 @@ void CGlobalState::set_message(std::shared_ptr<CMessage> update)
 }
 
 
-/**
+/*
  * This method is called when a configuration key changes,
  * via our observer implementation.
  */
@@ -82,25 +83,25 @@ void CGlobalState::update(std::string key_name)
         CConfig *config = CConfig::instance();
         std::string new_mode = config->get_string("global.mode");
 
-        /**
+        /*
          * Update our cached list of messages in this maildir.
          */
         if (! new_mode.empty() && (new_mode == "index"))
             update_messages();
 
-        /**
+        /*
          * Update the list of maildirs.
          */
         if (!new_mode.empty() && (new_mode == "maildir"))
             update_maildirs();
 
-        /**
+        /*
          * Reset the horizontal scroll to be zero.
          */
         config->set("global.horizontal", 0, false);
     }
 
-    /**
+    /*
      * The name of the history file.
      */
     if (key_name == "global.history")
@@ -115,7 +116,7 @@ void CGlobalState::update(std::string key_name)
         history->set_file(path);
     }
 
-    /**
+    /*
      * Otherwise if the maildir-prefix or limit has changed update things
      */
     if ((key_name == "maildir.limit") || (key_name == "maildir.prefix"))
@@ -123,7 +124,7 @@ void CGlobalState::update(std::string key_name)
         update_maildirs();
     }
 
-    /**
+    /*
      * If the index-limit has changed update that too.
      */
     if (key_name == "index.limit")
@@ -133,46 +134,30 @@ void CGlobalState::update(std::string key_name)
 }
 
 
-/**
- * Get all messages from the currently selected folder.
+/*
+ * Get the messages from the currently selected folder.
  */
 CMessageList * CGlobalState::get_messages()
 {
     return (m_messages);
 }
 
-/**
- * Get the maildirs which are visible.
+
+/*
+ * Get the available maildirs.
  */
-std::vector<std::shared_ptr<CMaildir> > CGlobalState::get_maildirs()
+std::vector<std::shared_ptr<CMaildir>> CGlobalState::get_maildirs()
 {
-    CMaildirList display;
-
-    /**
-     * If we have no folders then we must return the empty set.
-     *
-     * Most likely cause?  The maildir_prefix isn't set, or is set incorrectly.
-     */
-    if (m_maildirs == NULL)
-        return (display);
-
-    /**
-     * Filter the folders to those we can display
-     */
-    for (std::shared_ptr<CMaildir> maildir : (*m_maildirs))
-    {
-        display.push_back(maildir);
-    }
-
-    return (display);
+  return( *m_maildirs );
 }
 
-/**
+
+/*
  * Update our cached maildir-list.
  */
 void CGlobalState::update_maildirs()
 {
-    /**
+    /*
      * If we have items already then free each of them.
      */
     if (m_maildirs != NULL)
@@ -183,7 +168,7 @@ void CGlobalState::update_maildirs()
 
     m_maildirs = new CMaildirList;
 
-    /**
+    /*
      * Get the maildir prefix.
      */
     CConfig *config = CConfig::instance();
@@ -193,7 +178,7 @@ void CGlobalState::update_maildirs()
         return;
 
 
-    /**
+    /*
      * Get the maildir.limit.
      */
     std::string limit = config->get_string("maildir.limit");
@@ -202,7 +187,7 @@ void CGlobalState::update_maildirs()
         limit = "all";
 
 
-    /**
+    /*
      * We'll store each maildir here.
      */
     std::vector<std::string> folders;
@@ -226,26 +211,30 @@ void CGlobalState::update_maildirs()
         }
     }
 
-    /**
+    /*
      * Setup the size.
      */
     config->set("maildir.max", std::to_string(m_maildirs->size()));
 }
 
+
+/*
+ * Update the cached list of messages.
+ */
 void CGlobalState::update_messages()
 {
-    /**
+    /*
      * If we have items already then free each of them.
      */
     if (m_messages != NULL)
         delete(m_messages);
 
-    /**
+    /*
      * create a new store.
      */
     m_messages = new CMessageList;
 
-    /**
+    /*
      * Get the selected maildirs.  If any.
      */
     std::shared_ptr<CMaildir> current = current_maildir();
@@ -260,7 +249,7 @@ void CGlobalState::update_messages()
 
         CMessageList contents = current->getMessages();
 
-        /**
+        /*
          * Append to the list of messages combined.
          */
         for (std::shared_ptr<CMessage> content : contents)
@@ -279,10 +268,18 @@ void CGlobalState::update_messages()
 }
 
 
+/*
+ * Return the currently-selected maildir.
+ */
 std::shared_ptr<CMaildir>CGlobalState::current_maildir()
 {
     return (m_current_maildir);
 }
+
+
+/*
+ * Update the currently selected maildir.
+ */
 void CGlobalState::set_maildir(std::shared_ptr<CMaildir> updated)
 {
     m_current_maildir = updated;
