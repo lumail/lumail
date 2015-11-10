@@ -45,6 +45,7 @@ int l_CPanel_append(lua_State * l)
  */
 int l_CPanel_clear(lua_State * l)
 {
+    (void)l;
     CScreen *screen = CScreen::instance();
     screen->status_panel_clear();
     return 0;
@@ -78,6 +79,7 @@ int l_CPanel_height(lua_State * l)
  */
 int l_CPanel_hide(lua_State * l)
 {
+    (void)l;
     CScreen *screen = CScreen::instance();
     screen->status_panel_hide();
     return 0;
@@ -89,6 +91,7 @@ int l_CPanel_hide(lua_State * l)
  */
 int l_CPanel_show(lua_State * l)
 {
+    (void)l;
     CScreen *screen = CScreen::instance();
     screen->status_panel_show();
     return 0;
@@ -149,6 +152,7 @@ int l_CPanel_title(lua_State * l)
  */
 int l_CPanel_toggle(lua_State * l)
 {
+    (void)l;
     CScreen *screen = CScreen::instance();
     screen->status_panel_toggle();
     return 0;

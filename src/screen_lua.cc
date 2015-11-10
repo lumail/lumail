@@ -39,6 +39,8 @@ extern "C"
  */
 int l_CScreen_clear(lua_State * l)
 {
+    (void)l;
+
     CScreen *foo = CScreen::instance();
     foo->clear();
     return 0;
@@ -47,6 +49,8 @@ int l_CScreen_clear(lua_State * l)
 
 int l_CScreen_execute(lua_State *l)
 {
+    (void)l;
+
     const char *prog = luaL_checkstring(l, 2);
 
     CScreen *foo = CScreen::instance();
@@ -62,6 +66,8 @@ int l_CScreen_execute(lua_State *l)
  */
 int l_CScreen_exit(lua_State * l)
 {
+    (void)l;
+
     CScreen *foo = CScreen::instance();
     foo->exit_main_loop();
     return 0;
@@ -115,6 +121,7 @@ int l_CScreen_prompt_chars(lua_State * l)
  */
 int l_CScreen_height(lua_State * l)
 {
+    (void)l;
     CScreen *foo = CScreen::instance();
     lua_pushinteger(l, foo->height());
     return 1;
@@ -136,6 +143,7 @@ int l_CScreen_sleep(lua_State * l)
  */
 int l_CScreen_width(lua_State * l)
 {
+    (void)l;
     CScreen *foo = CScreen::instance();
     lua_pushinteger(l, foo->width());
     return 1;
