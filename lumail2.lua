@@ -57,8 +57,8 @@ package.path = package.path .. ';/' .. os.getenv("HOME") .. '/.lumail2/luarocks.
 --
 -- Load the `date` library from LuaRocks
 --
-local lr_date = require 'date'
-
+local lr_date = nil
+pcall("lr_date = require 'date'" )
 
 --
 -- 1. Define some utility functions
@@ -182,6 +182,20 @@ function Message:to_ctime(m)
       return(ctime_cache[p] )
    end
 
+   --
+   -- If luarocks library is not present then stat() the message
+   -- and handle the sorting that way.
+   --
+   if ( not lr_date ) then
+      local stat = File:stat( m:path() )
+      ctime_cache[p] = stat['mtime']
+      return(ctime_cache[p])
+   end
+
+   --
+   -- Otherwise the get the Date-header and use that to
+   -- get the message-age.
+   --
    local d = m:header("Date" )
    if ( d ) then
       local d1 = lr_date(d)
