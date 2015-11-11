@@ -154,15 +154,16 @@ int main(int argc, char *argv[])
      *
      */
     {
-      CGlobalState *global = CGlobalState::instance();
-      global->update("there.is.no.match.here");
+        CGlobalState *global = CGlobalState::instance();
+        global->update("there.is.no.match.here");
 
-      /*
-       * Launch time in seconds past the epoch.
-       */
-      CConfig *config = CConfig::instance();
-      config->set("global.launched", time(NULL) );
+        /*
+         * Launch time in seconds past the epoch.
+         */
+        CConfig *config = CConfig::instance();
+        config->set("global.launched", time(NULL));
     }
+
     /*
      * Load any named script file(s) we're supposed to load.
      */
