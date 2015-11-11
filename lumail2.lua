@@ -20,11 +20,11 @@
 --
 --    lumail2 --load-file /path/to/code.lua
 --
--- For reference please see the API documentation:
+-- To load files dynamically, at runtime, you may use the standard
+-- Lua facilities to do so, such as `require`.
 --
---    API.md
---
--- or online:
+-- For reference to the lumail2 objects please see the API documentation
+-- included within the repository as `API.md`, or browsable online at:
 --
 --    http://lumail.org/api/
 --
@@ -45,7 +45,7 @@
 -- We have bundled at least one LuaRocks library, and so we need to
 -- make sure that is loadable.
 --
--- We search the following two directories:
+-- We'll configure the load-path to search the following two directories:
 --
 --    /etc/lumail2/luarocks.d/
 --    ~/.lumail2/luarocks.d/
@@ -58,6 +58,8 @@ package.path = package.path .. ';/' .. os.getenv("HOME") .. '/.lumail2/luarocks.
 --
 local lr_date = nil
 pcall("lr_date = require 'date'" )
+
+
 
 --
 -- 1. Define some utility functions
