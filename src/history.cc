@@ -100,7 +100,7 @@ void CHistory::set_file(std::string filename)
     /**
      * Clear the current history.
      */
-      m_history.clear();
+    m_history.clear();
 
     /**
      * Save the filename
@@ -112,10 +112,10 @@ void CHistory::set_file(std::string filename)
      */
     std::ifstream input(m_filename);
 
-    for( std::string line; getline( input, line ); )
-      {
+    for (std::string line; getline(input, line);)
+    {
         m_history.push_back(line);
-      }
+    }
 
     input.close();
 }
