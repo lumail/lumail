@@ -24,7 +24,7 @@
 
 
 
-/**
+/*
  * Constructor.
  */
 CMessagePart::CMessagePart(std::string type, std::string filename,
@@ -43,7 +43,7 @@ CMessagePart::CMessagePart(std::string type, std::string filename,
     }
 }
 
-/**
+/*
  * Destructor.
  */
 CMessagePart::~CMessagePart()
@@ -57,7 +57,7 @@ CMessagePart::~CMessagePart()
 
 }
 
-/**
+/*
  * Get the content-type of the MIME-part.
  */
 std::string CMessagePart::type()
@@ -65,7 +65,7 @@ std::string CMessagePart::type()
     return (m_type);
 }
 
-/**
+/*
  * Get the filename - only makes sense for "is_attachment() == true".
  */
 std::string CMessagePart::filename()
@@ -74,7 +74,7 @@ std::string CMessagePart::filename()
 }
 
 
-/**
+/*
  * Is this an attachment?
  */
 bool CMessagePart::is_attachment()
@@ -83,7 +83,7 @@ bool CMessagePart::is_attachment()
 }
 
 
-/**
+/*
  * Get the content.
  */
 void * CMessagePart::content()
@@ -91,7 +91,7 @@ void * CMessagePart::content()
     return (m_content);
 }
 
-/**
+/*
  * Get the length of the content.
  */
 size_t CMessagePart::content_size()

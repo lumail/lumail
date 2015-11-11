@@ -33,43 +33,48 @@
  */
 class CMessage;
 
-/*
+/**
  * Type of a list of messages.
  */
 typedef std::vector <std::shared_ptr <CMessage > > CMessageList;
 
 
-/*
+/**
  * Maildir object.
  *
  * This is the C++ implementation of the maildir class.
- *
  */
 class CMaildir
 {
 public:
-
+    /**
+     * Constructor.
+     */
     CMaildir(const std::string name);
+
+    /**
+     * Destructor.
+     */
     ~CMaildir();
 
-    /*
+    /**
      * Return the path we represent.
      */
     std::string path();
 
-    /*
+    /**
      * The number of new messages for this maildir.
      */
     int unread_messages();
 
 
-    /*
+    /**
      * The total number of messages for this maildir.
      */
     int total_messages();
 
 
-    /*
+    /**
      * Get all messages in this maildir.
      */
     CMessageList getMessages();
@@ -98,15 +103,13 @@ private:
      */
     int m_total;
 
-
-    /*
+    /**
      * Return the last modified time for this Maildir.
      * Used to determine if we need to update our cache.
      */
     time_t last_modified();
 
-
-    /*
+    /**
      * Update the cached total/unread message counts.
      */
     void update_cache();
@@ -114,7 +117,7 @@ private:
 };
 
 
-/*
+/**
  * Helper-type for working with message-lists.
  */
 typedef std::vector<std::shared_ptr<CMaildir> > CMaildirList;

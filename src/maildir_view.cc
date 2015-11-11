@@ -27,14 +27,14 @@
 #include "maildir_view.h"
 
 
-/**
+/*
  * Constructor.
  */
 CMaildirView::CMaildirView()
 {
 }
 
-/**
+/*
  * Destructor.
  */
 CMaildirView::~CMaildirView()
@@ -43,7 +43,7 @@ CMaildirView::~CMaildirView()
 
 
 
-/**
+/*
  * Get the output of calling the Lua function `maildir_view`, which is the text we'll display.
  *
  * If this function doesn't exist we'll draw nothing.
@@ -53,7 +53,7 @@ std::vector<std::string> CMaildirView::get_text()
 {
     std::vector<std::string> result;
 
-    /**
+    /*
      * Get the lua state.
      */
     CLua *lua = CLua::instance();
@@ -100,7 +100,7 @@ std::vector<std::string> CMaildirView::get_text()
 }
 
 
-/**
+/*
  * This is the virtual function which is called to refresh the display
  * when the global.mode == "maildir".
  */
@@ -156,7 +156,7 @@ void CMaildirView::draw()
 
 }
 
-/**
+/*
  * Called when things are idle.
  */
 void CMaildirView::on_idle()

@@ -27,14 +27,14 @@
 #include "screen.h"
 
 
-/**
+/*
  * Constructor.
  */
 CIndexView::CIndexView()
 {
 }
 
-/**
+/*
  * Destructor.
  */
 CIndexView::~CIndexView()
@@ -43,7 +43,7 @@ CIndexView::~CIndexView()
 
 
 
-/**
+/*
  * Get the output of calling `index_view`, which is the text we'll display.
  */
 std::vector<std::string> CIndexView::get_text()
@@ -94,7 +94,7 @@ std::vector<std::string> CIndexView::get_text()
 
 }
 
-/**
+/*
  * This is the virtual function which is called to refresh the display
  * when the global.mode == "index".
  */
@@ -144,7 +144,7 @@ void CIndexView::draw()
 }
 
 
-/**
+/*
  * Called when things are idle.
  */
 void CIndexView::on_idle()

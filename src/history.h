@@ -32,34 +32,34 @@ class CHistory : public Singleton<CHistory>
 
 public:
 
-    /*
-     * Return the size of the history.
-     */
+    /**
+       * Return the size of the history.
+       */
     int size();
 
-    /*
+    /**
      * Get the Nth piece of history.
      */
     std::string at(size_t offset);
 
-    /*
+    /**
      * Add a new string to the history.
      */
     void add(std::string entry);
 
-    /*
+    /**
      * Clear the history.
      */
     void clear();
 
-    /*
+    /**
      * Set the file to write history from.
      */
     void set_file(std::string path);
 
 public:
 
-    /*
+    /**
      * Constructor.
      */
     CHistory();

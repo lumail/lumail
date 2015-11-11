@@ -32,22 +32,29 @@ class CMaildirView: public CViewMode
 {
 
 public:
+    /**
+     * Constructor.
+     */
     CMaildirView();
+
+    /**
+     * Destructor.
+     */
     ~CMaildirView();
 
-    /*
+    /**
      * Drawing routine - called when the current.mode=="maildir".
      */
     void draw();
 
-    /*
+    /**
      * Called when things are idle.
      */
     void on_idle();
 
 private:
 
-    /*
+    /**
      * Get the output of calling `maildir_view`, which is what we'll display.
      */
     std::vector<std::string> get_text();

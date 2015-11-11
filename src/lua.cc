@@ -25,7 +25,7 @@
 #include "lua.h"
 
 
-/**
+/*
  * External functions implemented in *_lua.cc
  */
 extern void InitConfig(lua_State * l);
@@ -41,7 +41,7 @@ extern void InitScreen(lua_State * l);
 
 
 
-/**
+/*
  * Populate "args"
  */
 void CLua::set_args(char *argv[], int argc)
@@ -60,25 +60,25 @@ void CLua::set_args(char *argv[], int argc)
 
 
 
-/**
+/*
  * Constructor - This is private as this class is a singleton.
  */
 CLua::CLua() : Observer(CConfig::instance())
 {
-    /**
+    /*
      * Create a new Lua object.
      */
     m_lua = luaL_newstate();
 
 
-    /**
+    /*
      * Register the libraries.
      */
     luaopen_base(m_lua);
     luaL_openlibs(m_lua);
 
 
-    /**
+    /*
      * Load our bindings.
      */
     InitConfig(m_lua);
@@ -94,7 +94,7 @@ CLua::CLua() : Observer(CConfig::instance())
 }
 
 
-/**
+/*
  * Destructor.
  */
 CLua::~CLua()
@@ -104,7 +104,7 @@ CLua::~CLua()
 }
 
 
-/**
+/*
  * Load the specified Lua file, and evaluate it.
  *
  * Return true on success.  False on error.
@@ -123,7 +123,7 @@ bool CLua::load_file(std::string filename)
 }
 
 
-/**
+/*
  * Evaluate the given string.
  *
  * Return true on success.  False on error.
@@ -137,14 +137,14 @@ bool CLua::execute(std::string lua)
 }
 
 
-/**
+/*
  * Lookup a value in a nested-table - used for keyboard lookups.
  */
 char * CLua::get_nested_table(std::string table, const char *key, const char *subkey)
 {
     char *result = NULL;
 
-    /**
+    /*
      * Ensure the table exists - if it doesn't return NULL.
      */
     lua_getglobal(m_lua, table.c_str());
@@ -154,7 +154,7 @@ char * CLua::get_nested_table(std::string table, const char *key, const char *su
         return NULL;
     }
 
-    /**
+    /*
      * Get the sub-table.
      */
     lua_pushstring(m_lua, key);
@@ -163,7 +163,7 @@ char * CLua::get_nested_table(std::string table, const char *key, const char *su
     if (!lua_istable(m_lua, -1))
         return result;
 
-    /**
+    /*
      * Get the value.
      */
     lua_pushstring(m_lua, subkey);
@@ -172,7 +172,7 @@ char * CLua::get_nested_table(std::string table, const char *key, const char *su
     if (lua_isnil(m_lua, -1))
         return result;
 
-    /**
+    /*
      * If it worked, and is a string .. return it.
      */
     if (lua_isstring(m_lua, -1))
@@ -182,7 +182,7 @@ char * CLua::get_nested_table(std::string table, const char *key, const char *su
 }
 
 
-/**
+/*
  * Call `on_complete` to complete a string.
  */
 std::vector<std::string> CLua::get_completions(std::string token)
@@ -209,13 +209,13 @@ std::vector<std::string> CLua::get_completions(std::string token)
 }
 
 
-/**
+/*
  * This method is called when a configuration key changes,
  * via our observer implementation.
  */
 void CLua::update(std::string key_name)
 {
-    /**
+    /*
      * If there is a Config:key_changed() function, then call it.
      */
     lua_getglobal(m_lua, "Config");
@@ -224,7 +224,7 @@ void CLua::update(std::string key_name)
     if (lua_isnil(m_lua, -1))
         return;
 
-    /**
+    /*
      * Call the function.
      */
     lua_pushstring(m_lua, key_name.c_str());

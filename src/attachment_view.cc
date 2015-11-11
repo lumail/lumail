@@ -29,14 +29,14 @@
 #include "attachment_view.h"
 #include "screen.h"
 
-/**
+/*
  * Constructor.
  */
 CAttachmentView::CAttachmentView()
 {
 }
 
-/**
+/*
  * Destructor.
  */
 CAttachmentView::~CAttachmentView()
@@ -45,7 +45,7 @@ CAttachmentView::~CAttachmentView()
 
 
 
-/**
+/*
  * Get the output of calling `attachment_view`, which is the text we'll display.
  */
 std::vector<std::string> CAttachmentView::get_text()
@@ -99,7 +99,7 @@ std::vector<std::string> CAttachmentView::get_text()
 }
 
 
-/**
+/*
  * This is the virtual function which is called to refresh the display
  * when the global.mode == "attachment".
  */
@@ -151,7 +151,7 @@ void CAttachmentView::draw()
     screen->draw_text_lines(lines, cur, max);
 }
 
-/**
+/*
  * Called when things are idle.  NOP.
  */
 void CAttachmentView::on_idle()

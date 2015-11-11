@@ -29,14 +29,14 @@
 #include "message_view.h"
 #include "screen.h"
 
-/**
+/*
  * Constructor
  */
 CMessageView::CMessageView()
 {
 }
 
-/**
+/*
  * Destructor.
  */
 CMessageView::~CMessageView()
@@ -45,7 +45,7 @@ CMessageView::~CMessageView()
 
 
 
-/**
+/*
  * Get the output of calling `message_view`, which is the text we'll display.
  *
  * The `message_view` Lua function should return a table of arrays to dipslay
@@ -100,7 +100,7 @@ std::vector<std::string> CMessageView::get_text()
 }
 
 
-/**
+/*
  * This is the virtual function which is called to refresh the display
  * when the global.mode == "message".
  */
@@ -152,7 +152,7 @@ void CMessageView::draw()
     screen->draw_text_lines(lines, cur, max, true);
 }
 
-/**
+/*
  * Called when things are idle.
  */
 void CMessageView::on_idle()

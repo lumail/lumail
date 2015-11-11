@@ -24,7 +24,7 @@
 #include "screen.h"
 
 
-/*
+/**
  * This is a index-view of the screen - it shows lists of *messages*.
  *
  * The list is created, and mainted, by lumail2, but the drawing is
@@ -34,22 +34,29 @@ class CIndexView: public CViewMode
 {
 
 public:
+    /**
+     * Constructor.
+     */
     CIndexView();
+
+    /**
+     * Destructor.
+     */
     ~CIndexView();
 
-    /*
+    /**
      * Drawing routine - called when the current.mode=="index".
      */
     void draw();
 
-    /*
+    /**
      * Called when things are idle.
      */
     void on_idle();
 
 private:
 
-    /*
+    /**
      * Get the output of calling `index_view`, which is the text we'll display.
      */
     std::vector<std::string> get_text();

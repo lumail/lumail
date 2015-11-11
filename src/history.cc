@@ -23,7 +23,7 @@
 
 
 
-/**
+/*
  * Constructor - This is private as this class is a singleton.
  */
 CHistory::CHistory()
@@ -32,7 +32,7 @@ CHistory::CHistory()
 }
 
 
-/**
+/*
  * Return the size of the history.
  */
 int CHistory::size()
@@ -41,12 +41,12 @@ int CHistory::size()
 }
 
 
-/**
+/*
  * Get the Nth piece of history.
  */
 std::string CHistory::at(size_t offset)
 {
-    /**
+    /*
      * Ensure the history offset is correctly bound.
      */
     assert(offset < m_history.size());
@@ -56,12 +56,12 @@ std::string CHistory::at(size_t offset)
 
 
 
-/**
+/*
  * Add a new string to the history.
  */
 void CHistory::add(std::string entry)
 {
-    /**
+    /*
      * Don't add empty entries.
      */
     if (entry.empty())
@@ -70,7 +70,7 @@ void CHistory::add(std::string entry)
     m_history.push_back(entry);
     assert(m_history.size() > 0);
 
-    /**
+    /*
      * If we've got a filename append the history.
      */
     if (! m_filename.empty())
@@ -83,7 +83,7 @@ void CHistory::add(std::string entry)
 }
 
 
-/**
+/*
  * Clear the history.
  */
 void CHistory::clear()
@@ -92,22 +92,22 @@ void CHistory::clear()
     assert(m_history.size() == 0);
 }
 
-/**
+/*
  * Set the file.
  */
 void CHistory::set_file(std::string filename)
 {
-    /**
+    /*
      * Clear the current history.
      */
     m_history.clear();
 
-    /**
+    /*
      * Save the filename
      */
     m_filename = filename;
 
-    /**
+    /*
      * Load the prior history
      */
     std::ifstream input(m_filename);

@@ -37,7 +37,7 @@
 #include "util.h"
 
 
-/**
+/*
  * Constructor.
  */
 CMessage::CMessage(const std::string name)
@@ -46,7 +46,7 @@ CMessage::CMessage(const std::string name)
 }
 
 
-/**
+/*
  * Return the path to this message.
  */
 std::string CMessage::path()
@@ -55,7 +55,7 @@ std::string CMessage::path()
 }
 
 
-/**
+/*
  * Update the path to the message.
  */
 void CMessage::path(std::string new_path)
@@ -64,26 +64,26 @@ void CMessage::path(std::string new_path)
 }
 
 
-/**
+/*
  * Return the value of a given header.
  */
 std::string CMessage::header(std::string name)
 {
     std::unordered_map < std::string, std::string > h = headers();
 
-    /**
+    /*
      * Lower-case the header we were given.
      */
     std::transform(name.begin(), name.end(), name.begin(), tolower);
 
-    /**
+    /*
      * Lookup the value.
      */
     return (h[name]);
 }
 
 
-/**
+/*
  * Return all header-names, and their values.
  */
 std::unordered_map < std::string, std::string > CMessage::headers()
@@ -116,7 +116,7 @@ std::unordered_map < std::string, std::string > CMessage::headers()
     const char *
     value;
 
-    /**
+    /*
      * Prepare to iterate.
      */
     GMimeHeaderList *
@@ -129,20 +129,20 @@ std::unordered_map < std::string, std::string > CMessage::headers()
     {
         while (g_mime_header_iter_is_valid(iter))
         {
-            /**
+            /*
              * Get the name + value.
              */
             name = g_mime_header_iter_get_name(iter);
             value = g_mime_header_iter_get_value(iter);
 
-            /**
+            /*
              * Downcase the name.
              */
             std::string nm(name);
             std::transform(nm.begin(), nm.end(), nm.begin(), tolower);
 
 
-            /**
+            /*
              * Decode the value.
              */
             char *
@@ -164,7 +164,7 @@ std::unordered_map < std::string, std::string > CMessage::headers()
 }
 
 
-/**
+/*
  * Destructor: If we've parsed any MIME-parts then free them here.
  */
 CMessage::~CMessage()
@@ -174,7 +174,7 @@ CMessage::~CMessage()
 }
 
 
-/**
+/*
  * Retrieve the current flags for this message.
  */
 std::string CMessage::get_flags()
@@ -191,14 +191,14 @@ std::string CMessage::get_flags()
     if (offset != std::string::npos)
         flags = pth.substr(offset + 3);
 
-    /**
+    /*
      * Sleazy Hack.
      */
     if (pth.find("/new/") != std::string::npos)
         flags += "N";
 
 
-    /**
+    /*
      * Sort the flags, and remove duplicates
      */
     std::sort(flags.begin(), flags.end());
@@ -208,19 +208,19 @@ std::string CMessage::get_flags()
 }
 
 
-/**
+/*
  * Set the flags for this message.
  */
 void CMessage::set_flags(std::string new_flags)
 {
-    /**
+    /*
      * Sort the flags.
      */
     std::string flags = new_flags;
     std::sort(flags.begin(), flags.end());
     flags.erase(std::unique(flags.begin(), flags.end()), flags.end());
 
-    /**
+    /*
      * Get the current ending position.
      */
     std::string cur_path = path();
@@ -249,7 +249,7 @@ void CMessage::set_flags(std::string new_flags)
 }
 
 
-/**
+/*
  * Add a flag to a message.
  *
  * Return true if the flag was added, false if already present.
@@ -260,7 +260,7 @@ bool CMessage::add_flag(char c)
 
     size_t offset = std::string::npos;
 
-    /**
+    /*
      * If the flag was missing, add it.
      */
     if ((offset = flags.find(c)) == std::string::npos)
@@ -274,12 +274,12 @@ bool CMessage::add_flag(char c)
 }
 
 
-/**
+/*
  * Does this message possess the given flag?
  */
 bool CMessage::has_flag(char c)
 {
-    /**
+    /*
      * Flags are upper-case.
      */
     c = toupper(c);
@@ -290,7 +290,7 @@ bool CMessage::has_flag(char c)
         return false;
 }
 
-/**
+/*
  * Remove a flag from a message.
  *
  * Return true if the flag was removed, false if it wasn't present.
@@ -301,13 +301,13 @@ bool CMessage::remove_flag(char c)
 
     std::string current = get_flags();
 
-    /**
+    /*
      * If the flag is not present, return.
      */
     if (current.find(c) == std::string::npos)
         return false;
 
-    /**
+    /*
      * Remove the flag.
      */
     std::string::size_type k = 0;
@@ -320,12 +320,12 @@ bool CMessage::remove_flag(char c)
     return true;
 }
 
-/**
+/*
  * Is this message new?
  */
 bool CMessage::is_new()
 {
-    /**
+    /*
      * A message is new if:
      *
      * It has the flag "N".
@@ -338,7 +338,7 @@ bool CMessage::is_new()
 }
 
 
-/**
+/*
  * Mark a message as unread.
  */
 void CMessage::mark_unread()
@@ -348,7 +348,7 @@ void CMessage::mark_unread()
 
 }
 
-/**
+/*
  * Mark a message as read.
  */
 void CMessage::mark_read()
@@ -361,12 +361,12 @@ void CMessage::mark_read()
 
     size_t offset = std::string::npos;
 
-    /**
+    /*
      * If we find /new/ in the path then rename to be /cur/
      */
     if ((offset = c_path.find("/new/")) != std::string::npos)
     {
-        /**
+        /*
          * Path component before /new/ + after it.
          */
         std::string before = c_path.substr(0, offset);
@@ -382,7 +382,7 @@ void CMessage::mark_read()
     }
     else
     {
-        /**
+        /*
          * The file is new, but not in the new folder.
          *
          * That means we need to remove "N" from the flag-component of the path.
@@ -395,13 +395,13 @@ void CMessage::mark_read()
 
 
 
-/**
+/*
  * Parse the message into MIME-parts, if we've not already done so.
  */
 std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
 {
 
-    /**
+    /*
      * If we've already parsed then return the cached results.
      *
      * A message can't/won't change under our feet.
@@ -410,7 +410,7 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
         return (m_parts);
 
 
-    /**
+    /*
      * Boiler variables.
      */
     GMimeMessage * m_message;
@@ -432,7 +432,7 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
     m_message = g_mime_parser_construct_message(parser);
     g_object_unref(parser);
 
-    /**
+    /*
      * Create an iterator
      */
     GMimePartIter *
@@ -440,7 +440,7 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
     int
     count = 1;
 
-    /**
+    /*
      * Iterate over the message.
      */
     do
@@ -450,13 +450,13 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
 
         if ((GMIME_IS_OBJECT(part)) && (GMIME_IS_PART(part)))
         {
-            /**
+            /*
              * Get the content-type
              */
             GMimeContentType *
             content_type = g_mime_object_get_content_type(part);
 
-            /**
+            /*
              * Get the filename
              */
             const char *
@@ -466,7 +466,7 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
             gchar *
             type = g_mime_content_type_to_string(content_type);
 
-            /**
+            /*
              * Get the content.
              */
             GMimeDataWrapper *
@@ -480,7 +480,7 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
                 g_mime_stream_mem_get_byte_array((GMimeStreamMem *)
                                                  memstream)->data;
 
-            /**
+            /*
              * Copy the content away.
              */
             void *
@@ -489,7 +489,7 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
             memcpy(data, b, len);
 
 
-            /**
+            /*
              * OK this is an attachment.
              */
             if (filename)
@@ -516,7 +516,7 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
 }
 
 
-/**
+/*
  * Delete this message from the disk.
  */
 bool CMessage::unlink()
@@ -525,7 +525,7 @@ bool CMessage::unlink()
 }
 
 
-/**
+/*
  * Copy the message to a new maildir - which must exist.
  */
 bool CMessage::copy(std::string maildir)

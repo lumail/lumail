@@ -39,43 +39,43 @@ extern int opterr;
 
 
 
-/**
+/*
  * The entry point to our code.
  */
 int main(int argc, char *argv[])
 {
-    /**
+    /*
      * Initiate mime.
      */
     g_mime_init(0);
 
-    /**
+    /*
      * Parse command-line arguments
      */
     int c;
 
-    /**
+    /*
      * Flags/things set by the command-line arguments.
      */
     std::vector < std::string > load;
     bool curses = true;
 
 
-    /**
+    /*
      * Default to loading some configuration files, if they
      * exist
      */
     if (CFile::exists("/etc/lumail2/lumail2.lua"))
         load.push_back("/etc/lumail2/lumail2.lua");
 
-    /**
+    /*
      * Get the home-directory of the current user.
      */
     std::string home;
 
     if (getenv("HOME") != NULL)
     {
-        /**
+        /*
          * If that worked then try to find things from beneath it.
          */
         home = getenv("HOME");
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
 
     CScreen *screen = CScreen::instance();
 
-    /**
+    /*
      * If we're supposed to use curses then set it up.
      */
     if (curses == true)
@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    /**
+    /*
      * Run the event-loop and terminate once that finishes.
      */
     if (curses == true)
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
         screen->teardown();
     }
 
-    /**
+    /*
      * Close GMime.
      */
     g_mime_shutdown();

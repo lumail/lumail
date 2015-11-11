@@ -42,7 +42,7 @@
 
 
 
-/**
+/*
  * Constructor.  Create an object to encapsulate the given path.
  */
 CMaildir::CMaildir(const std::string name)
@@ -51,7 +51,7 @@ CMaildir::CMaildir(const std::string name)
 }
 
 
-/**
+/*
  * Return the path we represent.
  */
 std::string CMaildir::path()
@@ -59,7 +59,7 @@ std::string CMaildir::path()
     return (m_path);
 }
 
-/**
+/*
  * Destructor.
  */
 CMaildir::~CMaildir()
@@ -67,7 +67,7 @@ CMaildir::~CMaildir()
 }
 
 
-/**
+/*
  * The number of new messages for this maildir.
  */
 int CMaildir::unread_messages()
@@ -77,7 +77,7 @@ int CMaildir::unread_messages()
 }
 
 
-/**
+/*
  * The total number of messages for this maildir.
  */
 int CMaildir::total_messages()
@@ -88,12 +88,12 @@ int CMaildir::total_messages()
 
 
 
-/**
+/*
  * Update the cached total/unread message counts.
  */
 void CMaildir::update_cache()
 {
-    /**
+    /*
      * If the cached date isn't different then we need do nothing.
      */
     time_t last_mod = last_modified();
@@ -101,19 +101,19 @@ void CMaildir::update_cache()
     if (last_mod == m_modified)
         return;
 
-    /**
+    /*
      * Otherwise update the last modified time.
      */
     m_modified = last_mod;
 
-    /**
+    /*
      * Get all messages, and update the total
      */
     CMessageList all = getMessages();
     m_total = all.size();
 
 
-    /**
+    /*
       * Now update the unread count.
       */
     m_unread = 0;
@@ -125,7 +125,7 @@ void CMaildir::update_cache()
     }
 }
 
-/**
+/*
  * Return the last modified time for this Maildir.
  */
 time_t CMaildir::last_modified()
@@ -135,19 +135,19 @@ time_t CMaildir::last_modified()
 
     std::string p = path();
 
-    /**
+    /*
      * The two directories we care about: new/ + cur/
      */
     std::vector < std::string > dirs;
     dirs.push_back(p + "/cur");
     dirs.push_back(p + "/new");
 
-    /**
+    /*
      * See which was the most recently modified.
      */
     for (std::string dir : dirs)
     {
-        /**
+        /*
              * If we can stat() the dir and it is more recent
              * than the current value - update it.
              */
@@ -159,7 +159,7 @@ time_t CMaildir::last_modified()
     return (last);
 }
 
-/**
+/*
  * Get each messages in the folder.
  *
  * These are heap-allocated and will be persistent until the folder
@@ -177,14 +177,14 @@ CMessageList CMaildir::getMessages()
     dirent *de;
     DIR *dp;
 
-    /**
+    /*
      * Directories we search.
      */
     std::vector < std::string > dirs;
     dirs.push_back(m_path + "/cur/");
     dirs.push_back(m_path + "/new/");
 
-    /**
+    /*
      * For each directory.
      */
     for (std::string path : dirs)
@@ -200,7 +200,7 @@ CMessageList CMaildir::getMessages()
                 if (de == NULL)
                     break;
 
-                /** Maybe we should check for DT_REG || DT_LNK ? */
+                /* Maybe we should check for DT_REG || DT_LNK ? */
                 if ((de->d_type != DT_DIR)
                         || (de->d_type == DT_UNKNOWN
                             && !CFile::is_directory(std::
