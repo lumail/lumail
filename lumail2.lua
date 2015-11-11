@@ -1785,6 +1785,11 @@ Config:set( "global.mailer", "/usr/lib/sendmail -t" )
 Config:set( "global.sender", "Steve Kemp <steve@steve.org.uk>" )
 
 --
+-- Unread messages/maildirs are drawn in red.
+--
+Config:set( "colour.unread", "red" )
+
+--
 -- Save persistant history of our input in the named file.
 --
 Config:set( "global.history", os.getenv( "HOME" ) .. "/.lumail2.history" )
