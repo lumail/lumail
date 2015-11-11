@@ -106,20 +106,33 @@ end
 
 
 --
--- Remove a colour-prefix from the given string
+-- Given a line add the given colour to it - removing any
+-- existing colour, uunless that colour is "UNREAD".
 --
--- Our drawing code allows lines to be different coloured based upon
--- a prefix.  So for example the text "$[RED]I like Helsinki" would be
--- drawn as "I like Helsinki", in the colour red.
+-- For example an input line such as "Bob" will be made red
+-- like so:
 --
--- This function removes any existing prefix, to avoid blind additions
--- that might end up like "$[RED]$[YELLOW]I like cakes".
+--      local out = colour_line( "Bob", "red" )
+--      print( out )
 --
-function strip_colour( input )
-   while( string.find(input, "^$[^]]+]" ) ) do
-      input = string.gsub( input, "^$[^]]+]", "" )
+-- The result is:
+--
+--      $[red]Bob
+--
+-- If the input was "$[blue]Bob" then the blue would be stripped and
+-- updated, but if the input is "$[UNREAD]Bob" it will be left alone.
+--
+function colour_line( line, colour )
+   local c, r = string.match(line, "^%$%[([a-zA-Z]*)%](.*)$" )
+   if ( c and r  ) then
+      c = c:lower()
+      if ( c ~= "unread" ) then
+         line = "$[" .. colour .. "]" .. r
+      end
+      return( line )
    end
-   return input
+   line = "$[" .. colour .. "]" .. line
+   return line
 end
 
 
@@ -847,8 +860,7 @@ function add_colours( lines, mode )
       for regexp,colour in pairs(colour_table[mode]) do
 
          if ( string.match( line, regexp ) ) then
-            line = strip_colour( line )
-            line = "$[" .. colour .. "]" .. line
+            line = colour_line( line, colour )
          end
       end
 
@@ -926,18 +938,10 @@ function Message:format(msg)
    local output = string.format( "[%4s] - %s - %s", flags, sender, subject )
 
    --
-   -- If the message is unread then show it in RED
+   -- If the message is unread then show it in the "unread" colour
    --
    if ( string.find( msg:flags(), "N" ) ) then
-      output = "$[RED]" .. output
-   end
-
-   --
-   -- If the message contains the word "STEVE" - show it in blue
-   --
-   if ( string.find( output, "steve" )  ) then
-      output = strip_colour( output )
-      output = "$[BLUE]" .. output
+      output = "$[UNREAD]" .. output
    end
 
    -- Update the cache.
@@ -1067,8 +1071,11 @@ function Maildir:format(obj)
 
    local output = string.format( "[%05d / %05d] - %s", unread, total, path )
 
+   --
+   -- If there are unread messages then show it in the unread-colour.
+   --
    if ( unread > 0 ) then
-      output = "$[RED]" .. output
+      output = "$[UNREAD]" .. output
    end
 
    -- update the cache

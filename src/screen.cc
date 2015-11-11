@@ -1262,6 +1262,20 @@ bool CScreen::on_keypress(const char *key)
 int CScreen::get_colour(std::string name)
 {
     std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+
+    /**
+     * If the name is "unread" then return the default configured
+     * colour.
+     */
+    if (name == "unread")
+    {
+        CConfig *config = CConfig::instance();
+        name = config->get_string("colour.unread");
+
+        if (name.empty())
+            name = "red";
+    }
+
     return (m_colours[name]);
 }
 
