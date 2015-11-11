@@ -23,7 +23,7 @@
 #include "directory.h"
 #include "util.h"
 
-/**
+/*
  * Does the directory exist?
  */
 bool CDirectory::exists(std::string path)
@@ -37,7 +37,7 @@ bool CDirectory::exists(std::string path)
 }
 
 
-/**
+/*
  * Return a sorted list of files beneath the directory.
  */
 std::vector < std::string > CDirectory::entries(std::string prefix)
