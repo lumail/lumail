@@ -102,9 +102,9 @@ void CGlobalState::update(std::string key_name)
     }
     else if (key_name == "global.history")
     {
-      /*
-       * The name of the history file.
-       */
+        /*
+         * The name of the history file.
+         */
         CConfig *config = CConfig::instance();
         std::string path = config->get_string("global.history");
 
@@ -116,17 +116,17 @@ void CGlobalState::update(std::string key_name)
     }
     else  if ((key_name == "maildir.limit") || (key_name == "maildir.prefix"))
     {
-      /*
-       * Otherwise if the maildir-prefix or limit has changed update things
-       */
+        /*
+         * Otherwise if the maildir-prefix or limit has changed update things
+         */
         update_maildirs();
     }
     else if (key_name == "index.limit")
     {
-      /*
-       * If the index-limit has changed update that too.
-       */
-      update_messages();
+        /*
+         * If the index-limit has changed update that too.
+         */
+        update_messages();
     }
 }
 
@@ -145,7 +145,7 @@ CMessageList * CGlobalState::get_messages()
  */
 std::vector<std::shared_ptr<CMaildir>> CGlobalState::get_maildirs()
 {
-  return( *m_maildirs );
+    return (*m_maildirs);
 }
 
 

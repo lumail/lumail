@@ -42,9 +42,9 @@
 class CGlobalState : public Singleton<CGlobalState>, public Observer
 {
 public:
-  /**
-   * Constructor.
-   */
+    /**
+     * Constructor.
+     */
     CGlobalState();
 
     /**
