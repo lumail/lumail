@@ -810,6 +810,55 @@ end
 --
 -----------------------------------------------------------------------------
 
+--
+-- This table contains colouring information, it is designed to allow
+-- the user to override the colours used in the display easily.
+--
+colour_table = {}
+colour_table['maildir'] = {}
+colour_table['index']   = {}
+colour_table['message'] = {}
+
+
+--
+-- This function takes a table of lines, and will iterate over
+-- every line, updating the strings if we find a match on the
+-- regular expressions contained in the colour-table
+--
+function add_colours( lines, mode )
+
+   --
+   -- Get the table of colours for the mode
+   -- if it doesn't exist then abort.
+   --
+   if ( not colour_table ) then return lines end
+   if ( not colour_table[mode] ) then return lines  end
+
+   local ret = {}
+
+
+   --
+   -- Iterate over the input-table
+   --
+   for index,line in ipairs( lines ) do
+      --
+      -- Iterate over the colours
+      --
+      for regexp,colour in pairs(colour_table[mode]) do
+
+         if ( string.match( line, regexp ) ) then
+            line = strip_colour( line )
+            line = "$[" .. colour .. "]" .. line
+         end
+      end
+
+      table.insert(ret,line)
+   end
+
+   return( ret )
+end
+
+
 
 --
 -- This function returns the output which is displayed in attachment-mode
@@ -919,6 +968,10 @@ function index_view()
       table.insert(result,str)
    end
 
+   --
+   -- Update the colours
+   --
+   result = add_colours(result, 'index')
    return result
 end
 
@@ -1018,15 +1071,6 @@ function Maildir:format(obj)
       output = "$[RED]" .. output
    end
 
-   if ( string.find( output, "Automated." ) ) then
-      output = strip_colour( output )
-      output = "$[YELLOW]" .. output
-   end
-   if ( string.find( output, "lists" ) ) then
-      output = strip_colour( output )
-      output = "$[GREEN]" .. output
-   end
-
    -- update the cache
    maildir_fmt_cache[time .. path] = output
 
@@ -1052,6 +1096,10 @@ function maildir_view()
       table.insert(result,str)
    end
 
+   --
+   -- Update the colours
+   --
+   result = add_colours(result, 'maildir')
    return result
 end
 
@@ -1139,7 +1187,13 @@ function message_view( msg )
    --
    -- The command output is now split into rows.
    --
-   return( string_to_table( output ) )
+   local result = string_to_table( output )
+
+   --
+   -- Update the colours
+   --
+   result = add_colours(result, 'message')
+   return(result)
 end
 
 
@@ -1728,6 +1782,35 @@ Config:set( "global.sender", "Steve Kemp <steve@steve.org.uk>" )
 --
 Config:set( "global.history", os.getenv( "HOME" ) .. "/.lumail2.history" )
 
+
+--
+-- Setup our colours - for Maildir-mode
+--
+colour_table['maildir'] = {
+   ['Automated'] = 'yellow',
+   ['lists']     = 'green',
+}
+
+-- Setup our colours - for index-mode
+colour_table['index'] = {
+   ['Steve'] = 'blue',
+   ['Ian']   = 'blue',
+}
+
+-- Setup our colours - for a message
+colour_table['message'] = {
+   -- headers
+   ['^Subject:'] = 'yellow',
+   ['^Date:']    = 'yellow',
+   ['^From:']    = 'yellow',
+   ['^To:']      = 'yellow',
+   ['^Cc:']      = 'yellow',
+   ['^Sent:']    = 'yellow',
+
+   -- quoting, and nested quoting.
+   ['^> ']  = 'yellow',
+   ['^> >'] = 'green'
+}
 
 --
 -- 7.  Handle any command-line argumenst
