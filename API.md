@@ -22,8 +22,12 @@ Variables
 
 We have a number of variables which are special, the most important ones are:
 
+* `colour.unread`
+    * The colour to use when drawing unread-messages.
+    * The colour to use when drawing maildirs containing unread-messages.
 * `maildir.prefix`
     * This holds the prefix to the maildir hierarchy.
+    * Maildirs are (recursively) found from here.
 * `global.editor`
     * The user's editor.
 * `global.from`
