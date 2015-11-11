@@ -48,44 +48,44 @@ public:
 
 public:
 
-    /*
+    /**
      * Populate "args"
      */
     void set_args(char *argv[], int argc);
 
-    /*
+    /**
      * Load the specified Lua file, and evaluate it.
      *
      * Return true on success.  False on error.
      */
     bool load_file(std::string filename);
 
-    /*
+    /**
      * Evaluate the given string.
      *
      * Return true on success.  False on error.
      */
     bool execute(std::string lua);
 
-    /*
+    /**
      * Lookup a key in a nested table structure - used for keyboard lookups.
      */
     char *get_nested_table(std::string table, const char *key, const char *subkey);
 
-    /*
+    /**
      * Call `on_complete` to complete a string.
      */
     std::vector<std::string> get_completions(std::string token);
 
-    /*
-     * HACK - TODO - Fix
+    /**
+     * Gain access to our global Lua state.
      */
     lua_State *state()
     {
         return m_lua;
     }
 
-    /*
+    /**
      * This method is called when a configuration key changes,
      * via our observer implementation.
      */

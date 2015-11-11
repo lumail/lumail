@@ -50,12 +50,12 @@ class CViewMode
 {
 public:
 
-    /*
-     * Allow our virtual mode to draw its own display.
-     */
+    /**
+      * Allow our virtual mode to draw its own display.
+      */
     virtual void draw() = 0;
 
-    /*
+    /**
      * It might be useful to have the virtual modes have
      * an idle function to update things.
      */
@@ -64,158 +64,220 @@ public:
 };
 
 
-/*
+
+
+
+/**
+ * We draw lines of colours.
+ *
+ * These lines are of the form:
+ *
+ *   $[RED]This is red$[YELLOW]This is yellow.
+ *
+ * We parse lines like this into arrays of structures,
+ * the structure contains the colour-code and the string to
+ * draw.
+ */
+typedef struct _COLOUR_STRING
+{
+    /**
+     * The colour to use for this segment.
+     */
+    int colour;
+
+    /**
+     * The string itself.
+     */
+    std::string string;
+
+} COLOUR_STRING;
+
+
+
+/**
+ *
  * This class contains simple functions relating to the screen-handling.
+ *
+ * Although the class is called `CScreen` it might easily have been called
+ * `CLumail`, as most of the logic that is implemented in the C++ part of
+ * the codebase is in this class.
+ *
+ * The class is generally responsible for handling input, updating state,
+ * and drawing the display.
+ *
  */
 class CScreen : public Singleton<CScreen>
 {
 
 public:
+    /**
+     * Constructor.
+     */
     CScreen();
+
+    /**
+     * Destructor.
+     */
     ~CScreen();
 
 public:
 
-    /*
-     * Setup/Teardown
+    /**
+     * Setup the `curses` environment.
      */
     void setup();
+
+    /**
+     * Tear down `curses`.
+     */
     void teardown();
 
-    /*
-     * Run our event loop.
+    /**
+     * Run our event loop - which means polling for keyboard input,
+     * responding to that received, and redrawing the screen.
      */
     void run_main_loop();
 
-    /*
-     * Exit our main event-loop
+    /**
+     * Exit our main event-loop.
      */
     void exit_main_loop();
 
-    /*
-     * Return the width of the screen.
+    /**
+     * Return the width of the screen, in columns.
      */
     static int width();
 
-    /*
-     * Return the height of the screen.
+    /**
+     * Return the height of the screen, in lines.
+     *
+     * **NOTE**: This doesn't take any account of the state of the
+     * status-panel.
      */
     static int height();
 
-    /*
+    /**
      * Clear the screen.
      */
     void clear();
 
-    /*
+    /**
      * Delay for the given period.
      */
     void sleep(int seconds);
 
-    /*
+    /**
      * Choose a single item from a small selection.
      *
      * Used by TAB-completion.
      */
     std::string choose_string(std::vector<std::string> choices);
 
-    /*
+    /**
      * Read a line of input via the status-line.
+     *
+     * History is handled via our `CHistory` singleton.
      */
     std::string get_line(std::string prompt, std::string input = "");
 
-    /*
+    /**
      * Show a message and return only a valid keypress from a given set.
      */
     std::string prompt_chars(std::string prompt, std::string valid);
 
-    /*
+    /**
      * Execute a program, resetting the screen first.
      */
     void execute(std::string program);
 
-    /*
+    /**
      * Is the status-panel visible?
      */
     bool status_panel_visible();
 
-    /*
+    /**
      * Get the status-panel title.
      */
     std::string status_panel_title();
 
-    /*
-     * Get the status-panel text.
+    /**
+     * Get the text contained within the status-panel.
      */
     std::vector < std::string > status_panel_text();
 
-    /*
+    /**
      * Hide the status-panel.
      */
     void status_panel_hide();
 
-    /*
+    /**
      * Show the status-panel.
      */
     void status_panel_show();
 
-    /*
+    /**
      * Append to the status-panel text.
      */
     void status_panel_append(std::string display);
 
-    /*
+    /**
      * Clear the status-panel text.
      */
     void status_panel_clear();
 
-    /*
+    /**
      * Set the status-panel title.
      */
     void status_panel_title(std::string new_title);
 
-    /*
+    /**
      * Toggle the visibility of the status-panel.
      */
     void status_panel_toggle();
 
-    /*
-     * Get the height of the status-panel.
+    /**
+     * Get the height of the status-panel, in lines.
      */
     int status_panel_height();
 
-    /*
+    /**
      * Set the height of the status-panel - minimum size is six.
      */
     void status_panel_height(int new_size);
 
-    /*
+    /**
      * Execute a function from the global keymap.
      */
     bool on_keypress(const char *key);
 
-    /*
+    /**
      * Get the colour-pair for the given name.
      */
     int get_colour(std::string name);
 
-    /*
-     * Draw a list of text, with a current entry highlighted.
+    /**
+     * Draw an array of lines to the screen, highlighting the current line.
+     *
+     * This is used by our view-classes, as a helper.
+     *
+     * If `simple` is set to true then we display the lines in a  simplified
+     * fashion - with no selection, and no smooth-scrolling.
      */
     void draw_text_lines(std::vector<std::string> lines, int selected, int max, bool simple = false);
 
 private:
-    /*
+
+    /**
      * Redraw the status-panel.
      */
     void status_panel_draw();
 
-    /*
+    /**
      * Initialize the status-panel.
      */
     void status_panel_init();
 
-    /*
+    /**
      * Convert ^I -> TAB, etc.
      */
     const char *lookup_key(int c);
@@ -239,8 +301,17 @@ private:
     /**
      * A lookup-map of colour-pairs, which are used for drawing
      * coloured text on the screen.
+     *
+     * See `get_colour` for the accessor used to access this map.
+     *
      */
     std::unordered_map < std::string, int >m_colours;
+
+    /**
+     * Parse a string into an array of "string + colour" pairs,
+     * which will be useful for drawing strings.
+     */
+    std::vector<COLOUR_STRING *> parse_coloured_string(std::string);
 
 private:
 
@@ -256,4 +327,5 @@ private:
         BOTTOM,
         NONE
     };
+
 };

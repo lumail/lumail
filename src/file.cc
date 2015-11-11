@@ -32,7 +32,7 @@
 
 
 
-/**
+/*
  * Test if a file exists.
  */
 bool CFile::exists(std::string path)
@@ -46,7 +46,7 @@ bool CFile::exists(std::string path)
 }
 
 
-/**
+/*
  * Is the given path a directory?
  */
 bool CFile::is_directory(std::string path)
@@ -60,7 +60,7 @@ bool CFile::is_directory(std::string path)
 }
 
 
-/**
+/*
  * Is the given path a maildir?
  */
 bool CFile::is_maildir(std::string path)
@@ -82,7 +82,7 @@ bool CFile::is_maildir(std::string path)
 }
 
 
-/**
+/*
  * Get the basename of a file.
  */
 std::string CFile::basename(std::string path)
@@ -97,7 +97,7 @@ std::string CFile::basename(std::string path)
 }
 
 
-/**
+/*
  * Copy a file.
  */
 bool CFile::copy(std::string src, std::string dst)
@@ -118,7 +118,7 @@ bool CFile::copy(std::string src, std::string dst)
 }
 
 
-/**
+/*
  * Move a file.
  */
 bool CFile::move(std::string src, std::string dst)
@@ -132,7 +132,7 @@ bool CFile::move(std::string src, std::string dst)
 }
 
 
-/**
+/*
  * Return a sorted list of maildirs beneath the given prefix.
  */
 std::vector < std::string > CFile::get_all_maildirs(std::string prefix)

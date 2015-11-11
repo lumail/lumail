@@ -29,9 +29,6 @@
 #include "lua.h"
 #include "screen.h"
 
-/**
- * Views.
- */
 #include "attachment_view.h"
 #include "history.h"
 #include "index_view.h"
@@ -50,28 +47,28 @@
 typedef struct _PANEL_DATA
 {
     /**
-     * Is the panel hidden?
-     */
+       * Is the panel hidden?
+       */
     bool hidden;
 
     /**
-     * The total height of the panel, in number of lines.
-     */
+       * The total height of the panel, in number of lines.
+       */
     int height;
 
     /**
-     * The title of the panel.
-     */
+       * The title of the panel.
+       */
     std::string title;
 
     /**
-     * The text the panel contains.
-     */
+       * The text the panel contains.
+       */
     std::vector < std::string > text;
 } PANEL_DATA;
 
 
-/**
+/*
  * The status-bar window, panel, & data.
  */
 WINDOW *g_status_bar_window;
@@ -80,12 +77,13 @@ PANEL_DATA g_status_bar_data;
 
 
 
-/**
- * Constructor.  Register our view-modes
+
+/*
+ * Constructor.
  */
 CScreen::CScreen()
 {
-    /**
+    /*
      * Register our view-modes.
      */
     m_views["attachment"] = new CAttachmentView();
@@ -97,7 +95,7 @@ CScreen::CScreen()
 
 
 
-/**
+/*
  * Destructor.  NOP.
  */
 CScreen::~CScreen()
@@ -105,12 +103,12 @@ CScreen::~CScreen()
     teardown();
 }
 
-/**
+/*
  * Run our event loop.
  */
 void CScreen::run_main_loop()
 {
-    /**
+    /*
      * Get our timeout period, and set it.
      */
     CConfig *config = CConfig::instance();
@@ -121,17 +119,17 @@ void CScreen::run_main_loop()
 
     timeout(tout);
 
-    /**
+    /*
      * Now we're in our loop.
      */
     m_running = true;
 
-    /**
+    /*
      * Get the lua-helper.
      */
     CLua *lua = CLua::instance();
 
-    /**
+    /*
      * Holder for keyboard input.
      */
     int ch;
@@ -139,14 +137,14 @@ void CScreen::run_main_loop()
     while ((m_running) && (ch = getch()))
     {
 
-        /**
+        /*
          * Clear the screen - note we're using the
          * curses function here, not our method.
          */
         ::clear();
 
 
-        /**
+        /*
          * Get the current global mode.
          */
         CConfig *config   = CConfig::instance();
@@ -156,12 +154,12 @@ void CScreen::run_main_loop()
             mode = "maildir";
 
 
-        /**
+        /*
          * Get the virtual view class.
          */
         CViewMode *view = m_views[mode];
 
-        /**
+        /*
          * If the user wanted to quit - do that.
          */
         if (ch == 'Q')
@@ -170,24 +168,24 @@ void CScreen::run_main_loop()
             continue;
         }
 
-        /**
+        /*
          * If the key fetching timed out then call our idle functions.
          */
         if (ch == ERR)
         {
-            /**
+            /*
              * Call the Lua on_idle() function.
              */
             lua->execute("on_idle()");
 
-            /**
+            /*
              * Call our view-specific on-idle handler.
              */
             view->on_idle();
         }
         else
         {
-            /**
+            /*
              * Convert the key-press to a key-name, which means that
              * "down" will be "KEY_DOWN", for example.
              */
@@ -197,12 +195,12 @@ void CScreen::run_main_loop()
                 on_keypress(key);
         }
 
-        /**
+        /*
          * Update the view.
          */
         view->draw();
 
-        /**
+        /*
          * Update our panel.
          */
         update_panels();
@@ -212,7 +210,7 @@ void CScreen::run_main_loop()
 }
 
 
-/**
+/*
  * Exit our main event-loop
  */
 void CScreen::exit_main_loop()
@@ -226,7 +224,7 @@ void CScreen::execute(std::string prog)
 {
     int result __attribute__((unused));
 
-    /**
+    /*
      * Save the current state of the TTY
      */
     refresh();
@@ -236,14 +234,14 @@ void CScreen::execute(std::string prog)
     /* Run the command */
     result = system(prog.c_str());
 
-    /**
+    /*
      * Reset + redraw
      */
     reset_prog_mode();
     refresh();
 }
 
-/**
+/*
  * Convert "^I" -> "TAB", etc.
  */
 const char *CScreen::lookup_key(int c)
@@ -261,12 +259,12 @@ const char *CScreen::lookup_key(int c)
 }
 
 
-/**
+/*
  * Setup the curses/screen.
  */
 void CScreen::setup()
 {
-    /**
+    /*
      * Setup locale.
      */
     setlocale(LC_CTYPE, "");
@@ -275,12 +273,12 @@ void CScreen::setup()
     char e[] = "ESCDELAY=0";
     putenv(e);
 
-    /**
+    /*
      * Setup ncurses.
      */
     initscr();
 
-    /**
+    /*
      * Make sure we have colours.
      */
     if (!has_colors() || (start_color() != OK))
@@ -296,7 +294,7 @@ void CScreen::setup()
     noecho();
     curs_set(0);
 
-    /**
+    /*
      * Get our timeout period, and set it.
      */
     CConfig *config = CConfig::instance();
@@ -339,7 +337,7 @@ void CScreen::setup()
 }
 
 
-/**
+/*
  * Shutdown curses.
  */
 void CScreen::teardown()
@@ -348,7 +346,7 @@ void CScreen::teardown()
 }
 
 
-/**
+/*
  * Clear the whole screen by printing lines of blanks.
  */
 void CScreen::clear()
@@ -372,7 +370,7 @@ void CScreen::clear()
 }
 
 
-/**
+/*
  * Return the height of the screen.
  */
 int CScreen::height()
@@ -383,7 +381,7 @@ int CScreen::height()
 }
 
 
-/**
+/*
  * Delay for the given period.
  */
 void CScreen::sleep(int seconds)
@@ -391,7 +389,7 @@ void CScreen::sleep(int seconds)
     ::sleep(seconds);
 }
 
-/**
+/*
  * Return the width of the screen.
  */
 int CScreen::width()
@@ -403,7 +401,7 @@ int CScreen::width()
 
 
 
-/**
+/*
  *  Create the status-panel.
  */
 void CScreen::status_panel_init()
@@ -411,20 +409,20 @@ void CScreen::status_panel_init()
     int show = 1;
     int x, y;
 
-    /**
+    /*
      * Size of panel
      */
     int rows = 6;
     int cols = CScreen::width();
 
-    /**
+    /*
      * Create the window.
      */
     x = 0;
     y = CScreen::height() - rows;
     g_status_bar_window = newwin(rows, cols, y, x);
 
-    /**
+    /*
      * Set the content of the status-bar
      */
     g_status_bar_data.height = rows;
@@ -433,7 +431,7 @@ void CScreen::status_panel_init()
     ("Lumail v2 - Toggle panel via 'TAB'.  Exit via 'Q'.  Eval via ':'.");
     g_status_bar_data.text.push_back("by Steve Kemp");
 
-    /**
+    /*
      * Refresh the panel display.
      */
     status_panel_draw();
@@ -456,14 +454,14 @@ void CScreen::status_panel_init()
 
 }
 
-/**
+/*
  * Update the text in the status-bar.
  */
 void CScreen::status_panel_draw()
 {
     int width = CScreen::width();
 
-    /**
+    /*
      * Select white, and draw a box.
      */
     wattron(g_status_bar_window, COLOR_PAIR(1));
@@ -472,7 +470,7 @@ void CScreen::status_panel_draw()
     mvwhline(g_status_bar_window, 2, 1, ACS_HLINE, width - 2);
     mvwaddch(g_status_bar_window, 2, width - 1, ACS_RTEE);
 
-    /**
+    /*
      * Show the title, and the last two lines of the text.
      */
     PANEL_DATA x = g_status_bar_data;
@@ -496,7 +494,7 @@ void CScreen::status_panel_draw()
             }
         }
 
-        /**
+        /*
          * Set the colour, and draw the text.
          */
         if (colour.empty())
@@ -505,7 +503,7 @@ void CScreen::status_panel_draw()
         while ((int)title.length() < CScreen::width() - 2)
             title += " ";
 
-        /**
+        /*
          * Ensure the line isn't too long, so we don't wrap around.
          */
         if ((int)title.length() >  CScreen::width() - 2)
@@ -557,13 +555,13 @@ void CScreen::status_panel_draw()
                 colour = "white";
 
 
-            /**
+            /*
              * Ensure we draw a complete line.
              */
             while ((int)text.length() < CScreen::width() - 2)
                 text += " ";
 
-            /**
+            /*
              * Ensure the line isn't too long, so we don't wrap around.
              */
             if ((int)text.length() >  CScreen::width() - 2)
@@ -578,20 +576,20 @@ void CScreen::status_panel_draw()
 }
 
 
-/**
+/*
  * Choose a single item from a small selection.
  *
  * (This is used to resolve ambiguity in TAB-completion.)
  */
 std::string CScreen::choose_string(std::vector<std::string> choices)
 {
-    /**
+    /*
      * We don't need to resolve ambiguity unless there is more than
      * one choice to choose from.
      */
     assert(choices.size() > 0);
 
-    /**
+    /*
      * Find longest/widest entry.
      */
     size_t max = 0;
@@ -602,7 +600,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
             max = choice.size();
     }
 
-    /**
+    /*
      * Get the dimensions.
      */
     int height = CScreen::height() - 4;
@@ -612,7 +610,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
     WINDOW *childwin = newwin(height, width, 2, 2);
     box(childwin, 0, 0);
 
-    /**
+    /*
      * How many columns to draw?
      */
     for (int i = 1; i < 12; i++)
@@ -621,7 +619,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
             cols = i;
     }
 
-    /**
+    /*
      * We'll be careful to not draw more columns than we have items.
      */
     if (cols > choices.size())
@@ -640,7 +638,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
 
         int count = 0;
 
-        /**
+        /*
          * Drawing of each item.
          */
         int x = 0;
@@ -649,7 +647,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
         for (std::string choice : choices)
         {
 
-            /**
+            /*
              * Calculate the column.
              */
             x = 2 + ((count % cols) * col_width);
@@ -676,7 +674,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
         {
             delwin(childwin);
             ::clear();
-            /**
+            /*
              * Get our timeout period, and set it.
              */
             CConfig *config = CConfig::instance();
@@ -717,7 +715,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
 
     delwin(childwin);
     ::clear();
-    /**
+    /*
      * Get our timeout period, and set it.
      */
     CConfig *config = CConfig::instance();
@@ -731,7 +729,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
 }
 
 
-/**
+/*
  * Read a line of input via the status-line.
  */
 std::string CScreen::get_line(std::string prompt, std::string input)
@@ -750,18 +748,18 @@ std::string CScreen::get_line(std::string prompt, std::string input)
         pos = input.size();
     }
 
-    /**
+    /*
      * Gain access to any past history.
      */
     CHistory *history  = CHistory::instance();
     int history_offset = history->size();
 
-    /**
+    /*
      * Get the cursor position
      */
     getyx(stdscr, orig_y, orig_x);
 
-    /**
+    /*
      * Determine where to move the cursor to.  If the panel is visible it'll
      * be above that.
      */
@@ -773,13 +771,13 @@ std::string CScreen::get_line(std::string prompt, std::string input)
         y -= g_status_bar_data.height;
     }
 
-    /**
+    /*
      * Draw the prompt, and make sure we place the cursor at a suitable spot.
      */
     mvaddnstr(y, x, prompt.c_str(), prompt.length());
     x += prompt.length();
 
-    /**
+    /*
      * Get the mode so we can update the display mid-input.
      */
     CConfig *config   = CConfig::instance();
@@ -790,7 +788,7 @@ std::string CScreen::get_line(std::string prompt, std::string input)
 
     CViewMode *view = m_views[mode];
 
-    /**
+    /*
      * We'll call our idle function too.
      */
     CLua *lua = CLua::instance();
@@ -816,23 +814,23 @@ std::string CScreen::get_line(std::string prompt, std::string input)
         mvaddnstr(y, 0, prompt.c_str(), prompt.length());
         mvaddnstr(y, x, buffer.c_str(), buffer.size());
 
-        /**
+        /*
           * Clear the line- the "-2" comes from the size of the prompt.
           */
         for (int padding = buffer.size(); padding < (width() - 1 - (int)prompt.length()); padding++)
             printw(" ");
 
-        /**
+        /*
           * Move the cursor
           */
         move(y, x + pos);
 
-        /**
+        /*
          * Get some input
          */
         c = getch();
 
-        /**
+        /*
           * Ropy input-handler.
           */
         if (c == KEY_ENTER || c == '\n' || c == '\r')
@@ -849,7 +847,7 @@ std::string CScreen::get_line(std::string prompt, std::string input)
         }
         else if (c == 11)	/* ctrl-k: kill to end of line */
         {
-            /**
+            /*
                  * Kill the buffer from the current position onwards.
                  */
             buffer = buffer.substr(0, pos);
@@ -904,7 +902,7 @@ std::string CScreen::get_line(std::string prompt, std::string input)
         }
         else if (c == 4)	/* ctrl+d */
         {
-            /**
+            /*
              * Remove the character after the point.
              */
             if (pos < (int) buffer.size())
@@ -914,7 +912,7 @@ std::string CScreen::get_line(std::string prompt, std::string input)
         }
         else if ((c == '\t') && (! buffer.empty()))      /* TAB-completion */
         {
-            /**
+            /*
              * We're going to find the token to complete against
              * by searching backwards for a position to start from.
              *
@@ -926,7 +924,7 @@ std::string CScreen::get_line(std::string prompt, std::string input)
             std::string prefix = "";
             std::string token  = buffer;
 
-            /**
+            /*
              * If we found one of the split-characters then we have
              * a token to complete, and the prefix to ignore.
              *
@@ -944,12 +942,12 @@ std::string CScreen::get_line(std::string prompt, std::string input)
             }
 
 
-            /**
+            /*
              * The token length - because we want to update the cursor position, post-completion.
              */
             int toke_len = token.size();
 
-            /**
+            /*
              * Get the completions.
              */
             CLua *lua = CLua::instance();
@@ -957,14 +955,14 @@ std::string CScreen::get_line(std::string prompt, std::string input)
 
             if (matches.size() == 0)
             {
-                /**
+                /*
                  * No completion possible.
                  */
                 beep();
             }
             else
             {
-                /**
+                /*
                  * Single completion == match.
                  */
                 if (matches.size() == 1)
@@ -974,24 +972,24 @@ std::string CScreen::get_line(std::string prompt, std::string input)
                 }
                 else
                 {
-                    /**
+                    /*
                      * Disable echoing before showing the menu.
                      */
                     noecho();
                     curs_set(0);
 
-                    /**
+                    /*
                      * Prompt for clarification in the multiple-matches.
                      */
                     std::string choice = choose_string(matches);
 
-                    /**
+                    /*
                      * Reset the cursor.
                      */
                     curs_set(1);
                     echo();
 
-                    /**
+                    /*
                      * If the user did make a specific choice, then use it.
                      */
                     if (! choice.empty())
@@ -1004,7 +1002,7 @@ std::string CScreen::get_line(std::string prompt, std::string input)
         }
         else if (isprint(c))
         {
-            /**
+            /*
              * Insert the character into the buffer-string.
              */
             buffer.insert(pos, 1, c);
@@ -1016,7 +1014,7 @@ std::string CScreen::get_line(std::string prompt, std::string input)
     if (old_curs != ERR)
         curs_set(old_curs);
 
-    /**
+    /*
      * Add the line to the history.
      */
     history->add(buffer);
@@ -1025,7 +1023,7 @@ std::string CScreen::get_line(std::string prompt, std::string input)
 }
 
 
-/**
+/*
  * Show a message and return only a valid keypress from a given set.
  */
 std::string CScreen::prompt_chars(std::string prompt, std::string valid)
@@ -1033,18 +1031,18 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
     int orig_x, x;
     int orig_y, y;
 
-    /**
+    /*
      * Get the cursor position
      */
     getyx(stdscr, orig_y, orig_x);
 
-    /**
+    /*
      * Ensure we draw a complete line.
      */
     while ((int)prompt.length() < CScreen::width())
         prompt += " ";
 
-    /**
+    /*
      * Determine where to move the cursor to.  If the panel is visible it'll
      * be above that.
      */
@@ -1057,7 +1055,7 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
     }
 
 
-    /**
+    /*
      * Get the mode so we can update the display mid-input.
      */
     CConfig *config   = CConfig::instance();
@@ -1068,7 +1066,7 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
 
     CViewMode *view = m_views[mode];
 
-    /**
+    /*
      * We'll call our idle function too.
      */
     CLua *lua = CLua::instance();
@@ -1136,7 +1134,7 @@ int CScreen::status_panel_height()
 }
 
 
-/**
+/*
  * Set the height of the status-panel - minimum size is six.
  */
 void CScreen::status_panel_height(int new_size)
@@ -1193,7 +1191,7 @@ void CScreen::status_panel_append(std::string display)
     status_panel_draw();
 }
 
-/**
+/*
  * Clear the status-panel text.
  */
 void CScreen::status_panel_clear()
@@ -1202,19 +1200,19 @@ void CScreen::status_panel_clear()
     status_panel_draw();
 }
 
-/**
+/*
  * Look up the binding for the named keystroke in our keymap(s).
  *
  * If the result is a string then execute it as a function.
  */
 bool CScreen::on_keypress(const char *key)
 {
-    /**
+    /*
      * The result of the lookup.
      */
     char *result = NULL;
 
-    /**
+    /*
      * Get the current global-mode.
      */
     std::string mode = "";
@@ -1225,20 +1223,20 @@ bool CScreen::on_keypress(const char *key)
     if ((ent != NULL) && (ent->type == CONFIG_STRING))
         mode = *ent->value.str;
 
-    /**
+    /*
      * Default mode.
      */
     if (mode.empty())
         mode = "message";
 
-    /**
+    /*
      * Lookup the keypress in the current-mode-keymap.
      */
     CLua *lua = CLua::instance();
     result = lua->get_nested_table("keymap", mode.c_str(), key);
 
 
-    /**
+    /*
      * If that failed then lookup the global keymap.
      *
      * This order ensures you can have a "global" keymap, overridden in just one mode.
@@ -1246,13 +1244,13 @@ bool CScreen::on_keypress(const char *key)
     if (result == NULL)
         result = lua->get_nested_table("keymap", "global", key);
 
-    /**
+    /*
      * If one/other of these lookups resulted in success then we're golden.
      */
     if (result != NULL)
         lua->execute(result);
 
-    /**
+    /*
      * We succeeded if the result wasn't NULL.
      */
     return (result != NULL);
@@ -1263,7 +1261,7 @@ int CScreen::get_colour(std::string name)
 {
     std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
-    /**
+    /*
      * If the name is "unread" then return the default configured
      * colour.
      */
@@ -1281,7 +1279,7 @@ int CScreen::get_colour(std::string name)
 
 
 
-/**
+/*
  * Draw an array of lines to the screen, highlighting the current line.
  *
  * This is used by our view-classes, as a helper.
@@ -1295,25 +1293,25 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
     CScreen *screen = CScreen::instance();
     int height = CScreen::height();
 
-    /**
+    /*
      * Take off the panel, if visible.
      */
     if (screen->status_panel_visible())
         height -= screen->status_panel_height();
 
-    /**
+    /*
      * Account for the fact we start from row one not zero.
      */
     height += 1;
 
-    /**
+    /*
      * Get the horizontal scroll-position.
      */
     CConfig *config = CConfig::instance();
     int x = config->get_integer("global.horizontal");
 
 
-    /**
+    /*
      * If we're in simple-mode we can just draw the lines directly
      * and return - we don't need to worry about the selection-handler
      * or the calculation of the scroll-point.
@@ -1326,7 +1324,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
             {
                 std::string buf = lines.at(i + selected);
 
-                /**
+                /*
                  * Look for a colour-string
                  */
                 if ((buf.size() > 3) && (buf.at(0) == '$'))
@@ -1345,7 +1343,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
                     }
                 }
 
-                /**
+                /*
                  * "Scroll" by starting from the middle of the string.
                  */
                 if (x < (int)buf.length())
@@ -1354,19 +1352,19 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
                     buf = "";
 
 
-                /**
+                /*
                  * Ensure we draw a complete line.
                  */
                 while ((int)buf.length() < CScreen::width())
                     buf += " ";
 
-                /**
+                /*
                  * Ensure the line isn't too long, so we don't wrap around.
                  */
                 if ((int)buf.length() >  CScreen::width())
                     buf = buf.substr(0, CScreen::width() - 1);
 
-                /**
+                /*
                  *  Draw the line, and reset any changed-colour.
                  */
                 mvprintw(i, 0, "%s", buf.c_str());
@@ -1378,7 +1376,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
     }
 
 
-    /**
+    /*
      * This is complex/smooth-scrolling mode.
      *
      * We'll draw a highlighted bar, and that'll move "nicely".
@@ -1389,14 +1387,15 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
     int rowToHighlight = 0;
     vectorPosition topBottomOrMiddle = NONE;
 
-    /**
+    /*
      * default to TOP if our list is shorter then the screen height
      */
     if (selected < middle || max <= height)
     {
         topBottomOrMiddle = TOP;
         rowToHighlight = selected;
-        /**
+
+        /*
          * if height is uneven we have to switch to the BOTTOM case on row earlier
          */
     }
@@ -1414,21 +1413,21 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
 
     for (int row = 0; row < height; row++)
     {
-        /**
+        /*
          * The current object.
          */
         int mailIndex = max;
 
         if (topBottomOrMiddle == TOP)
         {
-            /**
+            /*
              * we start at the top of the list so just use row
              */
             mailIndex = row;
         }
         else if (topBottomOrMiddle == BOTTOM)
         {
-            /**
+            /*
              * when we reached the end of the list mailIndex can maximally be
              * count-1, that this is given can easily be shown
              * row:=height-2 -> count-height+row+1 = count-height+height-2+1 = count-1
@@ -1454,7 +1453,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         else
             wattroff(stdscr, A_REVERSE | A_STANDOUT);
 
-        /**
+        /*
          * Look for a colour-string
          */
         if ((buf.size() > 3) && (buf.at(0) == '$'))
@@ -1473,7 +1472,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
             }
         }
 
-        /**
+        /*
          * "Scroll" by starting from the middle of the string.
          */
         if (x < (int)buf.length())
@@ -1481,7 +1480,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         else
             buf = "";
 
-        /**
+        /*
          * Ensure we draw a complete line - so that we cover
          * any old text - and make sure that our highlight covers a complete
          * line.
@@ -1489,25 +1488,40 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         while ((int)buf.length() < CScreen::width())
             buf += " ";
 
-        /**
+        /*
          * Ensure the line isn't too long, so we don't
          * wrap around.
          */
         if ((int)buf.length() >  CScreen::width())
             buf = buf.substr(0, CScreen::width() - 1);
 
-        /**
+        /*
          * Show the line, and reset the colours to known-good.
          */
         mvprintw(row, 0, "%s", buf.c_str());
         wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
     }
 
-    /**
+    /*
      * Ensure we turn off the attribute on the last line - so that
      * any blank lines are "normal".
      */
     wattroff(stdscr, A_REVERSE | A_STANDOUT);
     wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
 
+}
+
+
+/*
+ * Parse a string into an array of "string + colour" pairs,
+ * which will be useful for drawing strings.
+ */
+std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string)
+{
+    std::vector<COLOUR_STRING *> results;
+
+    /*
+     * MAGIC.
+     */
+    return (results);
 }

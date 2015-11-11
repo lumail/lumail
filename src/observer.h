@@ -33,6 +33,11 @@
 class Subject
 {
 public:
+    /**
+     * This vector contains the registered observers of this
+     * subject.
+     *
+     */
     std::vector < class Observer * > views;
 
 public:
