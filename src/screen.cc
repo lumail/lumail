@@ -1305,12 +1305,6 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
      */
     height += 1;
 
-    /*
-     * Get the horizontal scroll-position.
-     */
-    CConfig *config = CConfig::instance();
-    int x = config->get_integer("global.horizontal");
-
 
     /*
      * If we're in simple-mode we can just draw the lines directly
@@ -1325,51 +1319,8 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
             {
                 std::string buf = lines.at(i + selected);
 
-                /*
-                 * Look for a colour-string
-                 */
-                if ((buf.size() > 3) && (buf.at(0) == '$'))
-                {
-                    std::size_t start = buf.find("[");
-                    std::size_t end   = buf.find("]");
-
-                    if ((start != std::string::npos) &&
-                            (end != std::string::npos))
-                    {
-                        std::string colour;
-                        colour   = buf.substr(start + 1, end - start - 1);
-                        buf    = buf.substr(end + 1);
-
-                        wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
-                    }
-                }
-
-                /*
-                 * "Scroll" by starting from the middle of the string.
-                 */
-                if (x < (int)buf.length())
-                    buf = buf.substr(x);
-                else
-                    buf = "";
-
-
-                /*
-                 * Ensure we draw a complete line.
-                 */
-                while ((int)buf.length() < CScreen::width())
-                    buf += " ";
-
-                /*
-                 * Ensure the line isn't too long, so we don't wrap around.
-                 */
-                if ((int)buf.length() >  CScreen::width())
-                    buf = buf.substr(0, CScreen::width() - 1);
-
-                /*
-                 *  Draw the line, and reset any changed-colour.
-                 */
-                mvprintw(i, 0, "%s", buf.c_str());
-                wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
+                move(i, 0);
+                draw_single_line(buf);
             }
         }
 
@@ -1454,53 +1405,8 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         else
             wattroff(stdscr, A_REVERSE | A_STANDOUT);
 
-        /*
-         * Look for a colour-string
-         */
-        if ((buf.size() > 3) && (buf.at(0) == '$'))
-        {
-            std::size_t start = buf.find("[");
-            std::size_t end   = buf.find("]");
-
-            if ((start != std::string::npos) &&
-                    (end != std::string::npos))
-            {
-                std::string colour;
-                colour   = buf.substr(start + 1, end - start - 1);
-                buf    = buf.substr(end + 1);
-
-                wattron(stdscr, COLOR_PAIR(screen->get_colour(colour)));
-            }
-        }
-
-        /*
-         * "Scroll" by starting from the middle of the string.
-         */
-        if (x < (int)buf.length())
-            buf = buf.substr(x);
-        else
-            buf = "";
-
-        /*
-         * Ensure we draw a complete line - so that we cover
-         * any old text - and make sure that our highlight covers a complete
-         * line.
-         */
-        while ((int)buf.length() < CScreen::width())
-            buf += " ";
-
-        /*
-         * Ensure the line isn't too long, so we don't
-         * wrap around.
-         */
-        if ((int)buf.length() >  CScreen::width())
-            buf = buf.substr(0, CScreen::width() - 1);
-
-        /*
-         * Show the line, and reset the colours to known-good.
-         */
-        mvprintw(row, 0, "%s", buf.c_str());
-        wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
+        move(row, 0);
+        draw_single_line(buf);
     }
 
     /*
@@ -1510,6 +1416,65 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
     wattroff(stdscr, A_REVERSE | A_STANDOUT);
     wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
 
+}
+
+
+/**
+ * Draw a single text line, paying attention to our colour strings.
+ */
+void CScreen::draw_single_line(std::string buf)
+{
+    /*
+     * Get the horizontal scroll-position.
+     */
+    CConfig *config = CConfig::instance();
+    int x = config->get_integer("global.horizontal");
+
+    /*
+     * Look for a colour-string
+     */
+    if ((buf.size() > 3) && (buf.at(0) == '$'))
+    {
+        std::size_t start = buf.find("[");
+        std::size_t end   = buf.find("]");
+
+        if ((start != std::string::npos) &&
+                (end != std::string::npos))
+        {
+            std::string colour;
+            colour   = buf.substr(start + 1, end - start - 1);
+            buf    = buf.substr(end + 1);
+
+            wattron(stdscr, COLOR_PAIR(get_colour(colour)));
+        }
+    }
+
+    /*
+     * "Scroll" by starting from the middle of the string.
+     */
+    if (x < (int)buf.length())
+        buf = buf.substr(x);
+    else
+        buf = "";
+
+
+    /*
+     * Ensure we draw a complete line.
+     */
+    while ((int)buf.length() < CScreen::width())
+        buf += " ";
+
+    /*
+     * Ensure the line isn't too long, so we don't wrap around.
+     */
+    if ((int)buf.length() >  CScreen::width())
+        buf = buf.substr(0, CScreen::width() - 1);
+
+    /*
+     *  Draw the line, and reset any changed-colour.
+     */
+    printw("%s", buf.c_str());
+    wattron(stdscr, COLOR_PAIR(get_colour("white")));
 }
 
 

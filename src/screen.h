@@ -250,7 +250,6 @@ public:
      */
     bool on_keypress(const char *key);
 
-
     /**
      * Draw an array of lines to the screen, highlighting the current line.
      *
@@ -260,6 +259,12 @@ public:
      * fashion - with no selection, and no smooth-scrolling.
      */
     void draw_text_lines(std::vector<std::string> lines, int selected, int max, bool simple = false);
+
+    /**
+     * Draw a single text line, paying attention to our colour strings.
+     */
+    void draw_single_line(std::string text);
+
 
 private:
 
