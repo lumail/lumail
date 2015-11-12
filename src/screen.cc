@@ -39,6 +39,14 @@
 
 
 
+/*
+ * Used for `draw_single_line` function.
+ */
+#ifndef ARRAY_SIZE
+#  define ARRAY_SIZE( array ) sizeof( array ) / sizeof( array[0] )
+#endif
+
+
 /**
  * Data-structure associated with the status-bar.
  *
@@ -1313,14 +1321,15 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
      */
     if (simple)
     {
+        int size = lines.size();
+
         for (int i = 0; i < height; i++)
         {
-            if ((i + selected)  < (int)lines.size())
+            if ((i + selected)  < size)
             {
                 std::string buf = lines.at(i + selected);
 
-                move(i, 0);
-                draw_single_line(buf);
+                draw_single_line(i, buf);
             }
         }
 
@@ -1369,6 +1378,8 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
          * The current object.
          */
         int mailIndex = max;
+        int size      = lines.size();
+
 
         if (topBottomOrMiddle == TOP)
         {
@@ -1394,7 +1405,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
 
         std::string buf;
 
-        if ((mailIndex < max) && (mailIndex < (int)lines.size()))
+        if ((mailIndex < max) && (mailIndex < size))
             buf = lines.at(mailIndex);
 
         if (buf.empty())
@@ -1405,8 +1416,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         else
             wattroff(stdscr, A_REVERSE | A_STANDOUT);
 
-        move(row, 0);
-        draw_single_line(buf);
+        draw_single_line(row, buf);
     }
 
     /*
@@ -1419,35 +1429,156 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
 }
 
 
-/**
+/*
  * Draw a single text line, paying attention to our colour strings.
  */
-void CScreen::draw_single_line(std::string buf)
+void CScreen::draw_single_line(int row, std::string buf)
 {
+    /*
+     * Get the width of the screen.
+     */
+    int width = CScreen::width();
+
     /*
      * Split the string into segments, each of which might
      * have a different colour.
      */
     std::vector<COLOUR_STRING *> parts = parse_coloured_string(buf);
 
+    /*
+     * This is a horrible hack, or an inspirational piece of coding,
+     * I'm not sure which.
+     *
+     * We have a vector of string+colour pairs.
+     *
+     * To cope with handling horizontal scrolling we will now construct
+     * an array for each horizontal offset - this will have a column-by
+     * column pair of "colour" + "character" values.
+     *
+     * We will use our tokenized input to populate this array, and then
+     * draw it character by character.
+     *
+     */
+    int  col_buf[1024];  // TODO - Dynamic
+    char txt_buf[1024];   // TODO - Dynamic
+
+    /*
+     * We'll fill both arrays with sane defaults - white is the default
+     * colour.
+     */
+    int size  = ARRAY_SIZE(col_buf);
+    int white = COLOR_PAIR(get_colour("white"));
+
+    /*
+     * Initialize with sane defaults.
+     */
+    for (int i = 0; i < size; i++)
+    {
+        col_buf[i] = white;
+        txt_buf[i] = ' ';
+    }
+
+
+    /*
+     * Get our global horizontal offset.
+     */
+    CConfig *config = CConfig::instance();
+    int x = config->get_integer("global.horizontal");
+
+    /*
+     * Keep track of how wide the text is, minus the formatting markers.
+     */
+    int w = 0;
+
+    /*
+     * We now populate the two arrays with data for each X-position:
+     *
+     *     The attribute for that column.
+     *     The character for that column.
+     */
+    for (auto it = parts.begin(); it != parts.end() ; ++it)
+    {
+        /*
+         * Get the text/colour.
+         */
+        COLOUR_STRING *i = (*it);
+        std::string *colour = i->colour;
+        std::string *text   = i->string;
+
+        /*
+         * Add on the values to the row-settings.
+         */
+        for (int j = 0; j < (int)text->length() ; j++)
+        {
+            /*
+             * Bound this to make sure we don't try to walk off
+             * the end of `col_buf` or `txt_buf`.
+             */
+            if ((w + j) < size)
+            {
+                col_buf[w + j] = COLOR_PAIR(get_colour(*colour));
+                txt_buf[w + j] = text->at(j);
+            }
+        }
+
+        w += text->length();
+    }
+
+    /*
+     * We'll never draw more than this.
+     *
+     * TODO: This means you can't scroll more than 1023 characters
+     *       which should be fixed.
+     */
+    if (w > size)
+        w = size;
+
+    /*
+     * Now we draw the text, character by character.
+     */
+    int col = 0;
+
     /**
-     * Draw each string-segment
+     * Start from the horizontal-offset, and draw each character in
+     * the appropriate colour.
+     *
+     * Keep track of how many columns we drew, so that we can add padding
+     * if our line is too short.
+     */
+    for (int i = x;  i < w; i++)
+    {
+        wattron(stdscr, col_buf[i]);
+        mvprintw(row, col, "%c", txt_buf[i]);
+        col += 1;
+    }
+
+    /*
+     * Make sure we pad the line to the full width of the window, in our
+     * default colour.
+     */
+    wattron(stdscr, COLOR_PAIR(get_colour("white")));
+
+    /*
+     * Pad away ..
+     */
+    while (w < width)
+    {
+        printw(" ");
+        w += 1;
+    }
+
+
+    /*
+     * Finally free the tokenized string-bits.
      */
     for (auto it = parts.begin(); it != parts.end() ; ++it)
     {
         COLOUR_STRING *i = (*it);
-
-        /*
-         * Get the colour and the text.
-         */
-        std::string *colour = i->colour;
-        std::string *text   = i->string;
-
-        wattron(stdscr, COLOR_PAIR(get_colour(*colour)));
-        printw("%s", text->c_str());
+        delete(i->string);
+        delete(i->colour);
+        delete(i);
     }
 
-    wattron(stdscr, COLOR_PAIR(get_colour("white")));
 }
 
 

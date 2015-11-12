@@ -262,8 +262,10 @@ public:
 
     /**
      * Draw a single text line, paying attention to our colour strings.
+     *
+     * **NOTE**: This function is grossly inefficiant, although functional.
      */
-    void draw_single_line(std::string text);
+    void draw_single_line(int row, std::string text);
 
 
 private:
