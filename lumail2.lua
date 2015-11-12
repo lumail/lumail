@@ -1326,13 +1326,10 @@ end
 --
 function right()
    local x = Config:get("global.horizontal")
-   if ( not x ) then
-      x = 0
-   end
 
-   if ( x < Screen:width() ) then
-      x = x + 1
-   end
+   if ( not x ) then x = 0 end
+   x = x + 1
+
    Config:set( "global.horizontal", x )
 end
 
