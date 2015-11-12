@@ -265,7 +265,7 @@ public:
      *
      * **NOTE**: This function is grossly inefficiant, although functional.
      */
-    void draw_single_line(int row, std::string text);
+    void draw_single_line(int row, int col_offset, std::string text, WINDOW * screen);
 
 
 private:

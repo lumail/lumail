@@ -228,7 +228,9 @@ void CScreen::exit_main_loop()
 }
 
 
-
+/*
+ * Execute a command via `system`.
+ */
 void CScreen::execute(std::string prog)
 {
     int result __attribute__((unused));
@@ -484,44 +486,11 @@ void CScreen::status_panel_draw()
      */
     PANEL_DATA x = g_status_bar_data;
 
-    std::string title = x.title;
-
-    if (!title.empty())
+    if (! x.title.empty())
     {
-        std::string colour = "";
-
-        if (title.at(0) == '$')
-        {
-            std::size_t start = title.find("[");
-            std::size_t end   = title.find("]");
-
-            if ((start != std::string::npos) &&
-                    (end != std::string::npos))
-            {
-                colour = title.substr(start + 1, end - start - 1);
-                title  = title.substr(end + 1);
-            }
-        }
-
-        /*
-         * Set the colour, and draw the text.
-         */
-        if (colour.empty())
-            colour = "white";
-
-        while ((int)title.length() < CScreen::width() - 2)
-            title += " ";
-
-        /*
-         * Ensure the line isn't too long, so we don't wrap around.
-         */
-        if ((int)title.length() >  CScreen::width() - 2)
-            title = title.substr(0, CScreen::width() - 2);
-
-
-        wattron(g_status_bar_window, COLOR_PAIR(get_colour(colour)));
-        mvwprintw(g_status_bar_window, 1, 1, title.c_str());
+        draw_single_line(1, 1, x.title, g_status_bar_window);
     }
+
 
     if (x.text.size() > 0)
     {
@@ -539,45 +508,13 @@ void CScreen::status_panel_draw()
         while (i < (height - 3 - 1))
         {
             std::string text;
-            std::string colour = "";
 
             if (i < (int)tmp.size())
                 text = tmp.at(i);
             else
                 text = "";
 
-
-            if ((text.size() > 1) && (text.at(0) == '$'))
-            {
-                std::size_t start = text.find("[");
-                std::size_t end   = text.find("]");
-
-                if ((start != std::string::npos) &&
-                        (end != std::string::npos))
-                {
-                    colour = text.substr(start + 1, end - start - 1);
-                    text   = text.substr(end + 1);
-                }
-            }
-
-            if (colour.empty())
-                colour = "white";
-
-
-            /*
-             * Ensure we draw a complete line.
-             */
-            while ((int)text.length() < CScreen::width() - 2)
-                text += " ";
-
-            /*
-             * Ensure the line isn't too long, so we don't wrap around.
-             */
-            if ((int)text.length() >  CScreen::width() - 2)
-                text = text.substr(0, CScreen::width() - 2);
-
-            wattron(g_status_bar_window, COLOR_PAIR(get_colour(colour)));
-            mvwprintw(g_status_bar_window, (height - 2 - i), 1, text.c_str());
+            draw_single_line((height - 2 - i), 1, text, g_status_bar_window);
             i++;
         }
     }
@@ -1325,11 +1262,11 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
 
         for (int i = 0; i < height; i++)
         {
-            if ((i + selected)  < size)
+            if ((i + selected) < size)
             {
                 std::string buf = lines.at(i + selected);
 
-                draw_single_line(i, buf);
+                draw_single_line(i, 0, buf, stdscr);
             }
         }
 
@@ -1416,7 +1353,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         else
             wattroff(stdscr, A_REVERSE | A_STANDOUT);
 
-        draw_single_line(row, buf);
+        draw_single_line(row, 0, buf, stdscr);
     }
 
     /*
@@ -1432,8 +1369,9 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
 /*
  * Draw a single text line, paying attention to our colour strings.
  */
-void CScreen::draw_single_line(int row, std::string buf)
+void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW * screen)
 {
+
     /*
      * Get the width of the screen.
      */
@@ -1547,8 +1485,8 @@ void CScreen::draw_single_line(int row, std::string buf)
      */
     for (int i = x;  i < w; i++)
     {
-        wattron(stdscr, col_buf[i]);
-        mvprintw(row, col, "%c", txt_buf[i]);
+        wattron(screen, col_buf[i]);
+        mvwprintw(screen, row, col + col_offset, "%c", txt_buf[i]);
         col += 1;
     }
 
@@ -1556,14 +1494,14 @@ void CScreen::draw_single_line(int row, std::string buf)
      * Make sure we pad the line to the full width of the window, in our
      * default colour.
      */
-    wattron(stdscr, COLOR_PAIR(get_colour("white")));
+    wattron(screen, COLOR_PAIR(get_colour("white")));
 
     /*
      * Pad away ..
      */
-    while (w < width)
+    while (w < (width - col_offset))
     {
-        printw(" ");
+        wprintw(screen, " ");
         w += 1;
     }
 
