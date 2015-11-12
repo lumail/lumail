@@ -990,6 +990,10 @@ function lua_view()
    --
    output = { }
 
+   table.insert(output,"$[RED]This $[GREEN]is $[YELLOW]Lumail2 $[CYAN]version $[BLUE]" .. Config:get("global.version" ))
+   table.insert(output,"")
+
+
    --
    -- Now show the current maildir, message, etc.
    --

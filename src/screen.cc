@@ -1425,55 +1425,28 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
 void CScreen::draw_single_line(std::string buf)
 {
     /*
-     * Get the horizontal scroll-position.
+     * Split the string into segments, each of which might
+     * have a different colour.
      */
-    CConfig *config = CConfig::instance();
-    int x = config->get_integer("global.horizontal");
+    std::vector<COLOUR_STRING *> parts = parse_coloured_string(buf);
 
-    /*
-     * Look for a colour-string
+    /**
+     * Draw each string-segment
      */
-    if ((buf.size() > 3) && (buf.at(0) == '$'))
+    for (auto it = parts.begin(); it != parts.end() ; ++it)
     {
-        std::size_t start = buf.find("[");
-        std::size_t end   = buf.find("]");
+        COLOUR_STRING *i = (*it);
 
-        if ((start != std::string::npos) &&
-                (end != std::string::npos))
-        {
-            std::string colour;
-            colour   = buf.substr(start + 1, end - start - 1);
-            buf    = buf.substr(end + 1);
+        /*
+         * Get the colour and the text.
+         */
+        std::string *colour = i->colour;
+        std::string *text   = i->string;
 
-            wattron(stdscr, COLOR_PAIR(get_colour(colour)));
-        }
+        wattron(stdscr, COLOR_PAIR(get_colour(*colour)));
+        printw("%s", text->c_str());
     }
 
-    /*
-     * "Scroll" by starting from the middle of the string.
-     */
-    if (x < (int)buf.length())
-        buf = buf.substr(x);
-    else
-        buf = "";
-
-
-    /*
-     * Ensure we draw a complete line.
-     */
-    while ((int)buf.length() < CScreen::width())
-        buf += " ";
-
-    /*
-     * Ensure the line isn't too long, so we don't wrap around.
-     */
-    if ((int)buf.length() >  CScreen::width())
-        buf = buf.substr(0, CScreen::width() - 1);
-
-    /*
-     *  Draw the line, and reset any changed-colour.
-     */
-    printw("%s", buf.c_str());
     wattron(stdscr, COLOR_PAIR(get_colour("white")));
 }
 
