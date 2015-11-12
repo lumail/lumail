@@ -1538,7 +1538,7 @@ void CScreen::draw_single_line(int row, std::string buf)
      */
     int col = 0;
 
-    /**
+    /*
      * Start from the horizontal-offset, and draw each character in
      * the appropriate colour.
      *
