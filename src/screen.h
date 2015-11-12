@@ -83,12 +83,12 @@ typedef struct _COLOUR_STRING
     /**
      * The colour to use for this segment.
      */
-    int colour;
+    std::string *colour;
 
     /**
      * The string itself.
      */
-    std::string string;
+    std::string *string;
 
 } COLOUR_STRING;
 
@@ -250,10 +250,6 @@ public:
      */
     bool on_keypress(const char *key);
 
-    /**
-     * Get the colour-pair for the given name.
-     */
-    int get_colour(std::string name);
 
     /**
      * Draw an array of lines to the screen, highlighting the current line.
@@ -266,6 +262,11 @@ public:
     void draw_text_lines(std::vector<std::string> lines, int selected, int max, bool simple = false);
 
 private:
+
+    /**
+     * Get the colour-pair for the given name.
+     */
+    int get_colour(std::string name);
 
     /**
      * Redraw the status-panel.
@@ -281,6 +282,12 @@ private:
      * Convert ^I -> TAB, etc.
      */
     const char *lookup_key(int c);
+
+    /**
+     * Parse a string into an array of "string + colour" pairs,
+     * which will be useful for drawing strings.
+     */
+    std::vector<COLOUR_STRING *> parse_coloured_string(std::string input);
 
 private:
 
@@ -303,15 +310,8 @@ private:
      * coloured text on the screen.
      *
      * See `get_colour` for the accessor used to access this map.
-     *
      */
     std::unordered_map < std::string, int >m_colours;
-
-    /**
-     * Parse a string into an array of "string + colour" pairs,
-     * which will be useful for drawing strings.
-     */
-    std::vector<COLOUR_STRING *> parse_coloured_string(std::string);
 
 private:
 

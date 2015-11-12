@@ -17,24 +17,25 @@
  */
 
 #include <algorithm>
-#include <sys/ioctl.h>
 #include <cursesw.h>
-#include <iostream>
 #include <fstream>
-#include <unistd.h>
+#include <iostream>
 #include <panel.h>
+#include <regex>
 #include <string.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
-#include "config.h"
-#include "lua.h"
-#include "screen.h"
 
 #include "attachment_view.h"
+#include "config.h"
 #include "history.h"
 #include "index_view.h"
+#include "lua.h"
 #include "lua_view.h"
 #include "maildir_view.h"
 #include "message_view.h"
+#include "screen.h"
 
 
 
@@ -1516,12 +1517,66 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
  * Parse a string into an array of "string + colour" pairs,
  * which will be useful for drawing strings.
  */
-std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string)
+std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
 {
     std::vector<COLOUR_STRING *> results;
 
+
     /*
-     * MAGIC.
+     * I know this is horrid.
+     *
+     * NOTE: We're tryign to be greedy but searching from the
+     * back of the string forward.  This is definitely the simpler
+     * of the approaches I trialled.
      */
+    std::regex base_regex("^(.*)\\$\\[([a-zA-Z]+)\\](.*)$");
+    std::smatch base_match;
+
+    while (std::regex_match(input, base_match, base_regex))
+    {
+
+        /*
+         * Allocate a structure to hold this match.
+         */
+        COLOUR_STRING *tmp = (COLOUR_STRING *)malloc(sizeof(COLOUR_STRING));
+
+        std::ssub_match prefix_match = base_match[1];
+        std::string prefix = prefix_match.str();
+
+        std::ssub_match colour_match = base_match[2];
+        std::string colour = colour_match.str();
+
+        std::ssub_match str_match = base_match[3];
+        std::string str = str_match.str();
+
+        /*
+        * Save our match away.
+        */
+        tmp->colour = new std::string(colour);
+        tmp->string = new std::string(str);
+        results.push_back(tmp);
+
+        input = prefix;
+    }
+
+    /*
+     * If input is non-empty then we have leading match.  Handle that
+     * as a special case.
+     */
+    if (! input.empty())
+    {
+        /*
+         * Allocate a structure to hold this match.
+         */
+        COLOUR_STRING *tmp = (COLOUR_STRING *)malloc(sizeof(COLOUR_STRING));
+        tmp->colour = new std::string("default");
+        tmp->string = new std::string(input);
+        results.push_back(tmp);
+    }
+
+    /*
+     * Remember we searched backwards?  Reverse so all makes sense.
+     */
+    std::reverse(results.begin(), results.end());
     return (results);
 }
