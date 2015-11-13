@@ -1489,12 +1489,6 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
     }
 
     /*
-     * Make sure we pad the line to the full width of the window, in our
-     * default colour.
-     */
-    wattron(screen, COLOR_PAIR(get_colour("white")));
-
-    /*
      * Pad away ..
      */
     while (w < (width - col_offset))
@@ -1502,6 +1496,11 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
         wprintw(screen, " ");
         w += 1;
     }
+
+    /*
+     * Reset to our default colour.
+     */
+    wattron(screen, COLOR_PAIR(get_colour("white")));
 
 
     /*
