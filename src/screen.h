@@ -23,6 +23,8 @@
 #pragma once
 
 
+#include <cursesw.h>
+#include <panel.h>
 #include <string>
 #include <unordered_map>
 #include <vector>

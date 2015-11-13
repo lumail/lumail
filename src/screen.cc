@@ -17,10 +17,8 @@
  */
 
 #include <algorithm>
-#include <cursesw.h>
 #include <fstream>
 #include <iostream>
-#include <panel.h>
 #include <regex>
 #include <string.h>
 #include <sys/ioctl.h>

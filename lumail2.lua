@@ -229,6 +229,47 @@ function compare_by_date(a,b)
    return Message:to_ctime(a) < Message:to_ctime(b)
 end
 
+--
+-- Compare two messages, based upon from-header.
+--
+function compare_by_from(a,b)
+   return a:header("From") < b:header("From")
+end
+
+--
+-- Compare two messages, based upon subject-header.
+--
+function compare_by_subject(a,b)
+   return a:header("Subject") < b:header("Subject")
+end
+
+
+--
+-- Return our sorted messages
+--
+function sorted_messages()
+   -- Get all messages
+   local msgs = Global:current_messages()
+
+   -- What sort method should we use?  local method =
+   method = Config:get("index.sort") or "date"
+
+   if ( method == "sort" ) then
+      table.sort(msgs, compare_by_date)
+   end
+
+   if ( method == "from" ) then
+      table.sort(msgs, compare_by_from)
+   end
+
+   if ( method == "subject" ) then
+      table.sort(msgs, compare_by_subject)
+   end
+
+   return( msgs )
+end
+
+
 
 --
 -- Simple utility function to test if the given message is
@@ -554,13 +595,10 @@ function Message:delete()
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
       local offset  = Config:get( "index.current" )
-      local msgs    = Global:current_messages()
+      local msgs    = sorted_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
       end
-
-      -- Sort the messages by Date-header.
-      table.sort(msgs, compare_by_date)
 
       msg = msgs[offset+1]
 
@@ -600,13 +638,10 @@ function Message:forward()
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
       local offset  = Config:get( "index.current" )
-      local msgs    = Global:current_messages()
+      local msgs    = sorted_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
       end
-
-      -- Sort the messages by Date-header.
-      table.sort(msgs, compare_by_date)
 
       msg = msgs[offset+1]
    end
@@ -715,13 +750,10 @@ function Message:save()
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
       local offset  = Config:get( "index.current" )
-      local msgs    = Global:current_messages()
+      local msgs    = sorted_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
       end
-
-      -- Sort the messages by Date-header.
-      table.sort(msgs, compare_by_date)
 
       msg = msgs[offset+1]
    end
@@ -960,11 +992,7 @@ end
 function index_view()
    local result = {}
 
-   -- Get the currently available messages.
-   local messages = Global:current_messages()
-
-   -- Sort the messages by Date-header.
-   table.sort(messages, compare_by_date)
+   local messages = sorted_messages()
 
    -- For each one add the output
    for offset,object in ipairs( messages ) do
@@ -1262,12 +1290,7 @@ function select()
       --
       -- Get the messages
       --
-      local msgs = Global:current_messages()
-
-      --
-      -- Sort them.
-      --
-      table.sort(msgs, compare_by_date)
+      local msgs = sorted_messages()
 
       --
       -- Get the current offset.
@@ -1473,8 +1496,7 @@ function prev_message()
    local cur = Config:get("index.current")
 
    -- Get the messages, and sort.
-   local msgs = Global:current_messages()
-   table.sort(msgs, compare_by_date)
+   local msgs = sorted_messages()
 
    if ( cur > 0 ) then
       cur = cur - 1
@@ -1494,8 +1516,7 @@ function next_message()
    local max = Config:get("index.max")
 
    -- Get the messages, and sort.
-   local msgs = Global:current_messages()
-   table.sort(msgs, compare_by_date)
+   local msgs = sorted_messages()
 
    if ( cur < (max-1) ) then
       cur = cur + 1
