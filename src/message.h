@@ -138,4 +138,9 @@ private:
      */
     std::vector<std::shared_ptr<CMessagePart>> m_parts;
 
+    /**
+     * Cached message-headers from this mail.
+     */
+    std::unordered_map < std::string, std::string > m_headers;
+
 };

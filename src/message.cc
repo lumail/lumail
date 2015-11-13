@@ -88,16 +88,17 @@ std::string CMessage::header(std::string name)
  */
 std::unordered_map < std::string, std::string > CMessage::headers()
 {
-    std::unordered_map < std::string, std::string > m_header_values;
+    /*
+     * If we've cached these then return that copy.
+     */
+    if (m_headers.size() > 0)
+        return (m_headers);
 
-    GMimeMessage *
-    m_message;
-    GMimeParser *
-    parser;
-    GMimeStream *
-    stream;
-    int
-    fd;
+
+    GMimeMessage * m_message;
+    GMimeParser *parser;
+    GMimeStream *stream;
+    int fd;
 
     if ((fd = open(m_path.c_str(), O_RDONLY, 0)) == -1)
         throw "Opening the message failed";
@@ -111,18 +112,14 @@ std::unordered_map < std::string, std::string > CMessage::headers()
     g_object_unref(parser);
 
 
-    const char *
-    name;
-    const char *
-    value;
+    const char *name;
+    const char *value;
 
     /*
      * Prepare to iterate.
      */
-    GMimeHeaderList *
-    ls = GMIME_OBJECT(m_message)->headers;
-    GMimeHeaderIter *
-    iter = g_mime_header_iter_new();
+    GMimeHeaderList *ls   = GMIME_OBJECT(m_message)->headers;
+    GMimeHeaderIter *iter = g_mime_header_iter_new();
 
     if (g_mime_header_list_get_iter(ls, iter)
             && g_mime_header_iter_first(iter))
@@ -145,9 +142,8 @@ std::unordered_map < std::string, std::string > CMessage::headers()
             /*
              * Decode the value.
              */
-            char *
-            decoded = g_mime_utils_header_decode_text(value);
-            m_header_values[nm] = decoded;
+            char * decoded = g_mime_utils_header_decode_text(value);
+            m_headers[nm] = decoded;
 
 
             if (!g_mime_header_iter_next(iter))
@@ -160,7 +156,7 @@ std::unordered_map < std::string, std::string > CMessage::headers()
 
     g_object_unref(m_message);
 
-    return (m_header_values);
+    return (m_headers);
 }
 
 
