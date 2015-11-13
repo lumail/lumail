@@ -216,8 +216,7 @@ function Message:to_ctime(m)
       local seconds = lr_date.diff(d1, lr_date.epoch()):spanseconds()
       ctime_cache[p] = seconds
 
-      return seconds;
-   end
+      return seconds end
    return 0
 end
 
@@ -1279,6 +1278,16 @@ function select()
       Panel:append( "Selected maildir " .. md:path() )
 
       --
+      -- The user might want to change email addresses
+      -- now
+      for pattern,email in pairs(folder_from) do
+         if ( string.find( md:path(), pattern ) )then
+            Config:set("global.sender", email )
+            Panel:append("Updated sender to be " .. email )
+         end
+      end
+
+      --
       -- Change to the index-mode, so we can see the messages in
       -- the folder.
       --
@@ -1295,7 +1304,7 @@ function select()
       --
       -- Get the current offset.
       --
-      local msg  = msgs[cur+1];
+      local msg  = msgs[cur+1]
 
       --
       -- Now select
@@ -1743,12 +1752,12 @@ keymap['index']['n']   = 'Config:set( "index.limit", "new" )'
 keymap['maildir']['q']    = "os.exit()"
 keymap['index']['q']      = "change_mode('maildir')"
 keymap['message']['q']    = "change_mode('index')"
-keymap['attachment']['q'] = "change_mode( 'message' )"
+keymap['attachment']['q'] = "change_mode('message')"
 
 --
 -- Enter attachment-mode
 --
-keymap['message']['A']    = "change_mode( 'attachment' )"
+keymap['message']['A']    = "change_mode('attachment')"
 
 --
 -- Save the current attachment
@@ -1815,6 +1824,18 @@ Config:set( "colour.unread", "red" )
 -- Save persistant history of our input in the named file.
 --
 Config:set( "global.history", os.getenv( "HOME" ) .. "/.lumail2.history" )
+
+
+--
+-- Some people like ot change email addresses when they change
+-- folders.
+-- Here we allow that.
+--
+folder_from = {
+   ['example.com'] = "steve@example.com",
+   ['example.net'] = "steve@example.net",
+   ['SPAM']        = "steve@spare.example.net"
+}
 
 
 --
