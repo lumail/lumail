@@ -28,6 +28,8 @@ We have a number of variables which are special, the most important ones are:
 * `maildir.prefix`
     * This holds the prefix to the maildir hierarchy.
     * Maildirs are (recursively) found from here.
+* `index.sort`
+    * The method to sort messages by: `date`, `subject`, or `from` at this time.
 * `global.editor`
     * The user's editor.
 * `global.from`
