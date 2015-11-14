@@ -456,7 +456,18 @@ ${sig}
       if ( a == "s" ) or ( "a" == "S" ) then
          -- Send the mail.
          os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
-         Panel:append("Message sent" )
+         Panel:append("Message sent to " .. to )
+
+         --
+         -- Now we need to save a copy of the outgoing message.
+         --
+         local sent = Config:get( "global.sent-mail" )
+         if ( sent ) then
+            local msent = Maildir.new( sent )
+            local mpath = msent:generate_path( false )
+            File:copy(tmp, mpath)
+         end
+
          run = false
       end
 
@@ -598,6 +609,16 @@ Date: ${date}
          if ( not string.find( cf, "R" ) ) then
             cf = cf .. "R"
             msg:flags(cf)
+         end
+
+         --
+         -- Now we need to save a copy of the outgoing message.
+         --
+         local sent = Config:get( "global.sent-mail" )
+         if ( sent ) then
+            local msent = Maildir.new( sent )
+            local mpath = msent:generate_path( false )
+            File:copy(tmp, mpath)
          end
 
          run = false
@@ -759,6 +780,17 @@ Begin forwarded message.
          -- Send the mail.
          os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
          Panel:append("Message sent" )
+
+         --
+         -- Now we need to save a copy of the outgoing message.
+         --
+         local sent = Config:get( "global.sent-mail" )
+         if ( sent ) then
+            local msent = Maildir.new( sent )
+            local mpath = msent:generate_path( false )
+            File:copy(tmp, mpath)
+         end
+
          run = false
       end
 
