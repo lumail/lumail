@@ -1,14 +1,15 @@
 API
 ===
 
-The core idea of lumail2, and the reason for writing it rather than continuing to extend
-the version one project, is that everything is an object.
+The core idea beind lumail2, and the reason for writing it rather than
+continuing to extend the legacy-project, is that all the items that are
+involved are Objects.
 
-At the moment we have objects for working with:
+When you're writing configuration functions you should only be dealing
+with simple objects, such as:
 
-* Command-line options
-* Configuration variables.
-* Directories
+* Configuration values.
+* Directories.
 * Files.
 * Maildirs.
 * Messages.
@@ -16,9 +17,67 @@ At the moment we have objects for working with:
 * The screen.
     * The status-panel, which is optionally displayed upon the screen.
 
+By making all the basic things objects, and simplifying our API we've
+got a mail-client which is simple to script, and has a unified feel.
+There is no need for a large number of global-functions, just a few
+types of objects and ways to create/access them.
 
-Variables
+
+Callbacks
 ---------
+
+The mail-client is writting in C++ and generally defers to the Lua
+code to perform actions.
+
+There are two cases where Lua is specifically invoked from the C++
+core:
+
+* `on_idle()`
+     * This function is called regularly from the main loop.
+     * You can perform background action here.
+* `on_complete(token)`
+     * This is called when the user invokes TAB-completion upon a token.
+     * It should return a table of matches, which are presented to the user.
+
+Previously we had many more callbacks, for example a function that could be
+invoked when you opened a message, or changed the folder-selection. These
+days a lot of that code is already implemented in Lua, so if you wish to
+add code to handle such changes you can add it directly.
+
+
+
+Config
+------
+
+The `Config` object allows you to get, set, and iterate over configuration values.
+
+A configuration variable will have both a name and a value.  Values may be:
+
+* an integer
+* a string
+* a table of strings.
+
+The following (static) methods are available:
+
+* `Config:keys()`
+    * Return all the configuration-keys which have been set.
+* `Config:get(key)`
+    * Return the value of a given key.
+    * The value might be an integer, a string or an array (table of strings with integer indexes).
+* `Config:set(key,value)`
+    * Set the value of the given key.
+    * The value might be an integer, a string or an array (table of strings with integer indexes).
+
+If the function `Config:key_changed` is defined it will be invoked whenever
+the value of a key is changed.  The single argument being the name of the key
+which has been updated.
+
+Sample code is available in `sample.lua/config.lua`.
+
+
+
+Configuration Variables
+-----------------------
 
 We have a number of variables which are special, the most important ones are:
 
@@ -29,7 +88,7 @@ We have a number of variables which are special, the most important ones are:
     * This holds the prefix to the maildir hierarchy.
     * Maildirs are (recursively) found from here.
 * `index.sort`
-    * The method to sort messages by: `date`, `subject`, or `from` at this time.
+    * The method to sort messages by: `date`, `from`, `none`, or `subject` at this time.
 * `global.editor`
     * The user's editor.
 * `global.from`
@@ -57,46 +116,16 @@ and can be used for your own purposes.
 
 
 
-Callbacks
----------
-
-The global function `on_idle` is invoked between screen-refreshes.
-
-The global function `on_complete` is called to handle TAB-completion.
-
-
-Config
-------
-
-The Config method is registered automatically and doesn't need to be constructed.
-
-The following methods are available:
-
-* keys()
-    * Return all the configuration-keys which have been set.
-* get(key)
-    * Return the value of a given key.
-    * The value might be a string or an array (table of strings with integer indexes).
-* set(key,value)
-    * Set the value of the given key.
-    * The value might be a string or an array (table of strings with integer indexes).
-
-If the function `Config.key_changed` is defined it will be invoked whenever a key has a value updated.
-
-Sample code is available in `sample.lua/config.lua`.
-
-
-
-
 Directories
 -----------
 
 The following (static) methods exist:
 
-* Directory:entries(path)
+* `Directory:entries(path)`
    * Return a table of file-entries, present beneath the named directory.
-* Directory:exists(path)
+* `Directory:exists(path)`
    * Return `true` if the given directory exists.
+   * Return `false` otherwise.
 
 Sample code is available in `sample.lua/file.lua`.
 
@@ -107,11 +136,11 @@ Files
 
 The following (static) methods exist:
 
-* File:basename(path)
+* `File:basename(path)`
    * Return the basename of the given path.
-* File:exists(path)
+* `File:exists(path)`
    * Return a boolean based on whether the named file exists.
-* File:stat(path)
+* `File:stat(path)`
    * Return a table of information about the named target.
    * Returns `nil` on failure.
 
@@ -154,6 +183,7 @@ You can gain access to Maildir objects in several ways:
 * Constructing it manually: `m = Maildir.new( "./Maildir" )`.
 * Calling `Global:maildirs()` to get a list of all available Maildirs.
 * Calling `Global:current_maildir()` to return the currently selected maildir.
+    * This returns `nil` if no maildir is currently selected.
 
 The Maildir object has the following methods:
 
@@ -181,25 +211,27 @@ You can get access to message objects in several ways:
 
 * Construct one manually via `Message.new( path/to/message )`.
 * Call the `messages()` method on the currently-selected Maildir.
-    * This will return all messages in the given maildir, whether new, old or so
-mething else.
+    * This will return all messages in the given maildir, whether new, old or something else.
 * Call the `Global:current_message()` method.
     * This returns the single currently-selected message, if any.
+    * If no message is selected it will return `nil`.
 * Call the `Global:current_messages()` method.
     * This returns the currently available messages.
     * This pays attention to the `index.limit` variable.
 
-
 Message methods:
 
-* `flags`
-   * Get/Set the flags for the message.
-* `generate_message_id`
+* `flags()`
+   * Get the flags for the message.
+* `flags(new_flags)`
+   * Update the flags for the message.
+* `generate_message_id()`
    * Generate a random message-ID suitable for use in an email.
-* `header`
+* `header(name)`
    * Return the content of the named header, e.g. "Subject".
 * `headers()`
    * Return the names and values of every known-header, as a table.
+   * **NOTE**: All header-names are lower-cased.
 * `mark_read()`
    * Mark the message as having been read.
 * `mark_unread()`
@@ -214,15 +246,15 @@ Message methods:
 MessagePart objects are returned from the `parts()` method.  The `MessagePart`
 object contains the following methods:
 
-* content()
+* `content()`
 	* Returns the content of the part.
-* is_attachment()
+* `is_attachment()`
 	* Returns `true` if the part represents an attachment, false otherwise.
-* filename()
+* `filename()`
 	* Returns the name of the attachment, if `is_attachment` returned true.
-* size()
+* `size()`
     * Return the size of the content.
-* type()
+* `type()`
     * Returns the content-type of the MIME-part.
 
 Sample code is available in `sample.lua/show_message.lua`.
@@ -243,23 +275,23 @@ Sample code is available in `sample.lua/net.lua`.
 Screen
 ------
 
-The Screen object is registered automatically and doesn't need to be constructed  The following methods are available:
+The Screen object is registered automatically and doesn't need to be constructed  The following (static) methods are available:
 
-* `clear()`
+* `Screen:clear()`
     * Clear the screan-area.
-* `execute(cmd)`
+* `Screen:execute(cmd)`
     * Execute the given command, resetting the screen first.
-* `exit()`
+* `Screen:exit()`
     * Exit the main event-loop, and terminate the program.
-* `get_line( prompt-string, default-input )`
+* `Screen:get_line( prompt-string, default-input )`
     * Receive a line of input, from the prompt.
-* `height()`
+* `Screen:height()`
     * Return the height of the screen.
-* `prompt("Text", "chars" )`
+* `Screen:prompt("Text", "chars" )`
     * Accept input from a small list of characters, used for showing menus, etc.
-* `sleep(N)`
+* `Screen:sleep(N)`
     * Sleep for N-seconds.
-* `width()`
+* `Screen:width()`
     * Return the width of the screen.
 
 Sample code is available in `sample.lua/screen.lua`.
@@ -271,26 +303,26 @@ The panel is designed to collect & contain output messages for the user.
 New entries may be appended to it at any time, and the most recent N entries
 are displayed - the number being dependent upon the height of the panel.
 
-The Panel object has the following methods:
+The Panel object has the following (static) methods:
 
-* `append(str)`
+* `Panel:append(str)`
      * Append the specified string to the panel area.
-* `clear()`
+* `Panel:clear()`
      * Remove all prior output.
-* `height()`
+* `Panel:height()`
      * Get or set the size of the panel, in lines.
      * The panel will always be at least six lines tall.
-* `hide()`
+* `Panel:hide()`
      * Hide the panel, if visible.
-* `show()`
+* `Panel:show()`
      * Show the panel, if hidden.
-* `text()`
+* `Panel:text()`
      * Retrieve the current text in the panel, as a table.
-* `title( "New Title" )`
+* `Panel:title( "New Title" )`
      * Set the title of the panel
-* `title()`
+* `Panel:title()`
      * Get the title of the panel.
-* `toggle()`
+* `Panel:toggle()`
      * Toggle the visibility of the panel.
 
 Sample code is available in `sample.lua/panel.lua`.
@@ -305,20 +337,20 @@ Each of the major modes is implemented in a combination of Lua and C++.
 On the C++ side there is a virtual class instantiated which has the following
 two methods:
 
-* draw()
+* `draw()`
    * Draw the text.
-* on_idle()
+* `on_idle()`
    * Called to make updates, if required.
 
 On the Lua side each mode will call a method like:
 
-* index_view()
+* `index_view()`
     * Get the text to display in index-mode
-* lua_view()
+* `lua_view()`
     * Get the text to display in lua-mode
-* message_view()
+* `message_view()`
     * Get the text to display in message-mode
-* maildir_view()
+* `maildir_view()`
     * Get the text to display in maildir-mode
 
 
@@ -327,7 +359,7 @@ The lines may contain a prefix containing colour information.  For example:
 
     function lua_view()
       local r = { "$[RED]This is red",
-                  "$[YELLOW]This is yelloW!" }
+                  "$[YELLOW]This is yellow!" }
       return r
     end
 
