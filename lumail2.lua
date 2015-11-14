@@ -1856,6 +1856,17 @@ keymap['global']['P'] = 'panel_size_toggle()'
 Config:set( "maildir.prefix", os.getenv( "HOME" ) .. "/Maildir" )
 
 --
+-- Configure the path to save outgoing messages to.
+--
+local def_save = os.getenv( "HOME" ) .. "/Maildir/sent-mail"
+if (Directory:is_maildir(def_save) ) then
+   Config:set( "global.sent-mail", def_save)
+else
+   Panel:append( "WARNING: no sent-mail folder defined!" )
+end
+
+
+--
 -- Setup our default editor, for compose/reply/forward operations.
 --
 Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )

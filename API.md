@@ -101,6 +101,8 @@ We have a number of variables which are special, the most important ones are:
     * The horizontal-offset used to implement left/right scrolling.
 * `global.mode`
     * This holds the name of the currently active display-mode
+* `global.sent-mail`
+    * This is the Maildir to which outgoing messages are saved.
 
 For each mode that has a display there will be a `$mode.max` to store the
 count of the objects, as well as `$mode.current`.
