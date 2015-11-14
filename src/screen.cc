@@ -1525,7 +1525,6 @@ std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
 {
     std::vector<COLOUR_STRING *> results;
 
-
     /*
      * I know this is horrid.
      *
@@ -1566,7 +1565,7 @@ std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
          * Allocate a structure to hold this match.
          */
         COLOUR_STRING *tmp = (COLOUR_STRING *)malloc(sizeof(COLOUR_STRING));
-        tmp->colour = new std::string("default");
+        tmp->colour = new std::string("white");
         tmp->string = new std::string(input);
         results.push_back(tmp);
     }
