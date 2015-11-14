@@ -37,14 +37,13 @@ ifeq ($(UNAME),DragonFly)
 endif
 ifeq ($(UNAME),Darwin)
 	LVER=lua #(use lua-52)
-	LFLAGS=-std=c++11
 endif
 
 
 #
 # Compilation flags and libraries we use.
 #
-CPPFLAGS+=-std=gnu++0x -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) -DLUMAIL_VERSION="\"${VERSION}\""
+CPPFLAGS+=-std=c++0x -Wall -Werror $(shell pkg-config --cflags ${LVER}) $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) -DLUMAIL_VERSION="\"${VERSION}\""
 LDLIBS+=$(shell pkg-config --libs ${LVER}) $(shell pkg-config --libs ncursesw) $(shell pkg-config --libs panelw) -lpcrecpp
 
 #
