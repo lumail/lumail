@@ -19,11 +19,10 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <regex>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
-
+#include <pcrecpp.h>
 
 #include "attachment_view.h"
 #include "config.h"
@@ -1529,38 +1528,31 @@ std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
     /*
      * I know this is horrid.
      *
-     * NOTE: We're tryign to be greedy but searching from the
+     * NOTE: We're trying to be greedy but searching from the
      * back of the string forward.  This is definitely the simpler
      * of the approaches I trialled.
      */
-    std::regex base_regex("^(.*)\\$\\[([a-zA-Z]+)\\](.*)$");
-    std::smatch base_match;
+    pcrecpp::RE re("^(.*)\\$\\[([a-zA-Z]+)\\](.*)$");
 
-    while (std::regex_match(input, base_match, base_regex))
+    std::string pre;
+    std::string col;
+    std::string txt;
+
+    while (re.FullMatch(input, &pre, &col, &txt))
     {
-
         /*
          * Allocate a structure to hold this match.
          */
         COLOUR_STRING *tmp = (COLOUR_STRING *)malloc(sizeof(COLOUR_STRING));
 
-        std::ssub_match prefix_match = base_match[1];
-        std::string prefix = prefix_match.str();
-
-        std::ssub_match colour_match = base_match[2];
-        std::string colour = colour_match.str();
-
-        std::ssub_match str_match = base_match[3];
-        std::string str = str_match.str();
-
         /*
-        * Save our match away.
-        */
-        tmp->colour = new std::string(colour);
-        tmp->string = new std::string(str);
+         * Save our match away.
+         */
+        tmp->colour = new std::string(col);
+        tmp->string = new std::string(txt);
         results.push_back(tmp);
 
-        input = prefix;
+        input = pre;
     }
 
     /*

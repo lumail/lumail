@@ -77,7 +77,7 @@ Upon a Debian GNU/Linux host, running the Jessie (stable), release the following
 
     apt-get install build-essential make pkg-config
 
-    apt-get install liblua5.2-dev libgmime-2.6-dev libncursesw5-dev
+    apt-get install liblua5.2-dev libgmime-2.6-dev libncursesw5-dev libpcre3-dev
 
 With the dependencies installed you should ind the code builds cleanly with:
 
