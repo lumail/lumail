@@ -300,8 +300,8 @@ function sorted_messages()
    -- Get all messages
    local msgs = Global:current_messages()
 
-   -- What sort method should we use?  local method =
-   method = Config:get("index.sort") or "date"
+   -- What sort method should we use?
+   local method = Config:get("index.sort") or "date"
 
    if ( method == "date" ) then
       table.sort(msgs, compare_by_date)
@@ -380,7 +380,7 @@ function Message:generate_signature()
    domain = string.sub( sender, string.find( sender, "@" )+1 )
    domain = string.lower(domain)
 
-   -- Look for the domain-file beneath ~/.sigs/
+   -- Look for the domain-file ~/.sigs/$domain
    file = home .. "/.sigs/" .. domain
    if ( File:exists( file ) ) then
       return( read_file( file ) )
@@ -395,6 +395,7 @@ function Message:generate_signature()
 
    return ""
 end
+
 
 --
 -- Compose a new message.
@@ -828,6 +829,7 @@ function Message:save()
    end
 end
 
+
 --
 -- Utility function to open the Maildir with the given name.
 --
@@ -968,7 +970,7 @@ function attachment_view()
    --
    -- Get the parts from within the current message
    --
-   local msg   = Global:current_message()
+   local msg = Global:current_message()
    if ( not msg ) then
       return( { "No message selected!" } )
    end
@@ -989,7 +991,6 @@ function attachment_view()
    return( result )
 
 end
-
 
 
 
@@ -1067,6 +1068,9 @@ function lua_view()
    --
    output = { }
 
+   --
+   -- Test of the colour-mode.
+   --
    table.insert(output,"$[RED]This $[GREEN]is $[YELLOW]Lumail2 $[CYAN]version $[BLUE]" .. Config:get("global.version" ))
    table.insert(output,"")
 
@@ -1114,15 +1118,6 @@ function lua_view()
    return( output )
 end
 
-
---
--- A cache for Maildir formatting.
---
--- This cache is keyed upon the name of the Maildir, and the last
--- modification-time, so we don't need to worry about serving stale
--- content.
---
-local maildir_fmt_cache = {}
 
 --
 -- This method returns the text which is displayed when a maildir is
@@ -1430,7 +1425,7 @@ end
 --  * The mail-client is a modal editor.
 --  * You're always in one mode, stored in "Config:get("global.mode")".
 --  * Each mode displays the output of the lua-function $mode_view()
---  * This function returns a table of linesjj.
+--  * This function returns a table of lines.
 --  * There are also "current-offset" and "max-size" variables for these tables.
 --  * We can use this to dynamically invoke the right mode, and iterate.
 --
