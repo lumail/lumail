@@ -1702,14 +1702,16 @@ function on_complete( token )
    --
    for k,v in pairs(tmp) do
       if ( string.match( v, "^" .. token ) ) then
-         ret[k] = v
+         table.insert(ret, v)
       end
    end
 
    --
-   -- Return the value(s).
+   -- Return the sorted value(s).
    --
+   table.sort(ret)
    return(ret)
+
 end
 
 
