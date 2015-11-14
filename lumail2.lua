@@ -297,6 +297,7 @@ end
 -- Return our sorted messages
 --
 function sorted_messages()
+
    -- Get all messages
    local msgs = Global:current_messages()
 
@@ -319,7 +320,63 @@ function sorted_messages()
       -- NOP
    end
 
-   return( msgs )
+   --
+   -- Now limit the messages by limit
+   --
+   local limit = Config:get("index.limit" )
+
+   --
+   -- Temporary copies.
+   --
+   local ret = {}
+
+   if ( limit == nil ) or ( limit == "all" ) then
+      for i,o in ipairs(msgs) do
+         table.insert(ret, o)
+      end
+      return ret
+   end
+
+   if ( limit == "new" ) then
+      for i,o in ipairs(msgs) do
+         if ( Message:is_new(o) ) then
+            table.insert(ret, o)
+         end
+      end
+      return(ret)
+   end
+
+   if ( limit == "today" ) then
+      local time = os.time()
+      local today = time - ( 60 * 60 * 24 )
+
+      for i,o in ipairs(msgs) do
+         -- get current date of the message
+         local ctime = Message:to_ctime(o)
+
+         -- if it was within the past 24 hours then add it
+         if ( ctime > today ) then
+            table.insert(ret, o)
+         end
+      end
+      return(ret)
+   end
+
+   if ( limit ) then
+      for i,o in ipairs(msgs) do
+         local fmt = Message:format(o)
+         if ( string.find(fmt, limit) ) then
+            table.insert(ret, o)
+         end
+      end
+      return(ret)
+   end
+
+   local empty = {}
+   empty[1] = "EMPTY"
+   empty[2] = "EMPTY"
+
+   return( empty )
 end
 
 
@@ -515,7 +572,7 @@ function Message:reply()
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
       local offset  = Config:get( "index.current" )
-      local msgs    = Global:current_messages()
+      local msgs    = sorted_messages()
 
       if ( not msgs ) then
          Panel:append( "There are no messages!")
@@ -1830,10 +1887,15 @@ keymap['global']['?'] = 'find(-1)'
 -- Change the display-limits
 --
 keymap['maildir']['a'] = 'Config:set( "maildir.limit", "all" )'
-keymap['index']['a']   = 'Config:set( "index.limit", "all" )'
 keymap['maildir']['e'] = 'Config:set( "maildir.limit", ".*CRM.*" )'
 keymap['maildir']['n'] = 'Config:set( "maildir.limit", "new" )'
+
+--
+-- Limit the display of messages appropriately
+--
+keymap['index']['a']   = 'Config:set( "index.limit", "all" )'
 keymap['index']['n']   = 'Config:set( "index.limit", "new" )'
+keymap['index']['t']   = 'Config:set( "index.limit", "today" )'
 
 --
 -- Exit out of modes

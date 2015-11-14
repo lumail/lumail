@@ -121,13 +121,6 @@ void CGlobalState::update(std::string key_name)
          */
         update_maildirs();
     }
-    else if (key_name == "index.limit")
-    {
-        /*
-         * If the index-limit has changed update that too.
-         */
-        update_messages();
-    }
 }
 
 
@@ -238,25 +231,11 @@ void CGlobalState::update_messages()
 
     if (current)
     {
-        CConfig *config = CConfig::instance();
-        std::string limit = config->get_string("index.limit");
-
-        if (limit.empty())
-            limit = "all";
-
         CMessageList contents = current->getMessages();
 
-        /*
-         * Append to the list of messages combined.
-         */
         for (std::shared_ptr<CMessage> content : contents)
         {
-            if (limit == "all")
-                m_messages->push_back(content) ;
-
-            if (limit == "new")
-                if (content->is_new())
-                    m_messages->push_back(content);
+            m_messages->push_back(content) ;
         }
     }
 
