@@ -1324,7 +1324,7 @@ function select()
       for pattern,email in pairs(folder_from) do
          if ( string.find( md:path(), pattern ) )then
             Config:set("global.sender", email )
-            Panel:append("Updated sender to be " .. email )
+            Panel:append("Changed outgoing email-address to " .. email )
          end
       end
 
@@ -1851,9 +1851,18 @@ keymap['global']['P'] = 'panel_size_toggle()'
 -----------------------------------------------------------------------------
 
 --
--- Setup the prefix to our maildir hierarchy.
+-- The default Maildir location is ~/Maildir
 --
-Config:set( "maildir.prefix", os.getenv( "HOME" ) .. "/Maildir" )
+local def_maildir = os.getenv( "HOME" ) .. "/Maildir"
+
+--
+-- Set the maildir-prefix, if it exists.
+--
+if ( Directory:is_maildir(def_maildir) ) then
+   Config:set( "maildir.prefix", def_maildir )
+else
+   Panel:append( "WARNING: No maildir-prefix defined!" )
+end
 
 --
 -- Configure the path to save outgoing messages to.
@@ -1862,7 +1871,19 @@ local def_save = os.getenv( "HOME" ) .. "/Maildir/sent-mail"
 if (Directory:is_maildir(def_save) ) then
    Config:set( "global.sent-mail", def_save)
 else
-   Panel:append( "WARNING: no sent-mail folder defined!" )
+   Panel:append( "WARNING: No sent-mail folder defined!" )
+end
+
+
+--
+-- Setup our MTA
+--
+if ( File:exists( "/usr/lib/sendmail" ) ) then
+   Config:set( "global.mailer", "/usr/lib/sendmail -t" )
+elseif ( File:exists( "/usr/sbin/sendmail" ) ) then
+   Config:set( "global.mailer", "/usr/sbin/sendmail -t" )
+else
+   Panel:append( "WARNING: No sendmail binary found!" )
 end
 
 
@@ -1870,11 +1891,6 @@ end
 -- Setup our default editor, for compose/reply/forward operations.
 --
 Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )
-
---
--- Setup our MTA
---
-Config:set( "global.mailer", "/usr/lib/sendmail -t" )
 
 --
 -- Setup our default From: address.
@@ -1902,6 +1918,7 @@ cache_load()
 --
 -- Some people like ot change email addresses when they change
 -- folders.
+--
 -- Here we allow that.
 --
 folder_from = {
