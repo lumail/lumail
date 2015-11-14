@@ -143,6 +143,8 @@ The following (static) methods exist:
 
 * `File:basename(path)`
    * Return the basename of the given path.
+* `File:copy(src,dest)`
+   * Copy the given source file to the specified destination.
 * `File:exists(path)`
    * Return a boolean based on whether the named file exists.
 * `File:stat(path)`
