@@ -226,14 +226,10 @@ int l_CMaildir_mtime(lua_State *l)
 int l_CMaildir_generate_path(lua_State *l)
 {
     /*
-     * Get the path.
+     * Get the path, and "is-new" flag.
      */
     std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
-    int inew = luaL_checkint(l, 2);
-    bool is_new = false;
-
-    if (inew > 0)
-        is_new = true;
+    bool is_new = lua_toboolean(l, 2);
 
     std::string path = foo->generate_filename(is_new);
 
