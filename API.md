@@ -187,6 +187,9 @@ You can gain access to Maildir objects in several ways:
 
 The Maildir object has the following methods:
 
+* `generate_path( bool )`
+    * Generate the name of a file to save a message to within the maildir.
+    * Accepts a flag to determine if the filanem will be a new message, or a read one.
 * `path()`
     * Returns the path to the Maildir - what it was constructed with.
 * `messages()`

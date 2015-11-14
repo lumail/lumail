@@ -224,3 +224,72 @@ CMessageList CMaildir::getMessages()
 
     return result;
 }
+
+
+/*
+ * Generate a filename for saving a message in this maildir.
+ */
+std::string CMaildir::generate_filename(bool is_new)
+{
+    /*
+     * Ensure the path to our maildir is a maildir
+     */
+    std::string tmp = path();
+    std::string path = tmp;
+
+    if (! CFile::is_maildir(path))
+        return "";
+
+    /*
+     * Generate the path.
+     */
+    if (is_new)
+        path += "/new/";
+    else
+        path += "/cur/";
+
+    /*
+     * Filename is: $time.xxx.$hostname.
+     */
+    char host[1024] = {'\0'};
+    gethostname(host, sizeof(host) - 1);
+    std::string hostname(host);
+
+    /*
+     * Loop until we found a file that is unique.
+     */
+    while (true)
+    {
+        /*
+         * Convert the seconds past the epoch to a string.
+         */
+        time_t current_time = time(NULL);
+        std::stringstream ss;
+        ss << current_time;
+        std::string since_epoch = ss.str();
+
+        std::string file = since_epoch;
+        file += ".";
+        file += hostname;
+
+        /*
+         * Random number.
+         */
+        int r = rand() % 1000;
+        ss << r;
+        file += ss.str();
+
+        /*
+         * Generate the temporary file.
+         */
+        file += ":2";
+
+        if (is_new)
+            file += ",N";
+        else
+            file += ",S";
+
+        if (! CFile::exists(path  + file))
+            return (path + file);
+    }
+}

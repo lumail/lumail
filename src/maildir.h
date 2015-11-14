@@ -79,6 +79,11 @@ public:
      */
     CMessageList getMessages();
 
+    /**
+     * Generate a filename for saving a new message in this
+     * maildir.
+     */
+    std::string generate_filename(bool is_new);
 
 private:
 

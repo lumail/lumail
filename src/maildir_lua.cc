@@ -218,6 +218,30 @@ int l_CMaildir_mtime(lua_State *l)
 }
 
 
+
+
+/**
+ * Generate a path to save a message to.
+ */
+int l_CMaildir_generate_path(lua_State *l)
+{
+    /*
+     * Get the path.
+     */
+    std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
+    int inew = luaL_checkint(l, 2);
+    bool is_new = false;
+
+    if (inew > 0)
+        is_new = true;
+
+    std::string path = foo->generate_filename(is_new);
+
+    lua_pushstring(l, path.c_str());
+    return 1;
+}
+
+
 /**
  * Destructor.
  */
@@ -247,13 +271,14 @@ void InitMaildir(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
     {
+        {"__gc", l_CMaildir_destructor},
+        {"generate_path", l_CMaildir_generate_path},
+        {"messages", l_CMaildir_messages},
+        {"mtime", l_CMaildir_mtime},
         {"new", l_CMaildir_constructor},
         {"path", l_CMaildir_path},
         {"total_messages", l_CMaildir_total_messages},
         {"unread_messages", l_CMaildir_unread_messages},
-        {"messages", l_CMaildir_messages},
-        {"mtime", l_CMaildir_mtime},
-        {"__gc", l_CMaildir_destructor},
         {NULL, NULL}
     };
     luaL_newmetatable(l, "luaL_CMaildir");
