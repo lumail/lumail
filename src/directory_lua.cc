@@ -26,7 +26,7 @@ extern "C"
 
 
 #include "directory.h"
-
+#include "file.h"
 
 /**
  * Does the given directory exist?
@@ -79,6 +79,26 @@ int l_CDirectory_entries(lua_State * l)
 
 
 /**
+ * Is the given directory a maildir?
+ */
+int l_CDirectory_is_maildir(lua_State * l)
+{
+    const char *str = lua_tostring(l, 2);
+
+    if (str != NULL)
+    {
+        if (CFile::is_maildir(str))
+            lua_pushboolean(l , 1);
+        else
+            lua_pushboolean(l , 0);
+
+        return 1;
+    }
+
+    return 0;
+}
+
+/**
  * Export the `Directory` class to Lua.
  *
  * Bind the appropriate methods to that object.
@@ -89,6 +109,7 @@ void InitDirectory(lua_State * l)
     {
         {"exists",  l_CDirectory_exists},
         {"entries", l_CDirectory_entries},
+        {"is_maildir", l_CDirectory_is_maildir},
         {NULL,      NULL}
     };
     luaL_newmetatable(l, "luaL_CDirectory");

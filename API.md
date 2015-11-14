@@ -126,6 +126,9 @@ The following (static) methods exist:
 * `Directory:exists(path)`
    * Return `true` if the given directory exists.
    * Return `false` otherwise.
+* `Directory:is_maildir(path)`
+   * Return `true` if the given directory is a Maildir.
+   * Return `false` otherwise.
 
 Sample code is available in `sample.lua/file.lua`.
 
