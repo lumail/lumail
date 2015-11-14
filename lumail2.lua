@@ -1,5 +1,5 @@
 --
--- 0. Lumail2 configuration-file
+-- Lumail2 configuration-file
 --
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
@@ -36,7 +36,7 @@
 
 
 --
--- 0. Setup a sane Lua load-path
+--  Setup a sane Lua load-path
 --
 ----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
@@ -61,8 +61,60 @@ pcall("lr_date = require 'date'" )
 
 
 
+
 --
--- 1. Define some utility functions
+-- Setup a cache for objects, and define functions for loading/saving
+-- the cache-state.
+--
+----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
+local cache = {}
+
+
+--
+-- (Re)load our cache, if we have a cache-file defined, and it exists.
+--
+function cache_load()
+   local file = Config:get("message.cache")
+   if (file) and File:exists( file ) then
+      Panel:append("loading cache from: " .. file )
+      for line in io.lines(file) do
+         key, val = line:match("([^=]+)=(.*)")
+         cache[key] = val
+      end
+   end
+end
+
+--
+-- Write out the key/vals from our local cache object to the filename
+-- the user has set.  If there is no filename them don't write.
+--
+function cache_save()
+   local file = Config:get("message.cache")
+   if (file) then
+      local hand = io.open(file,"w")
+      for key,val in pairs(cache) do
+         hand:write( key .. "=" .. val  .. "\n")
+      end
+      hand:close()
+   end
+end
+
+--
+-- Flush our (on-disk) cache
+--
+function cache_flush()
+   for k in pairs (cache) do
+      cache[k] = nil
+   end
+   cache_save()
+end
+
+
+
+--
+-- Define some utility functions
 --
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
@@ -168,6 +220,7 @@ function toggle_variable( name )
    Config:set( name, current )
 end
 
+
 --
 -- Change the mode - and update the panel-title, if we have one.
 --
@@ -177,10 +230,6 @@ function change_mode( new_mode )
 end
 
 
---
--- Cache of message ctime values.
---
-ctime_cache = {}
 
 --
 -- Get the date of the message in terms of seconds past the epoch.
@@ -192,8 +241,8 @@ ctime_cache = {}
 function Message:to_ctime(m)
 
    local p = m:path()
-   if ( ctime_cache[p] ) then
-      return(ctime_cache[p] )
+   if ( cache["ctime:" .. p] ) then
+      return(cache["ctime:" .. p] )
    end
 
    --
@@ -202,8 +251,9 @@ function Message:to_ctime(m)
    --
    if ( not lr_date ) then
       local stat = File:stat( m:path() )
-      ctime_cache[p] = stat['mtime']
-      return(ctime_cache[p])
+      local res  = stat['mtime']
+      cache["ctime:" .. p] = res
+      return(res)
    end
 
    --
@@ -214,9 +264,9 @@ function Message:to_ctime(m)
    if ( d ) then
       local d1 = lr_date(d)
       local seconds = lr_date.diff(d1, lr_date.epoch()):spanseconds()
-      ctime_cache[p] = seconds
-
-      return seconds end
+      cache["ctime:" ..p] = seconds
+      return seconds
+   end
    return 0
 end
 
@@ -253,7 +303,7 @@ function sorted_messages()
    -- What sort method should we use?  local method =
    method = Config:get("index.sort") or "date"
 
-   if ( method == "sort" ) then
+   if ( method == "date" ) then
       table.sort(msgs, compare_by_date)
    end
 
@@ -263,6 +313,10 @@ function sorted_messages()
 
    if ( method == "subject" ) then
       table.sort(msgs, compare_by_subject)
+   end
+
+   if ( method == "none" ) then
+      -- NOP
    end
 
    return( msgs )
@@ -850,7 +904,7 @@ end
 
 
 --
--- 2. Define our views
+-- Define our views
 --
 -----------------------------------------------------------------------------
 
@@ -940,15 +994,6 @@ end
 
 
 --
--- A cache for message formatting.
---
--- This cache is keyed upon the name of the message, and the last
--- modification-time, so we don't need to worry about serving stale
--- content.
---
-local message_fmt_cache = {}
-
---
 -- This function formats a single message for display in index-mode,
 -- it is called by the `index_view()` function defined next.
 --
@@ -957,10 +1002,9 @@ function Message:format(msg)
    local time   = msg:mtime()
 
    -- Do we have this cached?  If so return it
-   if ( message_fmt_cache[time .. path] ) then
-      return(message_fmt_cache[time .. path])
+   if ( cache["message:" .. time .. path] ) then
+      return(cache["message:" .. time .. path])
    end
-
 
    local flags   = msg:flags()
    local subject = msg:header( "Subject" )
@@ -976,7 +1020,8 @@ function Message:format(msg)
    end
 
    -- Update the cache.
-   message_fmt_cache[time .. path] = output
+   cache["message:" .. time .. path] = output
+
    return( output )
 end
 
@@ -998,6 +1043,11 @@ function index_view()
       local str = Message:format(object)
       table.insert(result,str)
    end
+
+   --
+   -- Save our (updated?) cache
+   --
+   cache_save()
 
    --
    -- Update the colours
@@ -1084,10 +1134,11 @@ local maildir_fmt_cache = {}
 function Maildir:format(obj)
    local path   = obj:path()
    local time   = obj:mtime()
+   local trunc  = Config:get("truncate.maildir") or 0
 
    -- Do we have this cached?  If so return it
-   if ( maildir_fmt_cache[time .. path] ) then
-      return(maildir_fmt_cache[time .. path])
+   if ( cache["maildir:" .. trunc .. time .. path] ) then
+      return(cache["maildir:" .. trunc .. time .. path])
    end
 
    local total  = obj:total_messages()
@@ -1096,7 +1147,7 @@ function Maildir:format(obj)
    --
    -- Path might be truncated, via "p".
    --
-   if ( Config:get( "truncate.maildir" ) == "0" ) then
+   if ( trunc ~= 0 ) then
       path = File:basename(path)
    end
 
@@ -1110,7 +1161,7 @@ function Maildir:format(obj)
    end
 
    -- update the cache
-   maildir_fmt_cache[time .. path] = output
+   cache["maildir:" .. trunc .. time .. path] = output
 
    return output
 end
@@ -1133,6 +1184,11 @@ function maildir_view()
       local str = Maildir:format(object)
       table.insert(result,str)
    end
+
+   --
+   -- Save our (updated?) cache
+   --
+   cache_save()
 
    --
    -- Update the colours
@@ -1238,7 +1294,7 @@ end
 
 
 --
--- 3. Define some functions which are bound to keys, to move around, etc.
+-- Define some functions which are bound to keys, to move around, etc.
 --
 -----------------------------------------------------------------------------
 
@@ -1536,7 +1592,7 @@ end
 
 
 --
--- 4. Define some call-backs which are implemented at various times.
+-- Define some call-backs which are implemented at various times.
 --
 -----------------------------------------------------------------------------
 
@@ -1670,7 +1726,7 @@ end
 
 
 --
--- 5. Define our key-bindings.
+--  Define our key-bindings.
 --
 -----------------------------------------------------------------------------
 
@@ -1791,7 +1847,7 @@ keymap['global']['P'] = 'panel_size_toggle()'
 
 
 --
--- 6. Configure the mail-client.
+--  Configure the mail-client.
 --
 -----------------------------------------------------------------------------
 
@@ -1824,6 +1880,13 @@ Config:set( "colour.unread", "red" )
 -- Save persistant history of our input in the named file.
 --
 Config:set( "global.history", os.getenv( "HOME" ) .. "/.lumail2.history" )
+
+--
+-- Configure a cache-file, and populate it
+--
+Config:set( "message.cache", os.getenv( "HOME" ) .. "/.lumail2.cache" )
+cache_load()
+
 
 
 --
@@ -1867,8 +1930,11 @@ colour_table['message'] = {
    ['^> >'] = 'green'
 }
 
+
+
+
 --
--- 7.  Handle any command-line argumenst
+--   Handle any command-line argumenst
 --
 -----------------------------------------------------------------------------
 
