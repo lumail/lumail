@@ -470,15 +470,6 @@ void CScreen::status_panel_draw()
     int width = CScreen::width();
 
     /*
-     * Select white, and draw a box.
-     */
-    wattron(g_status_bar_window, COLOR_PAIR(1));
-    box(g_status_bar_window, 0, 0);
-    mvwaddch(g_status_bar_window, 2, 0, ACS_LTEE);
-    mvwhline(g_status_bar_window, 2, 1, ACS_HLINE, width - 2);
-    mvwaddch(g_status_bar_window, 2, width - 1, ACS_RTEE);
-
-    /*
      * Show the title, and the last two lines of the text.
      */
     PANEL_DATA x = g_status_bar_data;
@@ -515,6 +506,16 @@ void CScreen::status_panel_draw()
             i++;
         }
     }
+
+    /*
+     * Select white, and draw a box.
+     */
+    wattron(g_status_bar_window, COLOR_PAIR(1));
+    box(g_status_bar_window, 0, 0);
+    mvwaddch(g_status_bar_window, 2, 0, ACS_LTEE);
+    mvwhline(g_status_bar_window, 2, 1, ACS_HLINE, width - 2);
+    mvwaddch(g_status_bar_window, 2, width - 1, ACS_RTEE);
+
 
 }
 
