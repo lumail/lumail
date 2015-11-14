@@ -44,6 +44,20 @@ int l_CFile_basename(lua_State * l)
 
 
 /**
+ * Copy the given file.
+ */
+int l_CFile_copy(lua_State * l)
+{
+    const char *src = lua_tostring(l, 2);
+    const char *dst = lua_tostring(l, 3);
+
+    CFile::copy(src, dst);
+
+    return 0;
+}
+
+
+/**
  * Does the given file exist?
  */
 int l_CFile_exists(lua_State * l)
@@ -159,10 +173,11 @@ void InitFile(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
     {
-        {"basename",  l_CFile_basename},
-        {"exists",  l_CFile_exists},
-        {"stat",    l_CFile_stat},
-        {NULL,      NULL}
+        {"basename", l_CFile_basename},
+        {"copy",     l_CFile_copy},
+        {"exists",   l_CFile_exists},
+        {"stat",     l_CFile_stat},
+        {NULL,       NULL}
     };
     luaL_newmetatable(l, "luaL_CFile");
 
