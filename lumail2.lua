@@ -1046,11 +1046,6 @@ function index_view()
    end
 
    --
-   -- Save our (updated?) cache
-   --
-   cache_save()
-
-   --
    -- Update the colours
    --
    result = add_colours(result, 'index')
@@ -1179,11 +1174,6 @@ function maildir_view()
       local str = Maildir:format(object)
       table.insert(result,str)
    end
-
-   --
-   -- Save our (updated?) cache
-   --
-   cache_save()
 
    --
    -- Update the colours
@@ -1695,14 +1685,28 @@ end
 -- This function is called when the main-loop timesout, which is roughly
 -- once per second.
 --
-function on_idle()
+do
+   -- last sync time.
+   local ls = os.time()
 
-   --
-   -- This shows the way that we can append messages constantly
-   -- to the panel.
-   --
-   -- Panel:append("The date is " .. Message:generate_date())
-   --
+   function on_idle()
+
+      -- get current time
+      ct = os.time()
+
+      -- If it is two minutes then save our cache to disk
+      if ( ( ct - ls ) >= ( 60 * 2 ) ) then
+         ls = ct
+         cache_save()
+      end
+
+      --
+      -- This shows the way that we can append messages constantly
+      -- to the panel.
+      --
+      -- Panel:append("The date is " .. Message:generate_date())
+      --
+   end
 end
 
 
