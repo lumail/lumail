@@ -1361,6 +1361,47 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
     wattroff(stdscr, A_REVERSE | A_STANDOUT);
     wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
 
+
+}
+
+
+/*
+ * HORRID HACK - TODO - FIXME.
+ */
+void wide_print_char(wchar_t c)
+{
+  cchar_t c2;
+  wchar_t wc[2];
+  int result;
+
+  wc[0] = c;
+  wc[1] = L'\0';
+
+  result = setcchar(&c2, wc, 0, 0, NULL);
+  if (result != OK)
+  {
+      endwin();
+      printf("error in setcchar()!\n");
+  }
+  add_wch(&c2);
+}
+
+
+/*
+ * HORRID HACK - TODO - FIXME.
+ */
+wchar_t* widen(const char* text)
+{
+  int numChars = mbstowcs(NULL, text, 0);
+  wchar_t* wideText = (wchar_t *)malloc( (numChars+1) * sizeof(wchar_t));
+  int convresult = mbstowcs(wideText, text, numChars+1);
+  if (convresult != numChars)
+  {
+      endwin();
+      printf("error in mbstowcs()\n");
+  }
+
+  return wideText;
 }
 
 
@@ -1480,22 +1521,32 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
      *
      * Keep track of how many columns we drew, so that we can add padding
      * if our line is too short.
+     *
+     * HOWEVER there is a massive caveat, and that is that we must
+     * deal with UTF-8 issues.
+     *
+     * We do that by "widening" the characters, then printing out those
+     * wide version.
      */
+    const wchar_t* wide = widen(txt_buf);
     for (int i = x;  i < w; i++)
     {
         wattron(screen, col_buf[i]);
-        mvwprintw(screen, row, col + col_offset, "%c", txt_buf[i]);
+        wmove(screen,row,col);
+        wide_print_char(wide[i]);
         col += 1;
     }
+    free((void *)wide);
 
     /*
-     * Pad away ..
+     * Pad the line.
      */
     while (w < (width - col_offset))
     {
-        wprintw(screen, " ");
-        w += 1;
+      wprintw(screen, " ");
+      w += 1;
     }
+
 
     /*
      * Reset to our default colour.
