@@ -1469,7 +1469,7 @@ function select()
       -- The user might want to change email addresses
       -- now
       for pattern,email in pairs(folder_from) do
-         if ( string.find( md:path(), pattern ) )then
+         if ( string.find( folder:path(), pattern ) )then
             Config:set("global.sender", email )
             Panel:append("Changed outgoing email-address to " .. email )
          end
@@ -1945,7 +1945,7 @@ keymap['global']['?'] = 'find(-1)'
 -- Change the display-limits
 --
 keymap['maildir']['a'] = 'Config:set( "maildir.limit", "all" )'
-keymap['maildir']['e'] = 'Config:set( "maildir.limit", ".*CRM.*" )'
+keymap['maildir']['e'] = 'Config:set( "maildir.limit", "RT." )'
 keymap['maildir']['n'] = 'Config:set( "maildir.limit", "new" )'
 
 --

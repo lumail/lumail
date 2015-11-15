@@ -114,10 +114,10 @@ void CGlobalState::update(std::string key_name)
         CHistory *history = CHistory::instance();
         history->set_file(path);
     }
-    else  if ((key_name == "maildir.limit") || (key_name == "maildir.prefix"))
+    else  if (key_name == "maildir.prefix")
     {
         /*
-         * Otherwise if the maildir-prefix or limit has changed update things
+         * Otherwise if the maildir-prefix has changed update things.
          */
         update_maildirs();
     }
