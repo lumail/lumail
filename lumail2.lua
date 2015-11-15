@@ -293,6 +293,65 @@ function compare_by_subject(a,b)
 end
 
 
+
+--
+-- Return our maildirs
+--
+function maildirs()
+   local all = Global:maildirs()
+
+   --
+   -- Get the maildir.limit
+   --
+   local limit = Config:get("maildir.limit" )
+
+   --
+   -- Temporary copies.
+   --
+   local ret = {}
+
+   --
+   -- All
+   --
+   if ( limit == nil ) or ( limit == "all" ) then
+      for i,o in ipairs(all) do
+         table.insert(ret, o)
+      end
+      return ret
+   end
+
+   --
+   -- New
+   --
+   if ( limit == "new" ) then
+      for i,o in ipairs(all) do
+         local unread = o:unread_messages()
+         if ( unread > 0 ) then
+            table.insert(ret, o)
+         end
+      end
+      return ret
+   end
+
+   --
+   -- Some string to match against.
+   --
+   if ( limit ) then
+      for i,o in ipairs(all) do
+         local fmt = Maildir:format(o)
+         if ( string.find(fmt, limit) ) then
+            table.insert(ret, o)
+         end
+      end
+      return(ret)
+   end
+
+   --
+   -- Can't happen?
+   --
+   return(all)
+end
+
 --
 -- Return our sorted messages
 --
@@ -927,7 +986,7 @@ end
 function Maildir.select( desired )
 
    -- Get the maildirs
-   local folders = Global:maildirs()
+   local folders = maildirs()
 
    -- For each one .. see if it matches
    for index,object in ipairs( folders ) do
@@ -1256,7 +1315,7 @@ function maildir_view()
    local result = {}
 
    -- Get the maildirs
-   local folders = Global:maildirs()
+   local folders = maildirs()
 
    -- For each one add the output
    for index,object in ipairs( folders ) do
@@ -1399,13 +1458,12 @@ function select()
    local cur  = Config:get(mode .. ".current")
 
    if ( mode == "maildir" ) then
-      local folders = Global:maildirs()
+      local folders = maildirs()
       local folder  = folders[cur+1]
       Global:select_maildir( folder )
 
       -- Log the change of maildir.
-      local md = Global:current_maildir()
-      Panel:append( "Selected maildir " .. md:path() )
+      Panel:append( "Selected maildir " .. folder:path() )
 
       --
       -- The user might want to change email addresses

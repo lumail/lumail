@@ -169,15 +169,6 @@ void CGlobalState::update_maildirs()
 
 
     /*
-     * Get the maildir.limit.
-     */
-    std::string limit = config->get_string("maildir.limit");
-
-    if (limit.empty())
-        limit = "all";
-
-
-    /*
      * We'll store each maildir here.
      */
     std::vector<std::string> folders;
@@ -187,18 +178,7 @@ void CGlobalState::update_maildirs()
     {
         std::shared_ptr<CMaildir> m = std::shared_ptr<CMaildir>(new CMaildir(path));
 
-        if (limit == "all")
-            m_maildirs->push_back(m);
-        else  if (limit == "new")
-        {
-            if (m->unread_messages() > 0)
-                m_maildirs->push_back(m);
-        }
-        else
-        {
-            if (std::regex_match(path, std::regex(limit)))
-                m_maildirs->push_back(m);
-        }
+        m_maildirs->push_back(m);
     }
 
     /*
