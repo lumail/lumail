@@ -1368,7 +1368,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
 /*
  * HORRID HACK - TODO - FIXME.
  */
-void wide_print_char(wchar_t c)
+void wide_print_char(WINDOW *screen, wchar_t c)
 {
   cchar_t c2;
   wchar_t wc[2];
@@ -1383,7 +1383,7 @@ void wide_print_char(wchar_t c)
       endwin();
       printf("error in setcchar()!\n");
   }
-  add_wch(&c2);
+  wadd_wch(screen,&c2);
 }
 
 
@@ -1532,8 +1532,8 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
     for (int i = x;  i < w; i++)
     {
         wattron(screen, col_buf[i]);
-        wmove(screen,row,col);
-        wide_print_char(wide[i]);
+        wmove(screen,row,col+col_offset);
+        wide_print_char(screen,wide[i]);
         col += 1;
     }
     free((void *)wide);
