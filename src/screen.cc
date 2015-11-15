@@ -1370,20 +1370,22 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
  */
 void wide_print_char(WINDOW *screen, wchar_t c)
 {
-  cchar_t c2;
-  wchar_t wc[2];
-  int result;
+    cchar_t c2;
+    wchar_t wc[2];
+    int result;
 
-  wc[0] = c;
-  wc[1] = L'\0';
+    wc[0] = c;
+    wc[1] = L'\0';
 
-  result = setcchar(&c2, wc, 0, 0, NULL);
-  if (result != OK)
-  {
-      endwin();
-      printf("error in setcchar()!\n");
-  }
-  wadd_wch(screen,&c2);
+    result = setcchar(&c2, wc, 0, 0, NULL);
+
+    if (result != OK)
+    {
+        endwin();
+        printf("error in setcchar()!\n");
+    }
+
+    wadd_wch(screen, &c2);
 }
 
 
@@ -1392,16 +1394,17 @@ void wide_print_char(WINDOW *screen, wchar_t c)
  */
 wchar_t* widen(const char* text)
 {
-  int numChars = mbstowcs(NULL, text, 0);
-  wchar_t* wideText = (wchar_t *)malloc( (numChars+1) * sizeof(wchar_t));
-  int convresult = mbstowcs(wideText, text, numChars+1);
-  if (convresult != numChars)
-  {
-      endwin();
-      printf("error in mbstowcs()\n");
-  }
+    int numChars = mbstowcs(NULL, text, 0);
+    wchar_t* wideText = (wchar_t *)malloc((numChars + 1) * sizeof(wchar_t));
+    int convresult = mbstowcs(wideText, text, numChars + 1);
 
-  return wideText;
+    if (convresult != numChars)
+    {
+        endwin();
+        printf("error in mbstowcs()\n");
+    }
+
+    return wideText;
 }
 
 
@@ -1529,13 +1532,15 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
      * wide version.
      */
     const wchar_t* wide = widen(txt_buf);
+
     for (int i = x;  i < w; i++)
     {
         wattron(screen, col_buf[i]);
-        wmove(screen,row,col+col_offset);
-        wide_print_char(screen,wide[i]);
+        wmove(screen, row, col + col_offset);
+        wide_print_char(screen, wide[i]);
         col += 1;
     }
+
     free((void *)wide);
 
     /*
@@ -1543,8 +1548,8 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
      */
     while (w < (width - col_offset))
     {
-      wprintw(screen, " ");
-      w += 1;
+        wprintw(screen, " ");
+        w += 1;
     }
 
 
