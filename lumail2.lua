@@ -936,7 +936,7 @@ function Maildir.select( desired )
       if ( string.find( path, desired ) ) then
 
          -- Select the maildir, to make it current.
-         Global:select_maildir(index-1)
+         Global:select_maildir(object)
 
          -- change the mode, to make it work
          Config:set("global.mode", "index")
