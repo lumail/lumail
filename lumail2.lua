@@ -317,6 +317,7 @@ function maildirs()
       for i,o in ipairs(all) do
          table.insert(ret, o)
       end
+      Config:set("maildir.max", #ret)
       return ret
    end
 
@@ -330,6 +331,7 @@ function maildirs()
             table.insert(ret, o)
          end
       end
+      Config:set("maildir.max", #ret)
       return ret
    end
 
@@ -346,6 +348,7 @@ function maildirs()
             table.insert(ret, o)
          end
       end
+      Config:set("maildir.max", #ret)
       return(ret)
    end
 
@@ -359,13 +362,13 @@ function maildirs()
             table.insert(ret, o)
          end
       end
+      Config:set("maildir.max", #ret)
       return(ret)
    end
 
    --
-   -- Can't happen?
+   -- Not reached
    --
-   return(all)
 end
 
 --
@@ -409,6 +412,7 @@ function sorted_messages()
       for i,o in ipairs(msgs) do
          table.insert(ret, o)
       end
+      Config:set( "index.max", #ret)
       return ret
    end
 
@@ -418,6 +422,7 @@ function sorted_messages()
             table.insert(ret, o)
          end
       end
+      Config:set( "index.max", #ret)
       return(ret)
    end
 
@@ -434,6 +439,7 @@ function sorted_messages()
             table.insert(ret, o)
          end
       end
+      Config:set( "index.max", #ret)
       return(ret)
    end
 
@@ -444,14 +450,13 @@ function sorted_messages()
             table.insert(ret, o)
          end
       end
+      Config:set( "index.max", #ret)
       return(ret)
    end
 
-   local empty = {}
-   empty[1] = "EMPTY"
-   empty[2] = "EMPTY"
-
-   return( empty )
+   --
+   -- NOT REACHED
+   --
 end
 
 
@@ -476,6 +481,19 @@ function Message:is_new(msg)
    return false
 end
 
+
+--
+-- Show the (global) unread-mail count
+--
+function show_unread()
+   local count = 0
+
+   local all = Global:maildirs()
+   for i,m in pairs(all) do
+      count = count + m:unread_messages()
+   end
+   Panel:append("Unread messages: " .. count )
+end
 
 --
 -- Get the current date - used to set the Date: header when
@@ -1705,11 +1723,12 @@ end
 -- It is only called when viewing a single message.
 --
 function prev_message()
-   -- Get the current offset
-   local cur = Config:get("index.current")
 
    -- Get the messages, and sort.
    local msgs = sorted_messages()
+
+   -- Get the current offset
+   local cur = Config:get("index.current")
 
    if ( cur > 0 ) then
       cur = cur - 1
@@ -1724,12 +1743,13 @@ end
 -- It is only called when viewing a single message.
 --
 function next_message()
-   -- Get the current offset + max
-   local cur = Config:get("index.current")
-   local max = Config:get("index.max")
 
    -- Get the messages, and sort.
    local msgs = sorted_messages()
+
+   -- Get the current offset + max
+   local cur = Config:get("index.current")
+   local max = Config:get("index.max")
 
    if ( cur < max ) then
       cur = cur + 1
