@@ -14,6 +14,7 @@ with simple objects, such as:
 * Maildirs.
 * Messages.
 * Networking.
+* Regular Expressions.
 * The screen.
     * The status-panel, which is optionally displayed upon the screen.
 
