@@ -36,14 +36,6 @@
 
 
 
-/*
- * Used for `draw_single_line` function.
- */
-#ifndef ARRAY_SIZE
-#  define ARRAY_SIZE( array ) sizeof( array ) / sizeof( array[0] )
-#endif
-
-
 /**
  * Data-structure associated with the status-bar.
  *
