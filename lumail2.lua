@@ -322,7 +322,16 @@ end
 -- Return our maildirs
 --
 function maildirs()
+
+   --
+   -- Get all maildirs
+   --
    local all = Global:maildirs()
+
+   --
+   -- Sort them, case-insensitively
+   --
+   table.sort(all, function (a, b) return a:path():lower() < b:path():lower() end)
 
    --
    -- Get the maildir.limit
