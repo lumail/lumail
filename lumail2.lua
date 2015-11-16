@@ -1429,7 +1429,7 @@ function message_view( msg )
          --
          -- Get the content-type of this part.
          --
-         ct = part:type()
+         ct = part:type():lower()
 
          if ( string.find( ct, "text/" ) ) then
             output = output .. part:content()
