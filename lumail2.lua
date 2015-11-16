@@ -333,6 +333,22 @@ function maildirs()
       return ret
    end
 
+   if ( limit == "today" ) then
+      local time = os.time()
+      local today = time - ( 60 * 60 * 24 )
+
+      for i,o in ipairs(all) do
+         -- get modification-time of the maildir
+         local mtime = o:mtime()
+
+         -- if it was within the past 24 hours then add it
+         if ( mtime > today ) then
+            table.insert(ret, o)
+         end
+      end
+      return(ret)
+   end
+
    --
    -- Some string to match against.
    --
@@ -1945,8 +1961,8 @@ keymap['global']['?'] = 'find(-1)'
 -- Change the display-limits
 --
 keymap['maildir']['a'] = 'Config:set( "maildir.limit", "all" )'
-keymap['maildir']['e'] = 'Config:set( "maildir.limit", "RT." )'
 keymap['maildir']['n'] = 'Config:set( "maildir.limit", "new" )'
+keymap['maildir']['t'] = 'Config:set( "maildir.limit", "today" )'
 
 --
 -- Limit the display of messages appropriately
