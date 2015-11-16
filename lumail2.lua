@@ -54,10 +54,21 @@ package.path = package.path .. ';/etc/lumail2/luarocks.d/?.lua'
 package.path = package.path .. ';/' .. os.getenv("HOME") .. '/.lumail2/luarocks.d/?.lua'
 
 --
--- Load the `date` library from LuaRocks
+-- The libraries we've loaded.
 --
-local lr_date = nil
-pcall("lr_date = require 'date'" )
+luarocks_libraries = {}
+
+--
+-- Load a library by name.
+--
+function load_luarocks(name)
+   luarocks_libraries[name] = require(name)
+end
+
+--
+-- Ensure we've loaded our `date` library.
+--
+pcall( _ENV['load_luarocks'], 'date')
 
 
 
@@ -260,7 +271,7 @@ function Message:to_ctime(m)
    -- If luarocks library is not present then stat() the message
    -- and handle the sorting that way.
    --
-   if ( not lr_date ) then
+   if ( not luarocks_libraries["date"] ) then
       local stat = File:stat( m:path() )
       local res  = stat['mtime']
       cache["ctime:" .. p] = res
@@ -273,8 +284,10 @@ function Message:to_ctime(m)
    --
    local d = m:header("Date" )
    if ( d ) then
-      local d1 = lr_date(d)
-      local seconds = lr_date.diff(d1, lr_date.epoch()):spanseconds()
+      local date    = luarocks_libraries["date"]
+      local d1      = date(d)
+      local seconds = date.diff(d1, date.epoch()):spanseconds()
+
       cache["ctime:" ..p] = seconds
       return seconds
    end
