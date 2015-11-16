@@ -1731,7 +1731,7 @@ function next_message()
    -- Get the messages, and sort.
    local msgs = sorted_messages()
 
-   if ( cur < (max-1) ) then
+   if ( cur < max ) then
       cur = cur + 1
       Global:select_message( msgs[cur] )
       Config:set("index.current",cur)
