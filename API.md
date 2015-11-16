@@ -24,8 +24,7 @@ There is no need for a large number of global-functions, just a few
 types of objects and ways to create/access them.
 
 
-Callbacks
----------
+### Callbacks
 
 The mail-client is writting in C++ and generally defers to the Lua
 code to perform actions.
@@ -47,8 +46,7 @@ add code to handle such changes you can add it directly.
 
 
 
-Config
-------
+### Config
 
 The `Config` object allows you to get, set, and iterate over configuration values.
 
@@ -77,8 +75,7 @@ Sample code is available in `sample.lua/config.lua`.
 
 
 
-Configuration Variables
------------------------
+### Configuration Variables
 
 We have a number of variables which are special, the most important ones are:
 
@@ -119,8 +116,7 @@ and can be used for your own purposes.
 
 
 
-Directories
------------
+### Directories
 
 The following (static) methods exist:
 
@@ -137,8 +133,7 @@ Sample code is available in `sample.lua/file.lua`.
 
 
 
-Files
------
+### Files
 
 The following (static) methods exist:
 
@@ -156,8 +151,7 @@ Sample code is available in `sample.lua/file.lua`.
 
 
 
-Global State
-------------
+### Global State
 
 There are some things which are global, and these largely revolve around
 available maildirs, and messages.
@@ -183,8 +177,7 @@ The following API methods are available to help you with this:
 
 
 
-Maildir
--------
+### Maildir
 
 You can gain access to Maildir objects in several ways:
 
@@ -214,8 +207,7 @@ The Maildir object has the following methods:
 
 
 
-Message
--------
+### Message
 
 The Message object represents a single message, contained within a maildir.
 
@@ -255,6 +247,9 @@ Message methods:
 * `path()`
    * Return the path to the message, on-disk.
 
+
+#### Message-Parts
+
 MessagePart objects are returned from the `parts()` method.  The `MessagePart`
 object contains the following methods:
 
@@ -273,8 +268,7 @@ Sample code is available in `sample.lua/show_message.lua`.
 
 
 
-Networking
-----------
+### Networking
 
 There is only a single networking method:
 
@@ -285,8 +279,7 @@ Sample code is available in `sample.lua/net.lua`.
 
 
 
-Regular Expressions
--------------------
+### Regular Expressions
 
 There is a thin wrapper around PCRE for those who prefer this family of
 regular expressions.  The single method is:
@@ -302,8 +295,7 @@ Sample code is available under `sample.code/regexp.lua`.
 
 
 
-Screen
-------
+### Screen
 
 The Screen object is registered automatically and doesn't need to be constructed  The following (static) methods are available:
 
@@ -326,8 +318,9 @@ The Screen object is registered automatically and doesn't need to be constructed
 
 Sample code is available in `sample.lua/screen.lua`.
 
+#### The Panel
 
-The screen has an associated status-panel, hereby referred to as "Panel".
+The screen has an associated status-panel, hereby referred to as the panel.
 
 The panel is designed to collect & contain output messages for the user.
 New entries may be appended to it at any time, and the most recent N entries
@@ -359,8 +352,7 @@ Sample code is available in `sample.lua/panel.lua`.
 
 
 
-Views
------
+### Views
 
 Each of the major modes is implemented in a combination of Lua and C++.
 
@@ -392,10 +384,3 @@ The lines may contain a prefix containing colour information.  For example:
                   "$[YELLOW]This is yellow!" }
       return r
     end
-
-
-
-Utilities
----------
-
-None, at this time.
