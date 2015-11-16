@@ -106,7 +106,7 @@ void CIndexView::draw()
     if (!folder)
     {
         mvprintw(10, 10, "This is 'index' mode");
-        mvprintw(12, 10, "This should draw a list of messages, but there are none.");
+        mvprintw(12, 10, "This should draw a list of messages, but there is no selected Maildir.");
         return;
     }
 
