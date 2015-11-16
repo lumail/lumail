@@ -578,7 +578,7 @@ function Message:generate_signature()
    -- an empty string.
    --
    home = os.getenv( "HOME" )
-   if ( not home ) then
+   if ( home == nil or home == "" ) then
       return ""
    end
 
@@ -614,11 +614,11 @@ function Message:compose()
 
    -- Get some details
    local to = Screen:get_line("To:")
-   if ( not to ) then
+   if ( to == nil or to == "" ) then
       return
    end
    local subject = Screen:get_line("Subject:" )
-   if ( not subject ) then
+   if ( subject == nil or subject == "" ) then
       subject = "No subject"
    end
 
@@ -750,7 +750,7 @@ function Message:reply()
    -- Work out who we should be replying to.
    --
    local to = msg:header( "Reply-To" )
-   if ( not to ) then
+   if ( to == nil or to == "" ) then
       to = msg:header( "From" )
    end
 
