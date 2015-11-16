@@ -118,9 +118,9 @@ bool CLua::load_file(std::string filename)
 
     if (erred)
     {
-      /**
-       * Abort - showing the error
-       */
+        /**
+         * Abort - showing the error
+         */
         CScreen *screen = CScreen::instance();
         screen->teardown();
         std::cerr << "ERROR " << luaL_checkstring(m_lua, 0);
