@@ -23,6 +23,7 @@
 
 #include "config.h"
 #include "lua.h"
+#include "screen.h"
 
 
 /*
@@ -117,7 +118,13 @@ bool CLua::load_file(std::string filename)
 
     if (erred)
     {
-        std::cerr << "ERROR " << luaL_checkstring(m_lua, 1);
+      /**
+       * Abort - showing the error
+       */
+        CScreen *screen = CScreen::instance();
+        screen->teardown();
+        std::cerr << "ERROR " << luaL_checkstring(m_lua, 0);
+        exit(2);
         return false;
     }
     else
