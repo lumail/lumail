@@ -101,8 +101,6 @@ We have a number of variables which are special, the most important ones are:
     * The horizontal-offset used to implement left/right scrolling.
 * `global.mode`
     * This holds the name of the currently active display-mode
-* `global.sent-mail`
-    * This is the Maildir to which outgoing messages are saved.
 
 For each mode that has a display there will be a `$mode.max` to store the
 count of the objects, as well as `$mode.current`.
@@ -128,9 +126,6 @@ The following (static) methods exist:
 * `Directory:exists(path)`
    * Return `true` if the given directory exists.
    * Return `false` otherwise.
-* `Directory:is_maildir(path)`
-   * Return `true` if the given directory is a Maildir.
-   * Return `false` otherwise.
 
 Sample code is available in `sample.lua/file.lua`.
 
@@ -143,8 +138,6 @@ The following (static) methods exist:
 
 * `File:basename(path)`
    * Return the basename of the given path.
-* `File:copy(src,dest)`
-   * Copy the given source file to the specified destination.
 * `File:exists(path)`
    * Return a boolean based on whether the named file exists.
 * `File:stat(path)`
@@ -194,9 +187,6 @@ You can gain access to Maildir objects in several ways:
 
 The Maildir object has the following methods:
 
-* `generate_path( bool )`
-    * Generate the name of a file to save a message to within the maildir.
-    * Accepts a flag to determine if the filanem will be a new message, or a read one.
 * `path()`
     * Returns the path to the Maildir - what it was constructed with.
 * `messages()`
@@ -280,6 +270,24 @@ There is only a single networking method:
      * Return the FQDN of the current system.
 
 Sample code is available in `sample.lua/net.lua`.
+
+
+
+Regular Expressions
+-------------------
+
+There is a thin wrapper around PCRE for those who prefer this family of
+regular expressions.  The single method is:
+
+* `Regexp:match(pattern, string)`.
+
+The return value will vary depending on the regexp:
+
+* If the pattern contains no capture-groups then it will return `true`, or `false`.
+* If the pattern contains capture groups then it will return a table containing any matches.
+
+Sample code is available under `sample.code/regexp.lua`.
+
 
 
 Screen
