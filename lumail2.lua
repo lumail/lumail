@@ -73,6 +73,17 @@ local cache = {}
 
 
 --
+-- This holder contains the messages which are currently visible.
+--
+-- When the user selects a Maildir, or changes the active selection
+-- via the `index.limit` setting, then this set of messages will be
+-- updated.
+--
+local global_msgs = {}
+
+
+
+--
 -- (Re)load our cache, if we have a cache-file defined, and it exists.
 --
 function cache_load()
@@ -376,7 +387,19 @@ end
 --
 function sorted_messages()
 
-   -- Get all messages
+   --
+   -- If we have a cached selection then we'll return it
+   --
+   if ( #global_msgs > 0 ) then
+      Panel:append( "Returning cached message-set" )
+      return global_msgs
+   end
+
+   --
+   -- Otherwise get all the current messages,
+   -- filter them appropriately, and set the
+   -- current selection.
+   --
    local msgs = Global:current_messages()
 
    -- What sort method should we use?
@@ -412,7 +435,9 @@ function sorted_messages()
       for i,o in ipairs(msgs) do
          table.insert(ret, o)
       end
-      Config:set( "index.max", #ret)
+
+      -- update our cache
+      global_msgs = ret
       return ret
    end
 
@@ -422,7 +447,9 @@ function sorted_messages()
             table.insert(ret, o)
          end
       end
-      Config:set( "index.max", #ret)
+
+      -- update our cache
+      global_msgs = ret
       return(ret)
    end
 
@@ -439,7 +466,9 @@ function sorted_messages()
             table.insert(ret, o)
          end
       end
-      Config:set( "index.max", #ret)
+
+      -- update our cache
+      global_msgs = ret
       return(ret)
    end
 
@@ -450,7 +479,9 @@ function sorted_messages()
             table.insert(ret, o)
          end
       end
-      Config:set( "index.max", #ret)
+
+      -- update our cache
+      global_msgs = ret
       return(ret)
    end
 
@@ -812,6 +843,10 @@ function Message:delete()
       local msg = Global:current_message()
       msg:unlink()
       change_mode("index")
+
+      -- Flush the cached message-list
+      global_msgs = {}
+
       return
    end
 
@@ -834,6 +869,9 @@ function Message:delete()
       offset = offset - 1
       if ( offset < 0 ) then offset = 0 end
       Config:set( "index.current", offset )
+
+      -- Flush the cached message-list
+      global_msgs = {}
 
    end
 end
@@ -1033,6 +1071,9 @@ function Maildir.select( desired )
 
          -- change the mode, to make it work
          Config:set("global.mode", "index")
+
+         -- Flush the cached message-list
+         global_msgs = {}
 
          -- And update the current selection for when
          -- we return to Maildir-mode.
@@ -1509,11 +1550,18 @@ function select()
          end
       end
 
+
       --
       -- Change to the index-mode, so we can see the messages in
       -- the folder.
       --
       Config:set("global.mode", "index" )
+
+      --
+      -- Flush the cached message-list
+      --
+      global_msgs = {}
+
       return
    end
 
@@ -1904,6 +1952,16 @@ end
 -- remember that the value might be a string or a table.
 --
 function Config.key_changed( name )
+
+   --
+   -- If the index.limit value has changed then we can
+   -- update our state.
+   --
+   if ( name == "index.limit" ) then
+      global_msgs = {}
+      Panel:append("Flushed message cache.")
+   end
+
 end
 
 
@@ -1990,6 +2048,11 @@ keymap['maildir']['t'] = 'Config:set( "maildir.limit", "today" )'
 keymap['index']['a']   = 'Config:set( "index.limit", "all" )'
 keymap['index']['n']   = 'Config:set( "index.limit", "new" )'
 keymap['index']['t']   = 'Config:set( "index.limit", "today" )'
+
+--
+-- Force a cache flush - via a sleazy hack.
+--
+keymap['global']['^L'] = 'Config.key_changed( "index.limit" )'
 
 --
 -- Exit out of modes
