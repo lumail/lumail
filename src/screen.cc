@@ -1360,52 +1360,8 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
      */
     wattroff(stdscr, A_REVERSE | A_STANDOUT);
     wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
-
-
 }
 
-
-/*
- * HORRID HACK - TODO - FIXME.
- */
-void wide_print_char(WINDOW *screen, wchar_t c)
-{
-    cchar_t c2;
-    wchar_t wc[2];
-    int result;
-
-    wc[0] = c;
-    wc[1] = L'\0';
-
-    result = setcchar(&c2, wc, 0, 0, NULL);
-
-    if (result != OK)
-    {
-        endwin();
-        printf("error in setcchar()!\n");
-    }
-
-    wadd_wch(screen, &c2);
-}
-
-
-/*
- * HORRID HACK - TODO - FIXME.
- */
-wchar_t* widen(const char* text)
-{
-    int numChars = mbstowcs(NULL, text, 0);
-    wchar_t* wideText = (wchar_t *)malloc((numChars + 1) * sizeof(wchar_t));
-    int convresult = mbstowcs(wideText, text, numChars + 1);
-
-    if (convresult != numChars)
-    {
-        endwin();
-        printf("error in mbstowcs()\n");
-    }
-
-    return wideText;
-}
 
 
 /*
@@ -1413,12 +1369,10 @@ wchar_t* widen(const char* text)
  */
 void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW * screen)
 {
-
-    /*
-     * Get the width of the screen.
+    /**
+     * Move to the correct location
      */
-    int width = CScreen::width();
-
+    wmove(screen, row, 0);
     /*
      * Split the string into segments, each of which might
      * have a different colour.
@@ -1426,56 +1380,12 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
     std::vector<COLOUR_STRING *> parts = parse_coloured_string(buf);
 
     /*
-     * This is a horrible hack, or an inspirational piece of coding,
-     * I'm not sure which.
+     * Draw each piece.
      *
-     * We have a vector of string+colour pairs.
-     *
-     * To cope with handling horizontal scrolling we will now construct
-     * an array for each horizontal offset - this will have a column-by
-     * column pair of "colour" + "character" values.
-     *
-     * We will use our tokenized input to populate this array, and then
-     * draw it character by character.
-     *
+     * Track our width.
      */
-    int  col_buf[1024];  // TODO - Dynamic
-    char txt_buf[1024];   // TODO - Dynamic
+    int width = 0;
 
-    /*
-     * We'll fill both arrays with sane defaults - white is the default
-     * colour.
-     */
-    int size  = ARRAY_SIZE(col_buf);
-    int white = COLOR_PAIR(get_colour("white"));
-
-    /*
-     * Initialize with sane defaults.
-     */
-    for (int i = 0; i < size; i++)
-    {
-        col_buf[i] = white;
-        txt_buf[i] = ' ';
-    }
-
-
-    /*
-     * Get our global horizontal offset.
-     */
-    CConfig *config = CConfig::instance();
-    int x = config->get_integer("global.horizontal");
-
-    /*
-     * Keep track of how wide the text is, minus the formatting markers.
-     */
-    int w = 0;
-
-    /*
-     * We now populate the two arrays with data for each X-position:
-     *
-     *     The attribute for that column.
-     *     The character for that column.
-     */
     for (auto it = parts.begin(); it != parts.end() ; ++it)
     {
         /*
@@ -1484,72 +1394,27 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
         COLOUR_STRING *i = (*it);
         std::string *colour = i->colour;
         std::string *text   = i->string;
+        char *t = (char *)(*text).c_str();
+
 
         /*
-         * Add on the values to the row-settings.
+         * Set the colour + draw teh component.
          */
-        for (int j = 0; j < (int)text->length() ; j++)
-        {
-            /*
-             * Bound this to make sure we don't try to walk off
-             * the end of `col_buf` or `txt_buf`.
-             */
-            if ((w + j) < size)
-            {
-                col_buf[w + j] = COLOR_PAIR(get_colour(*colour));
-                txt_buf[w + j] = text->at(j);
-            }
-        }
+        wattron(screen, COLOR_PAIR(get_colour(*colour)));
+        waddstr(screen, t);
 
-        w += text->length();
+        width += (*text).size();
     }
 
-    /*
-     * We'll never draw more than this.
-     *
-     * TODO: This means you can't scroll more than 1023 characters
-     *       which should be fixed.
-     */
-    if (w > size)
-        w = size;
-
-    /*
-     * Now we draw the text, character by character.
-     */
-    int col = 0;
-
-    /*
-     * Start from the horizontal-offset, and draw each character in
-     * the appropriate colour.
-     *
-     * Keep track of how many columns we drew, so that we can add padding
-     * if our line is too short.
-     *
-     * HOWEVER there is a massive caveat, and that is that we must
-     * deal with UTF-8 issues.
-     *
-     * We do that by "widening" the characters, then printing out those
-     * wide version.
-     */
-    const wchar_t* wide = widen(txt_buf);
-
-    for (int i = x;  i < w; i++)
-    {
-        wattron(screen, col_buf[i]);
-        wmove(screen, row, col + col_offset);
-        wide_print_char(screen, wide[i]);
-        col += 1;
-    }
-
-    free((void *)wide);
-
-    /*
+    /**
      * Pad the line.
      */
-    while (w < (width - col_offset))
+    int max = CScreen::width();
+
+    while (width < (max - col_offset))
     {
-        wprintw(screen, " ");
-        w += 1;
+        waddstr(screen, (char *)" ");
+        width += 1;
     }
 
 
