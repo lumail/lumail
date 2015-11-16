@@ -27,14 +27,31 @@ extern "C"
 
 
 
+/**
+ * @file config_lua.cc
+ *
+ * This file implements the trivial exporting of our CConfig class,
+ * implemented in C++, to Lua.  Lua-usage looks something like this:
+ *
+ *<code>
+ *   -- Set the outgoing email address<br/>
+ *   Config:set( "global.from", "Steve Kemp <steve@example.com>" )
+ *</code>
+ *
+ */
+
+
+/**
+ * Implementation of `Config:get`
+ */
 int l_Config_get(lua_State * l)
 {
-    /**
+    /*
      * The key to get.
      */
     const char *name = luaL_checkstring(l, 2);
 
-    /**
+    /*
      * Get the entry - and test it has a value.
      */
     CConfig *foo = CConfig::instance();
@@ -46,7 +63,7 @@ int l_Config_get(lua_State * l)
         return 1;
     }
 
-    /**
+    /*
      * Does this configuration value hold a string?
      */
     if (x->type == CONFIG_STRING)
@@ -94,9 +111,12 @@ int l_Config_get(lua_State * l)
 }
 
 
+/**
+ * Implementation of `Config:keys`
+ */
 int l_Config_keys(lua_State * l)
 {
-    /**
+    /*
      * Get the keys.
      */
     CConfig *foo = CConfig::instance();
@@ -122,9 +142,12 @@ int l_Config_keys(lua_State * l)
 }
 
 
+/**
+ * Implementation of `Config:set`
+ */
 int l_Config_set(lua_State * l)
 {
-    /**
+    /*
      * Get the key to set, and the helper.
      */
     CConfig *foo = CConfig::instance();
@@ -164,6 +187,10 @@ int l_Config_set(lua_State * l)
 }
 
 
+/**
+ * Register the global `Config` object to the Lua environment, and
+ * setup our public methods upon which the user may operate.
+ */
 void InitConfig(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
