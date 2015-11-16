@@ -59,6 +59,11 @@ package.path = package.path .. ';/' .. os.getenv("HOME") .. '/.lumail2/luarocks.
 luarocks_libraries = {}
 
 --
+-- The libraries that we want to load
+--
+luarocks_desired = { "date" }
+
+--
 -- Load a library by name.
 --
 function load_luarocks(name)
@@ -68,7 +73,9 @@ end
 --
 -- Ensure we've loaded our `date` library.
 --
-pcall( _ENV['load_luarocks'], 'date')
+for index,name in ipairs(luarocks_desired) do
+   pcall( _ENV['load_luarocks'], name)
+end
 
 
 
