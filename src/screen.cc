@@ -1394,7 +1394,7 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
          * Set the colour + draw the component.
          */
         wattron(screen, COLOR_PAIR(get_colour(*colour)));
-        waddstr(screen,( char *)t);
+        waddstr(screen, (char *)t);
 
         width += (*text).size();
     }
