@@ -1361,10 +1361,11 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
  */
 void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW * screen)
 {
-    /**
+    /*
      * Move to the correct location
      */
-    wmove(screen, row, 0);
+    wmove(screen, row, col_offset);
+
     /*
      * Split the string into segments, each of which might
      * have a different colour.
@@ -1390,10 +1391,10 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
 
 
         /*
-         * Set the colour + draw teh component.
+         * Set the colour + draw the component.
          */
         wattron(screen, COLOR_PAIR(get_colour(*colour)));
-        waddstr(screen, t);
+        waddstr(screen,( char *)t);
 
         width += (*text).size();
     }
