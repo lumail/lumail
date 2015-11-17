@@ -2229,7 +2229,7 @@ Config:set( "maildir.prefix", def_maildir );
 --
 --       To set multiple values simply configure a table, not a string:
 --
-Config:set( "maildir.prefix", { def_maildir, "/tmp/Maildir" } )
+-- Config:set( "maildir.prefix", { def_maildir, "/tmp/Maildir" } )
 --
 
 --
