@@ -28,8 +28,25 @@ extern "C"
 #include "directory.h"
 #include "file.h"
 
+
 /**
- * Does the given directory exist?
+ * @file directory_lua.cc
+ *
+ * This file implements the trivial exporting of our CDirectory class,
+ * implemented in C++, to Lua.  Lua-usage looks something like this:
+ *
+ *<code>
+ *   -- Does the given directory exist? <br/>
+ *   if ( Directory:exists( "/etc" ) ) then <br/>
+ *       print "All is well"<br/>
+ *   end
+ *</code>
+ *
+ */
+
+
+/**
+ * Implementation of `Directory:exists`.
  */
 int l_CDirectory_exists(lua_State * l)
 {
@@ -50,13 +67,12 @@ int l_CDirectory_exists(lua_State * l)
 
 
 /**
- * Get the entries beneath given directory, return them to Lua.
+ * Implementation of `Directory:entries`.
  */
 int l_CDirectory_entries(lua_State * l)
 {
     const char *str = lua_tostring(l, 2);
     std::vector<std::string> entries = CDirectory::entries(str);
-
 
     lua_newtable(l);
 
@@ -79,7 +95,7 @@ int l_CDirectory_entries(lua_State * l)
 
 
 /**
- * Is the given directory a maildir?
+ * Implementation of `Directory:is_maildir`.
  */
 int l_CDirectory_is_maildir(lua_State * l)
 {
@@ -99,9 +115,8 @@ int l_CDirectory_is_maildir(lua_State * l)
 }
 
 /**
- * Export the `Directory` class to Lua.
- *
- * Bind the appropriate methods to that object.
+ * Register the global `Directory` object to the Lua environment,
+ * and setup our public methods upon which the user may operate.
  */
 void InitDirectory(lua_State * l)
 {

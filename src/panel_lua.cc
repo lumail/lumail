@@ -27,8 +27,25 @@ extern "C"
 #include "screen.h"
 
 
+
 /**
- * Append a line of text to that being displayed.
+ * @file panel_lua.cc
+ *
+ * This file implements the trivial exporting of our status-panel
+ * implemented in C++, to Lua.  Lua-usage looks something like this:
+ *
+ *<code>
+ *   -- Show some output  <br/>
+ *   Panel:append( "This is a message" );  <br/>
+ *   Panel:show() <br/>
+ *</code>
+ *
+ */
+
+
+
+/**
+ * Implementation of Panel:append().
  */
 int l_CPanel_append(lua_State * l)
 {
@@ -41,7 +58,7 @@ int l_CPanel_append(lua_State * l)
 
 
 /**
- * Clear the text.
+ * Implementation of Panel:clear().
  */
 int l_CPanel_clear(lua_State * l)
 {
@@ -53,7 +70,7 @@ int l_CPanel_clear(lua_State * l)
 
 
 /**
- * Get/set the height of the panel.
+ * Implementation of Panel:height().
  */
 int l_CPanel_height(lua_State * l)
 {
@@ -75,7 +92,7 @@ int l_CPanel_height(lua_State * l)
 
 
 /**
- * Hide the panel.
+ * Implementation of Panel:hide().
  */
 int l_CPanel_hide(lua_State * l)
 {
@@ -87,7 +104,7 @@ int l_CPanel_hide(lua_State * l)
 
 
 /**
- * Show the panel.
+ * Implementation of Panel:show().
  */
 int l_CPanel_show(lua_State * l)
 {
@@ -99,7 +116,7 @@ int l_CPanel_show(lua_State * l)
 
 
 /**
- * Get the array of text which is displayed.
+ * Implementation of Panel:text().
  */
 int l_CPanel_text(lua_State * l)
 {
@@ -125,7 +142,7 @@ int l_CPanel_text(lua_State * l)
 
 
 /**
- * Get/Set the title text which is displayed.
+ * Implementation of Panel:title().
  */
 int l_CPanel_title(lua_State * l)
 {
@@ -148,7 +165,7 @@ int l_CPanel_title(lua_State * l)
 
 
 /**
- * Toggle the visibility of the panel.
+ * Implementation of Panel:toggle().
  */
 int l_CPanel_toggle(lua_State * l)
 {
@@ -160,7 +177,7 @@ int l_CPanel_toggle(lua_State * l)
 
 
 /**
- * Is the panel visible?
+ * Implementation of Panel:visible().
  */
 int l_CPanel_visible(lua_State * l)
 {
@@ -176,9 +193,8 @@ int l_CPanel_visible(lua_State * l)
 
 
 /**
- * Export the `Panel` class to Lua.
- *
- * Bind the appropriate methods to that object.
+ * Register the global `Panel` object to the Lua environment, and
+ * setup our public (static) methods upon which the user may operate.
  */
 void InitPanel(lua_State * l)
 {

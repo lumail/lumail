@@ -33,9 +33,23 @@ extern "C"
 
 
 
+/**
+ * @file screen_lua.cc
+ *
+ * This file implements the trivial exporting of our screen-related
+ * functions implemented in C++, to Lua.  Lua-usage looks something
+ * like this:
+ *
+ *<code>
+ *   -- Clear the screen  <br/>
+ *   Screen:clear()<br/>
+ *</code>
+ *
+ */
+
 
 /**
- * Clear the screen.
+ * Implementation of Screen:clear().
  */
 int l_CScreen_clear(lua_State * l)
 {
@@ -47,6 +61,9 @@ int l_CScreen_clear(lua_State * l)
 }
 
 
+/**
+ * Implementation of Screen:execute().
+ */
 int l_CScreen_execute(lua_State *l)
 {
     (void)l;
@@ -62,7 +79,7 @@ int l_CScreen_execute(lua_State *l)
 
 
 /**
- * Exit our main event-loop.
+ * Implementation of Screen:exit().
  */
 int l_CScreen_exit(lua_State * l)
 {
@@ -75,11 +92,14 @@ int l_CScreen_exit(lua_State * l)
 
 
 /**
- * Read a line of input from the user, with history and TAB-completion
+ * Implementation of Screen:get_line().
+ *
+ * TAB-completion is supported via the lua `on_complete` callback,
+ * and history is maintained via CHistory.
  */
 int l_CScreen_get_line(lua_State * l)
 {
-    /**
+    /*
      * Get the prompt?
      */
     const char *prompt = luaL_checkstring(l, 2);
@@ -101,7 +121,7 @@ int l_CScreen_get_line(lua_State * l)
 
 
 /**
- * Show a message and return only a valid keypress from a given set.
+ * Implementation of Screen:prompt_chars().
  */
 int l_CScreen_prompt_chars(lua_State * l)
 {
@@ -116,8 +136,9 @@ int l_CScreen_prompt_chars(lua_State * l)
     return 1;
 }
 
+
 /**
- * Get the screen height.
+ * Implementation of Screen:height().
  */
 int l_CScreen_height(lua_State * l)
 {
@@ -128,7 +149,7 @@ int l_CScreen_height(lua_State * l)
 }
 
 /**
- * Delay execution for the given period, in seconds.
+ * Implementation of Screen:sleep().
  */
 int l_CScreen_sleep(lua_State * l)
 {
@@ -139,7 +160,7 @@ int l_CScreen_sleep(lua_State * l)
 }
 
 /**
- * Get the screen width.
+ * Implementation of Screen:width().
  */
 int l_CScreen_width(lua_State * l)
 {
@@ -149,8 +170,11 @@ int l_CScreen_width(lua_State * l)
     return 1;
 }
 
-void
-InitScreen(lua_State * l)
+/**
+ * Register the global `Screen` object to the Lua environment, and
+ * setup our public (static) methods upon which the user may operate.
+ */
+void InitScreen(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
     {

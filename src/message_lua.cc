@@ -48,6 +48,22 @@ extern "C"
 #include "message_part_lua.h"
 
 
+/**
+ * @file message_lua.cc
+ *
+ * This file implements the trivial exporting of our CMessage class,
+ * implemented in C++, to Lua.  Lua-usage looks something like this:
+ *
+ *<code>
+ *   -- Create a message, and get the sender <br/>
+ *   local m = Message.new( "/home/steve/Maildir/.foo.com/cur/foo.txt" ) <br/>
+ *   local f = m:header("from") <br/>
+ *</code>
+ *
+ */
+
+
+
 int l_CNet_hostname(lua_State * L);
 
 
@@ -56,7 +72,7 @@ int l_CNet_hostname(lua_State * L);
  */
 void push_cmessage(lua_State * l, std::shared_ptr<CMessage> message)
 {
-    /**
+    /*
      * Allocate a new object.
      */
     void *ud = lua_newuserdata(l, sizeof(std::shared_ptr<CMessage>*));
@@ -87,7 +103,7 @@ void push_cmessage(lua_State * l, std::shared_ptr<CMessage> message)
 }
 
 /**
- * Binding for CMessage
+ * Implementation for Message.new
  */
 int l_CMessage_constructor(lua_State * l)
 {
@@ -122,7 +138,7 @@ std::shared_ptr<CMessage> l_CheckCMessage(lua_State * l, int n)
 
 
 /**
- * Get the path to the message, on-disk.
+ * Implementation for Message:path()
  */
 int l_CMessage_path(lua_State * l)
 {
@@ -131,8 +147,9 @@ int l_CMessage_path(lua_State * l)
     return 1;
 }
 
+
 /**
- * Generate and return a suitable Message-ID.
+ * Implementation for Message:generate_message_id()
  */
 int l_CMessage_generate_message_id(lua_State *L)
 {
@@ -161,7 +178,7 @@ int l_CMessage_generate_message_id(lua_State *L)
 
 
 /**
- * Get the value of a specific header.
+ * Implementation for Message:header()
  */
 int l_CMessage_header(lua_State * l)
 {
@@ -178,18 +195,18 @@ int l_CMessage_header(lua_State * l)
 }
 
 /**
- * Return all header names & values.
+ * Implementation for Message:headers()
  */
 int l_CMessage_headers(lua_State * l)
 {
-    /**
+    /*
      * Get the headers.
      */
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
     std::unordered_map < std::string, std::string > headers = foo->headers();
 
 
-    /**
+    /*
      * Create the table.
      */
     lua_newtable(l);
@@ -214,7 +231,7 @@ int l_CMessage_headers(lua_State * l)
 
 
 /**
- * Mark the message as read.
+ * Implementation for Message:mark_read()
  */
 int l_CMessage_mark_read(lua_State *l)
 {
@@ -224,7 +241,7 @@ int l_CMessage_mark_read(lua_State *l)
 }
 
 /**
- * Mark the message as unread.
+ * Implementation for Message:mark_unread()
  */
 int l_CMessage_mark_unread(lua_State *l)
 {
@@ -235,7 +252,7 @@ int l_CMessage_mark_unread(lua_State *l)
 
 
 /**
- * Get the mtime of the message.
+ * Implementation for Message:mtime()
  */
 int l_CMessage_mtime(lua_State *l)
 {
@@ -256,17 +273,19 @@ int l_CMessage_mtime(lua_State *l)
 
 
 /**
+ * Implementation for Message:parts()
+ *
  * Return an array of CMessagePart objects to Lua.  These can be inspected
  * as the user wishes.
  *
- * NOTE: CMessagePart is *NOT* creatable via Lua.  This is a good thing.
+ * **NOTE**: CMessagePart is *NOT* creatable via Lua.  This is a good thing.
  *
  */
 int l_CMessage_parts(lua_State * l)
 {
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
 
-    /**
+    /*
      * Get the parts, and count.
      */
     std::vector<std::shared_ptr<CMessagePart>> parts = foo->get_parts();
@@ -288,7 +307,7 @@ int l_CMessage_parts(lua_State * l)
 
 
 /**
- * Copy the message to a new locatin.
+ * Implementation of CMessage:copy
  */
 int l_CMessage_copy(lua_State * l)
 {
@@ -321,13 +340,13 @@ int l_CMessage_copy(lua_State * l)
 
 
 /**
- * Get/Set the flags.
+ * Implementation of CMessage:flags
  */
 int l_CMessage_flags(lua_State * l)
 {
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
 
-    /**
+    /*
      * Are we setting the flags?
      */
     if (lua_gettop(l) >= 2)
@@ -336,7 +355,7 @@ int l_CMessage_flags(lua_State * l)
         foo->set_flags(update);
     }
 
-    /**
+    /*
      * Now get the flags
      */
     lua_pushstring(l, foo->get_flags().c_str());
@@ -366,7 +385,7 @@ int l_CMessage_destructor(lua_State * l)
 
 
 /**
- * Delete the message.
+ * Implementation of CMessage:unlink
  */
 int l_CMessage_unlink(lua_State * l)
 {
@@ -386,6 +405,10 @@ int l_CMessage_unlink(lua_State * l)
     return 0;
 }
 
+/**
+ * Register the global `Message` object to the Lua environment, and
+ * setup our public methods upon which the user may operate.
+ */
 void InitMessage(lua_State * l)
 {
     luaL_Reg sFooRegs[] =

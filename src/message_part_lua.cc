@@ -27,6 +27,23 @@ extern "C"
 #include "message_part.h"
 
 
+/**
+ * @file message_part_lua.cc
+ *
+ * This file implements the trivial exporting of our CMessagePart class,
+ * implemented in C++, to Lua.  Lua-usage looks something like this:
+ *
+ *<code>
+ *   -- Create a message object and get the MIME-parts <br/>
+ *   local m = Message.new( "/home/steve/Maildir/.foo.com/cur/foo.txt" ) <br/>
+ *   local p = m:parts() <br/>
+ * <br/>
+ *   for i,o in ipairs(p) do <br/>
+ *      print ("The part has MIME-type " .. o:type() )<br/>
+ *   end <br/>
+ *</code>
+ *
+ */
 
 
 
@@ -35,7 +52,7 @@ extern "C"
  */
 void push_cmessagepart(lua_State * l, std::shared_ptr<CMessagePart> part)
 {
-    /**
+    /*
      * Allocate a new object.
      */
     void *ud = lua_newuserdata(l, sizeof(std::shared_ptr<CMessagePart>*));
@@ -66,6 +83,9 @@ void push_cmessagepart(lua_State * l, std::shared_ptr<CMessagePart> part)
 }
 
 
+/**
+ * Test that the object is a std::shared_ptr<CMessagePart>.
+ */
 std::shared_ptr<CMessagePart> l_CheckCMessagePart(lua_State * l, int n)
 {
     void *ud = luaL_checkudata(l, n, "luaL_CMessagePart");
@@ -85,6 +105,10 @@ std::shared_ptr<CMessagePart> l_CheckCMessagePart(lua_State * l, int n)
     }
 }
 
+
+/**
+ * Implementation of MessagePart:content()
+ */
 int l_CMessagePart_content(lua_State * l)
 {
     std::shared_ptr<CMessagePart> foo = l_CheckCMessagePart(l, 1);
@@ -100,6 +124,10 @@ int l_CMessagePart_content(lua_State * l)
     return 1;
 }
 
+
+/**
+ * Implementation of MessagePart:filename()
+ */
 int l_CMessagePart_filename(lua_State * l)
 {
     std::shared_ptr<CMessagePart> foo = l_CheckCMessagePart(l, 1);
@@ -107,6 +135,10 @@ int l_CMessagePart_filename(lua_State * l)
     return 1;
 }
 
+
+/**
+ * Implementation of MessagePart:is_attachment()
+ */
 int l_CMessagePart_is_attachment(lua_State * l)
 {
     std::shared_ptr<CMessagePart> foo = l_CheckCMessagePart(l, 1);
@@ -119,6 +151,10 @@ int l_CMessagePart_is_attachment(lua_State * l)
     return 1;
 }
 
+
+/**
+ * Implementation of MessagePart:size()
+ */
 int l_CMessagePart_size(lua_State * l)
 {
     std::shared_ptr<CMessagePart> foo = l_CheckCMessagePart(l, 1);
@@ -127,6 +163,10 @@ int l_CMessagePart_size(lua_State * l)
     return 1;
 }
 
+
+/**
+ * Implementation of MessagePart:type()
+ */
 int l_CMessagePart_type(lua_State * l)
 {
     std::shared_ptr<CMessagePart> foo = l_CheckCMessagePart(l, 1);
@@ -134,6 +174,10 @@ int l_CMessagePart_type(lua_State * l)
     return 1;
 }
 
+
+/**
+ * Destructor
+ */
 int l_CMessagePart_destructor(lua_State * l)
 {
     void *ud = luaL_checkudata(l, 1, "luaL_CMessagePart");
@@ -152,6 +196,10 @@ int l_CMessagePart_destructor(lua_State * l)
     return 0;
 }
 
+/**
+ * Register the global `MessagePart` object to the Lua environment, and
+ * setup our public methods upon which the user may operate.
+ */
 void InitMessagePart(lua_State * l)
 {
     luaL_Reg sFooRegs[] =

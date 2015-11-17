@@ -47,6 +47,20 @@ extern "C"
 #include "message_lua.h"
 
 
+/**
+ * @file maildir_lua.cc
+ *
+ * This file implements the trivial exporting of our CMaildir class,
+ * implemented in C++, to Lua.  Lua-usage looks something like this:
+ *
+ *<code>
+ *   -- Create a maildir, and count messages <br/>
+ *   local m = Maildir.new( "/home/steve/Maildir/.foo.com" ) <br/>
+ *   local u = m:unread_messages() <br/>
+ *   local t = m:total_messages() <br/>
+ *</code>
+ *
+ */
 
 
 /**
@@ -54,7 +68,7 @@ extern "C"
  */
 void push_cmaildir(lua_State * l, std::shared_ptr<CMaildir> maildir)
 {
-    /**
+    /*
      * Allocate a new object.
      */
     void *ud = lua_newuserdata(l, sizeof(std::shared_ptr<CMaildir>*));
@@ -86,7 +100,7 @@ void push_cmaildir(lua_State * l, std::shared_ptr<CMaildir> maildir)
 
 
 /**
- * Binding for CMaildir
+ * Implementation for CMaildir.new
  */
 int l_CMaildir_constructor(lua_State * l)
 {
@@ -98,9 +112,8 @@ int l_CMaildir_constructor(lua_State * l)
 }
 
 
-
 /**
- * Test that the object is a std::shared_ptr<CMaildir>.
+ * Test that the object on the Lua stack is a std::shared_ptr<CMaildir>.
  */
 std::shared_ptr<CMaildir> l_CheckCMaildir(lua_State * l, int n)
 {
@@ -122,9 +135,8 @@ std::shared_ptr<CMaildir> l_CheckCMaildir(lua_State * l, int n)
 }
 
 
-
 /**
- * Return the path of this maildir object.
+ * Implementation of Maildir:path()
  */
 int l_CMaildir_path(lua_State * l)
 {
@@ -134,9 +146,8 @@ int l_CMaildir_path(lua_State * l)
 }
 
 
-
 /**
- * Count the messages in the maildir-directory
+ * Implementation of Maildir:total_messages()
  */
 int l_CMaildir_total_messages(lua_State * l)
 {
@@ -148,7 +159,7 @@ int l_CMaildir_total_messages(lua_State * l)
 
 
 /**
- * Count the unread messages in the maildir-directory.
+ * Implementation of Maildir:unread_messages()
  */
 int l_CMaildir_unread_messages(lua_State * l)
 {
@@ -159,6 +170,8 @@ int l_CMaildir_unread_messages(lua_State * l)
 
 
 /**
+ * Implementation of Maildir:messages()
+ *
  * Return a Lua CMessage object for each message.
  */
 int l_CMaildir_messages(lua_State * l)
@@ -182,9 +195,8 @@ int l_CMaildir_messages(lua_State * l)
 }
 
 
-
 /**
- * Get the mtime of the directory.
+ * Implementation of Maildir:mtime()
  */
 int l_CMaildir_mtime(lua_State *l)
 {
@@ -218,10 +230,8 @@ int l_CMaildir_mtime(lua_State *l)
 }
 
 
-
-
 /**
- * Generate a path to save a message to.
+ * Implementation of Maildir:generate_path()
  */
 int l_CMaildir_generate_path(lua_State *l)
 {
@@ -232,7 +242,6 @@ int l_CMaildir_generate_path(lua_State *l)
     bool is_new = lua_toboolean(l, 2);
 
     std::string path = foo->generate_filename(is_new);
-
     lua_pushstring(l, path.c_str());
     return 1;
 }
@@ -261,7 +270,8 @@ int l_CMaildir_destructor(lua_State * l)
 
 
 /**
- * Somebody set us up the mapping.
+ * Register the global `Maildir` object to the Lua environment, and
+ * setup our public methods upon which the user may operate.
  */
 void InitMaildir(lua_State * l)
 {

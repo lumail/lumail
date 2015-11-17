@@ -31,9 +31,22 @@ extern "C"
 #include "message_lua.h"
 
 
+/**
+ * @file global_state_lua.cc
+ *
+ * This file implements the trivial exporting of our CGlobalState class,
+ * implemented in C++, to Lua.  Lua-usage looks something like this:
+ *
+ *<code>
+ *   -- Get the currently selected message <br/>
+ *   local msg = CGlobal:current_message();
+ *</code>
+ *
+ */
+
 
 /**
- * Get all maildirs
+ * Implementation of `Global:maildirs`.
  */
 int l_CGlobalState_maildirs(lua_State * L)
 {
@@ -58,7 +71,7 @@ int l_CGlobalState_maildirs(lua_State * L)
 
 
 /**
- * Get the currently-selected maildir
+ * Implementation of `Global:current_maildir`.
  */
 int l_CGlobalState_current_maildir(lua_State * L)
 {
@@ -76,7 +89,7 @@ int l_CGlobalState_current_maildir(lua_State * L)
 
 
 /**
- * Update the currently-selected maildir, by object.
+ * Implementation of `Global:select_maildir`.
  */
 int l_CGlobalState_select_maildir(lua_State * L)
 {
@@ -89,7 +102,7 @@ int l_CGlobalState_select_maildir(lua_State * L)
 
 
 /**
- * Get the currently selected message
+ * Implementation of `Global:current_message`.
  */
 int l_CGlobalState_current_message(lua_State * l)
 {
@@ -106,7 +119,7 @@ int l_CGlobalState_current_message(lua_State * l)
 
 
 /**
- * Get the currently available messages.
+ * Implementation of `Global:current_messages`.
  */
 int l_CGlobalState_current_messages(lua_State * l)
 {
@@ -130,7 +143,7 @@ int l_CGlobalState_current_messages(lua_State * l)
 
 
 /**
- * Update the currently selected message, via an object.
+ * Implementation of `Global:select_messages`.
  */
 int l_CGlobalState_select_message(lua_State * l)
 {
@@ -142,6 +155,10 @@ int l_CGlobalState_select_message(lua_State * l)
 }
 
 
+/**
+ * Register the global `Global` object to the Lua environment,
+ * and setup our public methods upon which the user may operate.
+ */
 void InitGlobalState(lua_State * l)
 {
     luaL_Reg sFooRegs[] =

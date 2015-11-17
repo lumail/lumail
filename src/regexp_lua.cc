@@ -30,16 +30,32 @@ extern "C"
 
 
 /**
- * Test a pattern against a string.
+ * @file regexp_lua.cc
  *
- * If the regexp contains no captures:
+ * This file implements the trivial exporting of PCRE-based regular
+ * expression matching to Lua.
  *
- *    If the regexp matches return `true`.
- *   else
- *    Return `false`.
+ * Lua-usage looks something like this:
  *
- * Otherwise return a table of the matches
- * (up to ten).
+ *<code>
+ * local res = Regexp:match( "[kh]emp$", "Steve Kemp" )<br/>
+ * if ( res == true) then<br/>
+ *   print "OK"<br/>
+ * end<br/>
+ *</code>
+ *
+ */
+
+/**
+ * Implementation of Regexp:match().
+ *
+ * This allows a pattern to be tested against a string.
+ *
+ * If the regexp contains no captures then `true` will be returned on
+ * a successful match, otherwise `false`.
+ *
+ * If the regexp contains captures (up to ten) then they will be returned
+ * as a table.
  */
 int l_CRegexp_match(lua_State * l)
 {
