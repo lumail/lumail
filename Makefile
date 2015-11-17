@@ -7,7 +7,7 @@ VERSION=$(shell git describe --abbrev=4 --dirty --always --long)
 #
 # We've tested compilation with Lua 5.2 only
 #
-LUA_VERSION=5.2
+LUA_VERSION?=5.2
 
 
 #
@@ -30,7 +30,7 @@ LINKER=$(CC) -o
 # The name of the library we'll link against differs on different
 # systems, which is fun.
 #
-LVER=lua$(LUA_VERSION)
+LVER?=lua$(LUA_VERSION)
 UNAME := $(shell uname -s)
 ifeq ($(UNAME),DragonFly)
 	LVER=lua-$(LUA_VERSION)

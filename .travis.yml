@@ -9,6 +9,7 @@ addons:
     - libgmime-2.6-dev
 env:
     - LUA_VERSION=5.1
+    - LVER=5.1
 language: cpp
 compiler:
   - g++
