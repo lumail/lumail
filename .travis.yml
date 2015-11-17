@@ -1,0 +1,7 @@
+language: cpp
+compiler:
+  - g++
+script: make
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install -qq libncursesw5-dev liblua5.2-0-dev pkg-config libpcre3-dev libgmime-2.6-dev
