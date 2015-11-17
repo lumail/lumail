@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     /*
      * Initiate mime.
      */
-    g_mime_init(0);
+    g_mime_init(GMIME_ENABLE_RFC2047_WORKAROUNDS);
 
     /*
      * Parse command-line arguments
