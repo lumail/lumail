@@ -1,4 +1,7 @@
 
+[![Build Status](https://travis-ci.org/lumail/lumail2.png)](https://travis-ci.org/lumail/lumail2)
+
+
 lumail2
 =======
 
