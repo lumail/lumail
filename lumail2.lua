@@ -238,7 +238,7 @@ end
 function toggle_variable( name )
 
    local current = Config:get( name )
-   if ( current == nil ) then current = 1 end
+   if ( current == nil ) then current = 0 end
 
    if ( current == 1 ) or ( current == "1" )  then
       current = 0
@@ -1468,17 +1468,50 @@ function message_view( msg )
    local output = ""
 
    --
-   -- The headers we want to see by default.
+   -- We will either show "some" headers, or all headers.
+   --
+   -- The user may choose to view all headers by pressing `H`,
+   -- which will invoke:
+   --
+   --     toggle_variable( "message.headers" );
+   --
+   local full_headers = Config:get("message.headers") or 0
+
+   --
+   -- The headers we want to see if not full.
    --
    headers = { "To", "From", "Cc", "Subject", "Date" }
 
-   --
-   -- For each header, get it, and the value.
-   --
-   for i,header in ipairs( headers ) do
-      value = msg:header(header) or "[unset]"
-      if ( value  ) then
-         output = output ..  header .. ": " .. value .. "\n"
+   if ( full_headers ~= 0 ) then
+      Panel:append("Showing all headers")
+      --
+      -- Show all headers
+      --
+      local all_headers    = msg:headers()
+      local sorted_headers = {}
+
+      for n,v in pairs(all_headers) do
+         table.insert(sorted_headers, n)
+      end
+
+      table.sort( sorted_headers )
+
+      for index,name in pairs( sorted_headers ) do
+         local value = all_headers[name]
+         if ( value  ) then
+            output = output ..  name .. ": " .. value .. "\n"
+         end
+      end
+   else
+
+      --
+      -- Just show the small list.
+      --
+      for i,header in ipairs( headers ) do
+         value = msg:header(header) or "[unset]"
+         if ( value  ) then
+            output = output ..  header .. ": " .. value .. "\n"
+         end
       end
    end
 
@@ -2125,6 +2158,10 @@ keymap['maildir']['p'] = 'toggle_variable( "truncate.maildir" )'
 --
 keymap['global']['P'] = 'panel_size_toggle()'
 
+--
+-- Toggle the display of full headers.
+--
+keymap['message']['H'] = 'toggle_variable( "message.headers" )'
 
 
 --
