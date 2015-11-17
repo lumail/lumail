@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     /*
      * Initiate mime.
      */
-    g_mime_init(0);
+    g_mime_init(GMIME_ENABLE_RFC2047_WORKAROUNDS);
 
     /*
      * Parse command-line arguments
@@ -173,14 +173,7 @@ int main(int argc, char *argv[])
         for (std::string filename : load)
         {
             if (CFile::exists(filename))
-            {
-                if (! instance->load_file(filename))
-                {
-                    screen->teardown();
-                    std::cerr << "Error loading: " << filename << std::endl;
-                    return -1;
-                }
-            }
+                instance->load_file(filename);
             else
             {
                 screen->teardown();

@@ -110,25 +110,23 @@ CLua::~CLua()
 /*
  * Load the specified Lua file, and evaluate it.
  *
- * Return true on success.  False on error.
+ * If there is an error loading the file then the program will abort,
+ * and the error message will be shown to the user.
  */
-bool CLua::load_file(std::string filename)
+void CLua::load_file(std::string filename)
 {
     int erred = luaL_dofile(m_lua, filename.c_str());
 
     if (erred)
     {
-        /**
+        /*
          * Abort - showing the error
          */
         CScreen *screen = CScreen::instance();
         screen->teardown();
         std::cerr << "ERROR " << luaL_checkstring(m_lua, 0);
         exit(2);
-        return false;
     }
-    else
-        return true;
 }
 
 
