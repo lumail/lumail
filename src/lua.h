@@ -49,16 +49,17 @@ public:
 public:
 
     /**
-     * Populate "args"
+     * Populate "args" - the command-line arguments which are exposed to Lua.
      */
     void set_args(char *argv[], int argc);
 
     /**
      * Load the specified Lua file, and evaluate it.
      *
-     * Return true on success.  False on error.
+     * If there is an error loading the file then the program will abort,
+     * and the error message will be shown to the user.
      */
-    bool load_file(std::string filename);
+    void load_file(std::string filename);
 
     /**
      * Evaluate the given string.
