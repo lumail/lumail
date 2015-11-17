@@ -1167,6 +1167,12 @@ function save_attachment()
 
             -- Prompt for local-path
             local output = Screen:get_line( "Save to:", v:filename() )
+
+            if ( output == nil or output == "" ) then
+               Panel:append( "Attachment saving aborted" )
+               return
+            end
+
             -- save it
             local f = io.open(output, "wb")
             f:write( v:content() )
@@ -1601,6 +1607,12 @@ end
 --
 function read_eval()
    local txt = Screen:get_line(":")
+
+   if ( txt == nil or txt == "" ) then
+      Panel:append( "Evaluation aborted!" )
+      return
+   end
+
    loadstring( txt )()
 end
 
@@ -1610,6 +1622,12 @@ end
 --
 function read_execute()
    local cmd = Screen:get_line("!")
+
+   if ( cmd == nil or cmd == "" ) then
+      Panel:append( "Execution aborted!" )
+      return
+   end
+
    os.execute(cmd)
 end
 
