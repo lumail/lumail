@@ -1067,10 +1067,37 @@ function Message:save()
    end
 
    --
+   -- Get the default destination
+   --
+   local prefix   = Config:get("maildir.prefix")
+   local location = os.getenv( "HOME" )
+
+   --
+   -- If we have a prefix which is a string then use it.
+   --
+   if ( type(prefix) == "string" ) then
+      location=prefix
+   elseif( type(prefix) == "table" ) then
+      --
+      -- If we have multiple values set then use the first.
+      --
+      location=prefix[1]
+   end
+
+
+   --
    -- Prompt for destination
    --
-   local dest = Screen:get_line( "Copy to maildir:",
-                                 Config:get( "maildir.prefix" ))
+   local dest = Screen:get_line( "Copy to maildir:", location )
+
+   --
+   -- Nothing entered?  Abort.
+   --
+   if ( dest == nil or dest == "" ) then
+      Panel:append( "Copy aborted" )
+      return
+   end
+
    if ( msg:copy( dest ) ) then
       Panel:append( "Message copied to " .. dest )
    else
@@ -2140,11 +2167,15 @@ local def_maildir = os.getenv( "HOME" ) .. "/Maildir"
 --
 -- Set the maildir-prefix, if it exists.
 --
-if ( Directory:is_maildir(def_maildir) ) then
-   Config:set( "maildir.prefix", def_maildir )
-else
-   Panel:append( "WARNING: No maildir-prefix defined!" )
-end
+Config:set( "maildir.prefix", def_maildir );
+
+--
+-- NOTE: You could also set an array of prefixes.
+--
+--       To set multiple values simply configure a table, not a string:
+--
+Config:set( "maildir.prefix", { def_maildir, "/tmp/Maildir" } )
+--
 
 --
 -- Configure the path to save outgoing messages to.

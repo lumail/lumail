@@ -159,26 +159,40 @@ void CGlobalState::update_maildirs()
     m_maildirs = new CMaildirList;
 
     /*
-     * Get the maildir prefix.
+     * Get the maildir prefix - note that we allow an array to be used.
      */
     CConfig *config = CConfig::instance();
-    std::string prefix = config->get_string("maildir.prefix");
+    std::vector<std::string> prefixes = config->get_array("maildir.prefix");
 
-    if (prefix.empty())
-        return;
+    /*
+     * If we've been given a string then we'll deal with that too.
+     */
+    if (prefixes.empty())
+        prefixes.push_back(config->get_string("maildir.prefix"));
 
 
     /*
-     * We'll store each maildir here.
+     * For each prefix add in the Maildirs.
      */
-    std::vector<std::string> folders;
-    folders = CFile::get_all_maildirs(prefix);
-
-    for (std::string path : folders)
+    for (auto it = prefixes.begin(); it != prefixes.end(); ++it)
     {
-        std::shared_ptr<CMaildir> m = std::shared_ptr<CMaildir>(new CMaildir(path));
+        std::string prefix = *it;
 
-        m_maildirs->push_back(m);
+        /*
+         * We'll store each maildir here.
+         */
+        std::vector<std::string> folders;
+        folders = CFile::get_all_maildirs(prefix);
+
+        /*
+         * Construct the Maildir object.
+         */
+        for (std::string path : folders)
+        {
+            std::shared_ptr<CMaildir> m = std::shared_ptr<CMaildir>(new CMaildir(path));
+
+            m_maildirs->push_back(m);
+        }
     }
 
     /*
