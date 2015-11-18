@@ -116,10 +116,7 @@ int l_CMessagePart_content(lua_State * l)
     void *content = foo->content();
     size_t content_size = foo->content_size();
 
-    if (content_size > 0)
-        lua_pushlstring(l, (char *) content, content_size);
-    else
-        lua_pushnil(l);
+    lua_pushlstring(l, (char *) content, content_size);
 
     return 1;
 }

@@ -1563,11 +1563,12 @@ function message_view( msg )
       if ( found == false ) then
 
          --
-         -- Get the content-type of this part.
+         -- Get the content-type & size of this part.
          --
-         ct = part:type():lower()
+         local ct = part:type():lower()
+         local sz = part:size()
 
-         if ( string.find( ct, "text/" ) ) then
+         if ( string.find( ct, "text/" ) ) and ( sz > 0 )  then
             output = output .. part:content()
             found = true
          end
@@ -1578,7 +1579,7 @@ function message_view( msg )
    -- Did we show the body?
    --
    if ( found == false ) then
-      output = output .. "Failed to find a 'text/xxx' part from the message."
+      output = output .. "Failed to find a plain-text part in the message."
    end
 
    --
