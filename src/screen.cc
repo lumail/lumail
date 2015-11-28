@@ -187,6 +187,19 @@ void CScreen::run_main_loop()
                 on_keypress(key);
         }
 
+
+        /*
+         * Check if the view has changed (after key handling).
+         *
+         * This avoids a single redraw of the wrong mode, before we
+         * run round the event-loop again and draw in the correct mode.
+         */
+        std::string new_mode = config->get_string("global.mode", "maildir");
+
+        if (new_mode != mode)
+            view = m_views[new_mode];
+
+
         /*
          * Update the view.
          */
@@ -1183,7 +1196,7 @@ int CScreen::get_colour(std::string name)
     if (name == "unread")
     {
         CConfig *config = CConfig::instance();
-        name = config->get_string("colour.unread", "red" );
+        name = config->get_string("colour.unread", "red");
     }
 
     return (m_colours[name]);
