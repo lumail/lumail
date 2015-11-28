@@ -142,11 +142,8 @@ void CScreen::run_main_loop()
         /*
          * Get the current global mode.
          */
-        CConfig *config   = CConfig::instance();
-        std::string mode  = config->get_string("global.mode");
-
-        if (mode.empty())
-            mode = "maildir";
+        CConfig *config  = CConfig::instance();
+        std::string mode = config->get_string("global.mode", "maildir");
 
 
         /*
@@ -705,10 +702,7 @@ std::string CScreen::get_line(std::string prompt, std::string input)
      * Get the mode so we can update the display mid-input.
      */
     CConfig *config   = CConfig::instance();
-    std::string mode  = config->get_string("global.mode");
-
-    if (mode.empty())
-        mode = "maildir";
+    std::string mode  = config->get_string("global.mode", "maildir");
 
     CViewMode *view = m_views[mode];
 
@@ -983,10 +977,7 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
      * Get the mode so we can update the display mid-input.
      */
     CConfig *config   = CConfig::instance();
-    std::string mode  = config->get_string("global.mode");
-
-    if (mode.empty())
-        mode = "maildir";
+    std::string mode  = config->get_string("global.mode", "maildir");
 
     CViewMode *view = m_views[mode];
 
@@ -1192,10 +1183,7 @@ int CScreen::get_colour(std::string name)
     if (name == "unread")
     {
         CConfig *config = CConfig::instance();
-        name = config->get_string("colour.unread");
-
-        if (name.empty())
-            name = "red";
+        name = config->get_string("colour.unread", "red" );
     }
 
     return (m_colours[name]);
