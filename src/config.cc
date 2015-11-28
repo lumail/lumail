@@ -252,7 +252,7 @@ void CConfig::set(std::string name, std::vector < std::string > entries, bool no
 /*
  * Helper to get the integer-value of a named key.
  */
-int CConfig::get_integer(std::string name)
+int CConfig::get_integer(std::string name, int default_value)
 {
     int result = 0;
 
@@ -260,6 +260,8 @@ int CConfig::get_integer(std::string name)
 
     if (tmp && (tmp->type == CONFIG_INTEGER))
         result = *tmp->value.value;
+    else
+        result = default_value;
 
     return (result);
 }
@@ -268,7 +270,7 @@ int CConfig::get_integer(std::string name)
 /*
  * Helper to get the string-value of a named key.
  */
-std::string CConfig::get_string(std::string name)
+std::string CConfig::get_string(std::string name, std::string default_value)
 {
     std::string result;
 
@@ -276,6 +278,8 @@ std::string CConfig::get_string(std::string name)
 
     if (tmp && (tmp->type == CONFIG_STRING))
         result = *tmp->value.str;
+    else
+        result = default_value;
 
     return (result);
 }

@@ -122,13 +122,17 @@ public:
 
     /**
      * Helper to get the integer-value of a named key.
+     *
+     * If the value is not found the supplied default will be used instead.
      */
-    int get_integer(std::string name);
+    int get_integer(std::string name, int default_value = 0);
 
     /**
      * Helper to get the string-value of a named key.
+     *
+     * If the value is not found the supplied default will be used instead.
      */
-    std::string get_string(std::string name);
+    std::string get_string(std::string name, std::string default_value = "");
 
 private:
 
