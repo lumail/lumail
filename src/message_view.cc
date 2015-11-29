@@ -53,41 +53,11 @@ CMessageView::~CMessageView()
  */
 std::vector<std::string> CMessageView::get_text()
 {
-    std::vector<std::string> result;
-
     /*
-     * Get the lua state.
+     * Call the view-function.
      */
     CLua *lua = CLua::instance();
-    lua_State * l = lua->state();
-
-    /*
-     * If there is a message_view() function, then call it.
-     */
-    lua_getglobal(l, "message_view");
-
-    if (lua_isnil(l, -1))
-        return (result);
-
-    /*
-     * Call the function.
-     */
-    lua_pcall(l, 0, 1, 0);
-
-    /*
-     * Now get the table we expected.
-     */
-    if (lua_istable(l, 1))
-    {
-        lua_pushnil(l);
-
-        while (lua_next(l, -2))
-        {
-            const char *entry = lua_tostring(l, -1);
-            result.push_back(entry);
-            lua_pop(l, 1);
-        }
-    }
+    std::vector<std::string> result = lua->function2table("message_view");
 
     /*
      * Store the number of lines we've retrieved.

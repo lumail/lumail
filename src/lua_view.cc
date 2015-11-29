@@ -47,43 +47,13 @@ CLuaView::~CLuaView()
  */
 std::vector<std::string> CLuaView::get_text()
 {
-    std::vector<std::string> result;
-
-    /**
-     * Get the lua state.
+    /*
+     * Call the view-function.
      */
     CLua *lua = CLua::instance();
-    lua_State * l = lua->state();
+    std::vector<std::string> result = lua->function2table("lua_view");
 
-    /**
-     * If there is a lua_mode() function, then call it.
-     */
-    lua_getglobal(l, "lua_view");
-
-    if (lua_isnil(l, -1))
-        return (result);
-
-    /**
-     * Call the function.
-     */
-    lua_pcall(l, 0, 1, 0);
-
-    /**
-     * Now get the table we expected.
-     */
-    if (lua_istable(l, 1))
-    {
-        lua_pushnil(l);
-
-        while (lua_next(l, -2))
-        {
-            const char *entry = lua_tostring(l, -1);
-            result.push_back(entry);
-            lua_pop(l, 1);
-        }
-    }
-
-    /**
+    /*
      * Store the number of lines we've retrieved.
      */
     CConfig *config = CConfig::instance();
