@@ -92,6 +92,11 @@ public:
      */
     void update(std::string key_name);
 
+    /**
+     * Call a Lua function which will return a table of text.
+     */
+    std::vector<std::string> function2table(std::string function);
+
 private:
 
     /**

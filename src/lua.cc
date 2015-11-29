@@ -237,3 +237,49 @@ void CLua::update(std::string key_name)
     lua_pushstring(m_lua, key_name.c_str());
     lua_pcall(m_lua, 1, 0, 0);
 }
+
+/*
+ * Call a Lua function which will return a table of text.
+ */
+std::vector<std::string> CLua::function2table(std::string function)
+{
+    std::vector<std::string> result;
+
+    /*
+     * Get the fuction - if it doesn't exist we're done.
+     */
+    lua_getglobal(m_lua, function.c_str());
+
+    if (lua_isnil(m_lua, -1))
+        return (result);
+
+
+    /*
+     * Call the function - and handle any error.
+     */
+    if (lua_pcall(m_lua, 0, 1, 0))
+    {
+        /**
+         * Error.
+         */
+        lua_pop(m_lua, 1);
+        return (result);
+    }
+
+    /*
+     * Now get the table we expected.
+     */
+    if (lua_istable(m_lua, 1))
+    {
+        lua_pushnil(m_lua);
+
+        while (lua_next(m_lua, -2))
+        {
+            const char *entry = lua_tostring(m_lua, -1);
+            result.push_back(entry);
+            lua_pop(m_lua, 1);
+        }
+    }
+
+    return (result);
+}
