@@ -1153,7 +1153,7 @@ function save_attachment()
    --
    -- Get the current message, and then the parts.
    --
-   local msg   = Global:current_message()
+   local msg  = Global:current_message()
    if ( not msg ) then
       return
    end
@@ -1162,29 +1162,34 @@ function save_attachment()
 
    local i = 0
    for k,v in ipairs( parts ) do
-      if ( v:is_attachment() ) then
-         if ( i == cur ) then
+      if ( i == cur ) then
 
-            -- Prompt for local-path
-            local output = Screen:get_line( "Save to:", v:filename() )
+         -- Get the path of the attachment, if any
+         local path = v:filename()
+         if ( path == nil or path == "" ) then
+            path = "attachment"
+         end
+         path = "attachment"
 
-            if ( output == nil or output == "" ) then
-               Panel:append( "Attachment saving aborted" )
-               return
-            end
+         -- Prompt for local-path
+         local output = Screen:get_line( "Save to:", path )
 
-            -- save it
-            local f = io.open(output, "wb")
-            f:write( v:content() )
-            f:close()
-
-            Panel:append( "Wrote attachment to " .. output )
-
+         if ( output == nil or output == "" ) then
+            Panel:append( "Attachment saving aborted" )
             return
          end
 
-         i = i + 1
+         -- save it
+         local f = io.open(output, "wb")
+         f:write( v:content() )
+         f:close()
+
+         Panel:append( "Wrote attachment to " .. output )
+
+         return
       end
+
+      i = i + 1
    end
 end
 
@@ -1268,8 +1273,13 @@ function attachment_view()
    for k,v in ipairs( parts ) do
       if ( v:is_attachment() ) then
          local tmp = string.format( "%06d - %32s [%32s]",
-                                    v:size(), v:filename(), v:type() )
+                                    v:size(), v:type(), v:filename() )
          table.insert( result, tmp )
+      else
+         local tmp = string.format( "%06d - %32s",
+                                    v:size(), v:type() )
+         table.insert( result, tmp )
+
       end
    end
 
