@@ -259,6 +259,21 @@ function change_mode( new_mode )
 end
 
 
+--
+-- Configuration values are retrieved/set via Config:get() and Config:set().
+--
+-- There is no built-in way of getting a value with a default, so we
+-- define a helper here to do the neccessary thing.
+--
+function Config:get_with_default(key,default)
+   local value = Config:get(key)
+   if ( value == nil ) then
+      value = default
+   end
+
+   return( value )
+end
+
 
 --
 -- Get the date of the message in terms of seconds past the epoch.
@@ -432,7 +447,7 @@ function sorted_messages()
    local msgs = Global:current_messages()
 
    -- What sort method should we use?
-   local method = Config:get("index.sort") or "date"
+   local method = Config:get_with_default("index.sort", "date")
 
    if ( method == "date" ) then
       table.sort(msgs, compare_by_date)
@@ -453,14 +468,14 @@ function sorted_messages()
    --
    -- Now limit the messages by limit
    --
-   local limit = Config:get("index.limit" )
+   local limit = Config:get_with_default("index.limit", "all")
 
    --
    -- Temporary copies.
    --
    local ret = {}
 
-   if ( limit == nil ) or ( limit == "all" ) then
+   if ( limit == "all" ) then
       for i,o in ipairs(msgs) do
          table.insert(ret, o)
       end
@@ -1419,7 +1434,7 @@ end
 function Maildir:format(obj)
    local path   = obj:path()
    local time   = obj:mtime()
-   local trunc  = Config:get("truncate.maildir") or 0
+   local trunc  = Config:get_with_default("truncate.maildir", 0)
 
    -- Do we have this cached?  If so return it
    if ( cache["maildir:" .. trunc .. time .. path] ) then
@@ -1518,7 +1533,7 @@ function message_view( msg )
    --
    --     toggle_variable( "message.headers" );
    --
-   local full_headers = Config:get("message.headers") or 0
+   local full_headers = Config:get_with_default("message.headers", 0)
 
    --
    -- The headers we want to see if not full.
@@ -1728,10 +1743,7 @@ end
 -- Left/Right scrolling
 --
 function left()
-   local x = Config:get("global.horizontal")
-   if ( not x ) then
-      x = 0
-   end
+   local x = Config:get_with_default("global.horizontal",0)
 
    if ( x > 0 ) then
       x = x - 1
@@ -1745,9 +1757,8 @@ end
 -- Left/Right scrolling.
 --
 function right()
-   local x = Config:get("global.horizontal")
+   local x = Config:get_with_default("global.horizontal", 0)
 
-   if ( not x ) then x = 0 end
    x = x + 1
 
    Config:set( "global.horizontal", x )
@@ -1785,7 +1796,7 @@ function find( offset )
    -- We know the maximum offset is stored in the
    -- variable $mode.max
    --
-   local cur = Config:get(mode .. ".current") or 0
+   local cur = Config:get_with_default(mode .. ".current", 0)
    local max = Config:get(mode .. ".max")
 
    --
@@ -1827,12 +1838,8 @@ end
 function next( offset )
 
    local mode = Config:get("global.mode")
-   local cur  = Config:get(mode .. ".current")
    local max  = Config:get(mode .. ".max" )
-
-   if ( not cur ) then
-      cur = 0
-   end
+   local cur  = Config:get_with_default(mode .. ".current", 0)
 
    if ( cur + offset < (max-1) ) then
       cur = cur + offset
@@ -1852,11 +1859,7 @@ end
 --
 function prev( offset )
    local mode = Config:get("global.mode")
-   local cur  = Config:get(mode .. ".current")
-
-   if ( not cur ) then
-      cur = 0
-   end
+   local cur  = Config:get_with_default(mode .. ".current", 0)
 
    if ( cur - offset > 0 ) then
       cur = cur - offset
