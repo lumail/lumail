@@ -389,14 +389,11 @@ void CMessage::mark_read()
     }
 }
 
-
-
 /*
  * Parse the message into MIME-parts, if we've not already done so.
  */
 std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
 {
-
     /*
      * If we've already parsed then return the cached results.
      *
@@ -405,13 +402,9 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
     if (m_parts.size() > 0)
         return (m_parts);
 
-
-    /*
-     * Boiler variables.
-     */
-    GMimeMessage * m_message;
-    GMimeParser * parser;
-    GMimeStream * stream;
+    GMimeMessage *message;
+    GMimeParser *parser;
+    GMimeStream *stream;
     int fd;
 
     if ((fd = open(m_path.c_str(), O_RDONLY, 0)) == -1)
@@ -421,96 +414,87 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
     }
 
     stream = g_mime_stream_fs_new(fd);
-
     parser = g_mime_parser_new_with_stream(stream);
+
+    /*
+     * unref the stream (parser owns a ref, so this object does not
+     * actually get free'd until we destroy the parser)
+     **/
     g_object_unref(stream);
 
-    m_message = g_mime_parser_construct_message(parser);
-    g_object_unref(parser);
+    message = g_mime_parser_construct_message(parser);
 
-    /*
-     * Create an iterator
-     */
-    GMimePartIter *
-    iter = g_mime_part_iter_new((GMimeObject *) m_message);
-    int
-    count = 1;
-
-    /*
-     * Iterate over the message.
-     */
-    do
+    if (! message )
     {
-        GMimeObject *
-        part = g_mime_part_iter_get_current(iter);
+        g_object_unref(parser);
+        return m_parts;
+    }
 
-        if ((GMIME_IS_OBJECT(part)) && (GMIME_IS_PART(part)))
+    /**
+     * Iterate
+     */
+    GMimePartIter *iter  = g_mime_part_iter_new ((GMimeObject *) message);
+    g_object_unref (message);
+
+    do {
+        GMimeObject *part = g_mime_part_iter_get_current (iter);
+
+        GMimeContentType *ct = g_mime_object_get_content_type(part);
+        gchar *type = g_mime_content_type_to_string(ct);
+
+        char *aname = (char *) g_mime_object_get_content_disposition_parameter(part,"filename");
+        if (aname == NULL)
+            aname = (char *) g_mime_object_get_content_type_parameter(part, "name");
+
+
+        /**
+         * Get the attachment data.
+         */
+        GMimeStream *mem = g_mime_stream_mem_new();
+
+        if (GMIME_IS_MESSAGE_PART(part))
         {
-            /*
-             * Get the content-type
-             */
-            GMimeContentType *
-            content_type = g_mime_object_get_content_type(part);
+            GMimeMessage *msg = g_mime_message_part_get_message(GMIME_MESSAGE_PART(part));
 
-            /*
-             * Get the filename
-             */
-            const char *
-            filename =
-                g_mime_object_get_content_disposition_parameter(part,
-                        "filename");
-            gchar *
-            type = g_mime_content_type_to_string(content_type);
-
-            /*
-             * Get the content.
-             */
-            GMimeDataWrapper *
-            c = g_mime_part_get_content_object(GMIME_PART(part));
-            GMimeStream *
-            memstream = g_mime_stream_mem_new();
-            gint64
-            len = g_mime_data_wrapper_write_to_stream(c, memstream);
-            guint8 *
-            b =
-                g_mime_stream_mem_get_byte_array((GMimeStreamMem *)
-                                                 memstream)->data;
-
-            /*
-             * Copy the content away.
-             */
-            void *
-            data = (void *) malloc(len + 1);
-            size_t data_len = (size_t) len;
-            memcpy(data, b, len);
-
-
-            /*
-             * OK this is an attachment.
-             */
-            if (filename)
-            {
-                std::shared_ptr<CMessagePart> attach = std::shared_ptr<CMessagePart> (new CMessagePart(type, filename, data, data_len));
-                m_parts.push_back(attach);
-            }
-            else
-            {
-                std::shared_ptr<CMessagePart> part = std::shared_ptr<CMessagePart> (new CMessagePart(type, "", data, data_len));
-                m_parts.push_back(part);
-            }
+            g_mime_object_write_to_stream(GMIME_OBJECT(msg), mem);
+        } else
+        {
+            GMimeDataWrapper *content = g_mime_part_get_content_object(GMIME_PART(part));
+            g_mime_data_wrapper_write_to_stream(content, mem);
         }
 
-        count += 1;
-    }
-    while (g_mime_part_iter_next(iter));
+        /**
+         * NOTE: by setting the owner to FALSE, it means unreffing the
+         * memory stream won't free the GByteArray data.
+         */
+        g_mime_stream_mem_set_owner(GMIME_STREAM_MEM(mem), FALSE);
 
-    g_mime_part_iter_free(iter);
-    g_object_unref(m_message);
+        GByteArray *res = g_mime_stream_mem_get_byte_array(GMIME_STREAM_MEM(mem));
 
+        /**
+         * The actual data from the array, and the size of that data.
+         */
+        char *adata = (char *) res->data;
+        size_t len = (res->len);
 
-    return (m_parts);
+        if (aname)
+        {
+            std::shared_ptr<CMessagePart> attach = std::shared_ptr<CMessagePart> (new CMessagePart(type, aname, adata, len));
+            m_parts.push_back(attach);
+        }
+        else
+        {
+            std::shared_ptr<CMessagePart> part = std::shared_ptr<CMessagePart> (new CMessagePart(type, "", adata, len));
+            m_parts.push_back(part);
+        }
+
+        g_object_unref(mem);
+    } while (g_mime_part_iter_next (iter));
+
+    g_object_unref (iter);
+    g_object_unref(message);
+    return m_parts;
 }
-
 
 /*
  * Delete this message from the disk.
