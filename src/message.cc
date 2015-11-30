@@ -545,7 +545,7 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
     /*
      * If there are no attachments return.
      */
-    if ( attachments.size() < 1 )
+    if (attachments.size() < 1)
         return;
 
     if ((fd = open(m_path.c_str(), O_RDONLY, 0)) == -1)

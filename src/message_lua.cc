@@ -325,15 +325,17 @@ int l_CMessage_add_attachments(lua_State * l)
             lua_pop(l, 1);
         }
     }
-    if (lua_isstring(l, 2)){
+
+    if (lua_isstring(l, 2))
+    {
         const char *entry = lua_tostring(l, 2);
         files.push_back(entry);
     }
 
-    if ( files.size() > 0 )
+    if (files.size() > 0)
         foo->add_attachments(files);
 
-   return 0;
+    return 0;
 }
 
 
