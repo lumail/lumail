@@ -126,6 +126,11 @@ public:
      */
     std::vector<std::shared_ptr<CMessagePart>> get_parts();
 
+    /**
+     * Add the named file as an attachment to this message.
+     */
+    void add_attachments(std::vector<std::string> attachments);
+
 private:
 
     /**

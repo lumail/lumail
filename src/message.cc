@@ -529,3 +529,160 @@ bool CMessage::copy(std::string maildir)
 
     return (CFile::copy(src, dest));
 }
+
+
+
+/*
+ * Update our on-disk email to add the specified files as attachments.
+ */
+void CMessage::add_attachments(std::vector<std::string> attachments)
+{
+    GMimeMessage *message;
+    GMimeParser  *parser;
+    GMimeStream  *stream;
+    int fd;
+
+    /*
+     * If there are no attachments return.
+     */
+    if ( attachments.size() < 1 )
+        return;
+
+    if ((fd = open(m_path.c_str(), O_RDONLY, 0)) == -1)
+        throw "Opening the message failed";
+
+    stream = g_mime_stream_fs_new(fd);
+
+    parser = g_mime_parser_new_with_stream(stream);
+    g_object_unref(stream);
+
+    message = g_mime_parser_construct_message(parser);
+    g_object_unref(parser);
+
+
+    GMimeMultipart *multipart;
+    GMimePart *addition;
+    GMimeDataWrapper *content;
+
+    /**
+     * Create a new multipart message.
+     */
+    multipart = g_mime_multipart_new();
+    GMimeContentType *type;
+
+    /*
+     * Handle the mime-type.
+     */
+    type = g_mime_content_type_new("multipart", "mixed");
+    g_mime_object_set_content_type(GMIME_OBJECT(multipart), type);
+
+
+    GMimeContentType *new_type;
+    GMimeObject *mime_part;
+
+    mime_part = g_mime_message_get_mime_part(message);
+    new_type = g_mime_content_type_new_from_string("text/plain; charset=UTF-8");
+    g_mime_object_set_content_type(mime_part, new_type);
+
+    /*
+     * first, add the message's toplevel mime part into the multipart
+     */
+    g_mime_multipart_add(multipart, g_mime_message_get_mime_part(message));
+
+    /*
+     * now set the multipart as the message's top-level mime part
+     */
+    g_mime_message_set_mime_part(message, (GMimeObject*) multipart);
+
+    /*
+     * For each attachment ..
+     */
+    for (std::string name : attachments)
+    {
+        int ad;
+
+        if ((ad = open(name.c_str(), O_RDONLY)) == -1)
+            return;
+
+        stream = g_mime_stream_fs_new(ad);
+
+        /*
+         * the stream isn't encoded, so just use DEFAULT
+         */
+        content = g_mime_data_wrapper_new_with_stream(stream, GMIME_CONTENT_ENCODING_DEFAULT);
+
+        g_object_unref(stream);
+
+        /*
+         * TODO: Find the MIME-type of the file.
+         */
+        std::string ctype = "application/octet-stream";
+
+        /*
+         * Here we use the mime-type we've returned and set that for the
+         * attachment.
+         */
+        addition = g_mime_part_new();
+        GMimeContentType *a_type = g_mime_content_type_new_from_string(ctype.c_str());
+        g_mime_part_set_content_object(addition, content);
+        g_mime_object_set_content_type((GMimeObject *)addition, a_type);
+        g_object_unref(content);
+
+        /*
+         * set the filename.
+         */
+        g_mime_part_set_filename(addition, CFile::basename(name).c_str());
+
+        /*
+         * Here we use base64 encoding.
+         *
+         * NOTE: if you want to get really fancy, you could use
+         * g_mime_part_get_best_content_encoding()
+         * to calculate the most efficient encoding algorithm to use.
+         */
+        g_mime_part_set_content_encoding(addition, GMIME_CONTENT_ENCODING_BASE64);
+
+        /*
+         * Add the attachment to the multipart
+         */
+        g_mime_multipart_add(multipart, (GMimeObject*)addition);
+        g_object_unref(addition);
+    }
+
+    /*
+     * now that we've finished referencing the multipart directly (the message still
+     * holds it's own ref) we can unref it.
+     */
+    g_object_unref(multipart);
+
+    /*
+     * Output the updated message.  First pick a tmpfile.
+     *
+     * NOTE: We must use a temporary file.  If we attempt to overwrite the
+     * input file we'll get corruption, due to GMime caching.
+     */
+    char *tmpname = strdup("/tmp/tmpfileXXXXXX");
+    mkstemp(tmpname);
+
+    /*
+     * Write out the updated message.
+     */
+    FILE *f = NULL;
+
+    if ((f = fopen(tmpname, "wb")) == NULL)
+        return;
+
+    GMimeStream *ostream = g_mime_stream_file_new(f);
+    g_mime_object_write_to_stream((GMimeObject *) message, ostream);
+    g_object_unref(ostream);
+
+    /*
+     * Now rename the temporary file over the top of the input
+     * message.
+     */
+    CFile::copy(tmpname, m_path);
+    CFile::delete_file(tmpname);
+
+    if (m_parts.size() > 0)
+        m_parts.clear();
+}
