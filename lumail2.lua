@@ -1211,6 +1211,51 @@ end
 
 
 --
+-- This function is called by pressing `SPACE`/`ENTER` in attachment-mode
+--
+function view_mime_part()
+   --
+   -- Get the currently highlighted attachment-offset
+   --
+   local mode = Config:get("global.mode")
+   local cur  = Config:get(mode .. ".current")
+
+   --
+   -- Get the current message, and then the parts.
+   --
+   local msg  = Global:current_message()
+   if ( not msg ) then
+      return
+   end
+
+   local parts = msg:parts()
+
+   local i = 0
+   for k,v in ipairs( parts ) do
+      if ( i == cur ) then
+
+         -- Generate a temporary file
+         local tmp   = os.tmpname()
+         local file  = assert(io.open(tmp, "w"))
+
+         -- save the content there
+         file:write( v:content() )
+         file:close()
+
+         -- invoke `less`.
+         Screen:execute( "less " .. tmp )
+
+         -- Remove the file
+         os.remove(tmp)
+         return
+      end
+
+      i = i + 1
+   end
+end
+
+
+--
 -- Define our views
 --
 -----------------------------------------------------------------------------
@@ -2192,6 +2237,8 @@ keymap['message']['A']    = "change_mode('attachment')"
 -- Save the current attachment
 --
 keymap['attachment']['s'] = "save_attachment()"
+keymap['attachment']['SPACE'] = "view_mime_part()"
+keymap['attachment']['ENTER'] = "view_mime_part()"
 
 
 --
