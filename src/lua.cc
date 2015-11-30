@@ -200,7 +200,37 @@ std::vector<std::string> CLua::get_completions(std::string token)
     lua_pushstring(m_lua, token.c_str());
 
     if (lua_pcall(m_lua, 1, 1, 0) != 0)
+    {
+        /*
+         * The error message will be on the stack - get it & remove it.
+         */
+        const char *err = lua_tostring(m_lua, -1);
+        lua_pop(m_lua, 1);
+
+        /*
+         * Call the function - if it exists.
+         */
+        lua_getglobal(m_lua, "on_error");
+
+        if (!lua_isnil(m_lua, -1))
+        {
+            lua_pushstring(m_lua, err);
+
+            if (lua_pcall(m_lua, 1, 0, 0) != 0)
+            {
+                /*
+                 * Error invoking our error handler - ignore it.
+                 */
+                lua_pop(m_lua, 1);
+            }
+
+        }
+
+        /*
+         * Now return the result.
+         */
         return result;
+    }
 
     lua_pushnil(m_lua);
 
@@ -235,7 +265,34 @@ void CLua::update(std::string key_name)
      * Call the function.
      */
     lua_pushstring(m_lua, key_name.c_str());
-    lua_pcall(m_lua, 1, 0, 0);
+
+    if (lua_pcall(m_lua, 1, 0, 0) != 0)
+    {
+        /*
+         * The error message will be on the stack - get it & remove it.
+         */
+        const char *err = lua_tostring(m_lua, -1);
+        lua_pop(m_lua, 1);
+
+        /*
+         * Call the function - if it exists.
+         */
+        lua_getglobal(m_lua, "on_error");
+
+        if (!lua_isnil(m_lua, -1))
+        {
+            lua_pushstring(m_lua, err);
+
+            if (lua_pcall(m_lua, 1, 0, 0) != 0)
+            {
+                /*
+                 * Error invoking our error handler - ignore it.
+                 */
+                lua_pop(m_lua, 1);
+            }
+
+        }
+    }
 }
 
 /*
@@ -257,12 +314,33 @@ std::vector<std::string> CLua::function2table(std::string function)
     /*
      * Call the function - and handle any error.
      */
-    if (lua_pcall(m_lua, 0, 1, 0))
+    if (lua_pcall(m_lua, 0, 1, 0) != 0)
     {
-        /**
-         * Error.
+        /*
+         * The error message will be on the stack - get it & remove it.
          */
+        const char *err = lua_tostring(m_lua, -1);
         lua_pop(m_lua, 1);
+
+        /*
+         * Call the function - if it exists.
+         */
+        lua_getglobal(m_lua, "on_error");
+
+        if (!lua_isnil(m_lua, -1))
+        {
+            lua_pushstring(m_lua, err);
+
+            if (lua_pcall(m_lua, 1, 0, 0) != 0)
+            {
+                /*
+                 * Error invoking our error handler - ignore it.
+                 */
+                lua_pop(m_lua, 1);
+            }
+
+        }
+
         return (result);
     }
 
