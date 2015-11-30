@@ -424,7 +424,7 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
 
     message = g_mime_parser_construct_message(parser);
 
-    if (! message )
+    if (! message)
     {
         g_object_unref(parser);
         return m_parts;
@@ -433,16 +433,18 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
     /**
      * Iterate
      */
-    GMimePartIter *iter  = g_mime_part_iter_new ((GMimeObject *) message);
-    g_object_unref (message);
+    GMimePartIter *iter  = g_mime_part_iter_new((GMimeObject *) message);
+    g_object_unref(message);
 
-    do {
-        GMimeObject *part = g_mime_part_iter_get_current (iter);
+    do
+    {
+        GMimeObject *part = g_mime_part_iter_get_current(iter);
 
         GMimeContentType *ct = g_mime_object_get_content_type(part);
         gchar *type = g_mime_content_type_to_string(ct);
 
-        char *aname = (char *) g_mime_object_get_content_disposition_parameter(part,"filename");
+        char *aname = (char *) g_mime_object_get_content_disposition_parameter(part, "filename");
+
         if (aname == NULL)
             aname = (char *) g_mime_object_get_content_type_parameter(part, "name");
 
@@ -457,7 +459,8 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
             GMimeMessage *msg = g_mime_message_part_get_message(GMIME_MESSAGE_PART(part));
 
             g_mime_object_write_to_stream(GMIME_OBJECT(msg), mem);
-        } else
+        }
+        else
         {
             GMimeDataWrapper *content = g_mime_part_get_content_object(GMIME_PART(part));
             g_mime_data_wrapper_write_to_stream(content, mem);
@@ -489,9 +492,10 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
         }
 
         g_object_unref(mem);
-    } while (g_mime_part_iter_next (iter));
+    }
+    while (g_mime_part_iter_next(iter));
 
-    g_object_unref (iter);
+    g_object_unref(iter);
     g_object_unref(message);
     return m_parts;
 }
