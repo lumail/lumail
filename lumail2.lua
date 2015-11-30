@@ -1158,7 +1158,7 @@ end
 --
 -- This function is called by pressing `s` in attachment-mode
 --
-function save_attachment()
+function save_mime_part()
    --
    -- Get the currently highlighted attachment-offset
    --
@@ -2236,7 +2236,7 @@ keymap['message']['A']    = "change_mode('attachment')"
 --
 -- Save the current attachment
 --
-keymap['attachment']['s'] = "save_attachment()"
+keymap['attachment']['s']     = "save_mime_part()"
 keymap['attachment']['SPACE'] = "view_mime_part()"
 keymap['attachment']['ENTER'] = "view_mime_part()"
 
