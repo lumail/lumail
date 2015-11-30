@@ -29,15 +29,17 @@ types of objects and ways to create/access them.
 The mail-client is writting in C++ and generally defers to the Lua
 code to perform actions.
 
-There are two cases where Lua is specifically invoked from the C++
+There are three cases where Lua is specifically invoked from the C++
 core:
 
-* `on_idle()`
-     * This function is called regularly from the main loop.
-     * You can perform background action here.
+* `on_error(msg)`
+     * This function is called when an error is encountered.
 * `on_complete(token)`
      * This is called when the user invokes TAB-completion upon a token.
      * It should return a table of matches, which are presented to the user.
+* `on_idle()`
+     * This function is called regularly from the main loop.
+     * You can perform background action here.
 
 Previously we had many more callbacks, for example a function that could be
 invoked when you opened a message, or changed the folder-selection. These

@@ -149,6 +149,13 @@ end
 -----------------------------------------------------------------------------
 
 
+--
+-- This function is called when errors occur.
+--
+function on_error( msg )
+   Panel:append( "An error was caught " .. msg )
+end
+
 
 --
 -- String interopolation function, taken from the Lua wiki:
