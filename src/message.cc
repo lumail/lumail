@@ -541,6 +541,7 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
     GMimeParser  *parser;
     GMimeStream  *stream;
     int fd;
+    int result __attribute__((unused));
 
     /*
      * If there are no attachments return.
@@ -662,7 +663,7 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
      * input file we'll get corruption, due to GMime caching.
      */
     char *tmpname = strdup("/tmp/tmpfileXXXXXX");
-    mkstemp(tmpname);
+    result = mkstemp(tmpname);
 
     /*
      * Write out the updated message.
