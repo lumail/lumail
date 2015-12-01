@@ -746,7 +746,7 @@ function Message:reply()
 
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
-      local offset  = Config:get( "index.current" )
+      local offset  = Config:get_with_default( "index.current", 0 )
       local msgs    = sorted_messages()
 
       if ( not msgs ) then
@@ -905,7 +905,7 @@ function Message:delete()
 
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
-      local offset  = Config:get( "index.current" )
+      local offset  = Config:get_with_default( "index.current", 0)
       local msgs    = sorted_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
@@ -951,7 +951,7 @@ function Message:forward()
 
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
-      local offset  = Config:get( "index.current" )
+      local offset  = Config:get_with_default( "index.current", 0 )
       local msgs    = sorted_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
@@ -1074,7 +1074,7 @@ function Message:save()
 
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
-      local offset  = Config:get( "index.current" )
+      local offset  = Config:get_with_default( "index.current", 0 )
       local msgs    = sorted_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
@@ -1170,7 +1170,7 @@ function save_mime_part()
    -- Get the currently highlighted attachment-offset
    --
    local mode = Config:get("global.mode")
-   local cur  = Config:get(mode .. ".current")
+   local cur  = Config:get_with_default(mode .. ".current", 0)
 
    --
    -- Get the current message, and then the parts.
@@ -1225,7 +1225,7 @@ function view_mime_part()
    -- Get the currently highlighted attachment-offset
    --
    local mode = Config:get("global.mode")
-   local cur  = Config:get(mode .. ".current")
+   local cur  = Config:get_with_default(mode .. ".current", 0)
 
    --
    -- Get the current message, and then the parts.
@@ -1715,7 +1715,7 @@ end
 --
 function select()
    local mode = Config:get("global.mode")
-   local cur  = Config:get(mode .. ".current")
+   local cur  = Config:get_with_default(mode .. ".current", 0)
 
    if ( mode == "maildir" ) then
       local folders = maildirs()
@@ -1949,7 +1949,7 @@ function prev_message()
    local msgs = sorted_messages()
 
    -- Get the current offset
-   local cur = Config:get("index.current")
+   local cur = Config:get_with_default("index.current",0)
 
    if ( cur > 0 ) then
       cur = cur - 1
@@ -1969,7 +1969,7 @@ function next_message()
    local msgs = sorted_messages()
 
    -- Get the current offset + max
-   local cur = Config:get("index.current")
+   local cur = Config:get_with_default("index.current", 0)
    local max = Config:get("index.max")
 
    if ( cur < max ) then
