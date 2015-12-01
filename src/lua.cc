@@ -19,7 +19,7 @@
 
 #include <cstdlib>
 #include <iostream>
-
+#include <string.h>
 
 #include "config.h"
 #include "lua.h"
@@ -204,7 +204,7 @@ std::vector<std::string> CLua::get_completions(std::string token)
         /*
          * The error message will be on the stack..
          */
-        const char *err = strdup(lua_tostring(m_lua, -1));
+        char *err = strdup(lua_tostring(m_lua, -1));
         lua_pop(m_lua, 1);
 
         /*
@@ -275,7 +275,7 @@ void CLua::update(std::string key_name)
         /*
          * The error message will be on the stack..
          */
-        const char *err = strdup(lua_tostring(m_lua, -1));
+        char *err = strdup(lua_tostring(m_lua, -1));
         lua_pop(m_lua, 1);
 
         /*
@@ -327,7 +327,7 @@ std::vector<std::string> CLua::function2table(std::string function)
         /*
          * The error message will be on the stack.
          */
-        const char *err = strdup(lua_tostring(m_lua, -1));
+        char *err = strdup(lua_tostring(m_lua, -1));
         lua_pop(m_lua, 1);
 
         /*
