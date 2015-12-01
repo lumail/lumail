@@ -289,9 +289,9 @@ end
 --
 -- Returns zero on failure.
 --
-function Message:to_ctime(m)
+function Message:to_ctime()
 
-   local p = m:path()
+   local p = self:path()
    if ( cache["ctime:" .. p] ) then
       return(cache["ctime:" .. p] )
    end
@@ -301,7 +301,7 @@ function Message:to_ctime(m)
    -- and handle the sorting that way.
    --
    if ( not luarocks_libraries["date"] ) then
-      local stat = File:stat( m:path() )
+      local stat = File:stat( self:path() )
       local res  = stat['mtime']
       cache["ctime:" .. p] = res
       return(res)
@@ -311,7 +311,7 @@ function Message:to_ctime(m)
    -- Otherwise the get the Date-header and use that to
    -- get the message-age.
    --
-   local d = m:header("Date" )
+   local d = self:header("Date" )
    if ( d ) then
       local date    = luarocks_libraries["date"]
       local d1      = date(d)
@@ -328,7 +328,7 @@ end
 -- Compare two messages, based upon their date-headers.
 --
 function compare_by_date(a,b)
-   return Message:to_ctime(a) < Message:to_ctime(b)
+   return a:to_ctime() < b:to_ctime()
 end
 
 --
@@ -510,7 +510,7 @@ function sorted_messages()
 
       for i,o in ipairs(msgs) do
          -- get current date of the message
-         local ctime = Message:to_ctime(o)
+         local ctime = o:to_ctime()
 
          -- if it was within the past 24 hours then add it
          if ( ctime > today ) then
