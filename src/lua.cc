@@ -201,34 +201,39 @@ std::vector<std::string> CLua::get_completions(std::string token)
 
     if (lua_pcall(m_lua, 1, 1, 0) != 0)
     {
-        /*
-         * The error message will be on the stack..
-         */
-        char *err = strdup(lua_tostring(m_lua, -1));
-        lua_pop(m_lua, 1);
-
-        /*
-         * Call the function - if it exists.
-         */
-        lua_getglobal(m_lua, "on_error");
-
-        if (!lua_isnil(m_lua, -1))
+        if ( lua_isstring(m_lua, -1 ) )
         {
-            lua_pushstring(m_lua, err);
+            /*
+             * The error message will be on the stack..
+             */
+            char *err = strdup(lua_tostring(m_lua, -1));
+            lua_pop(m_lua, 1);
 
-            if (lua_pcall(m_lua, 1, 0, 0) != 0)
+            /*
+             * Call the function - if it exists.
+             */
+            lua_getglobal(m_lua, "on_error");
+
+            if (!lua_isnil(m_lua, -1))
             {
-                /*
-                 * Error invoking our error handler - ignore it.
-                 */
-                lua_pop(m_lua, 1);
-            }
-        }
+                lua_pushstring(m_lua, err);
 
-        /*
-         * Avoid a leak.
-         */
-        free(err);
+                if (lua_pcall(m_lua, 1, 0, 0) != 0)
+                {
+                    /*
+                     * Error invoking our error handler - ignore it.
+                     */
+                    lua_pop(m_lua, 1);
+                }
+            }
+
+            /*
+             * Avoid a leak.
+             */
+            free(err);
+        }
+        else
+            lua_pop(m_lua, 1);
 
         /*
          * Now return the result.
@@ -272,34 +277,39 @@ void CLua::update(std::string key_name)
 
     if (lua_pcall(m_lua, 1, 0, 0) != 0)
     {
-        /*
-         * The error message will be on the stack..
-         */
-        char *err = strdup(lua_tostring(m_lua, -1));
-        lua_pop(m_lua, 1);
-
-        /*
-         * Call the function - if it exists.
-         */
-        lua_getglobal(m_lua, "on_error");
-
-        if (!lua_isnil(m_lua, -1))
+        if ( lua_isstring(m_lua, -1 ) )
         {
-            lua_pushstring(m_lua, err);
+            /*
+             * The error message will be on the stack..
+             */
+            char *err = strdup(lua_tostring(m_lua, -1));
+            lua_pop(m_lua, 1);
 
-            if (lua_pcall(m_lua, 1, 0, 0) != 0)
+            /*
+             * Call the function - if it exists.
+             */
+            lua_getglobal(m_lua, "on_error");
+
+            if (!lua_isnil(m_lua, -1))
             {
-                /*
-                 * Error invoking our error handler - ignore it.
-                 */
-                lua_pop(m_lua, 1);
-            }
-        }
+                lua_pushstring(m_lua, err);
 
-        /*
-         * Avoid a leak.
-         */
-        free(err);
+                if (lua_pcall(m_lua, 1, 0, 0) != 0)
+                {
+                    /*
+                     * Error invoking our error handler - ignore it.
+                     */
+                    lua_pop(m_lua, 1);
+                }
+            }
+
+            /*
+             * Avoid a leak.
+             */
+            free(err);
+        }
+        else
+            lua_pop(m_lua, 1);
     }
 }
 
@@ -324,34 +334,40 @@ std::vector<std::string> CLua::function2table(std::string function)
      */
     if (lua_pcall(m_lua, 0, 1, 0) != 0)
     {
-        /*
-         * The error message will be on the stack.
-         */
-        char *err = strdup(lua_tostring(m_lua, -1));
-        lua_pop(m_lua, 1);
-
-        /*
-         * Call the function - if it exists.
-         */
-        lua_getglobal(m_lua, "on_error");
-
-        if (!lua_isnil(m_lua, -1))
+        if ( lua_isstring(m_lua, -1 ) )
         {
-            lua_pushstring(m_lua, err);
+            /*
+             * The error message will be on the stack..
+             */
+            char *err = strdup(lua_tostring(m_lua, -1));
+            lua_pop(m_lua, 1);
 
-            if (lua_pcall(m_lua, 1, 0, 0) != 0)
+            /*
+             * Call the function - if it exists.
+             */
+            lua_getglobal(m_lua, "on_error");
+
+            if (!lua_isnil(m_lua, -1))
             {
-                /*
-                 * Error invoking our error handler - ignore it.
-                 */
-                lua_pop(m_lua, 1);
-            }
-        }
+                lua_pushstring(m_lua, err);
 
-        /*
-         * Avoid a leak.
-         */
-        free(err);
+                if (lua_pcall(m_lua, 1, 0, 0) != 0)
+                {
+                    /*
+                     * Error invoking our error handler - ignore it.
+                     */
+                    lua_pop(m_lua, 1);
+                }
+            }
+
+            /*
+             * Avoid a leak.
+             */
+            free(err);
+        }
+        else
+            lua_pop(m_lua, 1);
+
         return (result);
     }
 
