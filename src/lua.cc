@@ -211,6 +211,7 @@ std::vector<std::string> CLua::get_completions(std::string token)
          * Call the function - if it exists.
          */
         lua_getglobal(m_lua, "on_error");
+
         if (!lua_isnil(m_lua, -1))
         {
             lua_pushstring(m_lua, err);
@@ -298,7 +299,7 @@ void CLua::update(std::string key_name)
         /*
          * Avoid a leak.
          */
-        free( err );
+        free(err);
     }
 }
 
