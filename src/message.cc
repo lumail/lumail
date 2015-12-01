@@ -31,6 +31,7 @@
 
 #include <gmime/gmime.h>
 
+#include "config.h"
 #include "file.h"
 #include "message.h"
 #include "message_part.h"
@@ -500,6 +501,7 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
     return m_parts;
 }
 
+
 /*
  * Delete this message from the disk.
  */
@@ -662,16 +664,23 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
      * NOTE: We must use a temporary file.  If we attempt to overwrite the
      * input file we'll get corruption, due to GMime caching.
      */
-    char *tmpname = strdup("/tmp/tmpfileXXXXXX");
-    result = mkstemp(tmpname);
+    CConfig *config     = CConfig::instance();
+    std::string tmp_dir = config->get_string("global.tmpdir", "/tmp");
+    std::string tmp_pat = tmp_dir + "/lumail2XXXXXXXX";
+    char *tmp_file      = strdup(tmp_pat.c_str());
+
+    result = mkstemp(tmp_file);
 
     /*
      * Write out the updated message.
      */
     FILE *f = NULL;
 
-    if ((f = fopen(tmpname, "wb")) == NULL)
+    if ((f = fopen(tmp_file, "wb")) == NULL)
+    {
+        free(tmp_file);
         return;
+    }
 
     GMimeStream *ostream = g_mime_stream_file_new(f);
     g_mime_object_write_to_stream((GMimeObject *) message, ostream);
@@ -681,9 +690,11 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
      * Now rename the temporary file over the top of the input
      * message.
      */
-    CFile::copy(tmpname, m_path);
-    CFile::delete_file(tmpname);
+    CFile::copy(tmp_file, m_path);
+    CFile::delete_file(tmp_file);
 
     if (m_parts.size() > 0)
         m_parts.clear();
+
+    free(tmp_file);
 }

@@ -95,6 +95,8 @@ We have a number of variables which are special, the most important ones are:
     * The email address to send messages from.
 * `global.timeout`
     * The timeout period (milliseconds) in our event-loop.
+* `global.tmpdir`
+    * The directory to use for temporary files - defaults to "/tmp".
 * `global.history`
     * The name of the file to write input-history to.
 * `global.horizontal`
