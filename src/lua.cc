@@ -202,16 +202,15 @@ std::vector<std::string> CLua::get_completions(std::string token)
     if (lua_pcall(m_lua, 1, 1, 0) != 0)
     {
         /*
-         * The error message will be on the stack - get it & remove it.
+         * The error message will be on the stack..
          */
-        const char *err = lua_tostring(m_lua, -1);
+        const char *err = strdup(lua_tostring(m_lua, -1));
         lua_pop(m_lua, 1);
 
         /*
          * Call the function - if it exists.
          */
         lua_getglobal(m_lua, "on_error");
-
         if (!lua_isnil(m_lua, -1))
         {
             lua_pushstring(m_lua, err);
@@ -223,8 +222,12 @@ std::vector<std::string> CLua::get_completions(std::string token)
                  */
                 lua_pop(m_lua, 1);
             }
-
         }
+
+        /*
+         * Avoid a leak.
+         */
+        free(err);
 
         /*
          * Now return the result.
@@ -269,9 +272,9 @@ void CLua::update(std::string key_name)
     if (lua_pcall(m_lua, 1, 0, 0) != 0)
     {
         /*
-         * The error message will be on the stack - get it & remove it.
+         * The error message will be on the stack..
          */
-        const char *err = lua_tostring(m_lua, -1);
+        const char *err = strdup(lua_tostring(m_lua, -1));
         lua_pop(m_lua, 1);
 
         /*
@@ -290,8 +293,12 @@ void CLua::update(std::string key_name)
                  */
                 lua_pop(m_lua, 1);
             }
-
         }
+
+        /*
+         * Avoid a leak.
+         */
+        free( err );
     }
 }
 
@@ -317,9 +324,9 @@ std::vector<std::string> CLua::function2table(std::string function)
     if (lua_pcall(m_lua, 0, 1, 0) != 0)
     {
         /*
-         * The error message will be on the stack - get it & remove it.
+         * The error message will be on the stack.
          */
-        const char *err = lua_tostring(m_lua, -1);
+        const char *err = strdup(lua_tostring(m_lua, -1));
         lua_pop(m_lua, 1);
 
         /*
@@ -338,9 +345,12 @@ std::vector<std::string> CLua::function2table(std::string function)
                  */
                 lua_pop(m_lua, 1);
             }
-
         }
 
+        /*
+         * Avoid a leak.
+         */
+        free(err);
         return (result);
     }
 
