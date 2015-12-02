@@ -675,17 +675,35 @@ ${sig}
 
    file:close()
 
+   --
+   -- This is a table of the attachment filenames the user is
+   -- going to add to the outgoing mail.
+   --
+   attachments = {}
+
    local run = true
+
+   -- Open the editor
+   Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
 
    while( run ) do
 
-      -- Open the editor
-      Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
-
       -- Once the editor quits ask for an action
-      local a = Screen:prompt( "Send message: re(e)dit, (s)end or (c)ancel?", "escESC" )
+      local a = Screen:prompt( "Send mail : (y)es, (n)o, re-(e)dit, or (a)dd an attachment?", "yYnNeEaA" )
 
-      if ( a == "s" ) or ( "a" == "S" ) then
+      if ( a == "e" ) or ( a == "E" ) then
+         -- Re-edit.
+         Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
+      end
+
+      if ( a == "y" ) or ( "a" == "Y" ) then
+
+         -- If the user has added attachments then process them
+         if ( #attachments > 0 ) then
+            amsg = Message.new(tmp)
+            amsg:add_attachments( attachments )
+         end
+
          -- Send the mail.
          os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
          Panel:append("Message sent to " .. to )
@@ -703,15 +721,20 @@ ${sig}
          run = false
       end
 
-      if ( a == 'c' ) or ( a == 'C' ) then
+      if ( a == 'n' ) or ( a == 'N' ) then
          -- Abort
          Panel:append("Sending aborted!" )
          run = false
       end
 
-      --
-      -- a == 'e' is implicit
-      --
+      if ( a == 'a' ) or ( a == 'A' ) then
+         -- Add attachment
+         path = Screen:get_line( "Attachment path:")
+         if ( File:exists( path ) ) then
+            table.insert(attachments,path)
+         end
+      end
+
    end
 
    --
@@ -817,18 +840,35 @@ Date: ${date}
    file:write( Message:generate_signature() )
    file:close()
 
+   --
+   -- This is a table of the attachment filenames the user is
+   -- going to add to the outgoing mail.
+   --
+   attachments = {}
 
    local run = true
 
+   -- Open the editor
+   Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
+
    while( run ) do
 
-      -- Open the editor
-      Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
-
       -- Once the editor quits ask for an action
-      local a = Screen:prompt( "Send message: re(e)dit, (s)end or (c)ancel?", "escESC" )
+      local a = Screen:prompt( "Send mail : (y)es, (n)o, re-(e)dit, or (a)dd an attachment?", "yYnNeEaA" )
 
-      if ( a == "s" ) or ( a == "S" ) then
+      if ( a == "e" ) or ( a == "E" ) then
+         -- Re-edit.
+         Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
+      end
+
+      if ( a == "y" ) or ( a == "Y" ) then
+
+         -- If the user has added attachments then process them
+         if ( #attachments > 0 ) then
+            amsg = Message.new(tmp)
+            amsg:add_attachments( attachments )
+         end
+
          -- Send the mail.
          os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
          Panel:append("Message sent" )
@@ -856,15 +896,20 @@ Date: ${date}
          run = false
       end
 
-      if ( a == "c" ) or ( a == "C" ) then
+      if ( a == "n" ) or ( a == "N" ) then
          -- Abort
-         Panel:append("Sending aborted!" )
+         Panel:append("Reply aborted!" )
          run = false
       end
 
-      --
-      -- Re-edit is implicit
-      --
+      if ( a == 'a' ) or ( a == 'A' ) then
+         -- Add attachment
+         path = Screen:get_line( "Attachment path:")
+         if ( File:exists( path ) ) then
+            table.insert(attachments,path)
+         end
+      end
+
    end
 
    --
@@ -1001,10 +1046,18 @@ Begin forwarded message.
    -- Append the signature
    file:write( "\n" )
    file:write( Message:generate_signature() )
-
    file:close()
 
+   --
+   -- This is a table of the attachment filenames the user is
+   -- going to add to the outgoing mail.
+   --
+   attachments = {}
+
    local run = true
+
+   -- Open the editor
+   Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
 
    while( run ) do
 
@@ -1012,9 +1065,21 @@ Begin forwarded message.
       Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
 
       -- Once the editor quits ask for an action
-      local a = Screen:prompt( "Forward message: re(e)dit, (s)end or (c)ancel?", "escESC" )
+      local a = Screen:prompt( "Forward mail : (y)es, (n)o, re-(e)dit, or (a)dd an attachment?", "yYnNeEaA" )
 
-      if ( a == "s" ) or ( a == "S" ) then
+      if ( a == "e" ) or ( a == "E" ) then
+         -- Re-edit.
+         Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
+      end
+
+      if ( a == "y" ) or ( a == "Y" ) then
+
+
+         -- If the user has added attachments then process them
+         if ( #attachments > 0 ) then
+            amsg = Message.new(tmp)
+            amsg:add_attachments( attachments )
+         end
 
          -- Send the mail.
          os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
@@ -1033,14 +1098,19 @@ Begin forwarded message.
          run = false
       end
 
-      if ( a == "c" ) or ( a == "C" ) then
+      if ( a == "n" ) or ( a == "N" ) then
          -- Abort
-         Panel:append("Sending aborted!" )
+         Panel:append("Forwarding aborted!" )
          run = false
       end
 
-
-      -- re-edit is implicit
+      if ( a == 'a' ) or ( a == 'A' ) then
+         -- Add attachment
+         path = Screen:get_line( "Attachment path:")
+         if ( File:exists( path ) ) then
+            table.insert(attachments,path)
+         end
+      end
    end
 
    --
