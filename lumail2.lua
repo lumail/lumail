@@ -272,7 +272,7 @@ end
 -- There is no built-in way of getting a value with a default, so we
 -- define a helper here to do the neccessary thing.
 --
-function Config:get_with_default(key,default)
+function Config.get_with_default(key,default)
    local value = Config:get(key)
    if ( value == nil ) then
       value = default
@@ -419,7 +419,7 @@ function maildirs()
    --
    if ( limit ) then
       for i,o in ipairs(all) do
-         local fmt = Maildir:format(o)
+         local fmt = o:format()
          if ( string.find(fmt, limit) ) then
             table.insert(ret, o)
          end
@@ -454,7 +454,7 @@ function sorted_messages()
    local msgs = Global:current_messages()
 
    -- What sort method should we use?
-   local method = Config:get_with_default("index.sort", "date")
+   local method = Config.get_with_default("index.sort", "date")
 
    if ( method == "date" ) then
       table.sort(msgs, compare_by_date)
@@ -475,7 +475,7 @@ function sorted_messages()
    --
    -- Now limit the messages by limit
    --
-   local limit = Config:get_with_default("index.limit", "all")
+   local limit = Config.get_with_default("index.limit", "all")
 
    --
    -- Temporary copies.
@@ -494,7 +494,7 @@ function sorted_messages()
 
    if ( limit == "new" ) then
       for i,o in ipairs(msgs) do
-         if ( Message:is_new(o) ) then
+         if ( o:is_new() ) then
             table.insert(ret, o)
          end
       end
@@ -525,7 +525,7 @@ function sorted_messages()
 
    if ( limit ) then
       for i,o in ipairs(msgs) do
-         local fmt = Message:format(o)
+         local fmt = o:format()
          if ( string.find(fmt, limit) ) then
             table.insert(ret, o)
          end
@@ -547,8 +547,8 @@ end
 -- Simple utility function to test if the given message is
 -- new, or unread.
 --
-function Message:is_new(msg)
-   local flags = msg:flags()
+function Message:is_new()
+   local flags = self:flags()
 
    -- If it has the [S]een-flag then it is not new.
    if ( string.find( flags, "S" ) ) then
@@ -581,7 +581,7 @@ end
 -- Get the current date - used to set the Date: header when
 -- we reply, compose, or forward an email.
 --
-function Message:generate_date()
+function Message.generate_date()
    return( os.date( "%a, %d %b %Y %H:%M:%S %z" ) )
 end
 
@@ -589,7 +589,7 @@ end
 --
 -- Return the signature to use for the outgoing mail.
 --
-function Message:generate_signature()
+function Message.generate_signature()
    --
    -- The sender of our mail.
    --
@@ -632,7 +632,7 @@ end
 --
 -- Compose a new message.
 --
-function Message:compose()
+function Message.compose()
 
    -- Get some details
    local to = Screen:get_line("To:")
@@ -653,7 +653,7 @@ function Message:compose()
    --
    local from  = Config:get("global.sender" )
    local msgid = Message:generate_message_id()
-   local date  = Message:generate_date()
+   local date  = Message.generate_date()
 
    -- Write out a header
    header = [[To: ${to}
@@ -670,7 +670,7 @@ ${sig}
                                  subject = subject,
                                  msgid   = msgid,
                                  date    = date,
-                                 sig     = Message:generate_signature()
+                                 sig     = Message.generate_signature()
                                } ) )
 
    file:close()
@@ -749,7 +749,7 @@ end
 --
 -- Reply to the current message
 --
-function Message:reply()
+function Message.reply()
 
    --
    -- If we're in message-mode then we can get the current-message
@@ -769,7 +769,7 @@ function Message:reply()
 
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
-      local offset  = Config:get_with_default( "index.current", 0 )
+      local offset  = Config.get_with_default( "index.current", 0 )
       local msgs    = sorted_messages()
 
       if ( not msgs ) then
@@ -827,7 +827,7 @@ Date: ${date}
                                  from    = Config:get("global.sender" ),
                                  subject = subject,
                                  msgid   = Message:generate_message_id(),
-                                 date    = Message:generate_date()
+                                 date    = Message.generate_date()
                                } ) )
 
 
@@ -837,7 +837,7 @@ Date: ${date}
 
    -- Append a signature
    file:write( "\n" )
-   file:write( Message:generate_signature() )
+   file:write( Message.generate_signature() )
    file:close()
 
    --
@@ -924,7 +924,7 @@ end
 --
 -- Delete the current message.
 --
-function Message:delete()
+function Message.delete()
 
    --
    -- If we're in message-mode then we can get the current-message
@@ -950,7 +950,7 @@ function Message:delete()
 
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
-      local offset  = Config:get_with_default( "index.current", 0)
+      local offset  = Config.get_with_default( "index.current", 0)
       local msgs    = sorted_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
@@ -976,7 +976,7 @@ end
 --
 -- Forward the current message
 --
-function Message:forward()
+function Message.forward()
 
    --
    -- If we're in message-mode then we can get the current-message
@@ -996,7 +996,7 @@ function Message:forward()
 
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
-      local offset  = Config:get_with_default( "index.current", 0 )
+      local offset  = Config.get_with_default( "index.current", 0 )
       local msgs    = sorted_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
@@ -1035,7 +1035,7 @@ Begin forwarded message.
    file:write( interp( header, { from    = from,
                                  subject = subject,
                                  msgid   = Message:generate_message_id(),
-                                 date    = Message:generate_date()
+                                 date    = Message.generate_date()
                                } ) )
 
 
@@ -1045,7 +1045,7 @@ Begin forwarded message.
 
    -- Append the signature
    file:write( "\n" )
-   file:write( Message:generate_signature() )
+   file:write( Message.generate_signature() )
    file:close()
 
    --
@@ -1125,7 +1125,7 @@ end
 --
 -- Save a copy of the current message elsehwere.
 --
-function Message:save()
+function Message.save()
 
    --
    -- If we're in message-mode then we can get the current-message
@@ -1144,7 +1144,7 @@ function Message:save()
 
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
-      local offset  = Config:get_with_default( "index.current", 0 )
+      local offset  = Config.get_with_default( "index.current", 0 )
       local msgs    = sorted_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
@@ -1240,7 +1240,7 @@ function save_mime_part()
    -- Get the currently highlighted attachment-offset
    --
    local mode = Config:get("global.mode")
-   local cur  = Config:get_with_default(mode .. ".current", 0)
+   local cur  = Config.get_with_default(mode .. ".current", 0)
 
    --
    -- Get the current message, and then the parts.
@@ -1295,7 +1295,7 @@ function view_mime_part()
    -- Get the currently highlighted attachment-offset
    --
    local mode = Config:get("global.mode")
-   local cur  = Config:get_with_default(mode .. ".current", 0)
+   local cur  = Config.get_with_default(mode .. ".current", 0)
 
    --
    -- Get the current message, and then the parts.
@@ -1430,25 +1430,25 @@ end
 -- This function formats a single message for display in index-mode,
 -- it is called by the `index_view()` function defined next.
 --
-function Message:format(msg)
-   local path   = msg:path()
-   local time   = msg:mtime()
+function Message:format()
+   local path   = self:path()
+   local time   = self:mtime()
 
    -- Do we have this cached?  If so return it
    if ( cache["message:" .. time .. path] ) then
       return(cache["message:" .. time .. path])
    end
 
-   local flags   = msg:flags()
-   local subject = msg:header( "Subject" )
-   local sender  = msg:header( "From" )
+   local flags   = self:flags()
+   local subject = self:header( "Subject" )
+   local sender  = self:header( "From" )
 
    local output = string.format( "[%4s] - %s - %s", flags, sender, subject )
 
    --
    -- If the message is unread then show it in the "unread" colour
    --
-   if ( string.find( msg:flags(), "N" ) ) then
+   if ( string.find( self:flags(), "N" ) ) then
       output = "$[UNREAD]" .. output
    end
 
@@ -1473,7 +1473,7 @@ function index_view()
 
    -- For each one add the output
    for offset,object in ipairs( messages ) do
-      local str = Message:format(object)
+      local str = object:format()
       table.insert(result,str)
    end
 
@@ -1553,18 +1553,18 @@ end
 -- The actual output of maildir-mode is generated by `maildir_view`
 -- which is defined below.
 --
-function Maildir:format(obj)
-   local path   = obj:path()
-   local time   = obj:mtime()
-   local trunc  = Config:get_with_default("truncate.maildir", 0)
+function Maildir:format()
+   local path   = self:path()
+   local time   = self:mtime()
+   local trunc  = Config.get_with_default("truncate.maildir", 0)
 
    -- Do we have this cached?  If so return it
    if ( cache["maildir:" .. trunc .. time .. path] ) then
       return(cache["maildir:" .. trunc .. time .. path])
    end
 
-   local total  = obj:total_messages()
-   local unread = obj:unread_messages()
+   local total  = self:total_messages()
+   local unread = self:unread_messages()
 
    --
    -- Path might be truncated, via "p".
@@ -1603,7 +1603,7 @@ function maildir_view()
 
    -- For each one add the output
    for index,object in ipairs( folders ) do
-      local str = Maildir:format(object)
+      local str = object:format()
       table.insert(result,str)
    end
 
@@ -1641,7 +1641,7 @@ function message_view( msg )
    --
    -- Change the message to being read, if it is new.
    --
-   if ( Message:is_new( msg ) ) then
+   if ( msg:is_new() ) then
       msg:mark_read()
    end
 
@@ -1655,7 +1655,7 @@ function message_view( msg )
    --
    --     toggle_variable( "message.headers" );
    --
-   local full_headers = Config:get_with_default("message.headers", 0)
+   local full_headers = Config.get_with_default("message.headers", 0)
 
    --
    -- The headers we want to see if not full.
@@ -1785,7 +1785,7 @@ end
 --
 function select()
    local mode = Config:get("global.mode")
-   local cur  = Config:get_with_default(mode .. ".current", 0)
+   local cur  = Config.get_with_default(mode .. ".current", 0)
 
    if ( mode == "maildir" ) then
       local folders = maildirs()
@@ -1865,7 +1865,7 @@ end
 -- Left/Right scrolling
 --
 function left()
-   local x = Config:get_with_default("global.horizontal",0)
+   local x = Config.get_with_default("global.horizontal",0)
 
    if ( x > 0 ) then
       x = x - 1
@@ -1879,7 +1879,7 @@ end
 -- Left/Right scrolling.
 --
 function right()
-   local x = Config:get_with_default("global.horizontal", 0)
+   local x = Config.get_with_default("global.horizontal", 0)
 
    x = x + 1
 
@@ -1918,7 +1918,7 @@ function find( offset )
    -- We know the maximum offset is stored in the
    -- variable $mode.max
    --
-   local cur = Config:get_with_default(mode .. ".current", 0)
+   local cur = Config.get_with_default(mode .. ".current", 0)
    local max = Config:get(mode .. ".max")
 
    --
@@ -1961,7 +1961,7 @@ function next( offset )
 
    local mode = Config:get("global.mode")
    local max  = Config:get(mode .. ".max" )
-   local cur  = Config:get_with_default(mode .. ".current", 0)
+   local cur  = Config.get_with_default(mode .. ".current", 0)
 
    if ( cur + offset < (max-1) ) then
       cur = cur + offset
@@ -1981,7 +1981,7 @@ end
 --
 function prev( offset )
    local mode = Config:get("global.mode")
-   local cur  = Config:get_with_default(mode .. ".current", 0)
+   local cur  = Config.get_with_default(mode .. ".current", 0)
 
    if ( cur - offset > 0 ) then
       cur = cur - offset
@@ -2019,7 +2019,7 @@ function prev_message()
    local msgs = sorted_messages()
 
    -- Get the current offset
-   local cur = Config:get_with_default("index.current",0)
+   local cur = Config.get_with_default("index.current",0)
 
    if ( cur > 0 ) then
       cur = cur - 1
@@ -2039,7 +2039,7 @@ function next_message()
    local msgs = sorted_messages()
 
    -- Get the current offset + max
-   local cur = Config:get_with_default("index.current", 0)
+   local cur = Config.get_with_default("index.current", 0)
    local max = Config:get("index.max")
 
    if ( cur < max ) then
@@ -2180,7 +2180,7 @@ do
       -- This shows the way that we can append messages constantly
       -- to the panel.
       --
-      -- Panel:append("The date is " .. Message:generate_date())
+      -- Panel:append("The date is " .. Message.generate_date())
       --
    end
 end
@@ -2321,15 +2321,15 @@ keymap['attachment']['ENTER'] = "view_mime_part()"
 --
 -- Actions relating to messages.
 --
-keymap['global']['c']  = 'Message:compose()'
-keymap['message']['r'] = 'Message:reply()'
-keymap['index']['r']   = 'Message:reply()'
-keymap['message']['f'] = 'Message:forward()'
-keymap['index']['f']   = 'Message:forward()'
-keymap['message']['d'] = 'Message:delete()'
+keymap['global']['c']  = 'Message.compose()'
+keymap['message']['r'] = 'Message.reply()'
+keymap['index']['r']   = 'Message.reply()'
+keymap['message']['f'] = 'Message.forward()'
+keymap['index']['f']   = 'Message.forward()'
+keymap['message']['d'] = 'Message.delete()'
 keymap['index']['d']   = 'Message:delete()'
-keymap['message']['s'] = 'Message:save()'
-keymap['index']['s']   = 'Message:save()'
+keymap['message']['s'] = 'Message.save()'
+keymap['index']['s']   = 'Message.save()'
 
 --
 -- Toggle display of full maildir paths
