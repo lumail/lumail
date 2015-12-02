@@ -119,14 +119,25 @@ void CLua::load_file(std::string filename)
 
     if (erred)
     {
+        char *err = NULL;
+
+        if (lua_isstring(m_lua, -1))
+            err = (char *)strdup(lua_tostring(m_lua, -1));
+
         /*
          * Abort - showing the error
          */
         CScreen *screen = CScreen::instance();
         screen->teardown();
-        std::cerr << "ERROR " << luaL_checkstring(m_lua, 0);
+        std::cerr << "ERROR " << err << std::endl;
         exit(2);
+
+        /*
+         * Avoid a leak.
+         */
+        free(err);
     }
+
 }
 
 
@@ -201,7 +212,7 @@ std::vector<std::string> CLua::get_completions(std::string token)
 
     if (lua_pcall(m_lua, 1, 1, 0) != 0)
     {
-        if ( lua_isstring(m_lua, -1 ) )
+        if (lua_isstring(m_lua, -1))
         {
             /*
              * The error message will be on the stack..
@@ -277,7 +288,7 @@ void CLua::update(std::string key_name)
 
     if (lua_pcall(m_lua, 1, 0, 0) != 0)
     {
-        if ( lua_isstring(m_lua, -1 ) )
+        if (lua_isstring(m_lua, -1))
         {
             /*
              * The error message will be on the stack..
@@ -334,7 +345,7 @@ std::vector<std::string> CLua::function2table(std::string function)
      */
     if (lua_pcall(m_lua, 0, 1, 0) != 0)
     {
-        if ( lua_isstring(m_lua, -1 ) )
+        if (lua_isstring(m_lua, -1))
         {
             /*
              * The error message will be on the stack..
