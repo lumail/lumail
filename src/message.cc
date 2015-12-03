@@ -35,6 +35,7 @@
 #include "file.h"
 #include "message.h"
 #include "message_part.h"
+#include "mime.h"
 #include "util.h"
 
 
@@ -617,9 +618,10 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
         g_object_unref(stream);
 
         /*
-         * TODO: Find the MIME-type of the file.
+         * Find the MIME-type of the file.
          */
-        std::string ctype = "application/octet-stream";
+        CMime *mime = CMime::instance();
+        std::string ctype = mime->type(name);
 
         /*
          * Here we use the mime-type we've returned and set that for the
