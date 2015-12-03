@@ -2432,7 +2432,10 @@ keymap['message']['H'] = 'toggle_variable( "message.headers" )'
 
 
 --
---  Configure the mail-client.
+-- Configure the mail-client.
+--
+-- This is the section that most users will need to change.
+--
 --
 -----------------------------------------------------------------------------
 
@@ -2449,15 +2452,18 @@ local def_maildir = HOME .. "/Maildir"
 --
 -- Set the maildir-prefix, if it exists.
 --
-Config:set( "maildir.prefix", def_maildir );
-
---
 -- NOTE: You could also set an array of prefixes.
 --
---       To set multiple values simply configure a table, not a string:
+-- To set multiple values simply configure a table, not a string:
 --
 -- Config:set( "maildir.prefix", { def_maildir, "/tmp/Maildir" } )
 --
+if (Directory:is_maildir(def_maildir) ) then
+   Config:set( "maildir.prefix", def_maildir );
+else
+   Panel:append( "WARNING: No maildir.prefix set!" )
+end
+
 
 --
 -- Configure the path to save outgoing messages to.
@@ -2481,7 +2487,6 @@ else
    Panel:append( "WARNING: No sendmail binary found!" )
 end
 
-
 --
 -- Setup our default editor, for compose/reply/forward operations.
 --
@@ -2490,7 +2495,7 @@ Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )
 --
 -- Setup our default From: address.
 --
-Config:set( "global.sender", "Steve Kemp <steve@steve.org.uk>" )
+Config:set( "global.sender", "Some User <steve@example.com>" )
 
 --
 -- Unread messages/maildirs are drawn in red.
@@ -2579,15 +2584,6 @@ for index,arg in ipairs(ARGS) do
    local folder = string.match(arg, "--folder=(.*)" )
    if ( folder ) then
       Maildir.select( folder )
-   end
-
-   --
-   -- Look for --eval=bar()
-   --
-   local txt = string.match(arg, "--eval=(.*)" )
-   if ( txt ) then
-      f = loadstring( txt )
-      f()
    end
 
 end
