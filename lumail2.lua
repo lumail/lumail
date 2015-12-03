@@ -1550,6 +1550,11 @@ function lua_view()
    table.insert(output,"$[RED]This $[GREEN]is $[YELLOW]Lumail2 $[CYAN]version $[BLUE]" .. Config:get("global.version" ))
    table.insert(output,"")
 
+   --
+   -- Test UTF-8
+   --
+   table.insert(output, "This line is for UTF-8 testing $[RED]«ÜßÄ$€»$[CYAN]‹ÅåÄäÖö›" )
+   table.insert(output, "")
 
    --
    -- Now show the current maildir, message, etc.
