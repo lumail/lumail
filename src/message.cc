@@ -436,7 +436,6 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
      * Iterate
      */
     GMimePartIter *iter  = g_mime_part_iter_new((GMimeObject *) message);
-    g_object_unref(message);
 
     do
     {
@@ -499,6 +498,7 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
 
     g_object_unref(iter);
     g_object_unref(message);
+
     return m_parts;
 }
 
