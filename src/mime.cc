@@ -26,7 +26,7 @@
  */
 CMime::CMime()
 {
-    m_mime = magic_open(MAGIC_MIME);
+    m_mime = magic_open(MAGIC_MIME_TYPE);
 
     if (m_mime == NULL)
     {
