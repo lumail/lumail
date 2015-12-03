@@ -107,13 +107,29 @@ local global_msgs = {}
 function cache_load()
    local file = Config:get("message.cache")
    if (file) and File:exists( file ) then
+
+      -- show report
       Panel:append("Loading cache from: " .. file )
+
+      -- our version
+      local cur = "VERSION=" .. Config:get( "global.version" )
+      -- The version from the cache-file.
+      local ver = nil
+
       for line in io.lines(file) do
 
-         -- greedy match on key-name.
-         key, val = line:match("^(.*)=([^=]+)$")
-         if ( key and val ) then
-            cache[key] = val
+         -- If we've not got a version then the first line we see will be it.
+         if ( not ver ) then
+            ver = line
+         end
+
+         -- Does the version match our current release?
+         if ( ver == cur ) then
+            -- greedy match on key-name.
+            key, val = line:match("^(.*)=([^=]+)$")
+            if ( key and val ) then
+               cache[key] = val
+            end
          end
       end
    end
@@ -125,8 +141,14 @@ end
 --
 function cache_save()
    local file = Config:get("message.cache")
+
    if (file) then
       local hand = io.open(file,"w")
+
+      -- write out our version
+      hand:write( "VERSION=" .. Config:get( "global.version" ) .. "\n" )
+
+      -- Now the key/values from our cache.
       for key,val in pairs(cache) do
          hand:write( key .. "=" .. val  .. "\n")
       end
