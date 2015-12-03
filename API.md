@@ -276,6 +276,19 @@ Sample code is available in `sample.lua/show_message.lua`.
 
 
 
+### MIME-Type
+
+There is a simple helper-object allowing you to retrieve the MIME-type
+of files, based upon their containts.   This lookup is achieved via
+`libmagic`.
+
+* `MIME:type(file)`
+     * Return the MIME-type of the specified file.
+
+Sample code is available in `sample.lua/mime_type.lua`.
+
+
+
 ### Networking
 
 There is only a single networking method:
