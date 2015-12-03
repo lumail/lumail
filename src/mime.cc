@@ -53,7 +53,7 @@ CMime::~CMime()
  */
 std::string CMime::type(std::string file)
 {
-    const char *info = magic_file(m_mime,file.c_str());
+    const char *info = magic_file(m_mime, file.c_str());
 
     if (info)
         return (info);
