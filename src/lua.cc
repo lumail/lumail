@@ -35,6 +35,7 @@ extern void InitFile(lua_State * l);
 extern void InitGlobalState(lua_State * l);
 extern void InitMaildir(lua_State * l);
 extern void InitMessage(lua_State * l);
+extern void InitMIME(lua_State * l);
 extern void InitMessagePart(lua_State * l);
 extern void InitNet(lua_State * l);
 extern void InitPanel(lua_State * l);
@@ -92,6 +93,7 @@ CLua::CLua() : Observer(CConfig::instance())
     InitMessagePart(m_lua);
     InitNet(m_lua);
     InitPanel(m_lua);
+    InitMIME(m_lua);
     InitRegexp(m_lua);
     InitScreen(m_lua);
 }
