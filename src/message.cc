@@ -404,6 +404,13 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
     if (m_parts.size() > 0)
         return (m_parts);
 
+    /*
+     * This is used to enable/disable conversion of character
+     * sets.
+     */
+    CConfig *config = CConfig::instance();
+    int iconv       = config->get_integer("global.iconv", 0);
+
     GMimeMessage *message;
     GMimeParser *parser;
     GMimeStream *stream;
@@ -441,46 +448,107 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
     {
         GMimeObject *part = g_mime_part_iter_get_current(iter);
 
+        /*
+         * Get the content-type of this part.
+         */
         GMimeContentType *ct = g_mime_object_get_content_type(part);
-        gchar *type = g_mime_content_type_to_string(ct);
 
+        /*
+         * Get the content-type as a string, along with the charset.
+         */
+        const char *charset = g_mime_content_type_get_parameter(ct, "charset");
+        gchar *type         = g_mime_content_type_to_string(ct);
+
+
+        /*
+         * Get the filename of this part, if any.  We try to look for
+         * both `filename` and `name`.
+         */
         char *aname = (char *) g_mime_object_get_content_disposition_parameter(part, "filename");
 
         if (aname == NULL)
             aname = (char *) g_mime_object_get_content_type_parameter(part, "name");
 
-
-        /**
-         * Get the attachment data.
+        /*
+         * Holder for the content
          */
         GMimeStream *mem = g_mime_stream_mem_new();
 
         if (GMIME_IS_MESSAGE_PART(part))
         {
-            GMimeMessage *msg = g_mime_message_part_get_message(GMIME_MESSAGE_PART(part));
 
+            /*
+             * Populate `mem` with the data.
+             */
+            GMimeMessage *msg = g_mime_message_part_get_message(GMIME_MESSAGE_PART(part));
             g_mime_object_write_to_stream(GMIME_OBJECT(msg), mem);
         }
         else
         {
+            /*
+             * Populate `mem` with the data.
+             */
             GMimeDataWrapper *content = g_mime_part_get_content_object(GMIME_PART(part));
             g_mime_data_wrapper_write_to_stream(content, mem);
         }
 
-        /**
+        /*
          * NOTE: by setting the owner to FALSE, it means unreffing the
          * memory stream won't free the GByteArray data.
          */
         g_mime_stream_mem_set_owner(GMIME_STREAM_MEM(mem), FALSE);
 
+
+        /*
+         * Now we have `res` which is a byte-array of the part's content.
+         *
+         * We also have the content-type.
+         */
         GByteArray *res = g_mime_stream_mem_get_byte_array(GMIME_STREAM_MEM(mem));
 
-        /**
+        /*
          * The actual data from the array, and the size of that data.
          */
         char *adata = (char *) res->data;
         size_t len = (res->len);
 
+        if (iconv == 1)
+        {
+            /*
+             * Now we'll try to conver the text to UTF-8, but we
+             * only do that if the content is:
+             *
+             *   text/plain
+             *
+             *   not UTF-8 already.
+             */
+            if ((g_mime_content_type_is_type(ct, "text", "plain")) &&
+                    (charset != NULL) &&
+                    (strstr(charset, "utf-8") != 0))
+            {
+                iconv_t cv = g_mime_iconv_open("UTF-8", charset);
+                char *converted = g_mime_iconv_strndup(cv, (const char *) adata, len);
+
+                if (converted != NULL)
+                {
+                    /*
+                     * If that succeeded then update our byte-array.
+                     *
+                     * This might causes problems in free.  We should check.
+                     */
+                    size_t conv_len = strlen(converted);
+                    adata = (char*)malloc(conv_len + 1);
+
+                    memcpy(adata, converted, conv_len + 1);
+                    len = (size_t)conv_len;
+                    g_free(converted);
+                }
+            }
+        }
+
+        /*
+         * If it is an attachment we'll add it.
+         */
         if (aname)
         {
             std::shared_ptr<CMessagePart> attach = std::shared_ptr<CMessagePart> (new CMessagePart(type, aname, adata, len));
@@ -488,10 +556,16 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
         }
         else
         {
+            /*
+             * Here we store it, but not as an attachment.
+             */
             std::shared_ptr<CMessagePart> part = std::shared_ptr<CMessagePart> (new CMessagePart(type, "", adata, len));
             m_parts.push_back(part);
         }
 
+        /*
+         * Unref the memory.
+         */
         g_object_unref(mem);
     }
     while (g_mime_part_iter_next(iter));
