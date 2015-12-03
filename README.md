@@ -73,14 +73,15 @@ Building Lumail2
 The code relies upon a small number of libraries:
 
 * lua 5.2.
-* libncursesw, the console input/graphics library.
+* libmagic, the file-identification library.
 * libgmime-2.6, the MIME-library.
+* libncursesw, the console input/graphics library.
 
 Upon a Debian GNU/Linux host, running the Jessie (stable), release the following two commands are sufficient to install the dependencies:
 
     apt-get install build-essential make pkg-config
 
-    apt-get install liblua5.2-dev libgmime-2.6-dev libncursesw5-dev libpcre3-dev
+    apt-get install liblua5.2-dev libgmime-2.6-dev libncursesw5-dev libpcre3-dev libmagic-dev
 
 With the dependencies installed you should ind the code builds cleanly with:
 
