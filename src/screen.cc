@@ -1225,12 +1225,6 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         height -= screen->status_panel_height();
 
     /*
-     * Account for the fact we start from row one not zero.
-     */
-    height += 1;
-
-
-    /*
      * If we're in simple-mode we can just draw the lines directly
      * and return - we don't need to worry about the selection-handler
      * or the calculation of the scroll-point.
