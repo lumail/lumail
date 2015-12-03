@@ -851,11 +851,17 @@ function Message.reply()
       subject = string.gsub( subject, "^[rR][eE]:[ \t]+", "" )
    end
 
+   --
+   -- Get any CC'd addresses
+   --
+   local cc = msg:header( "Cc" )
+
    -- Add prefix to the subject.
    subject ="Re: " .. subject
 
    -- Write out a header
    header = [[To: ${to}
+Cc: ${cc}
 From: ${from}
 Subject: ${subject}
 Message-ID: ${msgid}
@@ -864,6 +870,7 @@ Date: ${date}
 ]]
 
    file:write( interp( header, { to      = to,
+                                 cc      = cc,
                                  from    = Config:get("global.sender" ),
                                  subject = subject,
                                  msgid   = Message:generate_message_id(),
@@ -1050,6 +1057,11 @@ function Message.forward()
       return
    end
 
+   local to = Screen:get_line("Forward to:")
+   if ( to == nil or to == "" ) then
+      return
+   end
+
    -- Get the text of a message.
    local txt = message_view(msg)
 
@@ -1059,7 +1071,7 @@ function Message.forward()
 
    -- Write out a header
    -- Write out a header
-   header = [[To: xx@example.com
+   header = [[To: ${to}
 From: ${from}
 Subject: Fwd: ${subject}
 Message-ID: ${msgid}
@@ -1073,6 +1085,7 @@ Begin forwarded message.
    local subject = msg:header("Subject")
 
    file:write( interp( header, { from    = from,
+                                 to      = to,
                                  subject = subject,
                                  msgid   = Message:generate_message_id(),
                                  date    = Message.generate_date()
@@ -1100,9 +1113,6 @@ Begin forwarded message.
    Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
 
    while( run ) do
-
-      -- Open the editor
-      Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
 
       -- Once the editor quits ask for an action
       local a = Screen:prompt( "Forward mail : (y)es, (n)o, re-(e)dit, or (a)dd an attachment?", "yYnNeEaA" )
