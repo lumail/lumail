@@ -107,10 +107,14 @@ local global_msgs = {}
 function cache_load()
    local file = Config:get("message.cache")
    if (file) and File:exists( file ) then
-      Panel:append("loading cache from: " .. file )
+      Panel:append("Loading cache from: " .. file )
       for line in io.lines(file) do
-         key, val = line:match("([^=]+)=(.*)")
-         cache[key] = val
+
+         -- greedy match on key-name.
+         key, val = line:match("^(.*)=([^=]+)$")
+         if ( key and val ) then
+            cache[key] = val
+         end
       end
    end
 end
