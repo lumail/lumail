@@ -2458,11 +2458,7 @@ local def_maildir = HOME .. "/Maildir"
 --
 -- Config:set( "maildir.prefix", { def_maildir, "/tmp/Maildir" } )
 --
-if (Directory:is_maildir(def_maildir) ) then
-   Config:set( "maildir.prefix", def_maildir );
-else
-   Panel:append( "WARNING: No maildir.prefix set!" )
-end
+Config:set( "maildir.prefix", def_maildir );
 
 
 --
