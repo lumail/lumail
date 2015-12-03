@@ -42,7 +42,7 @@ msg = Message.new(path)
 --
 -- Add an some attachments
 --
-local files = { "/etc/passwd", "/etc/motd" }
+local files = { "/etc/passwd", "/etc/motd" , "/bin/ls" }
 msg:add_attachments( files )
 
 --
