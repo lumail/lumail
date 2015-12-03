@@ -496,7 +496,7 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
     }
     while (g_mime_part_iter_next(iter));
 
-    g_object_unref(iter);
+    g_mime_part_iter_free(iter);
     g_object_unref(message);
 
     return m_parts;
