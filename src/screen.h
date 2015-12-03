@@ -161,7 +161,7 @@ public:
     /**
      * Clear the screen.
      */
-    void clear();
+    void clear(bool refresh_screen = true);
 
     /**
      * Delay for the given period.

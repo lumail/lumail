@@ -133,10 +133,9 @@ void CScreen::run_main_loop()
     {
 
         /*
-         * Clear the screen - note we're using the
-         * curses function here, not our method.
+         * Clear the screen.
          */
-        ::clear();
+        clear(false);
 
 
         /*
@@ -353,10 +352,13 @@ void CScreen::teardown()
 /*
  * Clear the whole screen by printing lines of blanks.
  */
-void CScreen::clear()
+void CScreen::clear(bool refresh_screen)
 {
     int width = CScreen::width();
     int height = CScreen::height();
+
+    if (status_panel_visible())
+        height -= status_panel_height();
 
     std::string blank = "";
 
@@ -368,9 +370,12 @@ void CScreen::clear()
         mvprintw(i, 0, "%s", blank.c_str());
     }
 
-    update_panels();
-    doupdate();
-    refresh();
+    if (refresh_screen)
+    {
+        update_panels();
+        doupdate();
+        refresh();
+    }
 }
 
 
