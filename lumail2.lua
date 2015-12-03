@@ -482,7 +482,6 @@ function sorted_messages()
    -- If we have a cached selection then we'll return it
    --
    if ( #global_msgs > 0 ) then
-      Panel:append( "Returning cached message-set" )
       return global_msgs
    end
 
@@ -2403,9 +2402,14 @@ keymap['message']['H'] = 'toggle_variable( "message.headers" )'
 -----------------------------------------------------------------------------
 
 --
+-- Get our home-directory, as this is often used.
+--
+local HOME = os.getenv("HOME")
+
+--
 -- The default Maildir location is ~/Maildir
 --
-local def_maildir = os.getenv( "HOME" ) .. "/Maildir"
+local def_maildir = HOME .. "/Maildir"
 
 --
 -- Set the maildir-prefix, if it exists.
@@ -2423,7 +2427,7 @@ Config:set( "maildir.prefix", def_maildir );
 --
 -- Configure the path to save outgoing messages to.
 --
-local def_save = os.getenv( "HOME" ) .. "/Maildir/sent-mail"
+local def_save = HOME .. "/Maildir/sent-mail"
 if (Directory:is_maildir(def_save) ) then
    Config:set( "global.sent-mail", def_save)
 else
@@ -2461,12 +2465,12 @@ Config:set( "colour.unread", "red" )
 --
 -- Save persistant history of our input in the named file.
 --
-Config:set( "global.history", os.getenv( "HOME" ) .. "/.lumail2.history" )
+Config:set( "global.history", HOME .. "/.lumail2.history" )
 
 --
 -- Configure a cache-file, and populate it
 --
-Config:set( "message.cache", os.getenv( "HOME" ) .. "/.lumail2.cache" )
+Config:set( "message.cache", HOME .. "/.lumail2.cache" )
 cache_load()
 
 
@@ -2514,6 +2518,17 @@ colour_table['message'] = {
 }
 
 
+--
+-- Load per-host configuration file, if it exists
+--
+local host = Net:hostname()
+local file = HOME .. "/.lumail2/" .. host .. ".lua"
+if ( File.exists( file ) ) then
+   dofile( file )
+   Panel:append( "Loaded local file " .. file )
+else
+   Panel:append( "Skipped local file " .. file )
+end
 
 
 --
