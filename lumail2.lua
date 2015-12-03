@@ -1619,7 +1619,37 @@ function Maildir:format()
    -- Path might be truncated, via "p".
    --
    if ( trunc ~= 0 ) then
-      path = File:basename(path)
+
+      --
+      -- Work out which prefix the maildir is beneath, and strip it
+      --
+      local prefix = Config:get( "maildir.prefix" )
+
+      --
+      -- Simple case first - if there is only a single maildir prefix
+      -- then we just truncate.
+      --
+      if ( type(prefix) == "string" ) then
+         path = string.sub(path, prefix:len() +2)
+         if ( path == nil or path == "" ) then
+            path = "INBOX"
+         end
+      end
+
+      --
+      -- Otherwise we need to test each one.
+      --
+      if ( type(prefix) == "table" ) then
+         for index,pre in ipairs(prefix) do
+            local poss = string.sub(path,0,pre:len())
+            if ( poss == pre ) then
+               path = string.sub(path, pre:len() +2)
+               if ( path == nil or path == "" ) then
+                  path = "INBOX"
+               end
+            end
+         end
+      end
    end
 
    local output = string.format( "[%05d / %05d] - %s", unread, total, path )
