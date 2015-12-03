@@ -7,6 +7,7 @@ addons:
     - pkg-config
     - libpcre3-dev
     - libgmime-2.6-dev
+    - libmagic-dev
 env:
     - LUA_VERSION=5.1
 language: cpp
