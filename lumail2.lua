@@ -327,8 +327,22 @@ end
 --
 -- Compare two messages, based upon their date-headers.
 --
+-- We make sure we compare numbers, as these might have been
+-- cached and saved as strings.
+--
 function compare_by_date(a,b)
-   return a:to_ctime() < b:to_ctime()
+   local a_time = a:to_ctime()
+   local b_time = b:to_ctime()
+
+   if ( type(a_time) == "string" ) then
+      a_time = tonumber(a_time)
+   end
+
+   if ( type(b_time) == "string" ) then
+      b_time = tonumber(b_time)
+   end
+
+   return a_time < b_time
 end
 
 --
