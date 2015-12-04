@@ -519,12 +519,13 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
              * only do that if the content is:
              *
              *   text/plain
-             *
              *   not UTF-8 already.
              */
+
             if ((g_mime_content_type_is_type(ct, "text", "plain")) &&
                     (charset != NULL) &&
-                    (strstr(charset, "utf-8") != 0))
+                    (strcmp(charset, "utf-8") != 0) &&
+                    (strcmp(charset, "UTF-8") != 0))
             {
                 iconv_t cv = g_mime_iconv_open("UTF-8", charset);
                 char *converted = g_mime_iconv_strndup(cv, (const char *) adata, len);
@@ -543,6 +544,7 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
                     len = (size_t)conv_len;
                     g_free(converted);
                 }
+
             }
         }
 

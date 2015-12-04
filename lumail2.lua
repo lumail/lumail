@@ -2440,6 +2440,18 @@ keymap['message']['H'] = 'toggle_variable( "message.headers" )'
 -----------------------------------------------------------------------------
 
 --
+-- The following line enables *experimental* conversion of message-bodies
+-- to UTF-8.
+--
+-- You might require this to be enabled if you receive mail in foreign
+-- character-sets.  It should be harmless when enabled, but character-sets,
+-- encoding, and similar, are scary and hard.  If you see garbled text,
+-- unreadable emails, or similar problems with displaying message-bodies
+-- comment it out as a first step in isolating the problem.
+--
+Config:set( "global.iconv", 1 )
+
+--
 -- Get our home-directory, as this is often used.
 --
 local HOME = os.getenv("HOME")
