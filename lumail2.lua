@@ -1588,8 +1588,16 @@ function lua_view()
       val = Config:get( v )
       table.insert(output, "\t" .. v .. " <" .. type(val) .. ">" )
 
-      if ( ( type(val) == "string" ) or ( type(val) == "number" ) ) then
+      if ( type(val) == "string" ) then
          table.insert(output, "$[YELLOW]\t\t" .. val )
+      end
+      if ( type(val) == "number" ) then
+         table.insert(output, "$[YELLOW]\t\t" .. val )
+      end
+      if ( type(val) == "table" ) then
+         for o,p in ipairs( val ) do
+            table.insert(output, "$[YELLOW]\t\t" .. p)
+         end
       end
    end
 
