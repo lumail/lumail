@@ -88,7 +88,7 @@ std::string CMessage::header(std::string name)
  * Parse a MIME message and return an object suitable for operating
  * upon.
  */
-GMimeMessage * CMessage::parse_message(std::string path)
+GMimeMessage * CMessage::parse_message()
 {
     int result __attribute__((unused));
 
@@ -97,7 +97,7 @@ GMimeMessage * CMessage::parse_message(std::string path)
     GMimeStream *stream;
     int fd;
 
-    if ((fd = open(path.c_str(), O_RDONLY, 0)) == -1)
+    if ((fd = open(path().c_str(), O_RDONLY, 0)) == -1)
         throw "Opening the message failed";
 
     stream = g_mime_stream_fs_new(fd);
@@ -115,14 +115,14 @@ GMimeMessage * CMessage::parse_message(std::string path)
         /*
          * Clear our current object.
          */
-        g_object_unref(stream);
+        g_object_unref(parser);
 
         /*
          * Close the file and retry parsing it, by opening it and
          * skipping two lines.
          */
         close(fd);
-        fd = open(m_path.c_str(), O_RDONLY, 0);
+        fd = open(path().c_str(), O_RDONLY, 0);
 
         int newline = 2;
         char buf[2] = { '\0', '\0' };
@@ -148,7 +148,6 @@ GMimeMessage * CMessage::parse_message(std::string path)
 
     g_object_unref(parser);
 
-    close(fd);
     return (message);
 }
 
@@ -165,7 +164,7 @@ std::unordered_map < std::string, std::string > CMessage::headers()
         return (m_headers);
 
 
-    GMimeMessage *msg = parse_message(path());
+    GMimeMessage *msg = parse_message();
 
     if (msg == NULL)
     {
@@ -470,12 +469,14 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
     CConfig *config = CConfig::instance();
     int iconv       = config->get_integer("global.iconv", 0);
 
-    GMimeMessage *message = parse_message(path());
+    GMimeMessage *message = parse_message();
 
-    if (message == NULL)
+    if (! message)
     {
-        throw "Failed to parse message " + path();
+        return m_parts;
     }
+
+
 
 
     /**
@@ -513,7 +514,11 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
          */
         GMimeStream *mem = g_mime_stream_mem_new();
 
-        if (GMIME_IS_MESSAGE_PART(part))
+        if (GMIME_IS_MULTIPART(part) || GMIME_IS_MESSAGE_PARTIAL(part))
+        {
+            /* NOP */
+        }
+        else if (GMIME_IS_MESSAGE_PART(part))
         {
 
             /*

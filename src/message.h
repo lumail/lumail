@@ -137,7 +137,7 @@ private:
      * Parse a MIME message and return an object suitable for operating
      * upon.
      */
-    GMimeMessage * parse_message(std::string path);
+    GMimeMessage * parse_message();
 
 private:
 
