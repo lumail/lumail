@@ -29,7 +29,6 @@
 #include <unistd.h>
 
 
-#include <gmime/gmime.h>
 
 #include "config.h"
 #include "file.h"
@@ -86,6 +85,73 @@ std::string CMessage::header(std::string name)
 
 
 /*
+ * Parse a MIME message and return an object suitable for operating
+ * upon.
+ */
+GMimeMessage * CMessage::parse_message(std::string path)
+{
+    GMimeMessage * message;
+    GMimeParser *parser;
+    GMimeStream *stream;
+    int fd;
+
+    if ((fd = open(path.c_str(), O_RDONLY, 0)) == -1)
+        throw "Opening the message failed";
+
+    stream = g_mime_stream_fs_new(fd);
+    parser = g_mime_parser_new_with_stream(stream);
+    g_object_unref(stream);
+
+    message = g_mime_parser_construct_message(parser);
+
+    /*
+     * Constructing the message failed.  So we're going to do a horrid
+     * thing.
+     */
+    if (message == NULL)
+    {
+        /*
+         * Clear our current object.
+         */
+        g_object_unref(stream);
+
+        /*
+         * Close the file and retry parsing it, by opening it and
+         * skipping two lines.
+         */
+        close(fd);
+        fd = open(m_path.c_str(), O_RDONLY, 0);
+
+        int newline = 2;
+        char buf[2] = { '\0', '\0' };
+
+        while (newline > 0)
+        {
+            read(fd, buf, 1);
+
+            if (buf[0] == '\n')
+                newline -= 1;
+        }
+
+        /*
+         * Rebuild - the key here is that `fd` is the file-descriptor
+         * to the open file, and we've consumed content from it already.
+         */
+        stream    = g_mime_stream_fs_new(fd);
+        parser    = g_mime_parser_new_with_stream(stream);
+        g_object_unref(stream);
+        message = g_mime_parser_construct_message(parser);
+
+    }
+
+    g_object_unref(parser);
+
+    close(fd);
+    return (message);
+}
+
+
+/*
  * Return all header-names, and their values.
  */
 std::unordered_map < std::string, std::string > CMessage::headers()
@@ -97,21 +163,12 @@ std::unordered_map < std::string, std::string > CMessage::headers()
         return (m_headers);
 
 
-    GMimeMessage * m_message;
-    GMimeParser *parser;
-    GMimeStream *stream;
-    int fd;
+    GMimeMessage *msg = parse_message(path());
 
-    if ((fd = open(m_path.c_str(), O_RDONLY, 0)) == -1)
-        throw "Opening the message failed";
-
-    stream = g_mime_stream_fs_new(fd);
-
-    parser = g_mime_parser_new_with_stream(stream);
-    g_object_unref(stream);
-
-    m_message = g_mime_parser_construct_message(parser);
-    g_object_unref(parser);
+    if (msg == NULL)
+    {
+        throw "Failed to parse message " + path();
+    }
 
 
     const char *name;
@@ -120,7 +177,7 @@ std::unordered_map < std::string, std::string > CMessage::headers()
     /*
      * Prepare to iterate.
      */
-    GMimeHeaderList *ls   = GMIME_OBJECT(m_message)->headers;
+    GMimeHeaderList *ls   = GMIME_OBJECT(msg)->headers;
     GMimeHeaderIter *iter = g_mime_header_iter_new();
 
     if (g_mime_header_list_get_iter(ls, iter)
@@ -156,7 +213,7 @@ std::unordered_map < std::string, std::string > CMessage::headers()
     g_mime_header_iter_free(iter);
 
 
-    g_object_unref(m_message);
+    g_object_unref(msg);
 
     return (m_headers);
 }
@@ -411,33 +468,13 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
     CConfig *config = CConfig::instance();
     int iconv       = config->get_integer("global.iconv", 0);
 
-    GMimeMessage *message;
-    GMimeParser *parser;
-    GMimeStream *stream;
-    int fd;
+    GMimeMessage *message = parse_message(path());
 
-    if ((fd = open(m_path.c_str(), O_RDONLY, 0)) == -1)
+    if (message == NULL)
     {
-        std::cout << "Opening failed ..." << std::endl;
-        return m_parts;
+        throw "Failed to parse message " + path();
     }
 
-    stream = g_mime_stream_fs_new(fd);
-    parser = g_mime_parser_new_with_stream(stream);
-
-    /*
-     * unref the stream (parser owns a ref, so this object does not
-     * actually get free'd until we destroy the parser)
-     **/
-    g_object_unref(stream);
-
-    message = g_mime_parser_construct_message(parser);
-
-    if (! message)
-    {
-        g_object_unref(parser);
-        return m_parts;
-    }
 
     /**
      * Iterate

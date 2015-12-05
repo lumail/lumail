@@ -24,6 +24,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <gmime/gmime.h>
 
 /*
  * Forward declaration of class.
@@ -130,6 +131,13 @@ public:
      * Add the named file as an attachment to this message.
      */
     void add_attachments(std::vector<std::string> attachments);
+
+private:
+    /**
+     * Parse a MIME message and return an object suitable for operating
+     * upon.
+     */
+    GMimeMessage * parse_message(std::string path);
 
 private:
 
