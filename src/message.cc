@@ -90,6 +90,8 @@ std::string CMessage::header(std::string name)
  */
 GMimeMessage * CMessage::parse_message(std::string path)
 {
+    int result __attribute__((unused));
+
     GMimeMessage * message;
     GMimeParser *parser;
     GMimeStream *stream;
@@ -127,7 +129,7 @@ GMimeMessage * CMessage::parse_message(std::string path)
 
         while (newline > 0)
         {
-            read(fd, buf, 1);
+            result = read(fd, buf, 1);
 
             if (buf[0] == '\n')
                 newline -= 1;
