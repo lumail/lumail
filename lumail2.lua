@@ -2569,8 +2569,9 @@ colour_table['message'] = {
    ['^Sent:']    = 'yellow',
 
    -- quoting, and nested quoting.
-   ['^> ']  = 'yellow',
-   ['^> >'] = 'green'
+   ['^>%s*>%s*']   = 'green',
+   ['^>%s*[^>%s]'] = 'blue',
+   ['^>%s$']       = 'blue',
 }
 
 
