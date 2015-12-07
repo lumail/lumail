@@ -2579,7 +2579,7 @@ colour_table['message'] = {
 --
 local host = Net:hostname()
 local file = HOME .. "/.lumail2/" .. host .. ".lua"
-if ( File.exists( file ) ) then
+if ( File:exists( file ) ) then
    dofile( file )
    Panel:append( "Loaded local file " .. file )
 else
