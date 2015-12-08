@@ -339,13 +339,22 @@ function Message:to_ctime()
    --
    local d = self:header("Date" )
    if ( d ) then
-      local date    = luarocks_libraries["date"]
-      local d1      = date(d)
-      local seconds = date.diff(d1, date.epoch()):spanseconds()
 
-      cache["ctime:" ..p] = seconds
-      return seconds
+      -- Get the handle to the lua-rocks date library
+      local date = luarocks_libraries["date"]
+
+      -- Call the data function
+      local success,output = pcall( date, str )
+
+      -- If it worked, get the age in seconds, and update the cahce
+      if ( success == true ) then
+         local seconds = date.diff(output, date.epoch()):spanseconds()
+         cache["ctime:" ..p] = seconds
+         return seconds
+      end
    end
+
+   -- Failed to find out.  Return 0.
    return 0
 end
 
