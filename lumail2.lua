@@ -198,6 +198,14 @@ end
 
 
 --
+-- Strip leading/trailing whitespace from the given string.
+--
+function string.trim(s)
+  return string.match(s,'^()%s*$') and '' or string.match(s,'^%s*(.*%S)')
+end
+
+
+--
 -- Helper function to ensure that if anything calls `os.exit`
 -- we reset the screen neatly, etc.
 --
