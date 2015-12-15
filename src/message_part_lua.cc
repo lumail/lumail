@@ -107,6 +107,33 @@ std::shared_ptr<CMessagePart> l_CheckCMessagePart(lua_State * l, int n)
 
 
 /**
+ * Implementation of MessagePart:children()
+ */
+int l_CMessagePart_children(lua_State * l)
+{
+    std::shared_ptr<CMessagePart> foo = l_CheckCMessagePart(l, 1);
+
+    /*
+     * Get the parts, and count.
+     */
+    std::vector<std::shared_ptr<CMessagePart>> children = foo->children();
+
+    lua_createtable(l, children.size(), 0);
+    int i = 0;
+
+    for (auto it = children.begin(); it != children.end(); ++it)
+    {
+        std::shared_ptr<CMessagePart> cur = (*it);
+        push_cmessagepart(l, cur);
+        lua_rawseti(l, -2, i + 1);
+        i++;
+    }
+
+    return 1;
+}
+
+
+/**
  * Implementation of MessagePart:content()
  */
 int l_CMessagePart_content(lua_State * l)
@@ -201,6 +228,7 @@ void InitMessagePart(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
     {
+        {"children", l_CMessagePart_children},
         {"content", l_CMessagePart_content},
         {"filename", l_CMessagePart_filename},
         {"is_attachment", l_CMessagePart_is_attachment},
