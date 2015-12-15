@@ -647,7 +647,7 @@ static void mime_foreach_callback(GMimeObject * parent, GMimeObject * part, gpoi
          */
         for (int i = 0; i < n; i++)
         {
-            GMimeObject *subpart = g_mime_multipart_get_part(multipart, i);
+            GMimeObject *subpart = g_mime_multipart_get_part((GMimeMultipart *) part, i);
 
             std::shared_ptr<CMessagePart> child = self->part2obj(subpart);
             parent->add_child(child);
