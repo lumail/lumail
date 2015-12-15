@@ -139,6 +139,11 @@ private:
      */
     GMimeMessage * parse_message();
 
+    /**
+     * Convert a message-part from the MIME message to a CMessagePart object.
+     */
+    std::shared_ptr<CMessagePart> part2obj(GMimeObject *part);
+
 private:
 
     /**
