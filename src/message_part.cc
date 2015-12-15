@@ -108,7 +108,7 @@ size_t CMessagePart::content_size()
  */
 std::vector<std::shared_ptr<CMessagePart>> CMessagePart::children()
 {
-    return( m_children );
+    return (m_children);
 }
 
 /*
