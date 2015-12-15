@@ -1434,6 +1434,12 @@ function view_mime_part()
    --  If we found the part.
    --
    if ( found  ) then
+
+      if ( found:size() == 0 ) then
+         Panel:append("This MIME-part is empty" )
+         return
+      end
+
       -- Generate a temporary file
       local tmp   = os.tmpname()
       local file  = assert(io.open(tmp, "w"))
