@@ -1469,21 +1469,46 @@ function attachment_view()
    end
 
    local parts = msg:parts()
+   local c = 1
 
    --
    -- For each one - add it to the display, if it is an attachment.
    --
    for k,v in ipairs( parts ) do
       if ( v:is_attachment() ) then
-         local tmp = string.format( "%06d - %32s [%32s]",
+         local tmp = string.format( "%02d │  %06d - %20s [%32s]", c,
                                     v:size(), v:type(), v:filename() )
          table.insert( result, tmp )
       else
-         local tmp = string.format( "%06d - %32s",
+         local tmp = string.format( "%02d │  %06d - %20s", c,
                                     v:size(), v:type() )
          table.insert( result, tmp )
+      end
+
+      --
+      -- This is suboptimal - but we now insert the children
+      --
+      local children =  v:children()
+      if ( #children > 0) then
+
+         c = c + 1
+
+         for i,o in ipairs( children ) do
+            if ( o:is_attachment() ) then
+               local tmp = string.format( "%02d └─>%06d - %20s [%32s]", c,
+                                          o:size(), o:type(), o:filename() )
+               table.insert( result, tmp )
+            else
+               local tmp = string.format( "%02d └─>%06d - %20s", c,
+                                          o:size(), o:type() )
+               table.insert( result, tmp )
+            end
+
+         end
 
       end
+
+      c = c + 1
    end
 
    return( result )
