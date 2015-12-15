@@ -1907,6 +1907,25 @@ function message_view( msg )
             output = output .. part:content()
             found = true
          end
+
+         --
+         -- Now check the children.
+         --
+         local children = part:children()
+         if ( #children > 0) then
+            for a,b in ipairs( children ) do
+
+               if ( found == false ) then
+                  ct = b:type():lower()
+                  sz = b:size()
+
+                  if ( string.find( ct, "text/" ) ) and ( sz > 0 )  then
+                     output = output .. b:content()
+                     found = true
+                  end
+               end
+            end
+         end
       end
    end
 
