@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 
 /**
@@ -66,6 +67,17 @@ public:
      */
     size_t content_size();
 
+    /**
+     * Get the children of this part, if any.
+     */
+    std::vector<std::shared_ptr<CMessagePart>> children();
+
+    /**
+     * Add a child to this part.
+     */
+    void add_child(std::shared_ptr<CMessagePart> child);
+
+
 private:
 
     /**
@@ -88,4 +100,9 @@ private:
      * The length of this MIME-part's content.
      */
     size_t m_content_length;
+
+    /**
+     * Children of this part.
+     */
+    std::vector<std::shared_ptr<CMessagePart>> m_children;
 };

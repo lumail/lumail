@@ -55,6 +55,9 @@ CMessagePart::~CMessagePart()
         m_content_length = 0;
     }
 
+    if (m_children.size() > 0)
+        m_children.clear();
+
 }
 
 /*
@@ -97,4 +100,21 @@ void * CMessagePart::content()
 size_t CMessagePart::content_size()
 {
     return (m_content_length);
+}
+
+
+/*
+ * Get the children of this part, if any.
+ */
+std::vector<std::shared_ptr<CMessagePart>> CMessagePart::children()
+{
+    return( m_children );
+}
+
+/*
+ * Add a child to this part.
+ */
+void CMessagePart::add_child(std::shared_ptr<CMessagePart> child)
+{
+    m_children.push_back(child);
 }
