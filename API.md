@@ -261,6 +261,8 @@ Message methods:
 MessagePart objects are returned from the `parts()` method.  The `MessagePart`
 object contains the following methods:
 
+* `children()`
+    * Returns any MessagePart children this part might have.
 * `content()`
 	* Returns the content of the part.
 * `is_attachment()`
