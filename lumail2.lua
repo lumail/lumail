@@ -1316,38 +1316,69 @@ function save_mime_part()
       return
    end
 
+   --
+   -- Get the current message, and then the parts.
+   --
+   local msg  = Global:current_message()
+   if ( not msg ) then
+      return
+   end
+
+   -- Get the parts
    local parts = msg:parts()
 
+   -- Count of the child
    local i = 0
+
+   -- The part we're looking for - if this is non-nil at the end
+   -- of our loop then we got what we wanted.
+   local found = nil
+
+   -- For each part look for a match, if we found it update "found"
    for k,v in ipairs( parts ) do
       if ( i == cur ) then
+         found = v
+      end
 
-         -- Get the path of the attachment, if any
-         local path = v:filename()
-         if ( path == nil or path == "" ) then
-            path = "attachment"
+      local children = v:children()
+      if ( #children > 0) then
+         for a,b in ipairs( children ) do
+            i = i + 1
+            if ( i == cur ) then
+               found = b
+            end
          end
+      end
+      i = i + 1
+   end
+
+   --
+   --  If we found the part.
+   --
+   if ( found  ) then
+      -- Get the path of the attachment, if any
+      local path = found:filename()
+      if ( path == nil or path == "" ) then
          path = "attachment"
+      end
+      path = "attachment"
 
-         -- Prompt for local-path
-         local output = Screen:get_line( "Save to:", path )
+      -- Prompt for local-path
+      local output = Screen:get_line( "Save to:", path )
 
-         if ( output == nil or output == "" ) then
-            Panel:append( "Attachment saving aborted" )
-            return
-         end
-
-         -- save it
-         local f = io.open(output, "wb")
-         f:write( v:content() )
-         f:close()
-
-         Panel:append( "Wrote attachment to " .. output )
-
+      if ( output == nil or output == "" ) then
+         Panel:append( "Attachment saving aborted" )
          return
       end
 
-      i = i + 1
+      -- save it
+      local f = io.open(output, "wb")
+      f:write( found:content() )
+      f:close()
+
+      Panel:append( "Wrote attachment to " .. output )
+
+      return
    end
 end
 
@@ -1371,29 +1402,54 @@ function view_mime_part()
       return
    end
 
+   -- Get the parts
    local parts = msg:parts()
 
+   -- Count of the child
    local i = 0
+
+   -- The part we're looking for - if this is non-nil at the end
+   -- of our loop then we got what we wanted.
+   local found = nil
+
+   -- For each part look for a match, if we found it update "found"
    for k,v in ipairs( parts ) do
       if ( i == cur ) then
-
-         -- Generate a temporary file
-         local tmp   = os.tmpname()
-         local file  = assert(io.open(tmp, "w"))
-
-         -- save the content there
-         file:write( v:content() )
-         file:close()
-
-         -- invoke `less`.
-         Screen:execute( "less " .. tmp )
-
-         -- Remove the file
-         os.remove(tmp)
-         return
+         found = v
       end
 
+      local children = v:children()
+      if ( #children > 0) then
+         for a,b in ipairs( children ) do
+            i = i + 1
+            if ( i == cur ) then
+               found = b
+            end
+         end
+      end
       i = i + 1
+   end
+
+   --
+   --  If we found the part.
+   --
+   if ( found  ) then
+      -- Generate a temporary file
+      local tmp   = os.tmpname()
+      local file  = assert(io.open(tmp, "w"))
+
+      -- save the content there
+      file:write( found:content() )
+      file:close()
+
+      -- invoke `less`.
+      Screen:execute( "less " .. tmp )
+
+      -- Remove the file
+      os.remove(tmp)
+      return
+   else
+      Panel:append( "Failed to find MIME-part!" )
    end
 end
 
@@ -1490,10 +1546,8 @@ function attachment_view()
       --
       local children =  v:children()
       if ( #children > 0) then
-
-         c = c + 1
-
          for i,o in ipairs( children ) do
+            c = c + 1
             if ( o:is_attachment() ) then
                local tmp = string.format( "%02d └─>%06d - %20s [%32s]", c,
                                           o:size(), o:type(), o:filename() )
