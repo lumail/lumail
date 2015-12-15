@@ -499,7 +499,11 @@ std::shared_ptr<CMessagePart> CMessage::part2obj(GMimeObject *part)
      */
     GMimeStream *mem = g_mime_stream_mem_new();
 
-    if (GMIME_IS_MESSAGE_PART(part))
+    if (GMIME_IS_MULTIPART(part) || GMIME_IS_MESSAGE_PARTIAL(part))
+    {
+        /* NOP */
+    }
+    else if (GMIME_IS_MESSAGE_PART(part))
     {
 
         /*
