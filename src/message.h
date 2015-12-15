@@ -123,7 +123,10 @@ public:
     bool unlink();
 
     /**
-     * Get message-parts
+     * Parse the message into MIME-parts, if we've not already done so.
+     *
+     * The parts are returned as a vector of CMessagePart objects, each
+     * of which could contain nested children.
      */
     std::vector<std::shared_ptr<CMessagePart>> get_parts();
 
@@ -132,7 +135,8 @@ public:
      */
     void add_attachments(std::vector<std::string> attachments);
 
-private:
+public:
+
     /**
      * Parse a MIME message and return an object suitable for operating
      * upon.
@@ -152,13 +156,15 @@ private:
     std::string m_path;
 
     /**
-     * Cached MIME-parts to this message.
-     */
-    std::vector<std::shared_ptr<CMessagePart>> m_parts;
-
-    /**
      * Cached message-headers from this mail.
      */
     std::unordered_map < std::string, std::string > m_headers;
+
+public:
+
+    /**
+     * Cached MIME-parts to this message.
+     */
+    std::vector<std::shared_ptr<CMessagePart>> m_parts;
 
 };

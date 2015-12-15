@@ -30,6 +30,16 @@
 
 
 
+/**
+ * @file message.cc
+ *
+ * This file implements the CMessage class, which largely revolves
+ * around parsing and manipulation.
+ *
+ */
+
+
+
 #include "config.h"
 #include "file.h"
 #include "message.h"
@@ -589,6 +599,82 @@ std::shared_ptr<CMessagePart> CMessage::part2obj(GMimeObject *part)
 }
 
 
+/**
+ * This method iterates over the parts of the message, and it is a horrid
+ * function.
+ *
+ * The logical aim is to build-up a tree-structure of the MIME-parts which
+ * comprise of this object, but the library we're using doesn't make that
+ * easy - the iterator approach using `g_mime_part_iter_new` will collapse
+ * the parts, so we have to use a call-back to fake iteration.
+ *
+ * We simplify our lives by ignoring most of the possible types here,
+ * so that we can concentrate on whether a MIME-part is a "parent"
+ * which contains children, or a leaf-node which does not.
+ *
+ * **NOTE**: Because this is a C-style callback we have to use a static
+ * cast to reinstate our own object, and due to this some of the members
+ * that _should_ be private are .. not.
+ *
+ */
+static void mime_foreach_callback(GMimeObject * parent, GMimeObject * part, gpointer user_data)
+{
+    CMessage *self = (CMessage *)(user_data);
+
+    if (GMIME_IS_MULTIPART(part))
+    {
+        /*
+         * Get the content-type of this part.
+         */
+        GMimeContentType *ct = g_mime_object_get_content_type(part);
+        gchar *type          = g_mime_content_type_to_string(ct);
+
+        /*
+         * Create a parent to hold the children inside this multi-part
+         * MIME-object.
+         */
+        std::shared_ptr<CMessagePart> parent =
+            std::shared_ptr<CMessagePart>(new CMessagePart(type, "", NULL, 0));
+
+
+        /*
+         * Count the children.
+         */
+        int n = g_mime_multipart_get_count((GMimeMultipart *) part);
+
+        /*
+         * For each child .. add the part.
+         */
+        for (int i = 0; i < n; i++)
+        {
+            GMimeObject *subpart = g_mime_multipart_get_part(multipart, i);
+
+            std::shared_ptr<CMessagePart> child = self->part2obj(subpart);
+            parent->add_child(child);
+        }
+
+        /*
+         * Now add the parent, and the nested children.
+         */
+        self->m_parts.push_back(parent);
+    }
+    else
+    {
+        /*
+         * If this is does not have a multipart-parent then it is a leaf.
+         *
+         * So we can handle it as-such.
+         */
+        if (! GMIME_IS_MULTIPART(parent))
+        {
+            std::shared_ptr<CMessagePart> tmp = self->part2obj(part);
+            self->m_parts.push_back(tmp);
+        }
+    }
+}
+
+
+
 /*
  * Parse the message into MIME-parts, if we've not already done so.
  */
@@ -610,54 +696,13 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
     }
 
 
-    /**
-     * Iterate
-     */
-    GMimePartIter *iter  = g_mime_part_iter_new((GMimeObject *) message);
+    g_mime_message_foreach(message, mime_foreach_callback, this);
 
-    do
-    {
-        GMimeObject *part = g_mime_part_iter_get_current(iter);
-
-        if (GMIME_IS_MULTIPART(part))
-        {
-            GMimeContentType *ct = g_mime_object_get_content_type(part);
-            gchar *type         = g_mime_content_type_to_string(ct);
-
-            /* parent */
-            std::shared_ptr<CMessagePart> parent = std::shared_ptr<CMessagePart>(new CMessagePart(type, "", NULL, 0));
-
-            GMimeMultipart *multipart = (GMimeMultipart *) part;
-
-            int n = g_mime_multipart_get_count(multipart);
-
-            for (int i = 0; i < n; i++)
-            {
-                GMimeObject *subpart = g_mime_multipart_get_part(multipart, i);
-
-                std::shared_ptr<CMessagePart> child = part2obj(subpart);
-                parent->add_child(child);
-            }
-
-            m_parts.push_back(parent);
-        }
-        else
-        {
-            /*
-             * Get the parent - if there is none then we can process.
-             */
-            std::shared_ptr<CMessagePart> tmp = part2obj(part);
-            m_parts.push_back(tmp);
-        }
-
-    }
-    while (g_mime_part_iter_next(iter));
-
-    g_mime_part_iter_free(iter);
-    g_object_unref(message);
-
-    return m_parts;
+    return (m_parts);
 }
+
+
+
 
 
 /*
@@ -725,7 +770,7 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
     GMimePart *addition;
     GMimeDataWrapper *content;
 
-    /**
+    /*
      * Create a new multipart message.
      */
     multipart = g_mime_multipart_new();
