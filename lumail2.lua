@@ -1720,7 +1720,7 @@ end
 function Maildir:format()
    local path   = self:path()
    local time   = self:mtime()
-   local trunc  = Config.get_with_default("truncate.maildir", 0)
+   local trunc  = Config.get_with_default("maildir.truncate", 0)
 
    -- Do we have this cached?  If so return it
    if ( cache["maildir:" .. trunc .. time .. path] ) then
@@ -2577,7 +2577,7 @@ keymap['index']['s']   = 'Message.save()'
 --
 -- Toggle display of full maildir paths
 --
-keymap['maildir']['p'] = 'toggle_variable( "truncate.maildir" )'
+keymap['maildir']['p'] = 'toggle_variable( "maildir.truncate" )'
 
 --
 -- Toggle the size of the panel

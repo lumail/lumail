@@ -125,7 +125,7 @@ displays things, these are:
     * Alternate between showing some/all headers in message-mode.
 * `message.all_parts`
     * Alternate between showing some/all `text/*` parts in message-mode.
-* `truncate.maildir`
+* `maildir.truncate`
     * Alternate between showing the full/truncated Maildir path in maildir-mode.
 
 
