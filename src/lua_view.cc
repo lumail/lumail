@@ -26,23 +26,23 @@
 #include "screen.h"
 
 
-/**
- * NOP.
+/*
+ * Constructor.
  */
 CLuaView::CLuaView()
 {
 }
 
 
-/**
- * NOP.
+/*
+ * Destructor.
  */
 CLuaView::~CLuaView()
 {
 }
 
 
-/**
+/*
  * Get the output of calling `lua_view`, which is the text we'll display.
  */
 std::vector<std::string> CLuaView::get_text()
@@ -64,7 +64,7 @@ std::vector<std::string> CLuaView::get_text()
 }
 
 
-/**
+/*
  * This is the virtual function which is called to refresh the display
  * when the global.mode == "lua"
  */
@@ -108,7 +108,7 @@ void CLuaView::draw()
 }
 
 
-/**
+/*
  * Called when things are idle.  NOP.
  */
 void CLuaView::on_idle()

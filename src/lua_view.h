@@ -34,22 +34,29 @@ class CLuaView: public CViewMode
 {
 
 public:
+    /**
+     * Constructor.
+     */
     CLuaView();
+
+    /**
+     * Destructor.
+     */
     ~CLuaView();
 
-    /*
+    /**
      * Drawing routine - called when the current.mode=="lua".
      */
     void draw();
 
-    /*
+    /**
      * Called when things are idle.
      */
     void on_idle();
 
 private:
 
-    /*
+    /**
      * Get the output of calling `lua_view`, which is the text we'll display.
      */
     std::vector<std::string> get_text();
