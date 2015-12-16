@@ -1387,7 +1387,7 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
         width += (*text).size();
     }
 
-    /**
+    /*
      * Pad the line.
      */
     int max = CScreen::width();
