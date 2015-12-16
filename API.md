@@ -118,6 +118,15 @@ So if the current mode is `maildir` then:
 The global `ARGS` table contains all arguments passed to the command-line,
 and can be used for your own purposes.
 
+For day to day usage some variables change the way that the client
+displays things, these are:
+
+* `message.headers`
+    * Alternate between showing some/all headers in message-mode.
+* `message.all_parts`
+    * Alternate between showing some/all `text/*` parts in message-mode.
+* `truncate.maildir`
+    * Alternate between showing the full/truncated Maildir path in maildir-mode.
 
 
 ### Directories
