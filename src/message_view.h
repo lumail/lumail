@@ -42,12 +42,12 @@ public:
     /**
      * Drawing routine - called when the current.mode=="message".
      */
-    void draw();
+    void draw() override;
 
     /**
      * Called when things are idle.
      */
-    void on_idle();
+    void on_idle() override;
 
 private:
 
