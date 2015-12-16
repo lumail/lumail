@@ -1,6 +1,6 @@
 
-Overview
---------
+# Implementation Overview
+
 
 `CScreen` implements the main user-interface, and runs the event loop:
 
@@ -11,7 +11,7 @@ Overview
 `CGlobalState` is responsible for maintaining the current list of Maildirs,
 the current list of Messages, and getting/setting the current message.
 
-The different modal-modes are implemented in `src/*_view.cc`, and each
+The different modal-modes are implemented in `*_view.cc`, and each
 is instantiated in the `CScreen` setup phase.  Views each have a name,
 and routines for drawing the display.
 

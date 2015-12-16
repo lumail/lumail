@@ -1,5 +1,5 @@
-API
-===
+# Lua API
+
 
 The core idea beind lumail2, and the reason for writing it rather than
 continuing to extend the legacy-project, is that all the items that are
@@ -122,7 +122,7 @@ For day to day usage some variables change the way that the client
 displays things, these are:
 
 * `message.all_parts`
-    * Alternate between showing some/all `text/*` parts in message-mode.
+    * Alternate between showing some/all text-parts in message-mode.
 * `message.headers`
     * Alternate between showing some/all headers in message-mode.
 * `message.prepend`
@@ -417,3 +417,6 @@ The lines may contain a prefix containing colour information.  For example:
                   "$[YELLOW]This is yellow!" }
       return r
     end
+
+The function `lua_view` generates the output used in Lua-mode, one of
+the many available modal view-modes.
