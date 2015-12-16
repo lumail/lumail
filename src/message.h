@@ -135,7 +135,7 @@ public:
      */
     void add_attachments(std::vector<std::string> attachments);
 
-public:
+private:
 
     /**
      * Parse a MIME message and return an object suitable for operating
@@ -144,9 +144,16 @@ public:
     GMimeMessage * parse_message();
 
     /**
+     * Iterate over every MIME part in the message, and update
+     * our list of MIME-parts with those results.
+     */
+    static void mime_foreach_callback(GMimeObject * parent, GMimeObject * part, gpointer user_data);
+
+    /**
      * Convert a message-part from the MIME message to a CMessagePart object.
      */
     std::shared_ptr<CMessagePart> part2obj(GMimeObject *part);
+
 
 private:
 
@@ -159,8 +166,6 @@ private:
      * Cached message-headers from this mail.
      */
     std::unordered_map < std::string, std::string > m_headers;
-
-public:
 
     /**
      * Cached MIME-parts to this message.

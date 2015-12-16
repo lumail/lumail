@@ -616,14 +616,10 @@ std::shared_ptr<CMessagePart> CMessage::part2obj(GMimeObject *part)
  * so that we can concentrate on whether a MIME-part is a "parent"
  * which contains children, or a leaf-node which does not.
  *
- * **NOTE**: Because this is a C-style callback we have to use a static
- * cast to reinstate our own object, and due to this some of the members
- * that _should_ be private are .. not.
- *
  */
-static void mime_foreach_callback(GMimeObject * parent, GMimeObject * part, gpointer user_data)
+void CMessage::mime_foreach_callback(GMimeObject * parent, GMimeObject * part, gpointer user_data)
 {
-    CMessage *self = (CMessage *)(user_data);
+    CMessage *self = reinterpret_cast<CMessage*>(user_data);
 
     if (GMIME_IS_MULTIPART(part))
     {
