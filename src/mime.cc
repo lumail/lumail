@@ -49,14 +49,17 @@ CMime::~CMime()
 }
 
 /*
- * Get the MIME type of the given file.
+ * Discover the MIME-type of the specified file.
+ *
+ * If this cannot be determined return the default value which will be
+ * `application/octet-stream`.
  */
-std::string CMime::type(std::string file)
+std::string CMime::type(std::string file,std::string def_type)
 {
     const char *info = magic_file(m_mime, file.c_str());
 
     if (info)
         return (info);
     else
-        return ("application/octet-stream");
+        return (def_type);
 }

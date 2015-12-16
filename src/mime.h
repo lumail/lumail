@@ -25,27 +25,51 @@
 #include "singleton.h"
 
 /**
- * A singleton class holding an instance of libmagic, which is
+ * A singleton class holding an instance of `libmagic`, which is
  * used for identifying the MIME-type of files.
+ *
+ * We use this specifically to identify the MIME-type of files which
+ * are attached to outgoing messages.
+ *
+ * Usage is as simple as:
+ *
+ * <pre>
+ *  CMime  *instance = CMime::Instance();
+ *  std::string type = instance->type( "/etc/passwd" );
+ * </pre>
+ *
+ * Failure to identify the MIME-type of the specified file will
+ * result in the default value of `application/octet-stream` being
+ * returned.
  *
  */
 class CMime : public Singleton<CMime>
 {
 public:
+    /**
+     * Constructor.  Open up a handle to `libmagic`.
+     */
     CMime();
+
+    /**
+     * Destructor.  Close the `libmagic` handle.
+     */
     ~CMime();
 
 public:
 
     /**
-     * Get the MIME type of the given file.
+     * Discover the MIME-type of the specified file.
+     *
+     * If this cannot be determined return the default value which was
+     * specified.
      */
-    std::string type(std::string file);
+    std::string type(std::string file, std::string def_type = "application/octet-stream" );
 
 private:
 
     /**
-     * The handle to the mime-library.
+     * The handle provided by `libmagic`.
      */
     magic_t m_mime;
 
