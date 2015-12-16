@@ -1925,7 +1925,7 @@ function message_view( msg )
             if ( content[ct]  ) then
                content[ct] = content[ct] .. part:content()
             else
-               content[ct] = b:content()
+               content[ct] = part:content()
             end
          else
             if ( content[ct] == nil ) then
@@ -2585,9 +2585,10 @@ keymap['maildir']['p'] = 'toggle_variable( "truncate.maildir" )'
 keymap['global']['P'] = 'panel_size_toggle()'
 
 --
--- Toggle the display of full headers.
+-- Toggle the display of full headers / all parts
 --
 keymap['message']['H'] = 'toggle_variable( "message.headers" )'
+keymap['message']['T'] = 'toggle_variable( "message.all_parts" )'
 
 
 --
