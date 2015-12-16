@@ -79,14 +79,6 @@ public:
     std::vector<std::string> get_completions(std::string token);
 
     /**
-     * Gain access to our global Lua state.
-     */
-    lua_State *state()
-    {
-        return m_lua;
-    }
-
-    /**
      * This method is called when a configuration key changes,
      * via our observer implementation.
      */
