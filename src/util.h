@@ -23,7 +23,16 @@
 
 
 /**
- * A filter which is used by std::erase to remove duplicate slash-characters.
+ * A filter which is used by `std::erase` to remove duplicate slash-characters.
+ *
+ * Usage looks like this:
+ *
+ * <pre>
+ * std::string in = "this//has/too/many//slashes.txt";
+ * in.erase(std::unique(in.begin(), in.end(), both_slashes()), in.end());
+ *
+ * // in now contains 'this/has/too/many/slashes.txt'.
+ * </pre>
  */
 struct both_slashes
 {
