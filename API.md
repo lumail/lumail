@@ -121,13 +121,14 @@ and can be used for your own purposes.
 For day to day usage some variables change the way that the client
 displays things, these are:
 
-* `message.headers`
-    * Alternate between showing some/all headers in message-mode.
 * `message.all_parts`
     * Alternate between showing some/all `text/*` parts in message-mode.
+* `message.headers`
+    * Alternate between showing some/all headers in message-mode.
+* `message.prepend`
+    * Specifies whether additional MIME-parts should be appended/prepended to the display.
 * `maildir.truncate`
     * Alternate between showing the full/truncated Maildir path in maildir-mode.
-
 
 ### Directories
 

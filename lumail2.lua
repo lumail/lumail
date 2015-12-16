@@ -201,7 +201,7 @@ end
 -- Strip leading/trailing whitespace from the given string.
 --
 function string.trim(s)
-  return string.match(s,'^()%s*$') and '' or string.match(s,'^%s*(.*%S)')
+   return string.match(s,'^()%s*$') and '' or string.match(s,'^%s*(.*%S)')
 end
 
 
@@ -1910,6 +1910,11 @@ function message_view( msg )
    --
    local all = Config.get_with_default("message.all_parts", 0)
 
+   --
+   -- If we're going to show all parts do we append new parts
+   -- or prepend them?
+   --
+   local cat = Config.get_with_default("message.prepend", 0)
 
    --
    -- Process each part.
@@ -1922,12 +1927,18 @@ function message_view( msg )
 
       if ( string.find( ct, "text/" ) ) and ( sz > 0 )  then
          if ( all == 1 ) then
+            -- Prepend the content, unless nothing saved.
             if ( content[ct]  ) then
-               content[ct] = content[ct] .. part:content()
+               if ( cat == 0 ) then
+                  content[ct] = part:content() .. content[ct]
+               else
+                  content[ct] = content[ct] .. part:content()
+               end
             else
                content[ct] = part:content()
             end
          else
+            -- Only store the content if we didn't find a part already.
             if ( content[ct] == nil ) then
                content[ct] = part:content()
             end
@@ -1946,12 +1957,18 @@ function message_view( msg )
 
             if ( string.find( ct, "text/" ) ) and ( sz > 0 )  then
                if ( all == 1 ) then
+                  -- Prepend the content, unless nothing saved.
                   if ( content[ct]  ) then
-                     content[ct] = content[ct] .. b:content()
+                     if ( cat == 0 ) then
+                        content[ct] = b:content() .. content[ct]
+                     else
+                        content[ct] = content[ct] .. b:content()
+                     end
                   else
                      content[ct] = b:content()
                   end
                else
+                  -- Only store the content if we didn't find a part already.
                   if ( content[ct] == nil ) then
                      content[ct] = b:content()
                   end
