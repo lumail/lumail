@@ -137,7 +137,7 @@ end
 
 --
 -- Write out the key/vals from our local cache object to the filename
--- the user has set.  If there is no filename them don't write.
+-- the user has set.  If there is no filename then don't write.
 --
 function cache_save()
    local file = Config:get("message.cache")
@@ -1895,39 +1895,65 @@ function message_view( msg )
    output = output .. "\n"
 
    --
-   -- Now look for the first text/* content-type
+   -- Now we're going to build up the body of the mail.
+   --
+   -- We'll either show the first or ALL parts of the appropriate
+   -- type, and we prefer "text/plain" to "text/html", but will
+   -- display the latter if that is all we have.
+   --
+   -- We'll store the parts in a table keyed on the MIME-type
+   --
+   local content = {}
+
+   --
+   -- Are we displaying the first, or all parts?
+   --
+   local all = Config.get_with_default("message.all_parts", 0)
+
+
+   --
+   -- Process each part.
    --
    parts = msg:parts()
-
-   local found = false
    for i,part in ipairs( parts ) do
-      if ( found == false ) then
 
-         --
-         -- Get the content-type & size of this part.
-         --
-         local ct = part:type():lower()
-         local sz = part:size()
+      local ct = part:type():lower()
+      local sz = part:size()
 
-         if ( string.find( ct, "text/" ) ) and ( sz > 0 )  then
-            output = output .. part:content()
-            found = true
+      if ( string.find( ct, "text/" ) ) and ( sz > 0 )  then
+         if ( all == 1 ) then
+            if ( content[ct]  ) then
+               content[ct] = content[ct] .. part:content()
+            else
+               content[ct] = b:content()
+            end
+         else
+            if ( content[ct] == nil ) then
+               content[ct] = part:content()
+            end
          end
+      end
 
-         --
-         -- Now check the children.
-         --
-         local children = part:children()
-         if ( #children > 0) then
-            for a,b in ipairs( children ) do
+      --
+      -- Now check the children.
+      --
+      local children = part:children()
+      if ( #children > 0) then
+         for a,b in ipairs( children ) do
 
-               if ( found == false ) then
-                  ct = b:type():lower()
-                  sz = b:size()
+            ct = b:type():lower()
+            sz = b:size()
 
-                  if ( string.find( ct, "text/" ) ) and ( sz > 0 )  then
-                     output = output .. b:content()
-                     found = true
+            if ( string.find( ct, "text/" ) ) and ( sz > 0 )  then
+               if ( all == 1 ) then
+                  if ( content[ct]  ) then
+                     content[ct] = content[ct] .. b:content()
+                  else
+                     content[ct] = b:content()
+                  end
+               else
+                  if ( content[ct] == nil ) then
+                     content[ct] = b:content()
                   end
                end
             end
@@ -1935,12 +1961,16 @@ function message_view( msg )
       end
    end
 
+
    --
    -- Did we show the body?
    --
-   if ( found == false ) then
-      output = output .. "Failed to find a plain-text part in the message."
-   end
+   local txt = content["text/plain"] or
+      content["text/html"] or
+      "Failed to find a plain-text part in the message."
+
+
+   output = output .. txt
 
    --
    -- The command output is now split into rows.
