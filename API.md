@@ -199,6 +199,22 @@ The following API methods are available to help you with this:
 
 
 
+### Logfile Usage
+
+There is a simple primitive for writing messages to a logfile, which
+can be useful for debugging.
+
+By default log-entries are not written, to enable them you must set
+a filename like so:
+
+     Config:set( "global.logfile" , "/path/to/log" )
+
+Once a filename has been set logs may be added via:
+
+     Log:append( os.date .. " Hello!" )
+     Log:append( os.date .. " Goodbye!" )
+
+
 ### Maildir
 
 You can gain access to Maildir objects in several ways:
