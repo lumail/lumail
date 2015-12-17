@@ -64,7 +64,7 @@ public:
      * If this cannot be determined return the default value which was
      * specified.
      */
-    std::string type(std::string file, std::string def_type = "application/octet-stream" );
+    std::string type(std::string file, std::string def_type = "application/octet-stream");
 
 private:
 

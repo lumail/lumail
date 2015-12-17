@@ -54,7 +54,7 @@ CMime::~CMime()
  * If this cannot be determined return the default value which will be
  * `application/octet-stream`.
  */
-std::string CMime::type(std::string file,std::string def_type)
+std::string CMime::type(std::string file, std::string def_type)
 {
     const char *info = magic_file(m_mime, file.c_str());
 
