@@ -211,8 +211,8 @@ a filename like so:
 
 Once a filename has been set logs may be added via:
 
-     Log:append( os.date .. " Hello!" )
-     Log:append( os.date .. " Goodbye!" )
+     Log:append( os.date() .. " Hello!" )
+     Log:append( os.date() .. " Goodbye!" )
 
 
 ### Maildir
