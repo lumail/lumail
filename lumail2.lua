@@ -2113,11 +2113,49 @@ end
 --
 -- Jump to the last entry in the current-mode.
 --
+-- We could always set this to jump to the maximum
+-- line, but doing so would result in an empty display
+-- in the case of viewing a message, or viewing lua-mode.
+--
+-- We handle that by scrolling until the last line is *visible*
+-- rather than selected.
 function last()
    local mode = Config:get("global.mode")
    local max  = Config:get(mode .. ".max" )
 
-   Config:set( mode .. ".current", max-1 )
+   --
+   -- Jump to the end unless we're in message-mode
+   -- or lua-mode.
+   --
+   if ( mode ~= "message" and mode ~= "lua" ) then
+      Config:set( mode .. ".current", max-1 )
+      return
+   end
+
+   --
+   -- For these two remaining modes we want to jump
+   -- such that the end of the display is visible
+   -- but not selected.
+   --
+
+   -- Get the current offset.
+   local cur = Config:get(mode .. ".current")
+
+   -- Jump to the end of the display
+   cur = max - Screen:height()
+
+   -- Account for the panel
+   if (Panel:visible() ) then
+      cur = cur + Panel:height()
+   end
+
+   -- Bound the values.
+   if ( cur > max ) then cur = max end
+   if ( cur < 0 ) then cur = 0  end
+
+   -- And finally update them
+   Config:set( mode .. ".current", cur )
+
 end
 
 
