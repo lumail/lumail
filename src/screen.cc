@@ -28,6 +28,7 @@
 #include "config.h"
 #include "history.h"
 #include "index_view.h"
+#include "input_queue.h"
 #include "lua.h"
 #include "lua_view.h"
 #include "maildir_view.h"
@@ -129,7 +130,12 @@ void CScreen::run_main_loop()
      */
     int ch;
 
-    while ((m_running) && (ch = getch()))
+    /*
+     * Input handler.
+     */
+    CInputQueue *input = CInputQueue::instance();
+
+    while ((m_running) && (ch = input->get_input()))
     {
 
         /*
@@ -610,7 +616,11 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
 
         wrefresh(childwin);
 
-        int c = getch();
+        /*
+         * Read input from the queue / keyboard.
+         */
+        CInputQueue *input = CInputQueue::instance();
+        int c = input->get_input();
 
         if (c == '\n')
             done = true;
@@ -762,9 +772,10 @@ std::string CScreen::get_line(std::string prompt, std::string input)
         move(y, x + pos);
 
         /*
-         * Get some input
+         * Read input from the queue / keyboard.
          */
-        c = getch();
+        CInputQueue *input = CInputQueue::instance();
+        c = input->get_input();
 
         /*
           * Ropy input-handler.
@@ -1026,7 +1037,11 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
 
         mvaddnstr(y, x, prompt.c_str(), prompt.length());
 
-        c = getch();
+        /*
+         * Read input from the queue / keyboard.
+         */
+        CInputQueue *input = CInputQueue::instance();
+        c = input->get_input();
 
         for (unsigned int i = 0; i < valid.size(); i++)
         {

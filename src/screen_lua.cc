@@ -27,6 +27,7 @@ extern "C"
 
 
 #include "global_state.h"
+#include "input_queue.h"
 #include "maildir_lua.h"
 #include "message_lua.h"
 #include "screen.h"
@@ -159,6 +160,18 @@ int l_CScreen_sleep(lua_State * l)
     return 0;
 }
 
+
+/**
+ * Implementation of Screen:sleep().
+ */
+int l_CScreen_stuff(lua_State * l)
+{
+    const char *str = luaL_checkstring(l, 2);
+    CInputQueue *input = CInputQueue::instance();
+    input->add_input(str);
+    return 0;
+}
+
 /**
  * Implementation of Screen:width().
  */
@@ -185,6 +198,7 @@ void InitScreen(lua_State * l)
         {"height", l_CScreen_height},
         {"prompt", l_CScreen_prompt_chars},
         {"sleep", l_CScreen_sleep},
+        {"stuff", l_CScreen_stuff},
         {"width", l_CScreen_width},
         {NULL, NULL}
     };

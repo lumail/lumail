@@ -370,6 +370,9 @@ The Screen object is registered automatically and doesn't need to be constructed
     * Accept input from a small list of characters, used for showing menus, etc.
 * `Screen:sleep(N)`
     * Sleep for N-seconds.
+* `Screen:stuff(txt)`
+    * Add text to the pending input-queue, to fake user-input.
+    * For example: `Screen:stuff( ":Panel:append('ok');\n" )`
 * `Screen:width()`
     * Return the width of the screen.
 
