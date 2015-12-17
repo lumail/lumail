@@ -31,7 +31,7 @@ extern "C"
 
 
 /**
- * Get details about the given file.
+ * Get the current hostname.
  */
 int l_CNet_hostname(lua_State * L)
 {
@@ -81,7 +81,7 @@ int l_CNet_hostname(lua_State * L)
 
 
 /**
- * Export the utility functions to Lua.
+ * Export the networking functions to Lua.
  */
 void InitNet(lua_State * l)
 {

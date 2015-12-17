@@ -48,7 +48,7 @@ int l_CMime_type(lua_State * L)
 
 
 /**
- * Export the utility functions to Lua.
+ * Export the MIME functions to Lua.
  */
 void InitMIME(lua_State * l)
 {
