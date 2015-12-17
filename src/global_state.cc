@@ -24,6 +24,7 @@
 #include "global_state.h"
 #include "history.h"
 #include "lua.h"
+#include "logfile.h"
 #include "maildir.h"
 #include "message.h"
 
@@ -113,6 +114,20 @@ void CGlobalState::update(std::string key_name)
 
         CHistory *history = CHistory::instance();
         history->set_file(path);
+    }
+    else if (key_name == "global.logfile")
+    {
+        /*
+         * The name of the logfile file.
+         */
+        CConfig *config = CConfig::instance();
+        std::string path = config->get_string("global.logfile");
+
+        if (path.empty())
+            return;
+
+        CLogfile *log = CLogfile::instance();
+        log->set_file(path);
     }
     else  if (key_name == "maildir.prefix")
     {
