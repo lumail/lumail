@@ -2160,57 +2160,73 @@ end
 --  * We can use this to dynamically invoke the right mode, and iterate.
 --
 --
-function find( offset )
-
-   -- Get the thing we're searching for
-   local pattern = Screen:get_line( "/:" )
-
-   -- Get the global mode.
-   local mode = Config:get("global.mode")
-
-   -- Use that to get the lines we're currently displaying
-   loadstring( "out = " .. mode .. "_view()" )()
+do
 
    --
-   -- We know the current offset is stored in
-   -- the variable $mode.current
+   -- This is the value that the user entered previously, and is
+   -- the default if nothing is entered again.
    --
-   -- We know the maximum offset is stored in the
-   -- variable $mode.max
-   --
-   local cur = Config.get_with_default(mode .. ".current", 0)
-   local max = Config:get(mode .. ".max")
+   local search_text = ''
 
-   --
-   -- We'll keep track of how many times we've moved forward
-   -- to avoid looping indefinitely.
-   --
-   local count = -1
+   function find( offset )
 
-   cur = cur + 1
+      -- Get the search pattern.
+      local pattern  = Screen:get_line( "/:" )
 
-   --
-   -- Start searching from the current-position
-   --
-   while( count < max ) do
-
-      cur = cur + offset
-      if ( cur > max ) then cur = 1 end
-      if ( cur < 1 )   then cur = max end
-
-      -- Get the current entry
-      local line = out[cur]
-
-      -- Does it match?
-      if ( string.match( line, pattern ) ) then
-         Config:set(mode .. ".current", (cur - 1))
-         return
+      -- If the user didn't enter anything then use the previous
+      -- input, if any.
+      if ( pattern == nil or pattern == "" ) then
+         pattern = search_text
       end
 
-      count = count + 1
+      -- Save for next time.
+      search_text = pattern
+
+      -- Get the global mode.
+      local mode = Config:get("global.mode")
+
+      -- Use that to get the lines we're currently displaying
+      loadstring( "out = " .. mode .. "_view()" )()
+
+      --
+      -- We know the current offset is stored in
+      -- the variable $mode.current
+      --
+      -- We know the maximum offset is stored in the
+      -- variable $mode.max
+      --
+      local cur = Config.get_with_default(mode .. ".current", 0)
+      local max = Config:get(mode .. ".max")
+
+      --
+      -- We'll keep track of how many times we've moved forward
+      -- to avoid looping indefinitely.
+      --
+      local count = -1
+      cur = cur + 1
+
+      --
+      -- Start searching from the current-position
+      --
+      while( count < max ) do
+
+         cur = cur + offset
+         if ( cur > max ) then cur = 1 end
+         if ( cur < 1 )   then cur = max end
+
+         -- Get the current entry
+         local line = out[cur]
+
+         -- Does it match?
+         if ( string.match( line, pattern ) ) then
+            Config:set(mode .. ".current", (cur - 1))
+            return
+         end
+
+         count = count + 1
+      end
    end
 end
-
 
 
 --
