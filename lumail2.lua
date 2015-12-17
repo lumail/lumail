@@ -36,6 +36,20 @@
 
 
 --
+-- Define a method for logging information  which is disabled
+-- by default.
+--
+--  To enable this uncomment the following line which sets up a path
+-- to write the message to:
+--
+--      Config:set( "global.logfile", "lumail2.log" )
+--
+function log_message( txt )
+   Log:append( os.date() .. " " .. txt )
+end
+
+
+--
 --  Setup a sane Lua load-path
 --
 ----------------------------------------------------------------------------
@@ -108,8 +122,8 @@ function cache_load()
    local file = Config:get("message.cache")
    if (file) and File:exists( file ) then
 
-      -- show report
-      Panel:append("Loading cache from: " .. file )
+      -- Log the load
+      log_message("Loading cache from: " .. file )
 
       -- our version
       local cur = "VERSION=" .. Config:get( "global.version" )
@@ -132,6 +146,11 @@ function cache_load()
             end
          end
       end
+
+      if ( ver == cur ) then
+         log_message("The cache is for this version of lumail2 : " .. ver )
+      end
+
    end
 end
 
@@ -153,6 +172,8 @@ function cache_save()
          hand:write( key .. "=" .. val  .. "\n")
       end
       hand:close()
+
+      log_message("Wrote cache to " .. file )
    end
 end
 
@@ -163,6 +184,7 @@ function cache_flush()
    for k in pairs (cache) do
       cache[k] = nil
    end
+   log_message("Flushed cache")
    cache_save()
 end
 
@@ -180,6 +202,7 @@ end
 --
 function on_error( msg )
    Panel:append( "An error was caught " .. msg )
+   log_message("An error was caught: " .. msg )
 end
 
 
@@ -288,6 +311,7 @@ function toggle_variable( name )
    end
 
    Config:set( name, current )
+   log_message("Variable toggled: " .. name .. " new value is " .. current )
 end
 
 
@@ -296,7 +320,7 @@ end
 --
 function change_mode( new_mode )
    Config:set( "global.mode", new_mode )
-   Panel:append( "Mode changed to:" .. new_mode )
+   log_message("Mode changed to:" .. new_mode )
 end
 
 
@@ -2021,6 +2045,7 @@ function read_eval()
       return
    end
 
+   log_message( "Evaluating lua: " .. txt )
    loadstring( txt )()
 end
 
@@ -2036,6 +2061,7 @@ function read_execute()
       return
    end
 
+   log_message( "Executing shell command: " .. cmd )
    os.execute(cmd)
 end
 
@@ -2516,7 +2542,7 @@ function Config.key_changed( name )
    --
    if ( name == "index.limit" ) then
       global_msgs = {}
-      Panel:append("Flushed message cache.")
+      log_message( "index.limit changed - flushing message cache" )
    end
 
 end
