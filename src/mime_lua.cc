@@ -26,9 +26,27 @@ extern "C"
 
 #include "mime.h"
 
+/**
+ * @file mime_lua.cc
+ *
+ * This file implements the trivial exporting of a MIME-class to Lua.
+ *
+ * There is only a single method implemented, and usage looks like this:
+ *
+ *<code>
+ *   -- Get the MIME-type of /etc/passwd.<br />
+ *   local m = MIME:type( "/etc/passwd" )<br />
+ * <br/>
+ *   -- Show it<br />
+ *   Panel:append( "MIME type is " .. m )<br />
+ *</code>
+ *
+ */
+
+
 
 /**
- * Get the MIME-type of the given file
+ * Get the MIME-type of the given file.
  */
 int l_CMime_type(lua_State * L)
 {
@@ -48,7 +66,8 @@ int l_CMime_type(lua_State * L)
 
 
 /**
- * Export the MIME functions to Lua.
+ * Export the MIME object to Lua, this only contains the single static
+ * method `type`.
  */
 void InitMIME(lua_State * l)
 {
