@@ -29,6 +29,24 @@ extern "C"
 #include <sys/socket.h>
 #include <unistd.h>
 
+/**
+ * @file net_lua.cc
+ *
+ * This file implements the trivial exporting of a Net-class to Lua.
+ *
+ * There is only a single method implemented, and usage looks like this:
+ *
+ *<code>
+ *   -- Get our hostname<br />
+ *   local h = Net:hostname()<br />
+ * <br/>
+ *   -- Show it<br />
+ *   Panel:append( "Hostname is " .. h )<br />
+ *</code>
+ *
+ */
+
+
 
 /**
  * Get the current hostname.
@@ -37,7 +55,8 @@ int l_CNet_hostname(lua_State * L)
 {
     /**
      * If the environmental varaible HOSTNAME
-     * is set, use that.
+     * is set, use that, otherwise use the standard networking
+     * functions to determine our FQDN.
      */
     const char *env = getenv("HOSTNAME");
 
@@ -81,7 +100,7 @@ int l_CNet_hostname(lua_State * L)
 
 
 /**
- * Export the networking functions to Lua.
+ * Export the "Net" object to Lua, this just contains a single static-method.
  */
 void InitNet(lua_State * l)
 {
