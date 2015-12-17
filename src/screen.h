@@ -159,7 +159,8 @@ public:
     static int height();
 
     /**
-     * Clear the screen.
+     * Clear the screen - if refresh_screen is set to true we'll trigger
+     * a refresh of the screen via curses.
      */
     void clear(bool refresh_screen = true);
 
@@ -178,12 +179,15 @@ public:
     /**
      * Read a line of input via the status-line.
      *
-     * History is handled via our `CHistory` singleton.
+     * History is handled via our `CHistory` singleton, and faux input
+     * may be consumed via our CInputQueue object.
      */
     std::string get_line(std::string prompt, std::string input = "");
 
     /**
      * Show a message and return only a valid keypress from a given set.
+     *
+     * Faux input may be consumed via our CInputQueue object.
      */
     std::string prompt_chars(std::string prompt, std::string valid);
 
