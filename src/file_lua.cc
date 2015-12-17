@@ -30,7 +30,25 @@ extern "C"
 
 
 /**
+ * @file file_lua.cc
+ *
+ * This file implements the trivial exporting of our File class,
+ * implemented in C++, to Lua.  Lua-usage looks something like this:
+ *
+ *<code>
+ *   -- Does the given file exist? <br/>
+ *   if ( File:exists( "/etc/foo" ) ) then<br />
+ *      Panel:append( "Exists!") <br/>
+ *   end<br />
+ *</code>
+ *
+ */
+
+
+/**
  * Get the basename of the given file.
+ *
+ * For example the input "/foo/bar/baz" will return the result "baz".
  */
 int l_CFile_basename(lua_State * l)
 {
@@ -44,7 +62,7 @@ int l_CFile_basename(lua_State * l)
 
 
 /**
- * Copy the given file.
+ * Copy the given file to the specified destination.
  */
 int l_CFile_copy(lua_State * l)
 {
@@ -80,6 +98,8 @@ int l_CFile_exists(lua_State * l)
 
 /**
  * Get details about the given file.
+ *
+ * This returns a Lua-table with values such as `size`, `uid`, `gid`, etc.
  */
 int l_CFile_stat(lua_State * l)
 {
@@ -91,7 +111,7 @@ int l_CFile_stat(lua_State * l)
         return 0;
     }
 
-    /**
+    /*
      * If we fail to stat the entry return nil.
      */
     if ((stat(str, &sb) != 0))
@@ -101,14 +121,14 @@ int l_CFile_stat(lua_State * l)
     }
 
 
-    /**
+    /*
      * Convert the mode of the file to a string.
      */
     char mode[8];
     snprintf(mode, 8, "0%o", sb.st_mode);
 
 
-    /**
+    /*
      * Push a table onto the stack, and return it.
      */
     lua_newtable(l);

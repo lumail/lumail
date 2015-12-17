@@ -28,7 +28,27 @@ extern "C"
 
 
 /**
- * Append the given line to the logfile file.
+ * @file logfile_lua.cc
+ *
+ * This file implements the trivial exporting of our Log-class to Lua.
+ *
+ * There is only a single method implemented, and usage looks like this:
+ *
+ *<code>
+ *   -- Setup a logfile <br/>
+ *   Config:set( "global.logfile" , "/path/to/log" )<br/>
+ * <br/>
+ *   -- Add a message<br />
+ *   Log:append( os.date() .. "Hello, world!" )<br />
+ *</code>
+ *
+ */
+
+
+/**
+ * Append the specified line to our logfile.
+ *
+ * **NOTE**: If a logfile hasn't been set then this is a NOP.
  */
 int l_CLog_append(lua_State * L)
 {
@@ -41,7 +61,7 @@ int l_CLog_append(lua_State * L)
 
 
 /**
- * Export the logfile functions to Lua.
+ * Export the Log-class to Lua.
  */
 void InitLogfile(lua_State * l)
 {
