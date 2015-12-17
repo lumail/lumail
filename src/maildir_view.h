@@ -45,12 +45,12 @@ public:
     /**
      * Drawing routine - called when the current.mode=="maildir".
      */
-    void draw();
+    void draw() override;
 
     /**
      * Called when things are idle.
      */
-    void on_idle();
+    void on_idle() override;
 
 private:
 

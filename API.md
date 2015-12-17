@@ -26,11 +26,11 @@ types of objects and ways to create/access them.
 
 ### Callbacks
 
-The mail-client is writting in C++ and generally defers to the Lua
+The mail-client is written in C++ and generally defers to the Lua
 code to perform actions.
 
-There are three cases where Lua is specifically invoked from the C++
-core:
+There are some cases though where Lua is specifically invoked from the C++
+core in the style of a traditionally callback:
 
 * `on_error(msg)`
      * This function is called when an error is encountered.
@@ -40,6 +40,8 @@ core:
 * `on_idle()`
      * This function is called regularly from the main loop.
      * You can perform background action here.
+* The various `_view()` functions.
+     * There is a Lua function for each of our modes, for example `attachment_view()`, `index_view()`, etc.
 
 Previously we had many more callbacks, for example a function that could be
 invoked when you opened a message, or changed the folder-selection. These
@@ -52,7 +54,7 @@ add code to handle such changes you can add it directly.
 
 The `Config` object allows you to get, set, and iterate over configuration values.
 
-A configuration variable will have both a name and a value.  Values may be:
+A configuration variable will have both a name and a value, and we support the use of several different types for the value:
 
 * an integer
 * a string
@@ -72,6 +74,12 @@ The following (static) methods are available:
 If the function `Config:key_changed` is defined it will be invoked whenever
 the value of a key is changed.  The single argument being the name of the key
 which has been updated.
+
+**NOTE**: We've defined a helper method in `lumail2.lua` which allows you to retrieve the value of a configuration-key and return a default value if the key is not set.
+
+      function Config.get_with_default(key,default)
+          ..
+      end
 
 Sample code is available in `sample.lua/config.lua`.
 
@@ -112,7 +120,7 @@ count of the objects, as well as `$mode.current`.
 So if the current mode is `maildir` then:
 
 * `maildir.limit` contains any constraint in-use `all|new|pattern`.
-* `maildir.max` contains the (integer) count of messages.
+* `maildir.max` contains the (integer) count of maildirs.
 * `maildir.current` contains the index of the currently selected maildir.
 
 The global `ARGS` table contains all arguments passed to the command-line,
@@ -205,7 +213,7 @@ The Maildir object has the following methods:
 
 * `generate_path( bool )`
     * Generate the name of a file to save a message to within the maildir.
-    * Accepts a flag to determine if the filanem will be a new message, or a read one.
+    * Accepts a flag to determine if the filename will be a new message, or a read one.
 * `path()`
     * Returns the path to the Maildir - what it was constructed with.
 * `messages()`
