@@ -1,7 +1,7 @@
 # About Lumail2
 
-Lumail2 is a console-based mail modal client, primarily maintained and developed
-by Steve Kemp <steve@steve.org.uk>.
+Lumail2 is a console-based modal mail client, primarily maintained and developed
+by Steve Kemp.
 
 Further documentation is available in the [README](README.md) file, as well
 as on the [project website](https://lumail.org/).
@@ -20,9 +20,12 @@ running:
     lumail2 --version
 
 This will either return the release number if you've downloaded a published
-releast tarball, or a git revision ID otherwise.
+releast tarball, or a git revision ID.
 
 If you can test the latest release, that would also be helpful.
+
+The more detail you can contribute the better, but we appreciate that sometimes it can
+be hard to know _what_ is causing a crash!
 
 
 # Contributing Code
