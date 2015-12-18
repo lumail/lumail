@@ -47,12 +47,15 @@ The different view-modes are each derived from the `CViewMode` base-class,
 and are implemented in `*_view.cc`.   The view-modes are instantied in the
 `CScreen`-setup phase, and are selected by name.
 
-We implement several design patterns:
 
-* The Singleton-pattern.
+# Design Patterns
+
+We implement several [design patterns](https://en.wikipedia.org/wiki/Software_design_pattern):
+
+* The [Singleton-pattern](https://en.wikipedia.org/wiki/Singleton_pattern):
      * The `CHistory`, `CInput`, and `CLogfile` classes are singletons.
      * These are implemented via the template class in `singleton.h`.
-* The Observer-pattern.
+* The [Observer-pattern](https://en.wikipedia.org/wiki/Observer_pattern):
      * Changes to values stored in the `CConfig` class are broadcast to observers.
      * Observers currently include the `CGlobalState` and `CLua` objects.
      * The observer-pattern is implemented in `observer.h`.
