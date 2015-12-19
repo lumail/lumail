@@ -5,33 +5,31 @@
 lumail2
 =======
 
-This repository contains the `lumail2` application, a console-based email
-client with fully integrated scripting provided by Lua.
+This repository contains the `lumail2` console-based email
+client, with fully integrated scripting provided by Lua.
 
-This project is built upon of the previous [Lumail client](https://github.com/lumail/lumail/), and was initiated to improve both the core code and the user-presentation of that code:
+This project is built upon of the previous [Lumail client](https://github.com/lumail/lumail/), and was initiated to improve both the user-interface and
+the internal implementation:
 
-* The C++ core is much more consistent.
-* The Lua extension support is much more consistent.
+* The C++ core, and Lua scripting, is much more consistent.
 * The more things that can be pushed to Lua the better.
     * To allow customization.
     * To allow flexibility.
 
-The current status of the project is that of a work in-progress, but the
-core of the project is complete:
+The project is perpetually a work in-progress, but the core of the client
+is complete and robust:
 
-* Navigation around the various modes is complete.
 * Basic operations may be carried out against email:
      * Viewing Maildir hierarchies.
      * Viewing message-lists.
      * Reading emails.
      * Replying to emails.
      * Forwarding emails.
+     * Composing fresh emails.
 
 The missing facilities include:
 
 * Lack of support for GPG/PGP.
-* Lack of support for adding attachments to outgoing emails.
-* Lack of real documentation.
 
 **NOTE**: Lumail2 may well eat your email, corrupt your email, or
 otherwise cause data loss.  If you have no current backups of your
@@ -83,7 +81,7 @@ Upon a Debian GNU/Linux host, running the Jessie (stable), release the following
 
     apt-get install liblua5.2-dev libgmime-2.6-dev libncursesw5-dev libpcre3-dev libmagic-dev
 
-With the dependencies installed you should ind the code builds cleanly with:
+With the dependencies installed you should find the code builds cleanly with:
 
     make
 
@@ -116,6 +114,7 @@ Further Notes
 
 * [API Documentation](API.md)
    * Documents the Lua classes.
+* [Contributor Guide](CONTRIBUTING.md)
 * [Notes on implementation & structure](HACKING.md)
    * See also the [experiments repository](https://github.com/lumail/experiments) where some standalone code has been isolated for testing/learning purposes.
 
