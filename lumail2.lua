@@ -413,6 +413,39 @@ end
 
 
 --
+-- Count the attachments a message contains
+--
+function Message.count_attachments(msg)
+
+   local parts = msg:parts()
+   local ret   = 0
+
+   -- For each part look for a match, if we found it update "found"
+   for k,v in ipairs( parts ) do
+
+      -- The part
+      if ( v:is_attachment() ) then
+         ret = ret + 1
+      end
+
+      -- The children
+      local children = v:children()
+      if ( #children > 0) then
+         for a,b in ipairs( children ) do
+
+            -- Does this have an attachment
+            if ( b:is_attachment() ) then
+               ret = ret + 1
+            end
+         end
+      end
+   end
+
+   return(ret)
+end
+
+
+--
 -- Get the date of the message in terms of seconds past the epoch.
 --
 -- This is handled by reading the Date: header.
@@ -1697,7 +1730,20 @@ function Message:format()
    local subject = self:header( "Subject" )
    local sender  = self:header( "From" )
 
-   local output = string.format( "[%4s] - %s - %s", flags, sender, subject )
+   --
+   -- Count the attachments - and add an "A" if there are any
+   --
+   local acount  = Message.count_attachments(self)
+   local a_flags = " "
+   if ( acount > 0 ) then
+      a_flags = "A"
+   end
+
+   --
+   -- Format this message for display
+   --
+   local output = string.format( "[%4s] %s - %s - %s",
+                                 flags, a_flags, sender, subject )
 
    --
    -- If the message is unread then show it in the "unread" colour
@@ -1993,7 +2039,17 @@ function message_view( msg )
    end
 
    --
-   -- Add some text.
+   -- Does the message contain attachments?
+   --
+   -- If so add a pseudo-header to show the count of same.
+   --
+   local a_count = Message.count_attachments(msg)
+   if ( a_count > 0 ) then
+      output = output .. "$[BLUE]Attachments: " .. a_count .. "\n"
+   end
+
+   --
+   -- Add newline after the header-area.
    --
    output = output .. "\n"
 
