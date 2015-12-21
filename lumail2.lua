@@ -243,6 +243,64 @@ end
 
 
 --
+-- Return the program which can be used to view/show
+-- a file which has the particular MIME-type
+--
+-- For example if the input is "image/jpeg" we'd expect
+-- this function to return something like "display %s".
+--
+-- The caller is expected to replace "%s" with the name
+-- of the file which is to be viewed.
+--
+-- Reference: https://en.wikipedia.org/wiki/Mailcap
+--
+function get_mime_viewer( mime_type )
+   local ret  = "less %s"
+
+   -- Return if the file doesn't exist.
+   if ( not File:exists( "/etc/mailcap" ) ) then
+      return( ret )
+   end
+
+   -- HTML will probably have a graphical helper
+   -- we'll skip this for now.  TODO: Fixme
+   if ( mime_type == "text/html" ) then
+      return(ret)
+   end
+
+   local f    = io.input ("/etc/mailcap")
+   local line = nil
+
+   for line in io.lines(file) do
+
+      --
+      -- Split the line by ";", and if that worked
+      --
+      local entries = string.split(line, ";")
+      if ( #entries > 0 ) then
+
+         --
+         -- Look to see if the MIME-type is a match against
+         -- what we're looking for.  If it is then we can
+         -- return the program to use.
+         --
+         if ( entries[1] == mime_type ) then
+            f:close()
+            return( entries[2] )
+         end
+      end
+   end
+
+   f:close ()
+
+   --
+   -- We just don't know.  Try `less`.
+   --
+   return(ret)
+end
+
+
+--
 -- Helper function to ensure that if anything calls `os.exit`
 -- we reset the screen neatly, etc.
 --
@@ -1486,8 +1544,15 @@ function view_mime_part()
       file:write( found:content() )
       file:close()
 
-      -- invoke `less`.
-      Screen:execute( "less " .. tmp )
+      -- Get the MIME-type of the attachment
+      local mime = found:type()
+
+      -- Lookup the viewer, and put the filename in place
+      local cmd = get_mime_viewer(mime)
+      cmd = string.gsub(cmd, "%%s", tmp)
+
+      -- Execute it
+      Screen:execute(cmd)
 
       -- Remove the file
       os.remove(tmp)
