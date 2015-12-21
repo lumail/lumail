@@ -229,6 +229,20 @@ end
 
 
 --
+-- Split a string by a separator character, and return the resulting
+-- table.
+--
+function string.split(str, sep)
+   local result = {}
+   local regex = ("([^%s]+)"):format(sep)
+   for each in str:gmatch(regex) do
+      table.insert(result, each)
+   end
+   return result
+end
+
+
+--
 -- Helper function to ensure that if anything calls `os.exit`
 -- we reset the screen neatly, etc.
 --
