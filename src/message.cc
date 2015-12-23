@@ -594,6 +594,34 @@ std::shared_ptr<CMessagePart> CMessage::part2obj(GMimeObject *part)
         ret = std::shared_ptr<CMessagePart> (new CMessagePart(type, "", adata, len));
     }
 
+    /* If this is a multipart part, then add its children. */
+    if (GMIME_IS_MULTIPART(part))
+    {
+        /*
+         * Count the children.
+         */
+        int n = g_mime_multipart_get_count((GMimeMultipart *) part);
+
+        /*
+         * For each child .. add the part.
+         */
+        for (int i = 0; i < n; i++)
+        {
+            GMimeObject *subpart = g_mime_multipart_get_part((GMimeMultipart *) part, i);
+
+            /*
+             * Create the child - set the parent.
+             */
+            std::shared_ptr<CMessagePart> child = part2obj(subpart);
+            child->set_parent(ret);
+
+            /*
+             * Now add the child to the parent.
+             */
+            ret->add_child(child);
+        }
+    }
+
     /*
      * Unref the memory.
      */
@@ -703,8 +731,14 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
         return m_parts;
     }
 
+    GMimeObject *mime_part = g_mime_message_get_mime_part(message);
 
-    g_mime_message_foreach(message, mime_foreach_callback, this);
+    if (!mime_part)
+    {
+        return m_parts;
+    }
+
+    m_parts.push_back(part2obj(mime_part));
 
     return (m_parts);
 }
