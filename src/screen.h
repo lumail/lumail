@@ -70,15 +70,23 @@ public:
 
 
 /**
- * We draw lines of colours.
+ * The output function `draw_text_lines` is used to draw lines of text upon
+ * the screen, and this function is capable of performing colour output
+ * given input containing special markup.
  *
- * These lines are of the form:
+ * Colours are specified via the `$[COLOUR]` prefix, and the specified colour
+ * persists until the end of the line.  The following, for example, will draw
+ * a line of text with two colours:
  *
- *   $[RED]This is red$[YELLOW]This is yellow.
+ * <code>$[RED]This is red$[YELLOW]This is yellow.</code>
  *
- * We parse lines like this into arrays of structures,
- * the structure contains the colour-code and the string to
- * draw.
+ * Internally the line of text is parsed into segments of text, each of
+ * which contains:
+ *
+ * * The colour to draw
+ * * The text to draw.
+ *
+ * This structure is used to hold that result.
  */
 typedef struct _COLOUR_STRING
 {
@@ -88,7 +96,7 @@ typedef struct _COLOUR_STRING
     std::string *colour;
 
     /**
-     * The string itself.
+     * The text to draw for this segment.
      */
     std::string *string;
 

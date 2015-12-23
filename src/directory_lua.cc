@@ -38,7 +38,7 @@ extern "C"
  *<code>
  *   -- Does the given directory exist? <br/>
  *   if ( Directory:exists( "/etc" ) ) then <br/>
- *       print "All is well"<br/>
+ *   &nbsp;&nbsp;print "All is well"<br/>
  *   end
  *</code>
  *

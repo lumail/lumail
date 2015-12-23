@@ -38,7 +38,7 @@ extern "C"
  *<code>
  *   -- Does the given file exist? <br/>
  *   if ( File:exists( "/etc/foo" ) ) then<br />
- *      Panel:append( "Exists!") <br/>
+ *   &nbsp;&nbsp;Panel:append( "Exists!") <br/>
  *   end<br />
  *</code>
  *
@@ -48,7 +48,7 @@ extern "C"
 /**
  * Get the basename of the given file.
  *
- * For example the input "/foo/bar/baz" will return the result "baz".
+ * For example the input `/foo/bar/baz` will return the result `baz`.
  */
 int l_CFile_basename(lua_State * l)
 {
