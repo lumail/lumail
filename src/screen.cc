@@ -69,6 +69,8 @@ typedef struct _PANEL_DATA
 
 /*
  * The status-bar window, panel, & data.
+ *
+ * TODO: Move these away.
  */
 WINDOW *g_status_bar_window;
 PANEL *g_status_bar;
@@ -1361,6 +1363,13 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
 
 /*
  * Draw a single text line, paying attention to our colour strings.
+ *
+ * This needs to handle two special-cases:
+ *
+ *  * The formatting of coloured-input.
+ *
+ *  * The handling of horizontal scrolling via `global.horizontal`.
+ *
  */
 void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW * screen)
 {
@@ -1370,15 +1379,39 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
     wmove(screen, row, col_offset);
 
     /*
+     * Get the width of the screen.
+     */
+    int swidth = CScreen::width();
+
+    /*
+     * Truncate the string to avoid wrapping.
+     *
+     * The `col_offset` is the position from which we start
+     * drawing the line.  It is basically used to avoid drawing into
+     * the first/last column when displaying the status-panel.
+     *
+     * (i.e. Don't overwrite the box-characters.)
+     *
+     * So if col_offset is equal to one then we truncate the string
+     * to the size of the screen minus two - one for the left box-char
+     * and one for the right box-char.
+     *
+     */
+    if ((int)buf.size() > (swidth - (2 * col_offset)))
+    {
+        buf = buf.substr(0, swidth - (2 * col_offset));
+    }
+
+
+    /*
      * Split the string into segments, each of which might
      * have a different colour.
      */
     std::vector<COLOUR_STRING *> parts = parse_coloured_string(buf);
 
     /*
-     * Draw each piece.
-     *
-     * Track our width.
+     * Draw each piece - tracking the width of the text we've drawn
+     * such that we can later add padding to short-strings.
      */
     int width = 0;
 
@@ -1402,12 +1435,14 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
         width += (*text).size();
     }
 
-    /*
-     * Pad the line.
-     */
-    int max = CScreen::width();
 
-    while (width < (max - col_offset))
+    /*
+     * Add spaces to the end of any short lines.
+     *
+     * Although this might seem pointless it is required to
+     * ensure that any highlighting persists to the end of the line.
+     */
+    while (width < (swidth - col_offset))
     {
         waddstr(screen, (char *)" ");
         width += 1;
