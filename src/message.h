@@ -144,12 +144,6 @@ private:
     GMimeMessage * parse_message();
 
     /**
-     * Iterate over every MIME part in the message, and update
-     * our list of MIME-parts with those results.
-     */
-    static void mime_foreach_callback(GMimeObject * parent, GMimeObject * part, gpointer user_data);
-
-    /**
      * Convert a message-part from the MIME message to a CMessagePart object.
      */
     std::shared_ptr<CMessagePart> part2obj(GMimeObject *part);
