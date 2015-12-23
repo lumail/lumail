@@ -184,7 +184,7 @@ int l_CMessagePart_parent(lua_State * l)
     std::shared_ptr<CMessagePart> foo    = l_CheckCMessagePart(l, 1);
     std::shared_ptr<CMessagePart> parent = foo->get_parent();
 
-    if ( parent != nullptr )
+    if (parent != nullptr)
         push_cmessagepart(l, parent);
     else
         lua_pushnil(l);
@@ -237,6 +237,23 @@ int l_CMessagePart_destructor(lua_State * l)
     return 0;
 }
 
+
+/**
+ * Equality-test
+ */
+int l_CMessagePart_equality(lua_State * l)
+{
+    std::shared_ptr<CMessagePart> one = l_CheckCMessagePart(l, 1);
+    std::shared_ptr<CMessagePart> two = l_CheckCMessagePart(l, 2);
+
+    if (one == two)
+        lua_pushboolean(l , 1);
+    else
+        lua_pushboolean(l , 0);
+
+    return 1;
+}
+
 /**
  * Register the global `MessagePart` object to the Lua environment, and
  * setup our public methods upon which the user may operate.
@@ -253,6 +270,7 @@ void InitMessagePart(lua_State * l)
         {"size", l_CMessagePart_size},
         {"type", l_CMessagePart_type},
         {"__gc", l_CMessagePart_destructor},
+        {"__eq", l_CMessagePart_equality},
         {NULL, NULL}
     };
     luaL_newmetatable(l, "luaL_CMessagePart");
