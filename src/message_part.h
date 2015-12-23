@@ -77,6 +77,16 @@ public:
      */
     void add_child(std::shared_ptr<CMessagePart> child);
 
+    /**
+     * Set the parent to this part.
+     */
+    void set_parent(std::shared_ptr<CMessagePart> parent);
+
+    /**
+     * Get the parent of this part, which may be null.
+     */
+    std::shared_ptr<CMessagePart> get_parent();
+
 
 private:
 
@@ -105,4 +115,9 @@ private:
      * Children of this part.
      */
     std::vector<std::shared_ptr<CMessagePart>> m_children;
+
+    /**
+     * Parent of this part.
+     */
+    std::shared_ptr<CMessagePart> m_parent;
 };

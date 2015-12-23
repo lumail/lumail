@@ -30,10 +30,10 @@
 CMessagePart::CMessagePart(std::string type, std::string filename,
                            void *content, size_t content_length)
 {
-    m_type = type;
-    m_filename = filename;
-
-    m_content = NULL;
+    m_parent         = nullptr;
+    m_type           = type;
+    m_filename       = filename;
+    m_content        = NULL;
     m_content_length = 0;
 
     if ((content_length > 0) && (content != NULL))
@@ -117,4 +117,21 @@ std::vector<std::shared_ptr<CMessagePart>> CMessagePart::children()
 void CMessagePart::add_child(std::shared_ptr<CMessagePart> child)
 {
     m_children.push_back(child);
+}
+
+
+/*
+ * Set the parent to this part.
+ */
+void CMessagePart::set_parent(std::shared_ptr<CMessagePart> parent)
+{
+    m_parent = parent;
+}
+
+/*
+ * Get the parent of this part, which may be null.
+ */
+std::shared_ptr<CMessagePart> CMessagePart::get_parent()
+{
+    return (m_parent);
 }
