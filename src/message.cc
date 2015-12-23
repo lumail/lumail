@@ -649,7 +649,15 @@ void CMessage::mime_foreach_callback(GMimeObject * parent, GMimeObject * part, g
         {
             GMimeObject *subpart = g_mime_multipart_get_part((GMimeMultipart *) part, i);
 
+            /*
+             * Create the child - set the parent.
+             */
             std::shared_ptr<CMessagePart> child = self->part2obj(subpart);
+            child->set_parent(parent);
+
+            /*
+             * Now add the child to the parent.
+             */
             parent->add_child(child);
         }
 
