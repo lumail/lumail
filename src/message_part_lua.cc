@@ -39,7 +39,7 @@ extern "C"
  *   local p = m:parts() <br/>
  * <br/>
  *   for i,o in ipairs(p) do <br/>
- *      print ("The part has MIME-type " .. o:type() )<br/>
+ *   &nbsp;&nbsp;print ("The part has MIME-type " .. o:type() )<br/>
  *   end <br/>
  *</code>
  *
@@ -239,7 +239,8 @@ int l_CMessagePart_destructor(lua_State * l)
 
 
 /**
- * Equality-test
+ * Equality-test - this is bound to the Lua meta-method `__eq` such that two
+ * message-parts may be tested for equality.
  */
 int l_CMessagePart_equality(lua_State * l)
 {
