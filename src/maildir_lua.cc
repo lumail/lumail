@@ -270,6 +270,27 @@ int l_CMaildir_destructor(lua_State * l)
 
 
 /**
+ * Equality-test - this is bound to the Lua meta-method `__eq` such that two
+ * maildirs may be tested for equality.
+ *
+ * Two maildr-objects are considered identical if they refer to the
+ * same folder on-disk.
+ */
+int l_CMaildir_equality(lua_State * l)
+{
+    std::shared_ptr<CMaildir> one = l_CheckCMaildir(l, 1);
+    std::shared_ptr<CMaildir> two = l_CheckCMaildir(l, 2);
+
+    if (one->path() == two->path())
+        lua_pushboolean(l , 1);
+    else
+        lua_pushboolean(l , 0);
+
+    return 1;
+}
+
+
+/**
  * Register the global `Maildir` object to the Lua environment, and
  * setup our public methods upon which the user may operate.
  */
@@ -278,6 +299,7 @@ void InitMaildir(lua_State * l)
     luaL_Reg sFooRegs[] =
     {
         {"__gc", l_CMaildir_destructor},
+        {"__eq", l_CMaildir_equality},
         {"generate_path", l_CMaildir_generate_path},
         {"messages", l_CMaildir_messages},
         {"mtime", l_CMaildir_mtime},

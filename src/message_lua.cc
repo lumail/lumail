@@ -418,6 +418,27 @@ int l_CMessage_destructor(lua_State * l)
 
 
 /**
+ * Equality-test - this is bound to the Lua meta-method `__eq` such that two
+ * messages may be tested for equality.
+ *
+ * Two messages-objects are considered identical if they refer to the
+ * same message file on-disk.
+ */
+int l_CMessage_equality(lua_State * l)
+{
+    std::shared_ptr<CMessage> one = l_CheckCMessage(l, 1);
+    std::shared_ptr<CMessage> two = l_CheckCMessage(l, 2);
+
+    if (one->path() == two->path())
+        lua_pushboolean(l , 1);
+    else
+        lua_pushboolean(l , 0);
+
+    return 1;
+}
+
+
+/**
  * Implementation of CMessage:unlink
  */
 int l_CMessage_unlink(lua_State * l)
@@ -447,6 +468,7 @@ void InitMessage(lua_State * l)
     luaL_Reg sFooRegs[] =
     {
         {"__gc", l_CMessage_destructor},
+        {"__eq", l_CMessage_equality},
         {"add_attachments", l_CMessage_add_attachments},
         {"copy", l_CMessage_copy},
         {"flags", l_CMessage_flags},
