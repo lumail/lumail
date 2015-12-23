@@ -13,6 +13,7 @@ with simple objects, such as:
 * Files.
 * Maildirs.
 * Messages.
+    * Message Parts - i.e. attachments, or inline MIME-parts.
 * Networking.
 * Regular Expressions.
 * The screen.
@@ -303,6 +304,9 @@ object contains the following methods:
 	* Returns `true` if the part represents an attachment, false otherwise.
 * `filename()`
 	* Returns the name of the attachment, if `is_attachment` returned true.
+* `parent()`
+    * Returns the parent of the specified message-part, if any.
+    * This returns `nil` if the part is not a child.
 * `size()`
     * Return the size of the content.
 * `type()`

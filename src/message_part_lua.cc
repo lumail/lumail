@@ -177,6 +177,23 @@ int l_CMessagePart_is_attachment(lua_State * l)
 
 
 /**
+ * Implementation of MessagePart:parent()
+ */
+int l_CMessagePart_parent(lua_State * l)
+{
+    std::shared_ptr<CMessagePart> foo    = l_CheckCMessagePart(l, 1);
+    std::shared_ptr<CMessagePart> parent = foo->get_parent();
+
+    if ( parent != nullptr )
+        push_cmessagepart(l, parent);
+    else
+        lua_pushnil(l);
+
+    return 1;
+}
+
+
+/**
  * Implementation of MessagePart:size()
  */
 int l_CMessagePart_size(lua_State * l)
@@ -232,6 +249,7 @@ void InitMessagePart(lua_State * l)
         {"content", l_CMessagePart_content},
         {"filename", l_CMessagePart_filename},
         {"is_attachment", l_CMessagePart_is_attachment},
+        {"parent", l_CMessagePart_parent},
         {"size", l_CMessagePart_size},
         {"type", l_CMessagePart_type},
         {"__gc", l_CMessagePart_destructor},
