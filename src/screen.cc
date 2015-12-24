@@ -610,7 +610,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
             if (count == selected)
                 wattron(childwin, A_UNDERLINE | A_STANDOUT);
             else
-                wattroff(childwin, A_UNDERLINE | A_STANDOUT);
+                wattrset(childwin, A_NORMAL);
 
             mvwaddstr(childwin, y, x,  choice.c_str());
             count += 1;
@@ -1212,8 +1212,8 @@ int CScreen::get_colour(std::string name)
     std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
     /*
-     * If the name is "unread" then return the default configured
-     * colour.
+     * If the name is "unread" then remap that to the default configured
+     * colour/attribute.
      */
     if (name == "unread")
     {
@@ -1221,7 +1221,64 @@ int CScreen::get_colour(std::string name)
         name = config->get_string("colour.unread", "red");
     }
 
-    return (m_colours[name]);
+    /*
+     * Does the colour contain "|ATTRIBUTE1|ATTRIBUTE2|..N"?
+     */
+    std::size_t pipe      = name.find("|");
+    std::string attribute = "";
+
+    if (pipe != std::string::npos)
+    {
+        attribute = name.substr(pipe + 1);
+        name      = name.substr(0, pipe);
+    }
+
+
+    /*
+     * The resulting colour-pair.
+     */
+    int result = COLOR_PAIR(m_colours[name]);
+
+    /*
+     * Now handle the attribute too.
+     */
+    if (attribute.empty())
+    {
+        result |= A_NORMAL;
+    }
+    else
+    {
+        if (attribute.find("underline") != std::string::npos)
+            result |= A_UNDERLINE;
+
+        if (attribute.find("standout") != std::string::npos)
+            result |= A_STANDOUT;
+
+        if (attribute.find("reverse") != std::string::npos)
+            result |= A_REVERSE;
+
+        if (attribute.find("blink") != std::string::npos)
+            result |= A_BLINK;
+
+        if (attribute.find("dim") != std::string::npos)
+            result |= A_DIM;
+
+        if (attribute.find("bold") != std::string::npos)
+            result |= A_BOLD;
+
+        if (attribute.find("normal") != std::string::npos)
+        {
+            result &= A_UNDERLINE;
+            result &= A_STANDOUT;
+            result &= A_REVERSE;
+            result &= A_BLINK;
+            result &= A_DIM;
+            result &= A_BOLD;
+            result |= A_NORMAL;
+        }
+    }
+
+    return (result);
 }
 
 
@@ -1344,9 +1401,9 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
             continue;
 
         if (row == rowToHighlight)
-            wattron(stdscr, A_REVERSE | A_STANDOUT);
+            wattrset(stdscr, A_REVERSE | A_STANDOUT);
         else
-            wattroff(stdscr, A_REVERSE | A_STANDOUT);
+            wattrset(stdscr, A_NORMAL);
 
         draw_single_line(row, 0, buf, stdscr);
     }
@@ -1355,8 +1412,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
      * Ensure we turn off the attribute on the last line - so that
      * any blank lines are "normal".
      */
-    wattroff(stdscr, A_REVERSE | A_STANDOUT);
-    wattron(stdscr, COLOR_PAIR(screen->get_colour("white")));
+    wattrset(stdscr, screen->get_colour("white|normal"));
 }
 
 
@@ -1379,6 +1435,11 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
     wmove(screen, row, col_offset);
 
     /*
+     * Default colour/attributes for this line.
+     */
+    int def_col = getattrs(stdscr);
+
+    /*
      * Get the width of the screen.
      */
     int swidth = CScreen::width();
@@ -1388,33 +1449,6 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
      */
     CConfig *config = CConfig::instance();
     int horiz = config->get_integer("global.horizontal", 0);
-
-
-    /*
-     * Truncate the string to avoid wrapping.
-     *
-     * The `col_offset` is the position from which we start
-     * drawing the line.  It is basically used to avoid drawing into
-     * the first/last column when displaying the status-panel.
-     *
-     * (i.e. Don't overwrite the box-characters.)
-     *
-     * So if col_offset is equal to one then we truncate the string
-     * to the size of the screen minus two - one for the left box-char
-     * and one for the right box-char.
-     *
-     */
-    if ((int)buf.size() > (swidth - (2 * col_offset)))
-    {
-        buf = buf.substr(0, swidth - (2 * col_offset));
-    }
-
-    /*
-     * We also want to pad the line to ensure that it is
-     * at least as long as the width of the screen.
-     */
-    while ((int)buf.size() < swidth)
-        buf += " ";
 
     /*
      * Split the string into segments, each of which might
@@ -1451,7 +1485,8 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
         /*
          * Set the colour + draw the component.
          */
-        wattron(screen, COLOR_PAIR(get_colour(*colour)));
+        wattrset(screen, def_col);
+        wattron(screen, get_colour(*colour));
         waddstr(screen, (char *)(*text).c_str());
 
         width += (*text).size();
@@ -1474,8 +1509,7 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
     /*
      * Reset to our default colour.
      */
-    wattron(screen, COLOR_PAIR(get_colour("white")));
-
+    wattrset(screen, get_colour("white|normal"));
 
     /*
      * Finally free the tokenized string-bits.
@@ -1506,7 +1540,7 @@ std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
      * back of the string forward.  This is definitely the simpler
      * of the approaches I trialled.
      */
-    pcrecpp::RE re("^(.*)\\$\\[([a-zA-Z]+)\\](.*)$");
+    pcrecpp::RE re("^(.*)\\$\\[([a-zA-Z|]+)\\](.*)$");
 
     std::string pre;
     std::string col;

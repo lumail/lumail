@@ -1798,7 +1798,7 @@ function lua_view()
    --
    -- Test of the colour-mode.
    --
-   table.insert(output,"$[RED]This $[GREEN]is $[YELLOW]Lumail2 $[CYAN]version $[BLUE]" .. Config:get("global.version" ))
+   table.insert(output,"$[RED]This $[GREEN]is $[YELLOW|UNDERLINE|BOLD]Lumail2$[CYAN|NORMAL] version $[BLUE|BOLD]" .. Config:get("global.version" ))
    table.insert(output,"")
 
    --
@@ -2932,8 +2932,8 @@ folder_from = {
 -- Setup our colours - for Maildir-mode
 --
 colour_table['maildir'] = {
-   ['Automated'] = 'yellow',
-   ['lists']     = 'green',
+   ['Automated'] = 'yellow|underline',
+   ['lists']     = 'green|bold',
 }
 
 -- Setup our colours - for index-mode
