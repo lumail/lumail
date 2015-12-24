@@ -2498,7 +2498,7 @@ function prev_message()
 
    if ( cur > 0 ) then
       cur = cur - 1
-      Global:select_message( msgs[cur] )
+      Global:select_message( msgs[cur+1] )
       Config:set("index.current",cur)
    end
 end
@@ -2519,7 +2519,7 @@ function next_message()
 
    if ( cur < max ) then
       cur = cur + 1
-      Global:select_message( msgs[cur] )
+      Global:select_message( msgs[cur+1] )
       Config:set("index.current",cur)
    end
 end
