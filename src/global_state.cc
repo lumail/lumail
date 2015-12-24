@@ -213,7 +213,7 @@ void CGlobalState::update_maildirs()
     /*
      * Setup the size.
      */
-    config->set("maildir.max", std::to_string(m_maildirs->size()));
+    config->set("maildir.max", m_maildirs->size());
 }
 
 
@@ -249,7 +249,7 @@ void CGlobalState::update_messages()
     }
 
     CConfig *config = CConfig::instance();
-    config->set("index.max", std::to_string(m_messages->size()));
+    config->set("index.max", m_messages->size());
 }
 
 
