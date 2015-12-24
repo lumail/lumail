@@ -310,6 +310,29 @@ private:
      */
     std::vector<COLOUR_STRING *> parse_coloured_string(std::string input);
 
+    /**
+     * Given an array of colour parts which might look like this
+     *
+     * <code>
+     *   [ "RED",   "This is in red" ],
+     *   [ "YELLOW", "**"]
+     * </code>
+     *
+     * We want to return an updated array that is suitable for drawing column
+     * by column such as:
+     *
+     * <code>
+     *  [ "RED", "T" ],
+     *  [ "RED", "h" ],
+     * ...
+     *  [ "YELLOW", *" ],
+     *  [ "YELLOW", *" ]
+     * </code>
+     *
+     * This is used to implement horizontal scrolling.
+     */
+    std::vector<COLOUR_STRING *> coloured_string_scroll(std::vector<COLOUR_STRING *> parts , int offset);
+
 private:
 
     /**

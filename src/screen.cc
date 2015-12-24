@@ -1384,6 +1384,13 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
     int swidth = CScreen::width();
 
     /*
+     * Get the horizontal scroll offset.
+     */
+    CConfig *config = CConfig::instance();
+    int horiz = config->get_integer("global.horizontal", 0);
+
+
+    /*
      * Truncate the string to avoid wrapping.
      *
      * The `col_offset` is the position from which we start
@@ -1402,6 +1409,12 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
         buf = buf.substr(0, swidth - (2 * col_offset));
     }
 
+    /*
+     * We also want to pad the line to ensure that it is
+     * at least as long as the width of the screen.
+     */
+    while ((int)buf.size() < swidth)
+        buf += " ";
 
     /*
      * Split the string into segments, each of which might
@@ -1410,8 +1423,19 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
     std::vector<COLOUR_STRING *> parts = parse_coloured_string(buf);
 
     /*
+     * Handle the horizontal offset by filtering our array of
+     * lines to start at the given offset.
+     */
+    parts = coloured_string_scroll(parts, horiz);
+
+    /*
      * Draw each piece - tracking the width of the text we've drawn
      * such that we can later add padding to short-strings.
+     *
+     * Yes: We already padded the string, but consider the case where
+     * the string was "$[YELLOW]Yellow, $[GREEN]Green".  We'd pad it,
+     * but then the tokenizer would remove `$[YELLOW]` & `$[GREEN]` from
+     * the string - and that might make it too short once again.
      */
     int width = 0;
 
@@ -1423,14 +1447,12 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
         COLOUR_STRING *i = (*it);
         std::string *colour = i->colour;
         std::string *text   = i->string;
-        char *t = (char *)(*text).c_str();
-
 
         /*
          * Set the colour + draw the component.
          */
         wattron(screen, COLOR_PAIR(get_colour(*colour)));
-        waddstr(screen, (char *)t);
+        waddstr(screen, (char *)(*text).c_str());
 
         width += (*text).size();
     }
@@ -1439,8 +1461,8 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
     /*
      * Add spaces to the end of any short lines.
      *
-     * Although this might seem pointless it is required to
-     * ensure that any highlighting persists to the end of the line.
+     * Although this might seem pointless it is required to ensure that any
+     * highlighting/underlining/blinking persists to the end of the line.
      */
     while (width < (swidth - col_offset))
     {
@@ -1527,4 +1549,91 @@ std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
      */
     std::reverse(results.begin(), results.end());
     return (results);
+}
+
+
+/*
+     * Given an array of colour parts which might look like this
+     *
+     * <code>
+     *   [ "RED",   "This is in red" ],
+     *   [ "YELLOW", "**"]
+     * </code>
+     *
+     * We want to return an updated array that is suitable for drawing column
+     * by column such as:
+     *
+     * <code>
+     *  [ "RED", "T" ],
+     *  [ "RED", "h" ],
+     * ...
+     *  [ "YELLOW", *" ],
+     *  [ "YELLOW", *" ]
+     * </code>
+     *
+     * This is used to implement horizontal scrolling.
+     */
+std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_STRING *> parts, int offset)
+{
+    std::vector<COLOUR_STRING *> results;
+
+    /*
+     * No offset?  Then just return as-is.
+     */
+    if (offset == 0)
+        return parts;
+
+
+    /*
+     * Iterate over the entries.
+     */
+    for (auto it = parts.begin(); it != parts.end() ; ++it)
+    {
+        /*
+         * Get the text/colour.
+         */
+        std::string *colour = (*it)->colour;
+        std::string *text   = (*it)->string;
+
+        /*
+         * Copy the colour, and the one-character string.
+         */
+        for (int i = 0; i < (int)text->length(); i++)
+        {
+            COLOUR_STRING *tmp = (COLOUR_STRING *)malloc(sizeof(COLOUR_STRING));
+            tmp->colour = new std::string(*colour);
+            tmp->string = new std::string(text->substr(i, 1));
+            results.push_back(tmp);
+        }
+    }
+
+
+    /*
+     * Free the input.
+     */
+    for (auto it = parts.begin(); it != parts.end() ; ++it)
+    {
+        COLOUR_STRING *i = (*it);
+        delete(i->string);
+        delete(i->colour);
+        delete(i);
+    }
+
+
+    /*
+     * Now remove the parts that we should skip.
+     */
+    for (int i = 0; i < offset && ((int)results.size() > 1); i++)
+    {
+        COLOUR_STRING *x = results.at(0);
+        delete(x->string);
+        delete(x->colour);
+        delete(x);
+        results.erase(results.begin());
+    }
+
+    /*
+     * Return the results.
+     */
+    return results;
 }
