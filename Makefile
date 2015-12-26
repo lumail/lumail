@@ -19,10 +19,11 @@ VERSION=$(shell git describe --abbrev=4 --dirty --always --long)
 #
 # Load the flags if they're not already set - first look at the version
 #
-LVER?=lua5.2
+LUA_VERSION?=5.2
+LVER?=lua$(LUA_VERSION)
 UNAME := $(shell uname -s)
 ifeq ($(UNAME),DragonFly)
-	LVER=lua-5.2
+	LVER=lua-$(LUA_VERSION)
 endif
 ifeq ($(UNAME),Darwin)
 	LVER=lua #(use lua-52)
