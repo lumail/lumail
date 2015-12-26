@@ -100,7 +100,8 @@ int l_CNet_hostname(lua_State * L)
 
 
 /**
- * Export the "Net" object to Lua, this just contains a single static-method.
+ * Export the Net object to Lua, this only contains the single static
+ * method `type`.
  */
 void InitNet(lua_State * l)
 {
@@ -113,10 +114,10 @@ void InitNet(lua_State * l)
 
 #if LUA_VERSION_NUM == 501
     luaL_register(l, NULL, sFooRegs);
-#elif LUA_VERSION_NUM == 502
+#elif LUA_VERSION_NUM == 502 || LUA_VERSION_NUM == 503
     luaL_setfuncs(l, sFooRegs, 0);
 #else
-#error unsupported Lua version
+#error We are only tested under Lua 5.1, 5.2, or 5.3.
 #endif
 
     lua_pushvalue(l, -1);

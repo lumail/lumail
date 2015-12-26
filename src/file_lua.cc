@@ -185,9 +185,8 @@ int l_CFile_stat(lua_State * l)
 
 
 /**
- * Export the `Class` class to Lua.
- *
- * Bind the appropriate methods to that object.
+ * Register the global `File` object to the Lua environment,
+ * and setup our public methods upon which the user may operate.
  */
 void InitFile(lua_State * l)
 {
@@ -203,10 +202,10 @@ void InitFile(lua_State * l)
 
 #if LUA_VERSION_NUM == 501
     luaL_register(l, NULL, sFooRegs);
-#elif LUA_VERSION_NUM == 502
+#elif LUA_VERSION_NUM == 502 || LUA_VERSION_NUM == 503
     luaL_setfuncs(l, sFooRegs, 0);
 #else
-#error unsupported Lua version
+#error We are only tested under Lua 5.1, 5.2, or 5.3.
 #endif
 
     lua_pushvalue(l, -1);
