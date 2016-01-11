@@ -92,6 +92,11 @@ public:
 private:
 
     /**
+     * Call the user "on_error" function with given error message.
+     */
+    void on_error(std::string msg);
+
+    /**
      * The handle to the Lua interpreter.
      */
     lua_State * m_lua;
