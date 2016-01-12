@@ -173,7 +173,7 @@ void CLua::on_error(std::string msg)
 bool CLua::execute(std::string lua)
 {
     int result = luaL_loadstring(m_lua, lua.c_str());
-    if (result != LUA_OK) {
+    if (result != 0) {
         std::string err = lua_tostring(m_lua, -1);
         on_error(err);
         return false;
@@ -183,7 +183,7 @@ bool CLua::execute(std::string lua)
      * the stack.
      */
     result = lua_pcall(m_lua, 0, LUA_MULTRET, 0);
-    if (result == LUA_OK) {
+    if (result == 0) {
         return true;
     } else {
         std::string err = lua_tostring(m_lua, -1);
