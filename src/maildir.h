@@ -23,44 +23,39 @@
 #pragma once
 
 
-#include <string>
-#include <vector>
-#include <memory>
+#include "folder.h"
 
-
-/*
- * Forward declaration of class.
- */
-class CMessage;
-
-/**
- * Type of a list of messages.
- */
-typedef std::vector <std::shared_ptr <CMessage > > CMessageList;
 
 
 /**
- * Maildir object.
+ * This is the C++ implementation of the maildir class, which allows
+ * simple operations to be carried out against Maildir folders stored
+ * upon the local filesystem.
  *
- * This is the C++ implementation of the maildir class.
+ * It implements the CFolder interface which is what the rest of the
+ * core code uses.
  */
-class CMaildir
+class CMaildir : public CFolder
 {
 public:
+
     /**
      * Constructor.
      */
     CMaildir(const std::string name);
+
 
     /**
      * Destructor.
      */
     ~CMaildir();
 
+
     /**
      * Return the path we represent.
      */
     std::string path();
+
 
     /**
      * The number of new messages for this maildir.
@@ -75,15 +70,15 @@ public:
 
 
     /**
-     * Get all messages in this maildir.
+     * Get all of the messages in this maildir.
      */
     CMessageList getMessages();
 
+
     /**
-     * Generate a filename for saving a new message in this
-     * maildir.
+     * Save the given message in this maildir.
      */
-    std::string generate_filename(bool is_new);
+    bool saveMessage(std::shared_ptr <CMessage > msg);
 
 private:
 
@@ -119,10 +114,16 @@ private:
      */
     void update_cache();
 
+    /**
+     * Generate a filename for saving a message into.
+     */
+    std::string generate_filename(bool is_new);
+
 };
 
 
 /**
- * Helper-type for working with message-lists.
+ * This is a utility-type which contains a list of maildirs, as
+ * a vector.
  */
 typedef std::vector<std::shared_ptr<CMaildir> > CMaildirList;
