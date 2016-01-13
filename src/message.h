@@ -167,3 +167,11 @@ private:
     std::vector<std::shared_ptr<CMessagePart>> m_parts;
 
 };
+
+
+
+/**
+ * This is a utility-type which contains a list of messages, as
+ * a vector.
+ */
+typedef std::vector <std::shared_ptr <CMessage > > CMessageList;

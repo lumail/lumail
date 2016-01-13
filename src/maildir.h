@@ -33,34 +33,33 @@
  */
 class CMessage;
 
-/**
- * Type of a list of messages.
- */
-typedef std::vector <std::shared_ptr <CMessage > > CMessageList;
-
 
 /**
- * Maildir object.
- *
- * This is the C++ implementation of the maildir class.
+ * This is the C++ implementation of the maildir class, which allows
+ * simple operations to be carried out against Maildir folders stored
+ * upon the local filesystem.
  */
 class CMaildir
 {
 public:
+
     /**
      * Constructor.
      */
     CMaildir(const std::string name);
+
 
     /**
      * Destructor.
      */
     ~CMaildir();
 
+
     /**
      * Return the path we represent.
      */
     std::string path();
+
 
     /**
      * The number of new messages for this maildir.
@@ -75,9 +74,10 @@ public:
 
 
     /**
-     * Get all messages in this maildir.
+     * Get all of the messages in this maildir.
      */
     CMessageList getMessages();
+
 
     /**
      * Save the given message in this maildir.
@@ -127,6 +127,7 @@ private:
 
 
 /**
- * Helper-type for working with message-lists.
+ * This is a utility-type which contains a list of maildirs, as
+ * a vector.
  */
 typedef std::vector<std::shared_ptr<CMaildir> > CMaildirList;
