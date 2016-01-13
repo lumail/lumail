@@ -898,9 +898,9 @@ ${sig}
          --
          local sent = Config:get( "global.sent-mail" )
          if ( sent ) then
-            local msent = Maildir.new( sent )
-            local mpath = msent:generate_path( false )
-            File:copy(tmp, mpath)
+            local msent   = Maildir.new( sent )
+            local tmp_msg = Message.new(tmp)
+            msent:save_message(tmp_msg)
          end
 
          run = false
@@ -1080,9 +1080,9 @@ Date: ${date}
          --
          local sent = Config:get( "global.sent-mail" )
          if ( sent ) then
-            local msent = Maildir.new( sent )
-            local mpath = msent:generate_path( false )
-            File:copy(tmp, mpath)
+            local msent   = Maildir.new( sent )
+            local tmp_msg = Message.new(tmp)
+            msent:save_message(tmp_msg)
          end
 
          run = false
@@ -1285,9 +1285,9 @@ Begin forwarded message.
          --
          local sent = Config:get( "global.sent-mail" )
          if ( sent ) then
-            local msent = Maildir.new( sent )
-            local mpath = msent:generate_path( false )
-            File:copy(tmp, mpath)
+            local msent   = Maildir.new( sent )
+            local tmp_msg = Message.new(tmp)
+            msent:save_message(tmp_msg)
          end
 
          run = false

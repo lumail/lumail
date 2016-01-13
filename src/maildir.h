@@ -80,10 +80,9 @@ public:
     CMessageList getMessages();
 
     /**
-     * Generate a filename for saving a new message in this
-     * maildir.
+     * Save the given message in this maildir.
      */
-    std::string generate_filename(bool is_new);
+    bool saveMessage(std::shared_ptr <CMessage > msg);
 
 private:
 
@@ -118,6 +117,11 @@ private:
      * Update the cached total/unread message counts.
      */
     void update_cache();
+
+    /**
+     * Generate a filename for saving a message into.
+     */
+    std::string generate_filename(bool is_new);
 
 };
 

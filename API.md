@@ -228,15 +228,14 @@ You can gain access to Maildir objects in several ways:
 The Maildir object has the following methods:
 
 
-* `generate_path( bool )`
-    * Generate the name of a file to save a message to within the maildir.
-    * Accepts a flag to determine if the filename will be a new message, or a read one.
 * `path()`
     * Returns the path to the Maildir - what it was constructed with.
 * `messages()`
 	* Returns an array of Message-objects, one for each message in the maildir.
 * `mtime()`
     * Return the modified time of the given maildir, as seconds past the epoch.
+* `save_message(msg)`
+    * Save the specified message in the current maildir.
 * `total_messages()`
 	* Returns the count of messages in the maildir.
 * `unread_messages()`

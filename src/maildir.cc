@@ -227,7 +227,17 @@ CMessageList CMaildir::getMessages()
 
 
 /*
- * Generate a filename for saving a message in this maildir.
+ * Save the given message in this maildir.
+ */
+bool CMaildir::saveMessage(std::shared_ptr <CMessage > msg)
+{
+    std::string path = generate_filename(msg->is_new());
+
+    return (CFile::copy(msg->path(), path));
+}
+
+/*
+ * Generate a filename for saving a message into.
  */
 std::string CMaildir::generate_filename(bool is_new)
 {

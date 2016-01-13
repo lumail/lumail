@@ -146,6 +146,25 @@ int l_CMaildir_path(lua_State * l)
 }
 
 
+
+/**
+ * Implementation of Maildir:save_message()
+ */
+int l_CMaildir_save_message(lua_State * l)
+{
+    std::shared_ptr<CMaildir> maildir = l_CheckCMaildir(l, 1);
+    std::shared_ptr<CMessage> message = l_CheckCMessage(l, 2);
+
+    bool ret = maildir->saveMessage(message);
+
+    if (ret)
+        lua_pushboolean(l , 1);
+    else
+        lua_pushboolean(l , 0);
+
+    return 1;
+}
+
 /**
  * Implementation of Maildir:total_messages()
  */
@@ -231,23 +250,6 @@ int l_CMaildir_mtime(lua_State *l)
 
 
 /**
- * Implementation of Maildir:generate_path()
- */
-int l_CMaildir_generate_path(lua_State *l)
-{
-    /*
-     * Get the path, and "is-new" flag.
-     */
-    std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
-    bool is_new = lua_toboolean(l, 2);
-
-    std::string path = foo->generate_filename(is_new);
-    lua_pushstring(l, path.c_str());
-    return 1;
-}
-
-
-/**
  * Destructor.
  */
 int l_CMaildir_destructor(lua_State * l)
@@ -300,11 +302,11 @@ void InitMaildir(lua_State * l)
     {
         {"__gc", l_CMaildir_destructor},
         {"__eq", l_CMaildir_equality},
-        {"generate_path", l_CMaildir_generate_path},
         {"messages", l_CMaildir_messages},
         {"mtime", l_CMaildir_mtime},
         {"new", l_CMaildir_constructor},
         {"path", l_CMaildir_path},
+        {"save_message", l_CMaildir_save_message},
         {"total_messages", l_CMaildir_total_messages},
         {"unread_messages", l_CMaildir_unread_messages},
         {NULL, NULL}
