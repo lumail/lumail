@@ -174,6 +174,17 @@ void CGlobalState::update_maildirs()
     m_maildirs = new CMaildirList;
 
     /*
+     *
+     * TODO: If `imap.server`, `imap.user`, and `imap.password` are set
+     * then retrieve via IMAP instead.
+     *
+     * In this case we avoid using the maildir.prefix variables and would
+     * return early.
+     *
+     */
+
+
+    /*
      * Get the maildir prefix - note that we allow an array to be used.
      */
     CConfig *config = CConfig::instance();
