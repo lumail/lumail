@@ -23,23 +23,19 @@
 #pragma once
 
 
-#include <string>
-#include <vector>
-#include <memory>
+#include "folder.h"
 
-
-/*
- * Forward declaration of class.
- */
-class CMessage;
 
 
 /**
  * This is the C++ implementation of the maildir class, which allows
  * simple operations to be carried out against Maildir folders stored
  * upon the local filesystem.
+ *
+ * It implements the CFolder interface which is what the rest of the
+ * core code uses.
  */
-class CMaildir
+class CMaildir : public CFolder
 {
 public:
 
