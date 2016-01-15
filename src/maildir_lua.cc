@@ -136,6 +136,38 @@ std::shared_ptr<CMaildir> l_CheckCMaildir(lua_State * l, int n)
 
 
 /**
+ * Implementation of Maildir:is_imap()
+ */
+int l_CMaildir_is_imap(lua_State * l)
+{
+    std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
+
+    if (foo->is_imap())
+        lua_pushboolean(l , 1);
+    else
+        lua_pushboolean(l , 1);
+
+    return 1;
+}
+
+
+
+/**
+ * Implementation of Maildir:is_maildir()
+ */
+int l_CMaildir_is_maildir(lua_State * l)
+{
+    std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
+
+    if (foo->is_maildir())
+        lua_pushboolean(l , 1);
+    else
+        lua_pushboolean(l , 1);
+
+    return 1;
+}
+
+/**
  * Implementation of Maildir:path()
  */
 int l_CMaildir_path(lua_State * l)
@@ -302,6 +334,8 @@ void InitMaildir(lua_State * l)
     {
         {"__gc", l_CMaildir_destructor},
         {"__eq", l_CMaildir_equality},
+        {"is_imap", l_CMaildir_is_imap},
+        {"is_maildir", l_CMaildir_is_maildir},
         {"messages", l_CMaildir_messages},
         {"mtime", l_CMaildir_mtime},
         {"new", l_CMaildir_constructor},

@@ -227,7 +227,10 @@ You can gain access to Maildir objects in several ways:
 
 The Maildir object has the following methods:
 
-
+* `is_imap()`
+    * Returns true if this maildir represents a __remote__ IMAP folder.
+* `is_maildir()`
+    * Returns true if this maildir represents a __local__ Maildir folder.
 * `path()`
     * Returns the path to the Maildir - what it was constructed with.
 * `messages()`
@@ -235,7 +238,7 @@ The Maildir object has the following methods:
 * `mtime()`
     * Return the modified time of the given maildir, as seconds past the epoch.
 * `save_message(msg)`
-    * Save the specified message in the current maildir.
+    * Save the specified message to this maildir.
 * `total_messages()`
 	* Returns the count of messages in the maildir.
 * `unread_messages()`
