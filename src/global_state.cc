@@ -74,13 +74,14 @@ void CGlobalState::set_message(std::shared_ptr<CMessage> update)
  */
 void CGlobalState::update(std::string key_name)
 {
+    CConfig *config = CConfig::instance();
+
     /*
      * If we've changed global-mode then we might need to update
      * our messages/maildirs.
      */
     if (key_name == "global.mode")
     {
-        CConfig *config = CConfig::instance();
         std::string new_mode = config->get_string("global.mode");
 
         /*
@@ -105,7 +106,6 @@ void CGlobalState::update(std::string key_name)
         /*
          * The name of the history file.
          */
-        CConfig *config = CConfig::instance();
         std::string path = config->get_string("global.history");
 
         if (path.empty())
@@ -119,7 +119,6 @@ void CGlobalState::update(std::string key_name)
         /*
          * The name of the logfile file.
          */
-        CConfig *config = CConfig::instance();
         std::string path = config->get_string("global.logfile");
 
         if (path.empty())
@@ -138,8 +137,6 @@ void CGlobalState::update(std::string key_name)
     else if (key_name == "imap.username")
     {
         CIMAP *imap = CIMAP::instance();
-
-        CConfig *config = CConfig::instance();
         std::string value = config->get_string("imap.username");
         imap->set_username(value);
 
@@ -148,8 +145,6 @@ void CGlobalState::update(std::string key_name)
     else if (key_name == "imap.password")
     {
         CIMAP *imap = CIMAP::instance();
-
-        CConfig *config = CConfig::instance();
         std::string value = config->get_string("imap.password");
         imap->set_password(value);
 
@@ -158,10 +153,9 @@ void CGlobalState::update(std::string key_name)
     else if (key_name == "imap.server")
     {
         CIMAP *imap = CIMAP::instance();
-
-        CConfig *config = CConfig::instance();
         std::string value = config->get_string("imap.server");
         imap->set_server(value);
+
         update_maildirs();
     }
 }
@@ -203,25 +197,31 @@ void CGlobalState::update_maildirs()
 
     /*
      *
-     * TODO: If `imap.server`, `imap.user`, and `imap.password` are set
-     * then retrieve via IMAP instead.
-     *
-     * In this case we avoid using the maildir.prefix variables and would
-     * return early.
+     * If `imap.server`, `imap.user`, and `imap.password` are set
+     * then retrieve the list of available folders via IMAP.
      *
      */
     CConfig *config = CConfig::instance();
 
     if ((config->get_string("imap.username", "") != "") &&
-            (config->get_string("imap.password", "") != "") &&
-            (config->get_string("imap.server", "") != ""))
+        (config->get_string("imap.password", "") != "") &&
+        (config->get_string("imap.server", "") != ""))
     {
+        /*
+         * Get the IMAP handle.
+         */
         CIMAP *x = CIMAP::instance();
+
+        /*
+         * For each IMAP folder create a corresponding CMaildir object.
+         */
         std::vector<std::string> folders = x->getMaildirs();
 
-        for (std::vector<std::string>::iterator it = folders.begin() ;
-                it != folders.end(); ++it)
+        for (auto it = folders.begin() ; it != folders.end(); ++it)
         {
+            /*
+             * NOTE: We pass `false` to the constructor to mark it as non-local.
+             */
             std::string path = (*it);
             std::shared_ptr<CMaildir> m = std::shared_ptr<CMaildir>(new CMaildir(path, false));
 
