@@ -3,7 +3,7 @@
  *
  * This file is part of lumail - http://lumail.org/
  *
- * Copyright (c) 2015 by Steve Kemp.  All rights reserved.
+ * Copyright (c) 2016 by Steve Kemp.  All rights reserved.
  *
  **
  *
@@ -30,15 +30,10 @@
 #include "imap.h"
 
 
-/**
- * This is horrid.
- */
-static std::string m_txt;
-
-
 CIMAP::CIMAP()
 {
     m_ssl_verify = false;
+    m_txt        = "";
 }
 
 
@@ -50,7 +45,7 @@ CIMAP::~CIMAP()
 }
 
 
-/**
+/*
  * Setup login-credentials.
  */
 void CIMAP::set_password(std::string password)
@@ -58,7 +53,8 @@ void CIMAP::set_password(std::string password)
     m_password = password;
 }
 
-/**
+
+/*
  * Setup login-credentials.
  */
 void CIMAP::set_username(std::string username)
@@ -66,7 +62,8 @@ void CIMAP::set_username(std::string username)
     m_username = username;
 }
 
-/**
+
+/*
  * Setup the remote mail-server name, as an URL,
  * such as `imaps://mail.example.com/`
  */
@@ -76,15 +73,15 @@ void CIMAP::set_server(std::string server)
 };
 
 
-/**
- * Return a list of the folders available.
+/*
+ * Return a list of the available folders.
  */
 std::vector<std::string> CIMAP::getMaildirs()
 {
     std::vector<std::string> result;
 
     /* Reset our state */
-    m_txt = "";
+    m_txt      = "";
     CURL *curl = curl_easy_init();
 
 
@@ -100,6 +97,8 @@ std::vector<std::string> CIMAP::getMaildirs()
     }
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)(this));
+
     CURLcode res = curl_easy_perform(curl);
 
     /* Check for errors */
@@ -206,6 +205,10 @@ std::vector<std::string> CIMAP::getMaildirs()
     return (result);
 }
 
+
+/*
+ * Count the unread-messages in the specified folder.
+ */
 int CIMAP::count_unread(std::string folder)
 {
     /* reset our state */
@@ -227,6 +230,8 @@ int CIMAP::count_unread(std::string folder)
 
     curl_easy_setopt(curl, CURLOPT_URL, path.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)(this));
+
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "SEARCH UNSEEN");
 
     CURLcode res = curl_easy_perform(curl);
@@ -275,6 +280,9 @@ int CIMAP::count_unread(std::string folder)
 }
 
 
+/*
+ * Count the total-messages in the specified folder.
+ */
 int CIMAP::count_total(std::string folder)
 {
     /* reset our state */
@@ -297,6 +305,8 @@ int CIMAP::count_total(std::string folder)
     path += "\"";
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)(this));
+
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, path.c_str());
 
     CURLcode res = curl_easy_perform(curl);
@@ -340,16 +350,18 @@ int CIMAP::count_total(std::string folder)
     return (count);
 }
 
-/**
+/*
  * This function is called whenever new data is received as a result
  * of an URL-fetch.
  *
- * We append the new data to the global/static m_txt member.
+ * We append the new data to the m_txt member-variable.
  */
-size_t CIMAP::WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data)
+size_t CIMAP::WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *obj_ptr)
 {
+    CIMAP *obj = (CIMAP*)obj_ptr;
+
     size_t realsize = size * nmemb;
-    m_txt.append((char *)ptr, realsize);
+    obj->m_txt.append((char *)ptr, realsize);
 
     return realsize;
 };

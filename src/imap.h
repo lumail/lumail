@@ -47,6 +47,10 @@ class CIMAP : public Singleton<CIMAP>
 {
 
 public:
+
+    /**
+     * Constructor.
+     */
     CIMAP();
 
 
@@ -54,15 +58,19 @@ public:
      * Destructor.
      */
     ~CIMAP();
+
+
     /**
      * Setup login-credentials.
      */
     void set_password(std::string password);
 
+
     /**
      * Setup login-credentials.
      */
     void set_username(std::string username);
+
 
     /**
      * Setup the remote mail-server name, as an URL,
@@ -76,15 +84,24 @@ public:
      */
     std::vector<std::string> getMaildirs();
 
+
+    /**
+     * Count the unread-messages in the specified folder.
+     */
     int count_unread(std::string folder);
 
+
+    /**
+     * Count the total-messages in the specified folder.
+     */
     int count_total(std::string folder);
+
 
     /**
      * This function is called whenever new data is received as a result
      * of an URL-fetch.
      *
-     * We append the new data to the global/static m_txt member.
+     * We append the new data to the m_txt member-variable.
      */
     static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
 
@@ -92,12 +109,12 @@ public:
 private:
 
     /**
-     * Username.
+     * Username for IMAP login.
      */
     std::string m_username;
 
     /**
-     * Password.
+     * Password for IMAP login.
      */
     std::string m_password;
 
@@ -111,4 +128,10 @@ private:
      * Verify?
      */
     bool m_ssl_verify;
+
+
+    /**
+     * This text is appended to every time we make a request via libcurl.
+     */
+    std::string m_txt;
 };
