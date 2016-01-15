@@ -217,10 +217,6 @@ int CIMAP::count_unread(std::string folder)
     folder = urlencode(folder);
     std::string path = m_server + folder;
 
-    fprintf(stderr, "count_unread('%s')\n",
-            path.c_str());
-
-
     /* Set username and password */
     curl_easy_setopt(m_curl, CURLOPT_USERNAME, m_username.c_str());
     curl_easy_setopt(m_curl, CURLOPT_PASSWORD, m_password.c_str());
@@ -260,9 +256,6 @@ int CIMAP::count_unread(std::string folder)
     // Remove linefeeds and the prefix.
     m_txt.erase(std::remove(m_txt.begin(), m_txt.end(), '\n'), m_txt.end());
     m_txt.erase(std::remove(m_txt.begin(), m_txt.end(), '\r'), m_txt.end());
-
-    fprintf(stderr, "COUNT UNREAD - '%s' - LINE - '%s'\n",
-            folder.c_str(), m_txt.c_str());
 
     if (m_txt.length() > strlen("* RESULT"))
         m_txt = m_txt.substr(strlen("* RESULT"));
@@ -328,9 +321,6 @@ int CIMAP::count_total(std::string folder)
     {
         line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
         line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
-        fprintf(stderr, "COUNT_TOTAL PATH - '%s' - LINE - '%s'\n",
-                folder.c_str(), m_txt.c_str());
-
 
         std::vector<std::string> x = split(line, ' ');
 
