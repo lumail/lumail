@@ -17,7 +17,6 @@
  */
 
 #include <iostream>
-#include <regex>
 
 #include "config.h"
 #include "file.h"
@@ -143,6 +142,8 @@ void CGlobalState::update(std::string key_name)
         CConfig *config = CConfig::instance();
         std::string value = config->get_string("imap.username");
         imap->set_username(value);
+
+        update_maildirs();
     }
     else if (key_name == "imap.password")
     {
@@ -151,6 +152,8 @@ void CGlobalState::update(std::string key_name)
         CConfig *config = CConfig::instance();
         std::string value = config->get_string("imap.password");
         imap->set_password(value);
+
+        update_maildirs();
     }
     else if (key_name == "imap.server")
     {
@@ -159,6 +162,7 @@ void CGlobalState::update(std::string key_name)
         CConfig *config = CConfig::instance();
         std::string value = config->get_string("imap.server");
         imap->set_server(value);
+        update_maildirs();
     }
 }
 

@@ -36,6 +36,7 @@
 #include <gmime/gmime.h>
 
 
+#include "imap.h"
 #include "file.h"
 #include "maildir.h"
 #include "message.h"
@@ -81,7 +82,7 @@ CMaildir::~CMaildir()
  */
 bool CMaildir::is_maildir()
 {
-    return( ! m_imap );
+    return (! m_imap);
 }
 
 
@@ -90,7 +91,7 @@ bool CMaildir::is_maildir()
  */
 bool CMaildir::is_imap()
 {
-    return( m_imap );
+    return (m_imap);
 
 }
 
@@ -100,8 +101,16 @@ bool CMaildir::is_imap()
  */
 int CMaildir::unread_messages()
 {
-    update_cache();
-    return (m_unread);
+    if (m_imap)
+    {
+        CIMAP *imap = CIMAP::instance();
+        return (imap->count_unread(m_path));
+    }
+    else
+    {
+        update_cache();
+        return (m_unread);
+    }
 }
 
 
@@ -110,8 +119,16 @@ int CMaildir::unread_messages()
  */
 int CMaildir::total_messages()
 {
-    update_cache();
-    return (m_total);
+    if (m_imap)
+    {
+        CIMAP *imap = CIMAP::instance();
+        return (imap->count_total(m_path));
+    }
+    else
+    {
+        update_cache();
+        return (m_total);
+    }
 }
 
 
@@ -121,6 +138,9 @@ int CMaildir::total_messages()
  */
 void CMaildir::update_cache()
 {
+    if (m_imap)
+        return;
+
     /*
      * If the cached date isn't different then we need do nothing.
      */
@@ -158,6 +178,10 @@ void CMaildir::update_cache()
  */
 time_t CMaildir::last_modified()
 {
+
+    if (m_imap)
+        return 0;
+
     time_t last = 0;
     struct stat st_buf;
 
