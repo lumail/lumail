@@ -79,7 +79,9 @@ Upon a Debian GNU/Linux host, running the Jessie (stable), release the following
 
     apt-get install build-essential make pkg-config
 
-    apt-get install liblua5.2-dev libgmime-2.6-dev libncursesw5-dev libpcre3-dev libmagic-dev
+    apt-get install liblua5.2-dev libgmime-2.6-dev  \
+       libncursesw5-dev libpcre3-dev libmagic-dev libcurl4-openssl-dev
+
 
 With the dependencies installed you should find the code builds cleanly with:
 
