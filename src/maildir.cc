@@ -45,9 +45,14 @@
 /*
  * Constructor.  Create an object to encapsulate the given path.
  */
-CMaildir::CMaildir(const std::string name)
+CMaildir::CMaildir(const std::string name, bool is_local)
 {
     m_path = name;
+
+    if (is_local)
+        m_imap = false;
+    else
+        m_imap = true;
 }
 
 

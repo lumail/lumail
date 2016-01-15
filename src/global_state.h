@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include "imap.h"
 #include "maildir.h"
 #include "message.h"
 #include "observer.h"

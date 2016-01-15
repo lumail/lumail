@@ -136,6 +136,30 @@ void CGlobalState::update(std::string key_name)
          */
         update_maildirs();
     }
+    else if (key_name == "imap.username")
+    {
+        CIMAP *imap = CIMAP::instance();
+
+        CConfig *config = CConfig::instance();
+        std::string value = config->get_string("imap.username");
+        imap->set_username(value);
+    }
+    else if (key_name == "imap.password")
+    {
+        CIMAP *imap = CIMAP::instance();
+
+        CConfig *config = CConfig::instance();
+        std::string value = config->get_string("imap.password");
+        imap->set_password(value);
+    }
+    else if (key_name == "imap.server")
+    {
+        CIMAP *imap = CIMAP::instance();
+
+        CConfig *config = CConfig::instance();
+        std::string value = config->get_string("imap.server");
+        imap->set_server(value);
+    }
 }
 
 
@@ -182,12 +206,32 @@ void CGlobalState::update_maildirs()
      * return early.
      *
      */
+    CConfig *config = CConfig::instance();
+
+    if ((config->get_string("imap.username", "") != "") &&
+            (config->get_string("imap.password", "") != "") &&
+            (config->get_string("imap.server", "") != ""))
+    {
+        CIMAP *x = CIMAP::instance();
+        std::vector<std::string> folders = x->getMaildirs();
+
+        for (std::vector<std::string>::iterator it = folders.begin() ;
+                it != folders.end(); ++it)
+        {
+            std::string path = (*it);
+            std::shared_ptr<CMaildir> m = std::shared_ptr<CMaildir>(new CMaildir(path, false));
+
+            m_maildirs->push_back(m);
+        }
+
+        config->set("maildir.max", m_maildirs->size());
+        return;
+    }
 
 
     /*
      * Get the maildir prefix - note that we allow an array to be used.
      */
-    CConfig *config = CConfig::instance();
     std::vector<std::string> prefixes = config->get_array("maildir.prefix");
 
     /*

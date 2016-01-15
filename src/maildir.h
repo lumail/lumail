@@ -41,7 +41,7 @@ public:
     /**
      * Constructor.
      */
-    CMaildir(const std::string name);
+    CMaildir(const std::string name, bool is_local = true);
 
 
     /**
@@ -85,6 +85,11 @@ private:
      * The path we represent.
      */
     std::string m_path;
+
+    /**
+     * Are we an IMAP maildir?
+     */
+    bool m_imap;
 
     /**
      * The date/time this maildir was last updated.  Used to maintain a
