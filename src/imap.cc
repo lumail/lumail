@@ -259,7 +259,8 @@ int CIMAP::count_unread(std::string folder)
         m_txt = m_txt.substr(strlen("* RESULT"));
 
     // No results?  Finish.
-    if (m_txt.empty()) {
+    if (m_txt.empty())
+    {
         curl_easy_cleanup(curl);
         return 0;
     }

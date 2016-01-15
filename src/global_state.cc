@@ -204,8 +204,8 @@ void CGlobalState::update_maildirs()
     CConfig *config = CConfig::instance();
 
     if ((config->get_string("imap.username", "") != "") &&
-        (config->get_string("imap.password", "") != "") &&
-        (config->get_string("imap.server", "") != ""))
+            (config->get_string("imap.password", "") != "") &&
+            (config->get_string("imap.server", "") != ""))
     {
         /*
          * Get the IMAP handle.
