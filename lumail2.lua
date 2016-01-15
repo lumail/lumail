@@ -1870,10 +1870,23 @@ function Maildir:format()
    local path   = self:path()
    local time   = self:mtime()
    local trunc  = Config.get_with_default("maildir.truncate", 0)
+   local src    = "maildir"
+
+   --
+   -- If we're a remote IMAP Maildir then we cache that based on the
+   -- server-name.
+   --
+   -- This allows the user to switch IMAP-servers/accounts without
+   -- any problem
+   if ( self:is_imap() ) then
+      src = "imap"
+      src = src .. Config.get_with_default( "imap.server", "localhost" )
+      src = src .. Config.get_with_default( "imap.username", "username" )
+   end
 
    -- Do we have this cached?  If so return it
-   if ( cache["maildir:" .. trunc .. time .. path] ) then
-      return(cache["maildir:" .. trunc .. time .. path])
+   if ( cache["maildir:" .. trunc .. src .. time .. path] ) then
+      return(cache["maildir:" .. trunc .. src .. time .. path])
    end
 
    local total  = self:total_messages()
@@ -1926,7 +1939,7 @@ function Maildir:format()
    end
 
    -- update the cache
-   cache["maildir:" .. trunc .. time .. path] = output
+   cache["maildir:" .. trunc .. src .. time .. path] = output
 
    return output
 end
