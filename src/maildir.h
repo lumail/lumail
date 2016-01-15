@@ -23,7 +23,8 @@
 #pragma once
 
 
-#include "folder.h"
+#include "message.h"
+
 
 
 
@@ -32,10 +33,8 @@
  * simple operations to be carried out against Maildir folders stored
  * upon the local filesystem.
  *
- * It implements the CFolder interface which is what the rest of the
- * core code uses.
  */
-class CMaildir : public CFolder
+class CMaildir
 {
 public:
 
