@@ -39,13 +39,6 @@ static std::string m_txt;
 CIMAP::CIMAP()
 {
     m_ssl_verify = false;
-    m_curl = curl_easy_init();
-
-    if (!m_curl)
-    {
-        fprintf(stderr, "Failed to init curl\n");
-        exit(-1);
-    }
 }
 
 
@@ -54,8 +47,7 @@ CIMAP::CIMAP()
  */
 CIMAP::~CIMAP()
 {
-    curl_easy_cleanup(m_curl);
-};
+}
 
 
 /**
@@ -90,21 +82,25 @@ void CIMAP::set_server(std::string server)
 std::vector<std::string> CIMAP::getMaildirs()
 {
     std::vector<std::string> result;
+
+    /* Reset our state */
     m_txt = "";
+    CURL *curl = curl_easy_init();
+
 
     /* Set username and password */
-    curl_easy_setopt(m_curl, CURLOPT_USERNAME, m_username.c_str());
-    curl_easy_setopt(m_curl, CURLOPT_PASSWORD, m_password.c_str());
-    curl_easy_setopt(m_curl, CURLOPT_URL, m_server.c_str());
+    curl_easy_setopt(curl, CURLOPT_USERNAME, m_username.c_str());
+    curl_easy_setopt(curl, CURLOPT_PASSWORD, m_password.c_str());
+    curl_easy_setopt(curl, CURLOPT_URL, m_server.c_str());
 
     if (m_ssl_verify == false)
     {
-        curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
     }
 
-    curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-    CURLcode res = curl_easy_perform(m_curl);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    CURLcode res = curl_easy_perform(curl);
 
     /* Check for errors */
     if (res != CURLE_OK)
@@ -205,33 +201,35 @@ std::vector<std::string> CIMAP::getMaildirs()
     //
     std::sort(result.begin(), result.end());
 
+    /* Cleanup. */
+    curl_easy_cleanup(curl);
     return (result);
-
-
 }
 
 int CIMAP::count_unread(std::string folder)
 {
+    /* reset our state */
     m_txt = "";
+    CURL *curl = curl_easy_init();
 
     folder = urlencode(folder);
     std::string path = m_server + folder;
 
     /* Set username and password */
-    curl_easy_setopt(m_curl, CURLOPT_USERNAME, m_username.c_str());
-    curl_easy_setopt(m_curl, CURLOPT_PASSWORD, m_password.c_str());
+    curl_easy_setopt(curl, CURLOPT_USERNAME, m_username.c_str());
+    curl_easy_setopt(curl, CURLOPT_PASSWORD, m_password.c_str());
 
     if (m_ssl_verify == false)
     {
-        curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
     }
 
-    curl_easy_setopt(m_curl, CURLOPT_URL, path.c_str());
-    curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-    curl_easy_setopt(m_curl, CURLOPT_CUSTOMREQUEST, "SEARCH UNSEEN");
+    curl_easy_setopt(curl, CURLOPT_URL, path.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "SEARCH UNSEEN");
 
-    CURLcode res = curl_easy_perform(m_curl);
+    CURLcode res = curl_easy_perform(curl);
 
     /* Check for errors */
     if (res != CURLE_OK)
@@ -261,10 +259,14 @@ int CIMAP::count_unread(std::string folder)
         m_txt = m_txt.substr(strlen("* RESULT"));
 
     // No results?  Finish.
-    if (m_txt.empty())
+    if (m_txt.empty()) {
+        curl_easy_cleanup(curl);
         return 0;
+    }
     else
         m_txt = m_txt.substr(1);
+
+    curl_easy_cleanup(curl);
 
     // Otherwise count the spaces and return.
     size_t n = std::count(m_txt.begin(), m_txt.end(), ' ');
@@ -274,27 +276,29 @@ int CIMAP::count_unread(std::string folder)
 
 int CIMAP::count_total(std::string folder)
 {
+    /* reset our state */
     m_txt = "";
+    CURL *curl = curl_easy_init();
 
     /* Set username and password */
-    curl_easy_setopt(m_curl, CURLOPT_USERNAME, m_username.c_str());
-    curl_easy_setopt(m_curl, CURLOPT_PASSWORD, m_password.c_str());
-    curl_easy_setopt(m_curl, CURLOPT_URL, m_server.c_str());
+    curl_easy_setopt(curl, CURLOPT_USERNAME, m_username.c_str());
+    curl_easy_setopt(curl, CURLOPT_PASSWORD, m_password.c_str());
+    curl_easy_setopt(curl, CURLOPT_URL, m_server.c_str());
 
     if (m_ssl_verify == false)
     {
-        curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
     }
 
     std::string path = "EXAMINE \"";
     path += folder;
     path += "\"";
 
-    curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-    curl_easy_setopt(m_curl, CURLOPT_CUSTOMREQUEST, path.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, path.c_str());
 
-    CURLcode res = curl_easy_perform(m_curl);
+    CURLcode res = curl_easy_perform(curl);
 
     /* Check for errors */
     if (res != CURLE_OK)
@@ -331,6 +335,7 @@ int CIMAP::count_total(std::string folder)
         }
     }
 
+    curl_easy_cleanup(curl);
     return (count);
 }
 

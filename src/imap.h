@@ -111,9 +111,4 @@ private:
      * Verify?
      */
     bool m_ssl_verify;
-
-    /**
-     * Handle to the curl-library.
-     */
-    CURL *m_curl;
 };
