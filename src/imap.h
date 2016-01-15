@@ -33,11 +33,16 @@
 
 /**
  *
- * Simple functions for IMAP operations:
+ * This is a simple class which is used for all our IMAP operations.
  *
- * * Lists mailboxes.
- * * Count unread messages.
- * * Count total  messages - use "EXAMINE folder"
+ * Internally we're using [libcurl](http://curl.haxx.se/libcurl/) to provide our
+ * interface to the remote server.
+ *
+ * This class allows:
+ *
+ * * Listing mailboxes.
+ * * Counting unread messages in a folder.
+ * * Counting the total number of messages in a folder.
  *
  * TODO:
  *    Get a single message( folder, id )
