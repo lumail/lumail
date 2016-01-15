@@ -57,18 +57,41 @@ CMaildir::CMaildir(const std::string name, bool is_local)
 
 
 /*
- * Return the path we represent.
+ * Return the path we represent - NOTE: This might be a local
+ * maildir-location, or a remote IMAP path.
+ *
+ * Use "is_imap" or "is_maildir" to tell the difference.
  */
 std::string CMaildir::path()
 {
     return (m_path);
 }
 
+
 /*
  * Destructor.
  */
 CMaildir::~CMaildir()
 {
+}
+
+
+/**
+ * Is this maildir a local one?
+ */
+bool CMaildir::is_maildir()
+{
+    return( ! m_imap );
+}
+
+
+/*
+ * Is this maildir an IMAP path?
+ */
+bool CMaildir::is_imap()
+{
+    return( m_imap );
+
 }
 
 

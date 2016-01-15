@@ -51,9 +51,24 @@ public:
 
 
     /**
-     * Return the path we represent.
+     * Return the path we represent - NOTE: This might be a local
+     * maildir-location, or a remote IMAP path.
+     *
+     * Use "is_imap" or "is_maildir" to tell the difference.
      */
     std::string path();
+
+
+    /**
+     * Is this maildir a local one?
+     */
+    bool is_maildir();
+
+
+    /**
+     * Is this maildir an IMAP path?
+     */
+    bool is_imap();
 
 
     /**
