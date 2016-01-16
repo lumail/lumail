@@ -45,7 +45,7 @@ public:
     /**
      * Constructor.
      */
-    CMessage(const std::string name);
+    CMessage(const std::string name, bool is_local = true);
 
     /**
      * Destructor.
@@ -57,7 +57,20 @@ public:
      */
     bool copy(std::string maildir);
 
+
     /**
+     * Is this message a local one?
+     */
+    bool is_maildir();
+
+
+    /**
+     * Is this message an IMAP one?
+     */
+    bool is_imap();
+
+
+   /**
      * Get the path of this message.
      */
     std::string path();
@@ -166,6 +179,10 @@ private:
      */
     std::vector<std::shared_ptr<CMessagePart>> m_parts;
 
+    /**
+     * Is this message stored in IMAP?
+     */
+    bool m_imap;
 };
 
 

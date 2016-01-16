@@ -51,9 +51,10 @@
 /*
  * Constructor.
  */
-CMessage::CMessage(const std::string name)
+CMessage::CMessage(const std::string name, bool is_local)
 {
     m_path = name;
+    m_imap = !is_local;
 }
 
 
@@ -674,6 +675,23 @@ bool CMessage::unlink()
     return (CFile::delete_file(path()));
 }
 
+
+/*
+ * Is this message a local one?
+ */
+bool CMessage::is_maildir()
+{
+    return( !m_imap );
+}
+
+
+/**
+ * Is this message an IMAP one?
+ */
+bool CMessage::is_imap()
+{
+    return( m_imap );
+}
 
 /*
  * Copy the message to a new maildir - which must exist.
