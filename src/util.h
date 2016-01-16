@@ -62,4 +62,4 @@ std::vector<std::string> split(const std::string &text, char sep);
 /**
  * execute a command and return the output as a vector of lines.
  */
-std::vector<std::string> shell_execute( std::string cmd );
+std::vector<std::string> shell_execute(std::string cmd);

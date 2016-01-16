@@ -76,8 +76,14 @@ public:
      */
     int unread_messages();
 
-    void set_unread( int n ) { m_unread = n; };
-    void set_total( int n ) { m_total = n; };
+    void set_unread(int n)
+    {
+        m_unread = n;
+    };
+    void set_total(int n)
+    {
+        m_total = n;
+    };
 
     /**
      * The total number of messages for this maildir.

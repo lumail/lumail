@@ -200,14 +200,14 @@ void CGlobalState::update_maildirs()
         /*
          * Set the values in the environment.
          */
-        setenv( "imap_username", config->get_string( "imap.username" ).c_str(), 1 );
-        setenv( "imap_password", config->get_string( "imap.password" ).c_str(), 1 );
-        setenv( "imap_server", config->get_string( "imap.server" ).c_str(), 1 );
+        setenv("imap_username", config->get_string("imap.username").c_str(), 1);
+        setenv("imap_password", config->get_string("imap.password").c_str(), 1);
+        setenv("imap_server", config->get_string("imap.server").c_str(), 1);
 
         /*
          * Execute the program.
          */
-        std::vector< std::string >out = shell_execute( "perl.d/get-folders" );
+        std::vector< std::string >out = shell_execute("perl.d/get-folders");
 
         /*
          * For each output...
@@ -218,15 +218,15 @@ void CGlobalState::update_maildirs()
             line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
             line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
 
-            std::vector<std::string> tokens = split( line, ',' );
+            std::vector<std::string> tokens = split(line, ',');
 
-            int unread = atoi( tokens.at(0).c_str() );
-            int total  = atoi( tokens.at(1).c_str() );
+            int unread = atoi(tokens.at(0).c_str());
+            int total  = atoi(tokens.at(1).c_str());
             std::string path = tokens.at(2);
 
             std::shared_ptr<CMaildir> m = std::shared_ptr<CMaildir>(new CMaildir(path, false));
-            m->set_total( total);
-            m->set_unread( unread);
+            m->set_total(total);
+            m->set_unread(unread);
 
             m_maildirs->push_back(m);
         }
@@ -330,9 +330,10 @@ void CGlobalState::update_messages()
          * The server name is part of the cache.
          */
         CConfig *config = CConfig::instance();
-        std::string imap_server  = config->get_string( "imap.server" );
-        std::string imap_cache  = config->get_string( "imap.cache" );
-        if ( imap_cache.empty() )
+        std::string imap_server  = config->get_string("imap.server");
+        std::string imap_cache  = config->get_string("imap.cache");
+
+        if (imap_cache.empty())
             imap_cache = "/tmp";
 
         /*
@@ -370,16 +371,16 @@ void CGlobalState::update_messages()
             if (! CFile::exists(path))
             {
                 CConfig *config = CConfig::instance();
-                setenv( "imap_username", config->get_string( "imap.username" ).c_str(), 1 );
-                setenv( "imap_password", config->get_string( "imap.password" ).c_str(), 1 );
-                setenv( "imap_server", config->get_string( "imap.server" ).c_str(), 1 );
+                setenv("imap_username", config->get_string("imap.username").c_str(), 1);
+                setenv("imap_password", config->get_string("imap.password").c_str(), 1);
+                setenv("imap_server", config->get_string("imap.server").c_str(), 1);
 
 
                 /*
                  * Execute the program.
                  */
                 std::string cmd = "perl.d/get-message ";
-                cmd += std::to_string( i );
+                cmd += std::to_string(i);
                 cmd += " \"";
                 cmd += folder;
                 cmd += "\"";
@@ -387,10 +388,12 @@ void CGlobalState::update_messages()
 
                 std::fstream fs;
                 fs.open(path,  std::fstream::out | std::fstream::app);
+
                 for (auto it = out.begin() ; it != out.end(); ++it)
                 {
                     fs << (*it);
                 }
+
                 fs.close();
             }
 
