@@ -681,7 +681,7 @@ bool CMessage::unlink()
  */
 bool CMessage::is_maildir()
 {
-    return( !m_imap );
+    return (!m_imap);
 }
 
 
@@ -690,7 +690,7 @@ bool CMessage::is_maildir()
  */
 bool CMessage::is_imap()
 {
-    return( m_imap );
+    return (m_imap);
 }
 
 /*

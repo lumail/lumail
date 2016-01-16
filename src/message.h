@@ -70,9 +70,9 @@ public:
     bool is_imap();
 
 
-   /**
-     * Get the path of this message.
-     */
+    /**
+      * Get the path of this message.
+      */
     std::string path();
 
     /**
