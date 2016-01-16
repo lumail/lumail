@@ -33,7 +33,8 @@
 
 /**
  *
- * This is a simple class which is used for all our IMAP operations.
+ * This is a simple class which is used for all our IMAP operations,
+ * deriving from our singleton-template it is globally available.
  *
  * Internally we're using [libcurl](http://curl.haxx.se/libcurl/) to provide our
  * interface to the remote server.
@@ -43,9 +44,12 @@
  * * Listing mailboxes.
  * * Counting unread messages in a folder.
  * * Counting the total number of messages in a folder.
+ * * Retrieving a single message from a folder.
  *
- * TODO:
- *    Get a single message( folder, id )
+ * Outstanding functionality includes:
+ *
+ * * Saving a new message to an IMAP folder.
+ * * Getting/Setting message-flags.
  *
  */
 class CIMAP : public Singleton<CIMAP>
@@ -103,6 +107,12 @@ public:
 
 
     /**
+     * Fetch the specified message.
+     */
+    std::string fetch_message(std::string folder, int number);
+
+
+    /**
      * This function is called whenever new data is received as a result
      * of an URL-fetch.
      *
@@ -124,19 +134,20 @@ private:
     std::string m_password;
 
     /**
-     * IMAP Server, as URL such as "imap://imap.example.com", or
+     * IMAP Server, as URL such as "imap://imap.example.com/", or
      * "imaps://mail.example.com/"
      */
     std::string m_server;
 
     /**
-     * Verify?
+     * Should we verify the SSL certificate?
      */
     bool m_ssl_verify;
 
-
     /**
      * This text is appended to every time we make a request via libcurl.
+     *
+     * It is a essentially a per-request response buffer.
      */
     std::string m_txt;
 };

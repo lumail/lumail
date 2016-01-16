@@ -260,8 +260,8 @@ int CIMAP::count_unread(std::string folder)
     m_txt.erase(std::remove(m_txt.begin(), m_txt.end(), '\n'), m_txt.end());
     m_txt.erase(std::remove(m_txt.begin(), m_txt.end(), '\r'), m_txt.end());
 
-    if ( ( m_txt == "* SEARCH" ) ||
-         ( m_txt == "* RESULT" ) )
+    if ((m_txt == "* SEARCH") ||
+            (m_txt == "* RESULT"))
     {
         curl_easy_cleanup(curl);
         return 0;
@@ -356,6 +356,56 @@ int CIMAP::count_total(std::string folder)
     curl_easy_cleanup(curl);
     return (count);
 }
+
+/**
+ * Fetch the specified message.
+ */
+std::string CIMAP::fetch_message(std::string folder, int number)
+{
+    std::vector<std::string> result;
+
+    /* Reset our state */
+    m_txt      = "";
+    CURL *curl = curl_easy_init();
+
+
+    /* The path we'll request */
+    std::string path = m_server;
+    path += folder;
+    path += ";UID=";
+    path +=  std::to_string(number);
+
+
+    /* Set username and password */
+    curl_easy_setopt(curl, CURLOPT_USERNAME, m_username.c_str());
+    curl_easy_setopt(curl, CURLOPT_PASSWORD, m_password.c_str());
+    curl_easy_setopt(curl, CURLOPT_URL, path.c_str());
+
+    if (m_ssl_verify == false)
+    {
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+    }
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)(this));
+
+    CURLcode res = curl_easy_perform(curl);
+
+    /* Check for errors */
+    if (res != CURLE_OK)
+    {
+        fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                curl_easy_strerror(res));
+        exit(1);
+    }
+
+    /* Cleanup. */
+    curl_easy_cleanup(curl);
+    return (m_txt);
+}
+
+
 
 /*
  * This function is called whenever new data is received as a result
