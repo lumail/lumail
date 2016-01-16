@@ -260,8 +260,15 @@ int CIMAP::count_unread(std::string folder)
     m_txt.erase(std::remove(m_txt.begin(), m_txt.end(), '\n'), m_txt.end());
     m_txt.erase(std::remove(m_txt.begin(), m_txt.end(), '\r'), m_txt.end());
 
-    if (m_txt.length() > strlen("* RESULT"))
-        m_txt = m_txt.substr(strlen("* RESULT"));
+    if ( ( m_txt == "* SEARCH" ) ||
+         ( m_txt == "* RESULT" ) )
+    {
+        curl_easy_cleanup(curl);
+        return 0;
+    }
+
+    // Remove the prefix.
+    m_txt = m_txt.substr(strlen("* RESULT"));
 
     // No results?  Finish.
     if (m_txt.empty())
