@@ -70,3 +70,31 @@ std::vector<std::string> split(const std::string &text, char sep)
     tokens.push_back(text.substr(start));
     return tokens;
 };
+
+
+/*
+ * execute a command and return the output as a vector of lines.
+ */
+std::vector<std::string> shell_execute( std::string cmd )
+{
+    FILE*           fp;
+
+    std::vector<std::string> result;
+
+    if ((fp = popen(cmd.c_str (), "r")) == NULL)
+        return(result);
+
+
+    while ( !feof(fp) )
+    {
+        char buf[ 1024 ] = {0};
+
+        if ( fgets(buf, sizeof(buf), fp) > 0 )
+        {
+            result.push_back( std::string(buf) );
+        }
+    }
+    pclose( fp );
+
+    return(result);
+}
