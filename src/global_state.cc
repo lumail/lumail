@@ -17,6 +17,8 @@
  */
 
 #include <iostream>
+#include <fstream>
+
 
 #include "config.h"
 #include "file.h"
@@ -293,10 +295,110 @@ void CGlobalState::update_messages()
     m_messages = new CMessageList;
 
     /*
-     * Get the selected maildirs.  If any.
+     * Get the currently selected maildir.
      */
     std::shared_ptr<CMaildir> current = current_maildir();
 
+    /*
+     * If we're loading over IMAP ..
+     */
+    /*
+     *
+     * If `imap.server`, `imap.user`, and `imap.password` are set
+     * then retrieve the list of available folders via IMAP.
+     *
+     */
+    CConfig *config = CConfig::instance();
+
+    if ((config->get_string("imap.username", "") != "") &&
+            (config->get_string("imap.password", "") != "") &&
+            (config->get_string("imap.server", "") != ""))
+    {
+
+        /*
+         * The path to the folder we're operating upon
+         */
+        std::string folder = current->path();
+
+        /*
+         * The IMAP server & cache-location.
+         */
+        std::string imap_server = config->get_string("imap.server");
+        std::string imap_cache  = config->get_string("imap.cache");
+
+        if (imap_cache.empty())
+            imap_cache = "/tmp";
+
+        /*
+         * Count the messages we must fetch.
+         */
+        CIMAP *imap        = CIMAP::instance();
+        int total          = imap->count_total(folder);
+
+        /*
+         * For each message.
+         */
+        for (int i = 1; i <= total ; i++)
+        {
+            /*
+             * Create a fake path to store the message body in - we make
+             * sure this references both the remote IMAP-server and the folder
+             * name.
+             */
+            std::string path = imap_server;
+            path += folder;
+            path += ",";
+            path += std::to_string(i);
+
+            /*
+             * Make sure the path is escaped by removing "/" + "\".
+             */
+            std::transform(path.begin(), path.end(), path.begin(), [](char ch)
+            {
+                return (ch == '/' || ch == '\\') ? '_' : ch;
+            });
+
+            /*
+             * Add on the prefix.
+             */
+            path = imap_cache + "/" + path;
+
+            /*
+             * If there is not already a file there then we must fetch
+             * the message and write it out.
+             */
+            if (! CFile::exists(path))
+            {
+                std::string msg = imap->fetch_message(folder, i);
+                std::fstream fs;
+                fs.open(path,  std::fstream::out | std::fstream::app);
+                fs << msg << "\n";
+                fs.close();
+            }
+
+            /*
+             * Now create the message-object, pointing to the cached
+             * content, and make sure we mark it as being non-local.
+             */
+            std::shared_ptr < CMessage > t = std::shared_ptr < CMessage >(new CMessage(path, false));
+            t->path(path);
+
+
+            /*
+             * Add the message to our list.
+             */
+            m_messages->push_back(t);
+
+        }
+
+        config->set("index.max", total);
+        return;
+    }
+
+
+    /*
+     * Get the messages from the maildir.
+     */
     if (current)
     {
         CMessageList contents = current->getMessages();
@@ -307,7 +409,6 @@ void CGlobalState::update_messages()
         }
     }
 
-    CConfig *config = CConfig::instance();
     config->set("index.max", m_messages->size());
 }
 
