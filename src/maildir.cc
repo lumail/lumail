@@ -101,16 +101,8 @@ bool CMaildir::is_imap()
  */
 int CMaildir::unread_messages()
 {
-    if (m_imap)
-    {
-        CIMAP *imap = CIMAP::instance();
-        return (imap->count_unread(m_path));
-    }
-    else
-    {
-        update_cache();
-        return (m_unread);
-    }
+    update_cache();
+    return (m_unread);
 }
 
 
@@ -119,16 +111,8 @@ int CMaildir::unread_messages()
  */
 int CMaildir::total_messages()
 {
-    if (m_imap)
-    {
-        CIMAP *imap = CIMAP::instance();
-        return (imap->count_total(m_path));
-    }
-    else
-    {
-        update_cache();
-        return (m_total);
-    }
+    update_cache();
+    return (m_total);
 }
 
 
