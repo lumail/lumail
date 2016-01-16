@@ -1,0 +1,85 @@
+#!/usr/bin/perl -w
+#
+#  This script gets a single message from the given folder.
+#
+#  For example to get the first message run:
+#
+##    ./get-message  1 steve-org-uk
+#
+# Where "steve-org-uk" is the name of the folder.
+#
+#
+
+use strict;
+use warnings;
+
+use Net::IMAP::Client;
+
+#
+#  Arguments from the command-line.
+#
+my $id     = shift;
+my $folder = shift;
+
+
+#
+# Arguments from the environment.
+#
+my $user = $ENV{'imap_username'};
+my $pass = $ENV{'imap_password'};
+my $imap = $ENV{'imap_server'};
+
+#
+#  Get the values we're going to connect to the IMAP server with.
+#
+my $port = 0;
+my $ssl  = 0;
+my $host = "";
+if ( $imap =~ /^imaps:\/\/([^\/]+)\/?$/i )
+{
+    $port = 993;
+    $host = $1;
+    $ssl = 1;
+}
+elsif ( $imap =~ /^imap:\/\/([^\/]+)\/?$/i )
+{
+    $port = 143;
+    $host = $1;
+    $ssl = 0;
+}
+
+
+#
+#  Create the helper
+#
+my $handle = Net::IMAP::Client->new(
+                                    server          => $host,
+                                    user            => $user,
+                                    pass            => $pass,
+                                    ssl             => $ssl,
+                                    ssl_verify_peer => 0,
+                                    port            => $port
+
+                                   )
+  or die "Could not connect to IMAP server";
+
+
+$handle->login or die( 'Login failed: ' . $handle->last_error() );
+
+
+$handle->select( $folder ) or die "Failed to select folder: $folder";
+
+my $data = $handle->get_rfc822_body( $id );
+if ( $data ) {
+    print $$data;
+} else {
+    print <<EOF;
+To: user\@example.invalid
+From: user\@example.invalid
+Subject: IMAP fetch failed of message $id
+
+The message with ID $id wasn't found on the server:
+
+$user \@ $imap
+EOF
+}

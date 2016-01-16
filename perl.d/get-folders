@@ -1,0 +1,60 @@
+#!/usr/bin/perl -w
+#
+#  This script gets the IMAP folders.
+#
+
+
+use strict;
+use warnings;
+
+use Net::IMAP::Client;
+
+my $user = $ENV{'imap_username'};
+my $pass = $ENV{'imap_password'};
+my $imap = $ENV{'imap_server'};
+
+my $port = 0;
+my $ssl  = 0;
+my $host = "";
+if ( $imap =~ /^imaps:\/\/([^\/]+)\/?$/i )
+{
+    $port = 993;
+    $host = $1;
+    $ssl = 1;
+}
+elsif ( $imap =~ /^imap:\/\/([^\/]+)\/?$/i )
+{
+    $port = 143;
+    $host = $1;
+    $ssl = 0;
+}
+
+
+
+#
+#  Create the helper
+#
+my $handle = Net::IMAP::Client->new(
+                                    server          => $host,
+                                    user            => $user,
+                                    pass            => $pass,
+                                    ssl             => $ssl,
+                                    ssl_verify_peer => 0,
+                                    port            => $port
+
+                                   )
+  or die "Could not connect to IMAP server";
+
+
+$handle->login or die( 'Login failed: ' . $handle->last_error() );
+
+# Get the status of all.
+my @folders = $handle->folders();
+my $all     = $handle->status( \@folders );
+while ( my ( $name, $status ) = each %$all )
+{
+    print $status->{UNSEEN} . "," .
+      $status->{MESSAGES} . "," .
+      $name . "\n";
+}
+exit;
