@@ -47,8 +47,7 @@ DEBUG_OBJDIR   = obj.debug
 #
 #  Basics
 #
-C=gcc
-CC=g++
+CC?=g++
 LINKER=$(CC) -o
 
 
