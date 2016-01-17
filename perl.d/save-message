@@ -33,6 +33,10 @@ if ( !$handle )
 #  Arguments from the command-line.
 #
 my $file = shift;
+if ( !$file )
+{
+    print "Invalid command-line arguments\n";
+}
 
 my $handle = Lumail::imap_connect();
 

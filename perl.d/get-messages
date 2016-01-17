@@ -24,7 +24,11 @@ use JSON;
 #  Arguments from the command-line.
 #
 my $folder = shift;
-
+if ( !$folder )
+{
+    print "Invalid command-line arguments\n";
+    exit(0);
+}
 
 
 my $handle = Lumail::imap_connect();
