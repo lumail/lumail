@@ -372,9 +372,11 @@ void CGlobalState::update_messages()
 
         if (!parsingSuccessful)
         {
-            std::cout  << "Failed to parse configuration\n"
-                       << reader.getFormattedErrorMessages();
-            exit(1);
+            /*
+             * Failed to parse ..
+             */
+            config->set("index.max", 0);
+            return;
         }
 
         Json::Value messages = root["messages"];
