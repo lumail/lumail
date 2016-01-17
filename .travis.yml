@@ -7,6 +7,8 @@ install:
 addons:
   apt:
     packages:
+    - g++-4.9
+    - libncursesw5-dev
     - libncursesw5-dev
     - liblua5.1-0-dev
     - pkg-config
