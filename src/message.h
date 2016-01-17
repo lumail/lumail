@@ -109,6 +109,12 @@ public:
     void set_imap_flags(std::string flags);
 
     /**
+     * Set the IMAP message ID of this message
+     */
+    void set_imap_id( int n ) { m_imap_id = n; };
+
+
+    /**
      * Add a flag to a message.
      */
     bool add_flag(char c);
@@ -206,6 +212,11 @@ private:
      * The flags retrieved from IMAP
      */
     std::string m_imap_flags;
+
+    /**
+     * The IMAP ID
+     */
+    int m_imap_id;
 
     /**
      * The parent folder.

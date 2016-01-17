@@ -42,6 +42,7 @@
 
 #include "config.h"
 #include "file.h"
+#include "maildir.h"
 #include "message.h"
 #include "message_part.h"
 #include "mime.h"
@@ -693,6 +694,29 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
  */
 bool CMessage::unlink()
 {
+    /*
+     * If we're an IMAP message we need to call perl.d/delete-message
+     *
+     * With that we pass:
+     *
+     *  our IMAP ID
+     *
+     *  our parent-folder
+     */
+    if ( m_imap )
+    {
+        std::string folder = m_parent->path();
+
+        std::string cmd = "perl.d/delete-message ";
+        cmd += " \"";
+        cmd += folder;
+        cmd += "\" ";
+        cmd += std::to_string(m_imap_id);
+
+        system( cmd.c_str() );
+        return true;
+    }
+
     return (CFile::delete_file(path()));
 }
 

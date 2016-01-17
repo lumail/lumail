@@ -456,6 +456,7 @@ void CGlobalState::update_messages()
              */
             t->parent(current);
             t->set_imap_flags(f);
+            t->set_imap_id(id_val);
 
             /*
              * Add the message to our list.
