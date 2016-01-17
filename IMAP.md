@@ -9,9 +9,12 @@ access of mail, in a useful fashion:
 * Login and get the list of folders.
 * Retrieve the messages from a given folder.
 * Get/Set the flags of a given message.
+* Delete a message.
+* Save a message.
 
 Looking around there are no simple, portable, and sane C++ libraries
-for IMAP-client operations.
+for IMAP-client operations which lead me to avoid IMAP for quite some
+time.
 
 
 IMAP Implementation
@@ -44,23 +47,32 @@ Enter Perl.
 IMAP via Perl
 -------------
 
-As a proof of concept I've written a pair of scripts, in the top-level
-perl.d/ directory.  These each read the IMAP login credentials, and
-target-server, via the environment, and perform the necessary magic.
+Because I didn't want to write my own IMAP library, or spend further
+time trying to update the curl-based code to work in a faster and
+more efficient fashion I took a step back.
 
-In the case of listing folder *ONE* network request is sufficient
-to retrieve:
+The specific goal is that we can do "stuff" over IMAP from our C++
+core - because this is where mail-folders are examined and messages
+retrieved - it crossed my mind that we could leverage the reliable
+Perl `Net::IMAP::Client` module, by writing a couple of helpers.
 
-* The list of available folders.
-* The total/unread count of each folder.
+With that in mind I wrote :
 
-This is a collosal win.
+* `perl.d/get-folders`
+    * To connect to a remote IMAP server and return a list of all available folders.
+    * Along with the new/total count of messages in each one.
+* `perl.d/get-messages`
+    * Return an array of *every* message in the given folder.
+    * Along with their flags.
 
-To open a remote folder we also make one request which will receive
-the "flags" and "bodies" of each message in the folder.  This is
-returned as a JSON-array which the C++ code parses via the use
-of [jsoncpp](https://github.com/jmhodges/jsonpp).
+These each read the IMAP login credentials, and target-server, via the
+environment, and perform the necessary magic.
 
+In both cases we can get the data we want in *ONE* network request,
+so althouh calling `system` is slow, we actually have a net-win compared
+to the alternative approach.    We also gain from the fact that the
+library is well-tested, well-known, and easy to hack in a scripting
+language (i.e. Perl, not C++).
 
 
 
@@ -81,14 +93,3 @@ Configure your lumail with suitable IMAP settings:
 Enjoy.
 
 
-TODO
-----
-
-* Document this in the README.md.
-* Handle flags correctly.
-    * Add a script for "get/set" flags.
-* Handle saving to Sent-mail.
-    * Probably create a script which can be called via this lua:
-    * "imap:save_message( "/tmp/blah", "Sent-Mail" )"
-    * Or similar.
-* Handle deleting specially for IMAP folders too.
