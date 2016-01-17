@@ -1,11 +1,4 @@
 
-IMAP
-====
-
-As of release XX lumail supports the use of remote IMAP mailservers
-for retrieving email.
-
-
 
 Required IMAP Operations
 ------------------------
@@ -63,10 +56,11 @@ to retrieve:
 
 This is a collosal win.
 
-Fetching messages is still done individually, but with the right code
-we can return the *complete* bodies of each message in one further
-round-trip.  This will still be slow if the amount of data to be
-transferred is large, but that's a given
+To open a remote folder we also make one request which will receive
+the "flags" and "bodies" of each message in the folder.  This is
+returned as a JSON-array which the C++ code parses via the use
+of [jsoncpp](https://github.com/jmhodges/jsonpp).
+
 
 
 
@@ -75,7 +69,7 @@ Setup Instructions
 
 Ensure you have the required dependencies:
 
-     apt-get install libnet-imap-client
+     apt-get install libnet-imap-client libjson-perl
 
 Configure your lumail with suitable IMAP settings:
 
