@@ -111,7 +111,10 @@ public:
     /**
      * Set the IMAP message ID of this message
      */
-    void set_imap_id( int n ) { m_imap_id = n; };
+    void set_imap_id(int n)
+    {
+        m_imap_id = n;
+    };
 
 
     /**

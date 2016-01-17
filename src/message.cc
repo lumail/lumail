@@ -703,7 +703,7 @@ bool CMessage::unlink()
      *
      *  our parent-folder
      */
-    if ( m_imap )
+    if (m_imap)
     {
         std::string folder = m_parent->path();
 
@@ -713,7 +713,7 @@ bool CMessage::unlink()
         cmd += "\" ";
         cmd += std::to_string(m_imap_id);
 
-        system( cmd.c_str() );
+        system(cmd.c_str());
         return true;
     }
 
