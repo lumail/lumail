@@ -139,16 +139,25 @@ public:
 
     /**
      * Mark a message as unread.
+     *
+     * If this message is an IMAP one we use `perl.d/set-flags` to
+     * trigger an update on the remote IMAP store.
      */
     void mark_unread();
 
     /**
      * Mark a message as read.
+     *
+     * If this message is an IMAP one we use `perl.d/set-flags` to
+     * trigger an update on the remote IMAP store.
      */
     void mark_read();
 
     /**
      * Remove this message from disk.
+     *
+     * If this message is an IMAP one we use `perl.d/delete-message` to
+     * trigger its removal from the remote IMAP store.
      */
     bool unlink();
 
@@ -160,18 +169,28 @@ public:
      */
     std::vector<std::shared_ptr<CMessagePart>> get_parts();
 
+
     /**
      * Add the named file as an attachment to this message.
      */
     void add_attachments(std::vector<std::string> attachments);
 
     /**
-     * Get the parent object.
+     * Get the parent object - this is only used for IMAP-based messages.
+     *
+     * We store the parent such that we can find which folder this message
+     * came from, which is required if we want to change the flags, or delete
+     * the message.
      */
     std::shared_ptr<CMaildir> parent();
 
+
     /**
-     * Set the parent object.
+     * Set the parent object - this is only used for IMAP-based messages.
+     *
+     * We store the parent such that we can find which folder this message
+     * came from, which is required if we want to change the flags, or delete
+     * the message.
      */
     void parent(std::shared_ptr<CMaildir> owner);
 
