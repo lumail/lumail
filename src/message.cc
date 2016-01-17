@@ -438,6 +438,24 @@ void CMessage::mark_unread()
 
         system(cmd.c_str());
         return;
+
+        /*
+         * Remove `S` flag from m_imap_flags since these are
+         * not updated in real-time.
+         */
+        if (m_imap_flags.find('S') != std::string::npos)
+        {
+            std::string::size_type k = 0;
+
+            while ((k = m_imap_flags.find('S', k)) != current.npos)
+                current.erase(k, 1);
+        }
+
+        /*
+         * Add `N` flag, if not present.
+         */
+        if (m_imap_flags.find('N') != std::string::npos)
+            m_imap_flags += "N";
     }
 
     if (has_flag('S'))
@@ -463,6 +481,25 @@ void CMessage::mark_read()
         cmd += std::to_string(m_imap_id);
 
         system(cmd.c_str());
+
+        /*
+         * Remove `N` flag from m_imap_flags since these are
+         * not updated in real-time.
+         */
+        if (m_imap_flags.find('N') != std::string::npos)
+        {
+            std::string::size_type k = 0;
+
+            while ((k = m_imap_flags.find('N', k)) != current.npos)
+                current.erase(k, 1);
+        }
+
+        /*
+         * Add `S` flag, if not present.
+         */
+        if (m_imap_flags.find('S') != std::string::npos)
+            m_imap_flags += "S";
+
         return;
     }
 
