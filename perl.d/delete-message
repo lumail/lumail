@@ -25,6 +25,16 @@ use Lumail;
 my $folder = shift;
 my $id     = shift;
 
+if ( !$folder )
+{
+    print "Invalid command-line arguments\n";
+    exit(0);
+}
+if ( !$id )
+{
+    print "Invalid command-line arguments\n";
+    exit(0);
+}
 
 my $handle = Lumail::imap_connect();
 
@@ -40,4 +50,5 @@ if ( !$handle )
 #
 $handle->select($folder);
 $handle->delete_message($id);
+$handle->expunge();
 $handle->quit();
