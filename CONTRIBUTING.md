@@ -20,7 +20,7 @@ running:
     lumail2 --version
 
 This will either return the release number if you've downloaded a published
-releast tarball, or a git revision ID.
+release tarball, or a git revision ID.
 
 If you can test the latest release, that would also be helpful.
 
