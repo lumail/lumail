@@ -16,27 +16,19 @@ use warnings;
 use JSON;
 use Net::IMAP::Client;
 
-sub logg
-{
-    my( $txt ) = ( @_) ;
-    open( my $log, ">>" , "/tmp/log.log" );
-    print $log  $txt . "\n";
-    close($log);
-}
 
 
 #
 #  Arguments from the command-line.
 #
 my $folder = shift;
-logg( "Opening '$folder'\n" );
 
 #
 # Arguments from the environment.
 #
-my $user = $ENV{ 'imap_username' } ;
-my $pass = $ENV{ 'imap_password' } ;
-my $imap = $ENV{ 'imap_server' }  ;
+my $user = $ENV{ 'imap_username' };
+my $pass = $ENV{ 'imap_password' };
+my $imap = $ENV{ 'imap_server' };
 
 #
 #  Get the values we're going to connect to the IMAP server with.
@@ -74,14 +66,12 @@ my $handle = Net::IMAP::Client->new(
 
 
 $handle->login or die( 'Login failed: ' . $handle->last_error() );
-logg( "Logged in\n" );
 
 #
 #  Count the messages we need to fetch
 #
 my $status = $handle->status($folder);
 my $total  = $status->{ MESSAGES };
-logg( " Total messages: $total\n" );
 
 #
 # Select the folder
@@ -91,10 +81,11 @@ $handle->select($folder) or die "Failed to select folder: $folder";
 #
 #  Show a search
 #
-my $all = $handle->search("all" );
+my $all = $handle->search("all");
 
 my @ids;
-foreach my $a ( @$all ) {
+foreach my $a (@$all)
+{
     push @ids, $a;
 }
 #
@@ -125,4 +116,3 @@ $hash{ 'messages' } = $tmp;
 my $t = JSON->new->allow_nonref;
 my $o = $t->pretty->encode( \%hash );
 print $o;
-logg( $o);
