@@ -36,6 +36,19 @@ sub imap_connect
     my $pass = $ENV{ 'imap_password' } || "";
     my $imap = $ENV{ 'imap_server' }   || "";
 
+    if ( $ENV{ 'IMAP_FILE' } )
+    {
+        open( my $file, "<", $ENV{ 'IMAP_FILE' } );
+        while ( my $line = <$file> )
+        {
+            chomp($line);
+            $user = $1 if ( $line =~ /^user=(.*)/ );
+            $pass = $1 if ( $line =~ /^pass=(.*)/ );
+            $imap = $1 if ( $line =~ /^imap=(.*)/ );
+        }
+        close($file);
+    }
+
     my $port = 0;
     my $ssl  = 0;
     my $host = "";
