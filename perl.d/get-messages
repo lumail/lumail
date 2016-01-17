@@ -1,12 +1,9 @@
 #!/usr/bin/perl -w
 #
-#  This script gets ALL the messages from the given folder.
+#  This script gets ALL the messages from the given folder, and dumps them
+# as a JSON array of hashes.
 #
-#  For example to get the first message run:
-#
-##    ./get-messages  steve-org-uk
-#
-# Where "steve-org-uk" is the name of the folder.
+#  It is invoked from src/global_state.cc.
 #
 #
 

@@ -2,6 +2,11 @@
 #
 #  This script saves the specified filename to the remote IMAP server.
 #
+#  It is used to archive outgoing messages when you reply, forward, or
+# compose a mail, and is invoked via `lumail2.lua`.
+#
+# Steve
+# --
 
 use strict;
 use warnings;

@@ -1,7 +1,12 @@
 #!/usr/bin/perl -w
 #
-#  This script gets the IMAP folders.
+#  This script is invoked by luamil to read the list of globally available
+# folders from a remote IMAP-server.
 #
+#  It is invoked from src/global_state.cc.
+#
+# Steve
+# --
 
 
 use strict;

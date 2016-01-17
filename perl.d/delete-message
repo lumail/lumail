@@ -5,6 +5,7 @@
 #  Usage:
 #    delete-message folder ID
 #
+#  This is invoked from src/message.cc
 #
 #
 
