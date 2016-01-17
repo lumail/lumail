@@ -896,12 +896,7 @@ ${sig}
          --
          -- Now we need to save a copy of the outgoing message.
          --
-         local sent = Config:get( "global.sent-mail" )
-         if ( sent ) then
-            local msent   = Maildir.new( sent )
-            local tmp_msg = Message.new(tmp)
-            msent:save_message(tmp_msg)
-         end
+         Message.archive_outgoing(tmp)
 
          run = false
       end
@@ -1078,12 +1073,7 @@ Date: ${date}
          --
          -- Now we need to save a copy of the outgoing message.
          --
-         local sent = Config:get( "global.sent-mail" )
-         if ( sent ) then
-            local msent   = Maildir.new( sent )
-            local tmp_msg = Message.new(tmp)
-            msent:save_message(tmp_msg)
-         end
+         Message.archive_outgoing(tmp)
 
          run = false
       end
@@ -1110,6 +1100,39 @@ Date: ${date}
    if ( File:exists(tmp ) ) then
       os.remove(tmp)
    end
+end
+
+
+--
+-- Save a message
+--
+function Message.archive_outgoing( msg_path )
+
+   --
+   -- If we're using IMAP ..
+   --
+   local user = Config:get("imap.username")
+   local pass = Config:get("imap.password")
+   local host = Config:get("imap.server")
+
+   if ( user and pass and host ) then
+
+      -- We're saving in a remote host - do it
+      os.execute( "perl.d/save-message '" .. msg_path .. "'" )
+      Panel:append("Saved message to remote IMAP server.")
+      return
+   end
+
+   --
+   -- Otherwise just save globally.
+   --
+   local sent = Config:get( "global.sent-mail" )
+   if ( sent ) then
+      local msent   = Maildir.new( sent )
+      local tmp_msg = Message.new(msg_path)
+      msent:save_message(tmp_msg)
+   end
+
 end
 
 
@@ -1283,12 +1306,7 @@ Begin forwarded message.
          --
          -- Now we need to save a copy of the outgoing message.
          --
-         local sent = Config:get( "global.sent-mail" )
-         if ( sent ) then
-            local msent   = Maildir.new( sent )
-            local tmp_msg = Message.new(tmp)
-            msent:save_message(tmp_msg)
-         end
+         Message.archive_outgoing(tmp)
 
          run = false
       end
