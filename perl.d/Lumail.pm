@@ -36,7 +36,7 @@ sub imap_connect
     my $pass = $ENV{ 'imap_password' } || "";
     my $imap = $ENV{ 'imap_server' }   || "";
 
-    if ( $ENV{ 'IMAP_FILE' } )
+    if ( $ENV{ 'IMAP_FILE' } && ( -e $ENV{ 'IMAP_FILE' } ) )
     {
         open( my $file, "<", $ENV{ 'IMAP_FILE' } );
         while ( my $line = <$file> )
