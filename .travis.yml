@@ -22,4 +22,5 @@ script: make
 
 before_install:
  - sudo apt-get update -qq
+ - sudo apt-cache search ^gcc-
  - sudo apt-get install -qq libncursesw5-dev liblua5.1-0-dev pkg-config libpcre3-dev libgmime-2.6-dev g++-4.8 g++-4.9
