@@ -1,6 +1,6 @@
 sudo: required
 install:
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
+- export CC="g++-4.9"
 - echo ${PATH}
 - echo ${CXX}
 - ${CXX} --version
