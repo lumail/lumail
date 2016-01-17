@@ -30,8 +30,16 @@
 
 /**
  * This is the C++ implementation of the maildir class, which allows
- * simple operations to be carried out against Maildir folders stored
- * upon the local filesystem.
+ * simple operations to be carried out against collections of folders.
+ *
+ * Traditionally this class was solely responsible for the handling
+ * of local Maildir-folders, however it has been expanding in scope
+ * such that a CMaildir object can now represent either a local Maildir
+ * directory _or_ a remote IMAP directory.
+ *
+ * To differentiate the two a constructor flag is used, and the two
+ * member-methods `is_maildir` and `is_imap` are exported to allow
+ * callers to tell the difference.
  *
  */
 class CMaildir
@@ -72,21 +80,36 @@ public:
 
 
     /**
-     * The number of new messages for this maildir.
+     * Retrieve the number of new messages for this maildir.
      */
     int unread_messages();
 
+    /**
+     * Set the number of unread messages in this maildir.
+     *
+     * This is called when the object is created __if__ the object
+     * is a remote IMAP folder.   If that is the case then the notion
+     * of updating never applies.
+     */
     void set_unread(int n)
     {
         m_unread = n;
     };
+
+    /**
+     * Set the number of total messages in this maildir.
+     *
+     * This is called when the object is created __if__ the object
+     * is a remote IMAP folder.   If that is the case then the notion
+     * of updating never applies.
+     */
     void set_total(int n)
     {
         m_total = n;
     };
 
     /**
-     * The total number of messages for this maildir.
+     * Retrieve total number of messages for this maildir.
      */
     int total_messages();
 
@@ -117,6 +140,8 @@ private:
     /**
      * The date/time this maildir was last updated.  Used to maintain a
      * cache that can be expired/tested easily.
+     *
+     * **NOTE**: This does not apply to IMAP folders.
      */
     time_t m_modified;
 
@@ -133,11 +158,15 @@ private:
     /**
      * Return the last modified time for this Maildir.
      * Used to determine if we need to update our cache.
+     *
+     * **NOTE**: This does not apply to IMAP folders.
      */
     time_t last_modified();
 
     /**
      * Update the cached total/unread message counts.
+     *
+     * **NOTE**: This is a NOP for IMAP folders.
      */
     void update_cache();
 
