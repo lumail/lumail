@@ -27,13 +27,12 @@ is complete and robust:
      * Forwarding emails.
      * Composing fresh emails.
 
-The missing facilities include:
-
-* Lack of support for GPG/PGP.
+All of these things work against local Maildir-hierarchies __and__ remote
+IMAP servers.
 
 **NOTE**: Lumail2 may well eat your email, corrupt your email, or
 otherwise cause data loss.  If you have no current backups of your
-Maildir hierachies you have **NO USE FOR THIS PROJECT**.
+email you should **NO USE FOR THIS PROJECT**.
 
 
 User-Interface
@@ -68,14 +67,14 @@ of modes:
 Building Lumail2
 ----------------
 
-The code relies upon a small number of libraries:
+The core of the project relies upon a small number of libraries:
 
 * lua 5.2.
 * libmagic, the file-identification library.
 * libgmime-2.6, the MIME-library.
 * libncursesw, the console input/graphics library.
 
-Upon a Debian GNU/Linux host, running the Jessie (stable), release the following two commands are sufficient to install the dependencies:
+Upon a Debian GNU/Linux host, running the Jessie (stable) release, the following two commands are sufficient to install the dependencies:
 
     apt-get install build-essential make pkg-config
 
@@ -130,6 +129,7 @@ Further Notes
 * [API Documentation](API.md)
    * Documents the Lua classes.
 * [Contributor Guide](CONTRIBUTING.md)
+* [Notes on IMAP](IMAP.md)
 * [Notes on implementation & structure](HACKING.md)
    * See also the [experiments repository](https://github.com/lumail/experiments) where some standalone code has been isolated for testing/learning purposes.
 
