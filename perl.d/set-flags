@@ -1,0 +1,68 @@
+#!/usr/bin/perl -w
+#
+#  This script changes the flag of a message
+#
+#  Usage:
+#    set-flag [--read|--unread] folder ID
+#
+#  This is invoked from src/message.cc
+#
+#
+
+use strict;
+use warnings;
+
+use Cwd 'abs_path';
+use File::Basename;
+
+use lib File::Basename::dirname( abs_path($0) );
+use Lumail;
+
+
+#
+#  Arguments from the command-line.
+#
+my $action = shift;
+my $folder = shift;
+my $id     = shift;
+
+if ( !$action )
+{
+    print "Invalid command-line arguments\n";
+    exit(0);
+}
+if ( !$folder )
+{
+    print "Invalid command-line arguments\n";
+    exit(0);
+}
+if ( !$id )
+{
+    print "Invalid command-line arguments\n";
+    exit(0);
+}
+
+my $handle = Lumail::imap_connect();
+
+# If that failed show the user and abort.
+if ( !$handle )
+{
+    print "$0 - Login failed.\n";
+    exit(0);
+}
+
+#
+#  Select the folder
+#
+$handle->select($folder);
+
+if ( $action =~ /--unread/ )
+{
+    $handle->del_flags( $id, "\\Seen" );
+}
+if ( $action =~ /--read/ )
+{
+    $handle->del_flags( $id, "\\Unseen" );
+    $handle->add_flags( $id, "\\Seen" );
+}
+$handle->quit();

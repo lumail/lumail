@@ -423,8 +423,20 @@ bool CMessage::is_new()
  */
 void CMessage::mark_unread()
 {
+    /*
+     * If we're an IMAP message we need to call `perl.d/set-flags --unread`
+     */
     if (m_imap)
     {
+        std::string folder = m_parent->path();
+
+        std::string cmd = "/etc/lumail2/perl.d/set-flags --unread ";
+        cmd += " \"";
+        cmd += folder;
+        cmd += "\" ";
+        cmd += std::to_string(m_imap_id);
+
+        system(cmd.c_str());
         return;
     }
 
@@ -437,8 +449,20 @@ void CMessage::mark_unread()
  */
 void CMessage::mark_read()
 {
+    /*
+     * If we're an IMAP message we need to call `perl.d/set-flags --read`
+     */
     if (m_imap)
     {
+        std::string folder = m_parent->path();
+
+        std::string cmd = "/etc/lumail2/perl.d/set-flags --read ";
+        cmd += " \"";
+        cmd += folder;
+        cmd += "\" ";
+        cmd += std::to_string(m_imap_id);
+
+        system(cmd.c_str());
         return;
     }
 
