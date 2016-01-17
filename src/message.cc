@@ -447,8 +447,8 @@ void CMessage::mark_unread()
         {
             std::string::size_type k = 0;
 
-            while ((k = m_imap_flags.find('S', k)) != current.npos)
-                current.erase(k, 1);
+            while ((k = m_imap_flags.find('S', k)) != m_imap_flags.npos)
+                m_imap_flags.erase(k, 1);
         }
 
         /*
@@ -490,8 +490,8 @@ void CMessage::mark_read()
         {
             std::string::size_type k = 0;
 
-            while ((k = m_imap_flags.find('N', k)) != current.npos)
-                current.erase(k, 1);
+            while ((k = m_imap_flags.find('N', k)) != m_imap_flags.npos)
+                m_imap_flags.erase(k, 1);
         }
 
         /*
@@ -987,6 +987,8 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
 
     free(tmp_file);
 }
+
+
 /**
  * Get the parent object.
  */
