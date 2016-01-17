@@ -36,7 +36,6 @@
 #include <gmime/gmime.h>
 
 
-#include "imap.h"
 #include "file.h"
 #include "maildir.h"
 #include "message.h"
