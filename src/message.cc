@@ -423,6 +423,8 @@ bool CMessage::is_new()
  */
 void CMessage::mark_unread()
 {
+    int result __attribute__((unused));
+
     /*
      * If we're an IMAP message we need to call `perl.d/set-flags --unread`
      */
@@ -436,8 +438,7 @@ void CMessage::mark_unread()
         cmd += "\" ";
         cmd += std::to_string(m_imap_id);
 
-        system(cmd.c_str());
-        return;
+        result = system(cmd.c_str());
 
         /*
          * Remove `S` flag from m_imap_flags since these are
@@ -467,6 +468,8 @@ void CMessage::mark_unread()
  */
 void CMessage::mark_read()
 {
+    int result __attribute__((unused));
+
     /*
      * If we're an IMAP message we need to call `perl.d/set-flags --read`
      */
@@ -480,7 +483,7 @@ void CMessage::mark_read()
         cmd += "\" ";
         cmd += std::to_string(m_imap_id);
 
-        system(cmd.c_str());
+        result = system(cmd.c_str());
 
         /*
          * Remove `N` flag from m_imap_flags since these are
@@ -755,6 +758,8 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
  */
 bool CMessage::unlink()
 {
+    int result __attribute__((unused));
+
     /*
      * If we're an IMAP message we need to call perl.d/delete-message
      *
@@ -774,7 +779,7 @@ bool CMessage::unlink()
         cmd += "\" ";
         cmd += std::to_string(m_imap_id);
 
-        system(cmd.c_str());
+        result = system(cmd.c_str());
         return true;
     }
 
