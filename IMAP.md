@@ -1,3 +1,5 @@
+Lumail IMAP Support
+===================
 
 
 Required IMAP Operations
@@ -54,7 +56,7 @@ more efficient fashion I took a step back.
 The specific goal is that we can do "stuff" over IMAP from our C++
 core - because this is where mail-folders are examined and messages
 retrieved - it crossed my mind that we could leverage the reliable
-Perl `Net::IMAP::Client` module, by writing a couple of helpers.
+Perl [Net::IMAP::Client](http://search.cpan.org/perldoc?Net%3A%3AIMAP%3A%3AClient) module, by writing a couple of helpers.
 
 With that in mind I wrote :
 
@@ -64,9 +66,11 @@ With that in mind I wrote :
 * `perl.d/get-messages`
     * Return an array of *every* message in the given folder.
     * Along with their flags.
+    * The data is returned as a JSON array of hashes.
 
-These each read the IMAP login credentials, and target-server, via the
-environment, and perform the necessary magic.
+These scripts each read the IMAP login credentials, and target-server, via the
+environment.  The code to handle that is centralized in the
+`Lumail.pm` module.
 
 In both cases we can get the data we want in *ONE* network request,
 so althouh calling `system` is slow, we actually have a net-win compared
@@ -91,5 +95,3 @@ Configure your lumail with suitable IMAP settings:
      Config:set( "imap.password", "pass.word" )
 
 Enjoy.
-
-

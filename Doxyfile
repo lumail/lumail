@@ -756,6 +756,7 @@ WARN_LOGFILE           =
 INPUT                  = src/
 INPUT                 += doxygen.md
 INPUT                 += API.md
+INPUT                 += IMAP.md
 INPUT                 += HACKING.md
 
 # This tag can be used to specify the character encoding of the source files
