@@ -10,9 +10,14 @@
 use strict;
 use warnings;
 
-use JSON;
-use Net::IMAP::Client;
+use Cwd 'abs_path';
+use File::Basename;
 
+
+use lib File::Basename::dirname( abs_path($0) );
+use Lumail;
+
+use JSON;
 
 
 #
@@ -20,49 +25,16 @@ use Net::IMAP::Client;
 #
 my $folder = shift;
 
-#
-# Arguments from the environment.
-#
-my $user = $ENV{ 'imap_username' };
-my $pass = $ENV{ 'imap_password' };
-my $imap = $ENV{ 'imap_server' };
 
-#
-#  Get the values we're going to connect to the IMAP server with.
-#
-my $port = 0;
-my $ssl  = 0;
-my $host = "";
-if ( $imap =~ /^imaps:\/\/([^\/]+)\/?$/i )
+
+my $handle = Lumail::imap_connect();
+
+# If that failed show the user and abort.
+if ( !$handle )
 {
-    $port = 993;
-    $host = $1;
-    $ssl  = 1;
+    print "$0 - Login failed.\n";
+    exit(0);
 }
-elsif ( $imap =~ /^imap:\/\/([^\/]+)\/?$/i )
-{
-    $port = 143;
-    $host = $1;
-    $ssl  = 0;
-}
-
-
-#
-#  Create the helper
-#
-my $handle = Net::IMAP::Client->new(
-    server          => $host,
-    user            => $user,
-    pass            => $pass,
-    ssl             => $ssl,
-    ssl_verify_peer => 0,
-    port            => $port
-
-  ) or
-  die "Could not connect to IMAP server";
-
-
-$handle->login or die( 'Login failed: ' . $handle->last_error() );
 
 #
 #  Count the messages we need to fetch
