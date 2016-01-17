@@ -707,7 +707,7 @@ bool CMessage::unlink()
     {
         std::string folder = m_parent->path();
 
-        std::string cmd = "perl.d/delete-message ";
+        std::string cmd = "/etc/lumail2/perl.d/delete-message ";
         cmd += " \"";
         cmd += folder;
         cmd += "\" ";

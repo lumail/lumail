@@ -208,7 +208,7 @@ void CGlobalState::update_maildirs()
         /*
          * Execute the program.
          */
-        std::vector< std::string >out = shell_execute("perl.d/get-folders");
+        std::vector< std::string >out = shell_execute("/etc/lumail2/perl.d/get-folders");
 
         /*
          * For each output...
@@ -348,7 +348,7 @@ void CGlobalState::update_messages()
          * flags: The flags.
          *
          */
-        std::string cmd = "perl.d/get-messages ";
+        std::string cmd = "/etc/lumail2/perl.d/get-messages ";
         cmd += " '";
         cmd += folder;
         cmd += "'";

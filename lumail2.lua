@@ -1118,7 +1118,7 @@ function Message.archive_outgoing( msg_path )
    if ( user and pass and host ) then
 
       -- We're saving in a remote host - do it
-      os.execute( "perl.d/save-message '" .. msg_path .. "'" )
+      os.execute( "/etc/lumail2/perl.d/save-message '" .. msg_path .. "'" )
       Panel:append("Saved message to remote IMAP server.")
       return
    end
