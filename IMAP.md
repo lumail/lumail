@@ -73,7 +73,7 @@ environment.  The code to handle that is centralized in the
 `Lumail.pm` module.
 
 In both cases we can get the data we want in *ONE* network request,
-so althouh calling `system` is slow, we actually have a net-win compared
+so although calling `system` is slow, we actually have a net-win compared
 to the alternative approach.    We also gain from the fact that the
 library is well-tested, well-known, and easy to hack in a scripting
 language (i.e. Perl, not C++).
