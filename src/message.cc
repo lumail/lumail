@@ -246,6 +246,9 @@ CMessage::~CMessage()
  */
 std::string CMessage::get_flags()
 {
+    if (m_imap)
+        return m_imap_flags;
+
     std::string flags = "";
     std::string pth = path();
 
@@ -313,6 +316,15 @@ void CMessage::set_flags(std::string new_flags)
         CFile::move(cur_path, dst_path);
         path(dst_path);
     }
+}
+
+
+/*
+ * Set IMAP-flags - these are set at creation time.
+ */
+void CMessage::set_imap_flags(std::string flags)
+{
+    m_imap_flags = flags;
 }
 
 
@@ -410,9 +422,13 @@ bool CMessage::is_new()
  */
 void CMessage::mark_unread()
 {
+    if (m_imap)
+    {
+        return;
+    }
+
     if (has_flag('S'))
         remove_flag('S');
-
 }
 
 /*
@@ -420,6 +436,11 @@ void CMessage::mark_unread()
  */
 void CMessage::mark_read()
 {
+    if (m_imap)
+    {
+        return;
+    }
+
     /*
      * Get the current path, and build a new one.
      */
@@ -880,4 +901,19 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
         m_parts.clear();
 
     free(tmp_file);
+}
+/**
+ * Get the parent object.
+ */
+std::shared_ptr<CMaildir> CMessage::parent()
+{
+    return (m_parent);
+}
+
+/**
+ * Set the parent object.
+ */
+void CMessage::parent(std::shared_ptr<CMaildir> owner)
+{
+    m_parent = owner;
 }

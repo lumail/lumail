@@ -26,10 +26,13 @@
 #include <vector>
 #include <gmime/gmime.h>
 
+class CMaildir;
+
 /*
  * Forward declaration of class.
  */
 class CMessagePart;
+
 
 
 /**
@@ -101,6 +104,11 @@ public:
     void set_flags(std::string new_flags);
 
     /**
+     * Set IMAP-flags - these are set at creation time.
+     */
+    void set_imap_flags(std::string flags);
+
+    /**
      * Add a flag to a message.
      */
     bool add_flag(char c);
@@ -148,6 +156,16 @@ public:
      */
     void add_attachments(std::vector<std::string> attachments);
 
+    /**
+     * Get the parent object.
+     */
+    std::shared_ptr<CMaildir> parent();
+
+    /**
+     * Set the parent object.
+     */
+    void parent(std::shared_ptr<CMaildir> owner);
+
 private:
 
     /**
@@ -183,6 +201,16 @@ private:
      * Is this message stored in IMAP?
      */
     bool m_imap;
+
+    /**
+     * The flags retrieved from IMAP
+     */
+    std::string m_imap_flags;
+
+    /**
+     * The parent folder.
+     */
+    std::shared_ptr<CMaildir> m_parent;
 };
 
 
