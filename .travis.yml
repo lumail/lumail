@@ -1,13 +1,11 @@
 sudo: required
 install:
-- export CC="g++-4.9"
-- echo ${PATH}
-- echo ${CXX}
-- ${CXX} --version
+- export CC="g++-4.8"
+- ${CC} --version
 addons:
   apt:
     packages:
-    - g++-4.9
+    - g++-4.8
     - libncursesw5-dev
     - libncursesw5-dev
     - liblua5.1-0-dev
