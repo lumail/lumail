@@ -80,14 +80,27 @@ Upon a Debian GNU/Linux host, running the Jessie (stable), release the following
     apt-get install build-essential make pkg-config
 
     apt-get install liblua5.2-dev libgmime-2.6-dev  \
-       libncursesw5-dev libpcre3-dev libmagic-dev libcurl4-openssl-dev
+       libncursesw5-dev libpcre3-dev libmagic-dev
 
 
 With the dependencies installed you should find the code builds cleanly with:
 
     make
 
-Running `make install` will install the binary and the [luarocks](https://luarocks.org/) libraries that we bundle.  If you wish to install manually copy the contents of `luarocks.d` to `/etc/lumail2/luarocks.d`.
+
+
+Installing lumail2
+------------------
+
+Running `make install` will install the binary and the [luarocks](https://luarocks.org/) libraries that we bundle.
+
+If you wish to install manually copy the contents of `luarocks.d` to `/etc/lumail2/luarocks.d`, and `perl.d` to `/etc/lumail2/perl.d`.
+
+NOTE: If you wish to use IMAP you'll need to install the two perl libraries `JSON` and `Net::IMAP::Client`, Upon a Debian GNU/Linux system this can be done via:
+
+     apt-get install libnet-imap-client-perl libjson-perl
+
+
 
 
 Using Lumail
