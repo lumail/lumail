@@ -24,11 +24,12 @@
 #include "file.h"
 #include "global_state.h"
 #include "history.h"
-#include "lua.h"
+#include "json/json.h"
 #include "logfile.h"
+#include "lua.h"
 #include "maildir.h"
 #include "message.h"
-
+#include "util.h"
 
 /*
  * Constructor
@@ -330,17 +331,64 @@ void CGlobalState::update_messages()
          * The server name is part of the cache.
          */
         CConfig *config = CConfig::instance();
-        std::string imap_server  = config->get_string("imap.server");
+        std::string imap_server = config->get_string("imap.server");
         std::string imap_cache  = config->get_string("imap.cache");
 
         if (imap_cache.empty())
             imap_cache = "/tmp";
 
         /*
-         * For each message.
+         * Execute the helper to get all messages.
+         *
+         * This will return a JSON-array, with entries for each distinct
+         * message.  The array will be an array of hashes - with the keys:
+         *
+         *   id:  The UID of the message.
+         *  msg:  The text-body.
+         * flags: The flags.
+         *
          */
-        for (int i = 1; i <= total ; i++)
+        std::string cmd = "perl.d/get-messages ";
+        cmd += " '";
+        cmd += folder;
+        cmd += "'";
+
+        std::vector< std::string >out = shell_execute(cmd);
+
+        /*
+         * Join the array of lines into one buffer.
+         */
+        std::string json = "";
+
+        for (auto it = out.begin() ; it != out.end(); ++it)
+            json += (*it);
+
+        /*
+         * Now parse the JSON into objects.
+         */
+        Json::Value root;
+        Json::Reader reader;
+        bool parsingSuccessful = reader.parse(json, root);
+
+        if (!parsingSuccessful)
         {
+            std::cout  << "Failed to parse configuration\n"
+                       << reader.getFormattedErrorMessages();
+            exit(1);
+        }
+
+        Json::Value messages = root["messages"];
+
+        for (Json::ValueConstIterator it = messages.begin(); it != messages.end(); ++it)
+        {
+            /*
+             * Get the values from the JSON array.
+             */
+            Json::Value single = (*it);
+            int id_val = single["id"].asInt();
+            std::string flags_val = single["flags"].asString();
+            std::string msg_val = single["msg"].asString();
+
             /*
              * Create a fake path to store the message body in - we make
              * sure this references both the remote IMAP-server and the folder
@@ -349,7 +397,7 @@ void CGlobalState::update_messages()
             std::string path = imap_server;
             path += folder;
             path += ",";
-            path += std::to_string(i);
+            path += std::to_string(id_val);
 
             /*
              * Make sure the path is escaped by removing "/" + "\".
@@ -370,30 +418,9 @@ void CGlobalState::update_messages()
              */
             if (! CFile::exists(path))
             {
-                CConfig *config = CConfig::instance();
-                setenv("imap_username", config->get_string("imap.username").c_str(), 1);
-                setenv("imap_password", config->get_string("imap.password").c_str(), 1);
-                setenv("imap_server", config->get_string("imap.server").c_str(), 1);
-
-
-                /*
-                 * Execute the program.
-                 */
-                std::string cmd = "perl.d/get-message ";
-                cmd += std::to_string(i);
-                cmd += " \"";
-                cmd += folder;
-                cmd += "\"";
-                std::vector< std::string >out = shell_execute(cmd);
-
                 std::fstream fs;
                 fs.open(path,  std::fstream::out | std::fstream::app);
-
-                for (auto it = out.begin() ; it != out.end(); ++it)
-                {
-                    fs << (*it);
-                }
-
+                fs << msg_val;
                 fs.close();
             }
 
@@ -404,6 +431,31 @@ void CGlobalState::update_messages()
             std::shared_ptr < CMessage > t = std::shared_ptr < CMessage >(new CMessage(path, false));
             t->path(path);
 
+            /*
+             * Split the flags into sane things.
+             */
+            std::string f;
+            std::vector<std::string> flags = split(flags_val, ',');
+
+            for (auto it = flags.begin() ; it != flags.end(); ++it)
+            {
+                std::string flag = (*it);
+
+                if (flag == "\\Seen")
+                    f += "S";
+
+                if (flag == "\\Recent")
+                    f += "N";
+
+                if (flag == "\\Answered")
+                    f += "R";
+            }
+
+            /*
+             * Set the flags and link
+             */
+            t->parent(current);
+            t->set_imap_flags(f);
 
             /*
              * Add the message to our list.
