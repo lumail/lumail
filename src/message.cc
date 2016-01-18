@@ -474,7 +474,7 @@ void CMessage::mark_unread()
         /*
          * Add `N` flag, if not present.
          */
-        if (m_imap_flags.find('N') != std::string::npos)
+        if (m_imap_flags.find('N') == std::string::npos)
             m_imap_flags += "N";
 
         /*
@@ -531,7 +531,7 @@ void CMessage::mark_read()
         /*
          * Add `S` flag, if not present.
          */
-        if (m_imap_flags.find('S') != std::string::npos)
+        if (m_imap_flags.find('S') == std::string::npos)
             m_imap_flags += "S";
 
         /*
