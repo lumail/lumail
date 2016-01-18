@@ -99,3 +99,20 @@ std::vector<std::string> shell_execute(std::string cmd)
 
     return (result);
 }
+
+
+/*
+ * Escape a string such that it can be used for a filename.
+ *
+ * For example "`foo/bar`" would become "`foo_bar`", and
+ * `imaps://example.com/` would become "`imaps:__example.com_`"
+ */
+std::string escape_filename(std::string path)
+{
+    std::transform(path.begin(), path.end(), path.begin(), [](char ch)
+    {
+        return (ch == '/' || ch == '\\') ? '_' : ch;
+    });
+
+    return (path);
+}

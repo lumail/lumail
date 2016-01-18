@@ -63,3 +63,11 @@ std::vector<std::string> split(const std::string &text, char sep);
  * execute a command and return the output as a vector of lines.
  */
 std::vector<std::string> shell_execute(std::string cmd);
+
+/**
+ * Escape a string such that it can be used for a filename.
+ *
+ * For example "`foo/bar`" would become "`foo_bar`", and
+ * `imaps://example.com/` would become "`imaps:__example.com_`"
+ */
+std::string escape_filename(std::string path);
