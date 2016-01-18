@@ -457,6 +457,12 @@ void CGlobalState::update_messages()
             }
 
             /*
+             * Empty flag == new message.
+             */
+            if (f.empty())
+                f = "N";
+
+            /*
              * Set the flags and link
              */
             t->parent(current);
