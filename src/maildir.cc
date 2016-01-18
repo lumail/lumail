@@ -163,7 +163,9 @@ time_t CMaildir::last_modified()
 {
 
     if (m_imap)
-        return 0;
+    {
+        return (m_modified);
+    }
 
     time_t last = 0;
     struct stat st_buf;

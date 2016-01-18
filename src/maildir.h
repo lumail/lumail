@@ -125,11 +125,24 @@ public:
      */
     bool saveMessage(std::shared_ptr <CMessage > msg);
 
+
     /**
-     * Bump the modification-time of this maildir artificially
-     * which is used solely for IMAP-based messages.
+     * Bump the modification-time of this maildir artificially.
+     *
+     * **NOTE**: This is used solely for IMAP-based messages, and
+     * updates the fake time that `last_modified()` returns.
      */
     void bump_mtime();
+
+
+    /**
+     * Return the last modified time for this Maildir, which is
+     * used to determine if we need to update our cache.
+     *
+     * **NOTE**: This result is faked for IMAP-folders, via
+     * `bump_mtime()`.
+     */
+    time_t last_modified();
 
 private:
 
@@ -161,13 +174,6 @@ private:
      */
     int m_total;
 
-    /**
-     * Return the last modified time for this Maildir.
-     * Used to determine if we need to update our cache.
-     *
-     * **NOTE**: This does not apply to IMAP folders.
-     */
-    time_t last_modified();
 
     /**
      * Update the cached total/unread message counts.
