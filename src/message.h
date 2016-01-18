@@ -154,7 +154,7 @@ public:
     void mark_read();
 
     /**
-     * Remove this message from disk.
+     * Remove this message.
      *
      * If this message is an IMAP one we use `perl.d/delete-message` to
      * trigger its removal from the remote IMAP store.
@@ -194,6 +194,11 @@ public:
      */
     void parent(std::shared_ptr<CMaildir> owner);
 
+    /**
+     * Retrieve the last modification time of our message.
+     */
+    int get_mtime();
+
 private:
 
     /**
@@ -209,6 +214,11 @@ private:
 
 
 private:
+
+    /**
+     * The last modification time of our message.
+     */
+    int m_time;
 
     /**
      * The path on-disk to the message.

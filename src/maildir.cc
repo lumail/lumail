@@ -338,3 +338,13 @@ std::string CMaildir::generate_filename(bool is_new)
             return (path + file);
     }
 }
+
+
+/*
+ * Bump the modification-time of this maildir artificially
+ * which is used solely for IMAP-based messages.
+ */
+void CMaildir::bump_mtime()
+{
+    m_modified += 1;
+}

@@ -25,6 +25,7 @@
 #include <string.h>
 #include <string>
 #include <sstream>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -55,6 +56,7 @@
 CMessage::CMessage(const std::string name, bool is_local)
 {
     m_path = name;
+    m_time = 0;
     m_imap = !is_local;
 }
 
@@ -325,7 +327,24 @@ void CMessage::set_flags(std::string new_flags)
  */
 void CMessage::set_imap_flags(std::string flags)
 {
+    /*
+     * Sort the flags, and remove duplicates
+     */
+    std::sort(flags.begin(), flags.end());
+    flags.erase(std::unique(flags.begin(), flags.end()), flags.end());
+
     m_imap_flags = flags;
+
+    /*
+     * Update our mtime so that the cache is flushed.
+     */
+    m_time += 1;
+
+    /*
+     * Increase the modification time of the parent folder too.
+     */
+    m_parent->bump_mtime();
+
 }
 
 
@@ -457,6 +476,18 @@ void CMessage::mark_unread()
          */
         if (m_imap_flags.find('N') != std::string::npos)
             m_imap_flags += "N";
+
+        /*
+         * Update our mtime so that the cache is flushed.
+         */
+        m_time += 1;
+
+        /*
+         * Increase the modification time of the parent folder too.
+         */
+        m_parent->bump_mtime();
+        return;
+
     }
 
     if (has_flag('S'))
@@ -503,6 +534,15 @@ void CMessage::mark_read()
         if (m_imap_flags.find('S') != std::string::npos)
             m_imap_flags += "S";
 
+        /*
+         * Update our mtime so that the cache is flushed.
+         */
+        m_time += 1;
+
+        /*
+         * Increase the modification time of the parent folder too.
+         */
+        m_parent->bump_mtime();
         return;
     }
 
@@ -751,10 +791,11 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
 
 
 
-
-
 /*
- * Delete this message from the disk.
+ * Remove this message.
+ *
+ * If this message is an IMAP one we use `perl.d/delete-message` to
+ * trigger its removal from the remote IMAP store.
  */
 bool CMessage::unlink()
 {
@@ -780,6 +821,12 @@ bool CMessage::unlink()
         cmd += std::to_string(m_imap_id);
 
         result = system(cmd.c_str());
+
+        /*
+         * Increase the modification time of the parent folder.
+         */
+        m_parent->bump_mtime();
+
         return true;
     }
 
@@ -1008,4 +1055,25 @@ std::shared_ptr<CMaildir> CMessage::parent()
 void CMessage::parent(std::shared_ptr<CMaildir> owner)
 {
     m_parent = owner;
+}
+
+
+/*
+ * Retrieve the last modification time of our message.
+ */
+int CMessage::get_mtime()
+{
+    if (m_imap == false)
+    {
+        std::string our_path = path();
+
+        struct stat sb;
+
+        if (stat(our_path.c_str(), &sb) < 0)
+            return 1;
+        else
+            return sb.st_mtime;
+    }
+
+    return (m_time);
 }

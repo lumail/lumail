@@ -35,8 +35,6 @@ extern "C"
 #include <sstream>
 #include <string.h>
 #include <string>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <unordered_map>
 #include <vector>
@@ -257,17 +255,9 @@ int l_CMessage_mark_unread(lua_State *l)
 int l_CMessage_mtime(lua_State *l)
 {
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
-    std::string path = foo->path();
+    int m_time = foo->get_mtime();
 
-    struct stat sb;
-
-    if (stat(path.c_str(), &sb) < 0)
-    {
-        lua_pushnumber(l, 0);
-        return 1;
-    }
-
-    lua_pushinteger(l, sb.st_mtime);
+    lua_pushnumber(l, m_time);
     return 1;
 }
 

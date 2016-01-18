@@ -125,6 +125,12 @@ public:
      */
     bool saveMessage(std::shared_ptr <CMessage > msg);
 
+    /**
+     * Bump the modification-time of this maildir artificially
+     * which is used solely for IMAP-based messages.
+     */
+    void bump_mtime();
+
 private:
 
     /**
