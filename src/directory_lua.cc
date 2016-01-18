@@ -95,6 +95,17 @@ int l_CDirectory_entries(lua_State * l)
 
 
 /**
+ * Make a directory, creating all required parents.
+ */
+int l_CDirectory_mkdir(lua_State * l)
+{
+    const char *str = lua_tostring(l, 2);
+    CDirectory::mkdir_p(str);
+    return 0;
+}
+
+
+/**
  * Implementation of `Directory:is_maildir`.
  */
 int l_CDirectory_is_maildir(lua_State * l)
@@ -124,6 +135,7 @@ void InitDirectory(lua_State * l)
     {
         {"exists",  l_CDirectory_exists},
         {"entries", l_CDirectory_entries},
+        {"mkdir",  l_CDirectory_mkdir},
         {"is_maildir", l_CDirectory_is_maildir},
         {NULL,      NULL}
     };
