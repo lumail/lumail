@@ -446,6 +446,9 @@ void CGlobalState::update_messages()
                 if (flag == "\\Seen")
                     f += "S";
 
+                if (flag == "\\Unseen")
+                    f += "N";
+
                 if (flag == "\\Recent")
                     f += "N";
 
