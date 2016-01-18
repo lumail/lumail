@@ -486,6 +486,11 @@ void CMessage::mark_unread()
          * Increase the modification time of the parent folder too.
          */
         m_parent->bump_mtime();
+
+        int c = m_parent->unread_messages();
+        c += 1;
+        m_parent->set_unread(c);
+
         return;
 
     }
@@ -543,6 +548,15 @@ void CMessage::mark_read()
          * Increase the modification time of the parent folder too.
          */
         m_parent->bump_mtime();
+
+        int c = m_parent->unread_messages();
+        c -= 1;
+
+        if (c < 0)
+            c = 0;
+
+        m_parent->set_unread(c);
+
         return;
     }
 
