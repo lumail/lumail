@@ -21,6 +21,7 @@
 
 
 #include "config.h"
+#include "directory.h"
 #include "file.h"
 #include "global_state.h"
 #include "history.h"
@@ -392,27 +393,20 @@ void CGlobalState::update_messages()
             std::string msg_val = single["msg"].asString();
 
             /*
-             * Create a fake path to store the message body in - we make
-             * sure this references both the remote IMAP-server and the folder
-             * name.
+             * Create a path to hold the IMAP message.
+             *
+             * The path will be $cache/$server/$folder/NN
              */
-            std::string path = imap_server;
-            path += folder;
-            path += ",";
+            std::string path = imap_cache;
+            path += "/";
+            path += escape_filename(imap_server);
+            path += "/";
+            path += escape_filename(folder);
+
+            CDirectory::mkdir_p(path);
+
+            path += "/";
             path += std::to_string(id_val);
-
-            /*
-             * Make sure the path is escaped by removing "/" + "\".
-             */
-            std::transform(path.begin(), path.end(), path.begin(), [](char ch)
-            {
-                return (ch == '/' || ch == '\\') ? '_' : ch;
-            });
-
-            /*
-             * Add on the prefix.
-             */
-            path = imap_cache + "/" + path;
 
             /*
              * If there is not already a file there then we must fetch
