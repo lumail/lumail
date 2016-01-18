@@ -46,4 +46,9 @@ public:
      */
     static std::vector < std::string > entries(std::string prefix);
 
+    /**
+     * Make the directory, including any parents.
+     */
+    static void mkdir_p(std::string path);
+
 };

@@ -68,3 +68,29 @@ std::vector < std::string > CDirectory::entries(std::string prefix)
 
     return result;
 }
+
+
+/*
+ * Make the directory, including any parents.
+ */
+void CDirectory::mkdir_p(std::string path)
+{
+    /*
+     * Split into parts.
+     */
+    std::vector<std::string> parts = split(path, '/');
+    std::string todo = "";
+
+    for (auto it = parts.begin(); it != parts.end(); ++it)
+    {
+        if (!(*it).empty())
+        {
+            todo += "/";
+            todo += (*it);
+        }
+
+        if (! todo.empty())
+            if (! CDirectory::exists(todo))
+                mkdir(todo.c_str(), 0755);
+    }
+}
