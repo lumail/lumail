@@ -255,28 +255,8 @@ int l_CMaildir_mtime(lua_State *l)
      * Get the path.
      */
     std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
-    std::string path = foo->path();
-
-    struct stat sb;
-    time_t max = 0;
-
-    /*
-     * Test each path.  Most recent wins.
-     */
-    std::vector < std::string > dirs;
-    dirs.push_back(path);
-    dirs.push_back(path + "/cur");
-    dirs.push_back(path + "/tmp");
-    dirs.push_back(path + "/new");
-
-    for (auto it = dirs.begin(); it != dirs.end(); ++it)
-    {
-        if (stat((*it).c_str(), &sb) >= 0)
-            if (sb.st_mtime > max)
-                max = sb.st_mtime;
-    }
-
-    lua_pushinteger(l, max);
+    int mtime = foo->last_modified();
+    lua_pushinteger(l, mtime);
     return 1;
 }
 
