@@ -967,6 +967,9 @@ function Message.reply()
    -- Get the text of a message.
    local txt = message_view(msg)
 
+   -- Strip colours.
+   txt = strip_colour( txt );
+
    -- Get a temporary file, and opening it for writing
    local tmp  = os.tmpname()
    local file = assert(io.open(tmp, "w"))
@@ -1232,6 +1235,9 @@ function Message.forward()
 
    -- Get the text of a message.
    local txt = message_view(msg)
+
+   -- Strip colours.
+   txt = strip_colour( txt );
 
    -- Write it out to to a temporary file
    local tmp  = os.tmpname()
@@ -1627,6 +1633,50 @@ colour_table = {}
 colour_table['maildir'] = {}
 colour_table['index']   = {}
 colour_table['message'] = {}
+
+
+
+
+
+--
+-- Remove a colour-prefix from the given string
+--
+-- Our drawing code allows lines to be different coloured based upon
+-- a prefix.  So for example the text "$[RED]I like Helsinki" would be
+-- drawn as "I like Helsinki", in the colour red.
+--
+-- This function removes any existing colour prefixes.
+--
+function strip_colour( input )
+
+   --
+   -- If we've been given a table of input then
+   -- process each line.
+   --
+   if ( type(input) == "table" ) then
+
+      ret_val = {}
+
+      for o,p in ipairs( input ) do
+
+         while( string.find(p, "^$[^]]+]" ) ) do
+            p = string.gsub( p, "^$[^]]+]", "" )
+         end
+
+         table.insert(ret_val,p)
+      end
+
+      return( ret_val )
+   end
+
+   --
+   -- Handling a single string
+   --
+   while( string.find(input, "^$[^]]+]" ) ) do
+      input = string.gsub( input, "^$[^]]+]", "" )
+   end
+   return input
+end
 
 
 --
