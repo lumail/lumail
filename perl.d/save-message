@@ -1,43 +1,105 @@
 #!/usr/bin/perl -w
-#
-#  This script saves the specified filename to the remote IMAP server.
-#
-#  It is used to archive outgoing messages when you reply, forward, or
-# compose a mail, and is invoked via `lumail2.lua`.
-#
-# Steve
-# --
+
+=head1 NAME
+
+save-message - Save a local message to a remote IMAP server
+
+=cut
+
+=head1 SYNOPSIS
+
+  save-message filename [folder]
+
+
+  Help Options:
+
+    --help        Show the help information for this script.
+    --manual      Read the manual for this script.
+
+=cut
+
+=head1 ABOUT
+
+This script is designed to read the specified filename, and save
+it to a remote IMAP server.
+
+The IMAP-server details are read from the environment, via the code
+in the L<Lumail> module.
+
+If a folder is specified then it is used as the destination for
+the save, otherwise we iterate over every available folder and
+save to the first one which contains the `\\Sent` IMAP-flag.
+
+(i.e. With no folder specified we save to the default sent-mail
+folder, as determined by the remote IMAP-server.)
+
+=cut
+
+=head1 AUTHOR
+
+ Steve
+ --
+ http://www.steve.org.uk/
+
+=cut
+
+=head1 LICENSE
+
+Copyright (c) 2016 by Steve Kemp.  All rights reserved.
+
+This module is free software;
+you can redistribute it and/or modify it under
+the same terms as Perl itself.
+The LICENSE file contains the full text of the license.
+
+=cut
 
 use strict;
 use warnings;
 
 use Cwd 'abs_path';
 use File::Basename;
-
+use Getopt::Long;
+use Pod::Usage;
 
 use lib File::Basename::dirname( abs_path($0) );
 use Lumail;
 
 
-my $handle = Lumail::imap_connect();
+#
+#  Parse the command-line flags, just to look for --help + --man
+#
+my %CONFIG;
+exit
+  if (
+    !Getopt::Long::GetOptions(
 
-# If that failed show the user and abort.
-if ( !$handle )
-{
-    print "$0 - Login failed.\n";
-    exit(0);
-}
-
+        # Help options
+        "help",   \$CONFIG{ 'help' },
+        "manual", \$CONFIG{ 'manual' } ) );
 
 #
-#  Arguments from the command-line.
+#  If we have a --help|--manual flag specified then honour them.
 #
+Pod::Usage::pod2usage() if ( $CONFIG{ 'help' } );
+Pod::Usage::pod2usage( -verbose => 2 )
+  if ( $CONFIG{ 'manual' } );
+
+
+
+# Get the message we're to save.
 my $file = shift;
 if ( !$file )
 {
     print "Invalid command-line arguments\n";
+    exit(0);
 }
 
+# Optional destination folder.
+my $folder = shift;
+
+
+# Connect to the IMAP server
 my $handle = Lumail::imap_connect();
 
 # If that failed show the user and abort.
@@ -47,35 +109,70 @@ if ( !$handle )
     exit(0);
 }
 
-#
-#  Get the list of folders, and their flags.
-#
-my $data = $handle->folders_more();
 
-#
-#  For each folder we've found look at the flags, and
-# see if we can find one with `\Sent`, which is where we'll
-# save the message.
-#
-my $sent = "";
-
-foreach my $folder (%$data)
+# If we were not given a folder then find the Sent-folder.
+if ( !$folder )
 {
-    my $entry = $data->{ $folder };
-
-    my $flags = $entry->{ 'flags' };
-
-    foreach my $flag (@$flags)
+    $folder = find_folder();
+    if ( !$folder )
     {
-        $sent = $folder if ( $flag =~ /\Sent/i );
+        print "Failed to find SENT-folder\n";
+        exit(0);
     }
 }
 
-#
-#  Did we find one?
-#
-if ($sent)
+
+# Read the message we're going to add to the folder.
+my $msg = read_file($file);
+
+# Ensure the destination-folder exists - by creating it.
+$handle->create_folder($folder);
+
+# Now save the message there.
+$handle->append( $folder, \$msg );
+
+# Cleanup
+$handle->quit();
+exit(0);
+
+
+
+
+sub find_folder
 {
+
+    #
+    #  Get the list of folders, and their flags.
+    #
+    my $data = $handle->folders_more();
+
+    #
+    #  For each folder we've found look at the flags, and
+    # see if we can find one with `\Sent`, which is where we'll
+    # save the message.
+    #
+    my $sent = "";
+
+    foreach my $folder (%$data)
+    {
+        my $entry = $data->{ $folder };
+
+        my $flags = $entry->{ 'flags' };
+
+        foreach my $flag (@$flags)
+        {
+            $sent = $folder if ( $flag =~ /\Sent/i );
+        }
+    }
+
+    return ($sent);
+}
+
+
+sub read_file
+{
+    my ($file) = (@_);
+
     my $msg = "";
     open( my $h, "<", $file ) or
       die "Failed to read $file - $!";
@@ -84,12 +181,6 @@ if ($sent)
         $msg .= $line;
     }
     close($h);
-    $handle->append( $sent, \$msg );
-}
-else
-{
-    print "Failed to find folder to save message\n";
-}
 
-$handle->quit();
-exit(0);
+    return ($msg);
+}
