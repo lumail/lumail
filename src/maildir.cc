@@ -1,5 +1,5 @@
 /*
- * maildir.cc - Wrapper for a Maildir.
+ * maildir.cc - Wrapper for a collection of messages.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -185,9 +185,9 @@ time_t CMaildir::last_modified()
     for (std::string dir : dirs)
     {
         /*
-             * If we can stat() the dir and it is more recent
-             * than the current value - update it.
-             */
+         * If we can stat() the dir and it is more recent
+         * than the current value - update it.
+         */
         if (!stat(dir.c_str(), &st_buf))
             if (st_buf.st_mtime > last)
                 last = st_buf.st_mtime;

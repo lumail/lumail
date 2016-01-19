@@ -1,5 +1,5 @@
 /*
- * maildir.h - Wrapper for a Maildir.
+ * maildir.h - Wrapper for a collection of messages.
  *
  * This file is part of lumail - http://lumail.org/
  *
@@ -47,7 +47,10 @@ class CMaildir
 public:
 
     /**
-     * Constructor.
+     * Constructor.  If the `is_local` flag is true then the name
+     * points to the fully-qualified path, on disk.  Otherwise the
+     * name will be a string such as "Sent", "INBOX", or similar
+     * which lives upon a remote IMAP-server.
      */
     CMaildir(const std::string name, bool is_local = true);
 
@@ -59,7 +62,7 @@ public:
 
 
     /**
-     * Return the path we represent - NOTE: This might be a local
+     * Return the path we represent, which might be a local
      * maildir-location, or a remote IMAP path.
      *
      * Use "is_imap" or "is_maildir" to tell the difference.
@@ -81,8 +84,14 @@ public:
 
     /**
      * Retrieve the number of new messages for this maildir.
+     *
+     * In the case of a local Maildir this is discovered by opening
+     * the directory and counting the messages.  For IMAP servers we
+     * rely upon this being passed to us at construction-time, and
+     * updated when state-changes via `set_unread()`.
      */
     int unread_messages();
+
 
     /**
      * Set the number of unread messages in this maildir.
@@ -97,6 +106,17 @@ public:
     };
 
     /**
+     * Retrieve total number of messages for this maildir.
+     *
+     * In the case of a local Maildir this is discovered by opening
+     * the directory and counting the messages.  For IMAP servers we
+     * rely upon this being passed to us at construction-time, and
+     * updated when state-changes via `set_unread()`.
+     */
+    int total_messages();
+
+
+    /**
      * Set the number of total messages in this maildir.
      *
      * This is called when the object is created __if__ the object
@@ -108,13 +128,8 @@ public:
         m_total = n;
     };
 
-    /**
-     * Retrieve total number of messages for this maildir.
-     */
-    int total_messages();
 
-
-    /**
+   /**
      * Get all of the messages in this maildir.
      */
     CMessageList getMessages();
@@ -122,6 +137,9 @@ public:
 
     /**
      * Save the given message in this maildir.
+     *
+     * For a local message this is done directly, for a remote one
+     * the perl-helper `perl.d/save-message` is invoked.
      */
     bool saveMessage(std::shared_ptr <CMessage > msg);
 
@@ -139,8 +157,7 @@ public:
      * Return the last modified time for this Maildir, which is
      * used to determine if we need to update our cache.
      *
-     * **NOTE**: This result is faked for IMAP-folders, via
-     * `bump_mtime()`.
+     * **NOTE**: This result is faked for IMAP-folders, via `bump_mtime()`.
      */
     time_t last_modified();
 
@@ -173,7 +190,6 @@ private:
      * A cached count of messages in this maildir.
      */
     int m_total;
-
 
     /**
      * Update the cached total/unread message counts.
