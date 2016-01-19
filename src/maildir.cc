@@ -255,9 +255,44 @@ CMessageList CMaildir::getMessages()
  */
 bool CMaildir::saveMessage(std::shared_ptr <CMessage > msg)
 {
-    std::string path = generate_filename(msg->is_new());
+    /*
+     * If we were created by IMAP then our folder will have
+     * the m_imap flag set.
+     *
+     * Otherwise we'll not, but we can tell that we're non-local
+     * because the first character of the path will not contain
+     * the "/" character.
+     *
+     */
+    if ((m_imap) || ((m_path.empty() == false) && (m_path.at(0) != '/')))
+    {
+        /*
+         * IMAP SAVE
+         */
 
-    return (CFile::copy(msg->path(), path));
+        /*
+         * Get the message path.
+         */
+        std::string path = msg->path();
+
+        /*
+         * Call the helper.
+         */
+        std::string cmd = "/etc/lumail2/perl.d/save-message ";
+        cmd += "\"";
+        cmd += path;
+        cmd += "\" \"";
+        cmd += m_path;
+        cmd += "\"";
+
+        return (system(cmd.c_str()) == 0);
+    }
+    else
+    {
+        std::string path = generate_filename(msg->is_new());
+
+        return (CFile::copy(msg->path(), path));
+    }
 }
 
 /*
