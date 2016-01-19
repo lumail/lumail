@@ -1377,29 +1377,67 @@ function Message.save()
       return
    end
 
-   --
-   -- Get the default destination
-   --
-   local prefix   = Config:get("maildir.prefix")
-   local location = os.getenv( "HOME" )
 
    --
-   -- If we have a prefix which is a string then use it.
+   -- Are we using IMAP?
    --
-   if ( type(prefix) == "string" ) then
-      location=prefix
-   elseif( type(prefix) == "table" ) then
-      --
-      -- If we have multiple values set then use the first.
-      --
-      location=prefix[1]
+   local imap = true
+
+   --
+   -- Get the IMAP configuration-values
+   --
+   local i_s = Config.get_with_default( "imap.server", "" )
+   local i_u = Config.get_with_default( "imap.username", "" )
+   local i_p = Config.get_with_default( "imap.password", "" )
+
+   --
+   -- If any of them is empty then we're not using IMAP
+   --
+   if ( i_s == "" ) or ( i_u == "" ) or ( i_p == "" ) then
+      imap = false
    end
 
 
    --
-   -- Prompt for destination
+   -- This will be the destination the user entered.
    --
-   local dest = Screen:get_line( "Copy to maildir:", location )
+   local dest = nil
+
+
+   --
+   -- Prompt differently based on which storage is in-use.
+   --
+   if ( imap ) then
+
+      --
+      -- Prompt for the IMAP folder.
+      --
+      dest = Screen:get_line( "Copy to IMAP folder:" )
+
+   else
+
+      -- Get the default destination
+      --
+      local prefix   = Config:get("maildir.prefix")
+      local location = os.getenv( "HOME" )
+
+      --
+      -- If we have a prefix which is a string then use it.
+      --
+      if ( type(prefix) == "string" ) then
+         location=prefix
+      elseif( type(prefix) == "table" ) then
+         --
+         -- If we have multiple values set then use the first.
+         --
+         location=prefix[1]
+      end
+
+      --
+      -- Prompt for destination
+      --
+      dest = Screen:get_line( "Copy to local maildir:", location )
+   end
 
    --
    -- Nothing entered?  Abort.
@@ -1409,10 +1447,19 @@ function Message.save()
       return
    end
 
-   if ( msg:copy( dest ) ) then
+   --
+   -- Create a new helper for the destination
+   --
+   local dest_f = Maildir.new( dest )
+
+   --
+   -- Save the message-there.
+   local ret = dest_f:save_message( msg )
+
+   if ( ret ) then
       Panel:append( "Message copied to " .. dest )
    else
-      Panel:append( "Message copy failed" )
+      Panel:append( "Message save failed.")
    end
 end
 
