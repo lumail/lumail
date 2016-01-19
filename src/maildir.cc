@@ -36,6 +36,7 @@
 #include <gmime/gmime.h>
 
 
+#include "directory.h"
 #include "file.h"
 #include "maildir.h"
 #include "message.h"
@@ -205,14 +206,10 @@ time_t CMaildir::last_modified()
  * The return value is *all possible messages*, no attention to `index_limit`
  * is paid.
  *
- *  TODO:  Use CFile::files_in_directory().
- *
  */
 CMessageList CMaildir::getMessages()
 {
     CMessageList result;
-    dirent *de;
-    DIR *dp;
 
     /*
      * Directories we search.
@@ -226,36 +223,26 @@ CMessageList CMaildir::getMessages()
      */
     for (std::string path : dirs)
     {
-        dp = opendir(path.c_str());
 
-        if (dp)
+        /*
+         * Get the entries in the directory
+         */
+        std::vector<std::string> entries = CDirectory::entries( path );
+
+        /*
+         * For each one - if it isn't a dirrectory create a message
+         * using the path.
+         *
+         * This test is required because `CDirectory::entries` will return
+         * both the prefix, and the children "." + "..".
+         */
+        for (std::string file : entries)
         {
-            while (true)
+            if ( ! CFile::is_directory( file ) )
             {
-                de = readdir(dp);
-
-                if (de == NULL)
-                    break;
-
-                /* Maybe we should check for DT_REG || DT_LNK ? */
-                if ((de->d_type != DT_DIR)
-                        || (de->d_type == DT_UNKNOWN
-                            && !CFile::is_directory(std::
-                                                    string(path + de->d_name))))
-                {
-
-                    if (de->d_name[0] != '.')
-                    {
-                        std::shared_ptr < CMessage > t =
-                            std::shared_ptr < CMessage >
-                            (new CMessage(std::string(path + de->d_name)));
-                        result.push_back(t);
-
-                    }
-                }
+                std::shared_ptr < CMessage > t = std::shared_ptr < CMessage >  (new CMessage(std::string(file)));
+                result.push_back(t);
             }
-
-            closedir(dp);
         }
     }
 
