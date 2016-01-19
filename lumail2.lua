@@ -3044,6 +3044,26 @@ cache_load()
 
 
 --
+--  IMAP setup
+--
+--  The previous configuration set Lumail to read Maildirs
+-- beneath ~/Maildir/
+--
+--  If you prefer you can load mail from a remote IMAP server
+-- to do that set the following values appropriately
+--
+--
+--   Config:set( "imap.cache", HOME .. "/.lumail2/imap.cache" )
+--   Config:set( "imap.server",   "imaps://imap.gmail.com/" )
+--   Config:set( "imap.username", "gmail.username" )
+--   Config:set( "imap.password", "pass.word.here" )
+--
+--  IMAP support is still a little experimental, and for more details
+-- you should consult the `IMAP.md` file which comes with lumail2.
+--
+
+
+--
 -- Some people like ot change email addresses when they change
 -- folders.
 --
