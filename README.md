@@ -20,8 +20,8 @@ The project is perpetually a work in-progress, but the core of the client
 is complete and robust:
 
 * Basic operations may be carried out against email:
-     * Viewing Maildir hierarchies.
-     * Viewing message-lists.
+     * Viewing folder-hierarchies.
+     * Viewing the contents of a folder.
      * Reading emails.
      * Replying to emails.
      * Forwarding emails.
@@ -53,9 +53,9 @@ of modes:
 
 
 * `maildir`-mode
-    * Allows viewing lists of Maildir folders.
+    * Allows viewing lists of mail-folders.
 * `index`-mode
-    * Allows viewing a list of messages, i.e. the contents of a Maildir.
+    * Allows viewing a list of messages, i.e. the contents of a folder.
 * `message`-mode
     * Allows you to view a single message.
     * `attachment`-mode is a submode, and allows you to view the attachments associated with a particular message.
@@ -91,11 +91,15 @@ With the dependencies installed you should find the code builds cleanly with:
 Installing lumail2
 ------------------
 
-Running `make install` will install the binary and the [luarocks](https://luarocks.org/) libraries that we bundle.
+Running `make install` will install the binary and the [luarocks](https://luarocks.org/) libraries that we bundle, along with the perl-utiities which are required for IMAP-operation.
 
-If you wish to install manually copy the contents of `luarocks.d` to `/etc/lumail2/luarocks.d`, and `perl.d` to `/etc/lumail2/perl.d`.
+If you wish to install manually copy:
 
-NOTE: If you wish to use IMAP you'll need to install the two perl libraries `JSON` and `Net::IMAP::Client`, Upon a Debian GNU/Linux system this can be done via:
+* The contents of `luarocks.d` to `/etc/lumail2/luarocks.d`.
+* The contents of `perl.d` to `/etc/lumail2/perl.d`.
+
+NOTE: If you wish to use IMAP you'll need to install the two perl modules `JSON` and `Net::IMAP::Client`.  Upon a Debian GNU/Linux system this can be done
+via:
 
      apt-get install libnet-imap-client-perl libjson-perl
 
