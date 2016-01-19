@@ -329,38 +329,6 @@ int l_CMessage_add_attachments(lua_State * l)
 }
 
 
-/**
- * Implementation of CMessage:copy
- */
-int l_CMessage_copy(lua_State * l)
-{
-    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
-    std::string dst = luaL_checkstring(l, 2);
-
-    std::vector < std::string > dirs;
-    dirs.push_back(dst);
-    dirs.push_back(dst + "/cur");
-    dirs.push_back(dst + "/tmp");
-    dirs.push_back(dst + "/new");
-
-    for (std::vector < std::string >::iterator it = dirs.begin();
-            it != dirs.end(); ++it)
-    {
-        if (!CFile::is_directory(*it))
-        {
-            lua_pushboolean(l , 0);
-            return 1;
-        }
-    }
-
-    if (foo->copy(dst))
-        lua_pushboolean(l , 1);
-    else
-        lua_pushboolean(l , 0);
-
-    return 1;
-}
-
 
 /**
  * Implementation of CMessage:flags
@@ -460,7 +428,6 @@ void InitMessage(lua_State * l)
         {"__gc", l_CMessage_destructor},
         {"__eq", l_CMessage_equality},
         {"add_attachments", l_CMessage_add_attachments},
-        {"copy", l_CMessage_copy},
         {"flags", l_CMessage_flags},
         {"generate_message_id", l_CMessage_generate_message_id},
         {"header", l_CMessage_header},
