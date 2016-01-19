@@ -3064,7 +3064,7 @@ cache_load()
 
 
 --
--- Some people like ot change email addresses when they change
+-- Some people like to change email addresses when they change
 -- folders.
 --
 -- Here we allow that.
