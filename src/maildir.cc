@@ -227,7 +227,7 @@ CMessageList CMaildir::getMessages()
         /*
          * Get the entries in the directory
          */
-        std::vector<std::string> entries = CDirectory::entries( path );
+        std::vector<std::string> entries = CDirectory::entries(path);
 
         /*
          * For each one - if it isn't a dirrectory create a message
@@ -238,9 +238,9 @@ CMessageList CMaildir::getMessages()
          */
         for (std::string file : entries)
         {
-            if ( ! CFile::is_directory( file ) )
+            if (! CFile::is_directory(file))
             {
-                std::shared_ptr < CMessage > t = std::shared_ptr < CMessage >  (new CMessage(std::string(file)));
+                std::shared_ptr < CMessage > t = std::shared_ptr < CMessage > (new CMessage(std::string(file)));
                 result.push_back(t);
             }
         }

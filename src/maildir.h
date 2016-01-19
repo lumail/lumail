@@ -129,9 +129,9 @@ public:
     };
 
 
-   /**
-     * Get all of the messages in this maildir.
-     */
+    /**
+      * Get all of the messages in this maildir.
+      */
     CMessageList getMessages();
 
 
