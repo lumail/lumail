@@ -865,28 +865,6 @@ bool CMessage::is_imap()
     return (m_imap);
 }
 
-/*
- * Copy the message to a new maildir - which must exist.
- */
-bool CMessage::copy(std::string maildir)
-{
-    std::string src  = path();
-    std::string file = CFile::basename(src);
-    std::string dest = maildir;
-
-    if (is_new())
-        dest += "/new/";
-    else
-        dest += "/cur/";
-
-    dest += file;
-
-    dest.erase(std::unique(dest.begin(), dest.end(), both_slashes()), dest.end());
-
-    return (CFile::copy(src, dest));
-}
-
-
 
 /*
  * Update our on-disk email to add the specified files as attachments.

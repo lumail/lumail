@@ -55,11 +55,6 @@ public:
      */
     ~CMessage();
 
-    /**
-     * Copy the message to a new maildir - which must exist.
-     */
-    bool copy(std::string maildir);
-
 
     /**
      * Is this message a local one?
