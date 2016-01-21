@@ -151,3 +151,4 @@ install: lumail2
 	mkdir -p /etc/lumail2/perl.d/  || true
 	cp luarocks.d/*.lua /etc/lumail2/luarocks.d/
 	cp perl.d/* /etc/lumail2/perl.d/
+	if [ ! -e /etc/lumail2/lumail2.lua ] ; then cp ./lumail2.lua /etc/lumail2/lumail2.lua ; fi
