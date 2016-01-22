@@ -89,12 +89,12 @@ public:
      */
     std::vector<std::string> function2table(std::string function);
 
-private:
-
     /**
      * Call the user "on_error" function with given error message.
      */
     void on_error(std::string msg);
+
+private:
 
     /**
      * The handle to the Lua interpreter.
