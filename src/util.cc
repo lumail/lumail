@@ -17,6 +17,16 @@
  */
 
 
+#include <cstdlib>
+#include <memory>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+
 #include "util.h"
 
 
@@ -115,4 +125,61 @@ std::string escape_filename(std::string path)
     });
 
     return (path);
+}
+
+
+
+/*
+ * Send a command over our unix-domain socket to the IMAP intermediary.
+ *
+ * Return the output of that command as a single string.
+ */
+std::string get_imap_output(std::string cmd)
+{
+    int sockfd;
+    sockaddr_un addr;
+    std::string result = "";
+
+    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
+    addr.sun_family = AF_UNIX;
+
+    /*
+     * Use ~/.imap.sock as the path.
+     */
+    std::string path = getenv("HOME");
+    path += "/.imap.sock";
+
+    strcpy(addr.sun_path, path.c_str());
+
+    if (connect(sockfd, (sockaddr*)&addr, sizeof(addr)) < 0)
+    {
+        return ("Connection failed!");
+    }
+
+    write(sockfd, cmd.c_str(), cmd.length());
+
+    char buf[65535];
+    int rval;
+
+    do
+    {
+        bzero(buf, sizeof(buf));
+
+        if ((rval = read(sockfd, buf, sizeof(buf) - 1)) < 0)
+        {
+            // Failure
+        }
+        else if (rval == 0)
+        {
+            // End.
+        }
+        else
+        {
+            result += buf;
+        }
+    }
+    while (rval > 0);
+
+    close(sockfd);
+    return (result);
 }
