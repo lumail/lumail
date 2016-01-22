@@ -135,24 +135,24 @@ public:
     /**
      * Mark a message as unread.
      *
-     * If this message is an IMAP one we use `perl.d/set-flags` to
-     * trigger an update on the remote IMAP store.
+     * If this message is stored on a remote IMAP-server we handle
+     * that specially.
      */
     void mark_unread();
 
     /**
      * Mark a message as read.
      *
-     * If this message is an IMAP one we use `perl.d/set-flags` to
-     * trigger an update on the remote IMAP store.
+     * If this message is stored on a remote IMAP-server we handle
+     * that specially.
      */
     void mark_read();
 
     /**
      * Remove this message.
      *
-     * If this message is an IMAP one we use `perl.d/delete-message` to
-     * trigger its removal from the remote IMAP store.
+     * If this message is stored on a remote IMAP-server we handle
+     * that specially.
      */
     bool unlink();
 

@@ -207,18 +207,9 @@ void CGlobalState::update_maildirs()
         setenv("imap_server", config->get_string("imap.server").c_str(), 1);
 
         /*
-         * Execute the program.
+         * Get the list of folders via our IMAP deamon.
          */
-        std::vector< std::string >out = shell_execute("/etc/lumail2/perl.d/get-folders");
-
-        /*
-         * Join the array of lines into one buffer.
-         */
-        std::string json = "";
-
-        for (auto it = out.begin() ; it != out.end(); ++it)
-            json += (*it);
-
+        std::string json = get_imap_output("list_folders\n");
 
         /*
          * Now parse the JSON into objects.
@@ -229,18 +220,16 @@ void CGlobalState::update_maildirs()
 
         if (!parsingSuccessful)
         {
-            /*
-             * Failed to parse ..
-             */
-            config->set("maildir.max", 0);
+            CLua *lua = CLua::instance();
+            lua->on_error("Failed to parse JSON response to 'list_folders'.");
 
-            /*
-             * TODO: Show error.
-             */
+            config->set("maildir.max", 0);
             return;
         }
 
         Json::Value folders = root["folders"];
+
+        int count  = 0;
 
         for (Json::ValueConstIterator it = folders.begin(); it != folders.end(); ++it)
         {
@@ -257,9 +246,11 @@ void CGlobalState::update_maildirs()
             m->set_unread(unread);
 
             m_maildirs->push_back(m);
+
+            count += 1;
         }
 
-        config->set("maildir.max", out.size());
+        config->set("maildir.max", count);
         return;
     }
 
@@ -329,9 +320,6 @@ void CGlobalState::update_messages()
     std::shared_ptr<CMaildir> current = current_maildir();
 
     /*
-     * If we're loading over IMAP ..
-     */
-    /*
      *
      * If `imap.server`, `imap.user`, and `imap.password` are set
      * then retrieve the list of available folders via IMAP.
@@ -348,11 +336,6 @@ void CGlobalState::update_messages()
          * The path to the folder we're operating upon
          */
         std::string folder = current->path();
-
-        /*
-         * Get the total number of messages.
-         */
-        int total = current->total_messages();
 
         /*
          * The server name is part of the cache.
@@ -375,20 +358,9 @@ void CGlobalState::update_messages()
          * flags: The flags.
          *
          */
-        std::string cmd = "/etc/lumail2/perl.d/get-messages ";
-        cmd += " '";
-        cmd += folder;
-        cmd += "'";
+        std::string json = get_imap_output("get_messages " + folder + "\n");
 
-        std::vector< std::string >out = shell_execute(cmd);
-
-        /*
-         * Join the array of lines into one buffer.
-         */
-        std::string json = "";
-
-        for (auto it = out.begin() ; it != out.end(); ++it)
-            json += (*it);
+        int count = 0;
 
         /*
          * Now parse the JSON into objects.
@@ -399,9 +371,9 @@ void CGlobalState::update_messages()
 
         if (!parsingSuccessful)
         {
-            /*
-             * Failed to parse ..
-             */
+            CLua *lua = CLua::instance();
+            lua->on_error("Failed to parse JSON response to 'get_messages'.");
+
             config->set("index.max", 0);
             return;
         }
@@ -494,9 +466,10 @@ void CGlobalState::update_messages()
              */
             m_messages->push_back(t);
 
+            count += 1;
         }
 
-        config->set("index.max", total);
+        config->set("index.max", count);
         return;
     }
 

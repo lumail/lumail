@@ -138,8 +138,8 @@ public:
     /**
      * Save the given message in this maildir.
      *
-     * For a local message this is done directly, for a remote one
-     * the perl-helper `perl.d/save-message` is invoked.
+     * If this message is stored on a remote IMAP-server we handle
+     * that specially.
      */
     bool saveMessage(std::shared_ptr <CMessage > msg);
 

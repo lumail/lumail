@@ -439,25 +439,35 @@ bool CMessage::is_new()
 
 /*
  * Mark a message as unread.
+ *
+ * If this message is stored on a remote IMAP-server we handle
+ * that specially.
  */
 void CMessage::mark_unread()
 {
-    int result __attribute__((unused));
-
     /*
-     * If we're an IMAP message we need to call `perl.d/set-flags --unread`
+     * If we're an IMAP message we need to send a message over our
+     * Unix-domain-socket to carry out the action.
      */
     if (m_imap)
     {
+        /**
+         * We need to have both the name of the folder, and the ID
+         * of the message.
+         */
         std::string folder = m_parent->path();
+        std::string id     = std::to_string(m_imap_id);
 
-        std::string cmd = "/etc/lumail2/perl.d/set-flags --unread ";
-        cmd += " \"";
-        cmd += folder;
-        cmd += "\" ";
-        cmd += std::to_string(m_imap_id);
 
-        result = system(cmd.c_str());
+        /*
+         * Send the command.
+         */
+        std::string cmd = "mark_unread " + id + " " + folder + "\n";
+
+        /*
+         * Get the output.
+         */
+        std::string out = get_imap_output(cmd);
 
         /*
          * Remove `S` flag from m_imap_flags since these are
@@ -501,25 +511,35 @@ void CMessage::mark_unread()
 
 /*
  * Mark a message as read.
+ *
+ * If this message is stored on a remote IMAP-server we handle
+ * that specially.
  */
 void CMessage::mark_read()
 {
-    int result __attribute__((unused));
-
     /*
-     * If we're an IMAP message we need to call `perl.d/set-flags --read`
+     * If we're an IMAP message we need to send a message over our
+     * Unix-domain-socket to carry out the action.
      */
     if (m_imap)
     {
+        /**
+         * We need to have both the name of the folder, and the ID
+         * of the message.
+         */
         std::string folder = m_parent->path();
+        std::string id     = std::to_string(m_imap_id);
 
-        std::string cmd = "/etc/lumail2/perl.d/set-flags --read ";
-        cmd += " \"";
-        cmd += folder;
-        cmd += "\" ";
-        cmd += std::to_string(m_imap_id);
 
-        result = system(cmd.c_str());
+        /*
+         * Send the command.
+         */
+        std::string cmd = "mark_read " + id + " " + folder + "\n";
+
+        /*
+         * Get the output.
+         */
+        std::string out = get_imap_output(cmd);
 
         /*
          * Remove `N` flag from m_imap_flags since these are
@@ -808,33 +828,36 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
 /*
  * Remove this message.
  *
- * If this message is an IMAP one we use `perl.d/delete-message` to
- * trigger its removal from the remote IMAP store.
+ * If this message is stored on a remote IMAP-server we handle
+ * that specially.
  */
 bool CMessage::unlink()
 {
     int result __attribute__((unused));
 
     /*
-     * If we're an IMAP message we need to call perl.d/delete-message
-     *
-     * With that we pass:
-     *
-     *  our IMAP ID
-     *
-     *  our parent-folder
+     * If we're an IMAP message we need to send a message over our
+     * Unix-domain-socket to carry out the action.
      */
     if (m_imap)
     {
+
+        /**
+         * We need to have both the name of the folder, and the ID
+         * of the message.
+         */
         std::string folder = m_parent->path();
+        std::string id     = std::to_string(m_imap_id);
 
-        std::string cmd = "/etc/lumail2/perl.d/delete-message ";
-        cmd += " \"";
-        cmd += folder;
-        cmd += "\" ";
-        cmd += std::to_string(m_imap_id);
+        /*
+         * Send the command.
+         */
+        std::string cmd = "delete_message " + id + " " + folder + "\n";
 
-        result = system(cmd.c_str());
+        /*
+         * Get the output.
+         */
+        std::string out = get_imap_output(cmd);
 
         /*
          * Increase the modification time of the parent folder.

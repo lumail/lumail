@@ -40,7 +40,7 @@
 #include "file.h"
 #include "maildir.h"
 #include "message.h"
-
+#include "util.h"
 
 
 /*
@@ -252,6 +252,9 @@ CMessageList CMaildir::getMessages()
 
 /*
  * Save the given message in this maildir.
+ *
+ * If this message is stored on a remote IMAP-server we handle
+ * that specially.
  */
 bool CMaildir::saveMessage(std::shared_ptr <CMessage > msg)
 {
@@ -273,19 +276,24 @@ bool CMaildir::saveMessage(std::shared_ptr <CMessage > msg)
         /*
          * Get the message path.
          */
-        std::string path = msg->path();
+        std::string msg_path = msg->path();
 
         /*
-         * Call the helper.
+         * Get the folder-name we're saving to.
          */
-        std::string cmd = "/etc/lumail2/perl.d/save-message ";
-        cmd += "\"";
-        cmd += path;
-        cmd += "\" \"";
-        cmd += m_path;
-        cmd += "\"";
+        std::string folder = m_path;
 
-        return (system(cmd.c_str()) == 0);
+        /*
+         * Build up the string for the domain-socket helper.
+         */
+        std::string cmd = "save_message " + msg_path + " " + folder + "\n";
+
+        /*
+         * Get the output.
+         */
+        std::string out = get_imap_output(cmd);
+
+        return (true);
     }
     else
     {
