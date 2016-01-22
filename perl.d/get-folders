@@ -14,7 +14,7 @@ use warnings;
 
 use Cwd 'abs_path';
 use File::Basename;
-
+use JSON;
 
 use lib File::Basename::dirname( abs_path($0) );
 use Lumail;
@@ -35,13 +35,22 @@ my @folders = $handle->folders();
 # Get the status of each one.
 my $all = $handle->status( \@folders );
 
-# Now display them.
+# Now build up something to return.
+my $ret;
+
 while ( my ( $name, $status ) = each %$all )
 {
-    print $status->{ UNSEEN } .
-      "," . $status->{ MESSAGES } . "," . $name . "\n";
+    push( @$ret,
+          {  unread => $status->{ UNSEEN },
+             total  => $status->{ MESSAGES },
+             name   => $name
+          } );
 }
 
-# All done
-$handle->quit();
+my %hash;
+$hash{ 'folders' } = $ret;
+
+my $t = JSON->new->allow_nonref;
+my $o = $t->pretty->encode( \%hash );
+print($o);
 exit(0);

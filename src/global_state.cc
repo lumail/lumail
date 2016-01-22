@@ -212,19 +212,45 @@ void CGlobalState::update_maildirs()
         std::vector< std::string >out = shell_execute("/etc/lumail2/perl.d/get-folders");
 
         /*
-         * For each output...
+         * Join the array of lines into one buffer.
          */
+        std::string json = "";
+
         for (auto it = out.begin() ; it != out.end(); ++it)
+            json += (*it);
+
+
+        /*
+         * Now parse the JSON into objects.
+         */
+        Json::Value root;
+        Json::Reader reader;
+        bool parsingSuccessful = reader.parse(json, root);
+
+        if (!parsingSuccessful)
         {
-            std::string line = (*it);
-            line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
-            line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
+            /*
+             * Failed to parse ..
+             */
+            config->set("maildir.max", 0);
 
-            std::vector<std::string> tokens = split(line, ',');
+            /*
+             * TODO: Show error.
+             */
+            return;
+        }
 
-            int unread = atoi(tokens.at(0).c_str());
-            int total  = atoi(tokens.at(1).c_str());
-            std::string path = tokens.at(2);
+        Json::Value folders = root["folders"];
+
+        for (Json::ValueConstIterator it = folders.begin(); it != folders.end(); ++it)
+        {
+            /*
+             * Get the values from the JSON array.
+             */
+            Json::Value single = (*it);
+            int unread       = single["unread"].asInt();
+            int total        = single["total"].asInt();
+            std::string path = single["name"].asString();
 
             std::shared_ptr<CMaildir> m = std::shared_ptr<CMaildir>(new CMaildir(path, false));
             m->set_total(total);
