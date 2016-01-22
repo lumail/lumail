@@ -48,21 +48,12 @@ struct both_slashes
 };
 
 
-/**
- * URL-encode a string.
- */
-std::string urlencode(const std::string &s);
-
 
 /**
  * Split a string into a vector of strings on the given character.
  */
 std::vector<std::string> split(const std::string &text, char sep);
 
-/**
- * execute a command and return the output as a vector of lines.
- */
-std::vector<std::string> shell_execute(std::string cmd);
 
 /**
  * Escape a string such that it can be used for a filename.
