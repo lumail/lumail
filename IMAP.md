@@ -58,26 +58,12 @@ core - because this is where mail-folders are examined and messages
 retrieved - it crossed my mind that we could leverage the reliable
 Perl [Net::IMAP::Client](http://search.cpan.org/perldoc?Net%3A%3AIMAP%3A%3AClient) module, by writing a couple of helpers.
 
-With that in mind I wrote :
+With that in mind I've put together a simple server that creates
+a Unix domain-socket, reads command from it, and sends the response
+back as JSON-encoded objects.
 
-* `perl.d/get-folders`
-    * To connect to a remote IMAP server and return a list of all available folders.
-    * Along with the new/total count of messages in each one.
-* `perl.d/get-messages`
-    * Return an array of *every* message in the given folder.
-    * Along with their flags.
-    * The data is returned as a JSON array of hashes.
-
-These scripts each read the IMAP login credentials, and target-server, via the
-environment.  The code to handle that is centralized in the
-`Lumail.pm` module.
-
-In both cases we can get the data we want in *ONE* network request,
-so although calling `system` is slow, we actually have a net-win compared
-to the alternative approach.    We also gain from the fact that the
-library is well-tested, well-known, and easy to hack in a scripting
-language (i.e. Perl, not C++).
-
+All of our C++ code which needs to make IMAP operations uses the
+domain-socket, sending requests over it, and reading back the reponses.
 
 
 Setup Instructions
@@ -94,4 +80,6 @@ Configure your lumail with suitable IMAP settings:
      Config:set( "imap.username", "steve.login.name" )
      Config:set( "imap.password", "pass.word" )
 
+
 Enjoy.
+

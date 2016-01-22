@@ -1,0 +1,493 @@
+#!/usr/bin/perl -w
+
+=head1 NAME
+
+imapd - IMAP interface for lumail2
+
+=head1 SYNOPSIS
+
+   imapd [flags]
+
+  Help Options:
+    --help        Show the help information for this script.
+    --manual      Read the manual for this script.
+
+=cut
+
+=head1 ABOUT
+
+This script is designed to open a connection to a single IMAP-server
+and then wrap commands to it over a local Domain Socket.
+
+=cut
+
+=head1 AUTHOR
+
+ Steve
+ --
+ http://www.steve.org.uk/
+
+=cut
+
+=head1 LICENSE
+
+Copyright (c) 2016 by Steve Kemp.  All rights reserved.
+
+This module is free software;
+you can redistribute it and/or modify it under
+the same terms as Perl itself.
+The LICENSE file contains the full text of the license.
+
+=cut
+
+use strict;
+use warnings;
+use JSON;
+use IO::Socket::UNIX;
+
+use Cwd 'abs_path';
+use File::Basename;
+use Getopt::Long;
+use Pod::Usage;
+
+use lib File::Basename::dirname( abs_path($0) );
+use Lumail;
+
+
+
+#
+#  Parse the command-line flags, just to look for --help + --man
+#
+my %CONFIG;
+exit
+  if (
+    !Getopt::Long::GetOptions(
+
+        # Help options
+        "help",   \$CONFIG{ 'help' },
+        "manual", \$CONFIG{ 'manual' } ) );
+
+#
+#  If we have a --help|--manual flag specified then honour them.
+#
+Pod::Usage::pod2usage() if ( $CONFIG{ 'help' } );
+Pod::Usage::pod2usage( -verbose => 2 )
+  if ( $CONFIG{ 'manual' } );
+
+
+
+#
+#  Create the listening socket - removing any dead one first.
+#
+my $s_path = "$ENV{HOME}/.imap.sock";
+unlink($s_path) if ( -e $s_path );
+
+
+#
+# Launch our server to listen upon the Unix domain-socket.
+#
+my $server = IO::Socket::UNIX->new( Type   => SOCK_STREAM(),
+                                    Local  => $s_path,
+                                    Listen => 1,
+                                  );
+
+#
+#  Ensure we timeout suitably so we can keep our IMAP handle fresh.
+#
+$server->timeout(10);
+
+#
+# Get a handle to IMAP server.
+#
+my $handle = Lumail::imap_connect();
+
+
+#
+# Now wait for new connections.
+#
+while (1)
+{
+    #
+    #  Read and process incoming connections.
+    #
+    #  If no connection is received this will timeout after ten seconds
+    # or so, allowing this loop to repeat.
+    #
+    read_input();
+
+    #
+    #  Send a "still alive" message to our remote IMAP-server.
+    #
+    $handle->noop();
+}
+
+#
+#  All done.
+#
+exit(0);
+
+
+
+
+=begin doc
+
+Wait for a client to connect to our Unix domain socket.
+
+When a connection comes read the action to take, and handle it.
+
+If no connection is received during our timeout period then we
+return so that our main event-loop can send a "NOOP" message to
+the remote IMAP server, keeping the connection to that alive.
+
+=end doc
+
+=cut
+
+sub read_input
+{
+    while ( my $conn = $server->accept() )
+    {
+        # Read a one-line command from the client.
+        print "Accepted connection.\n";
+        my $command = <$conn>;
+        chomp($command);
+
+        # Show it.
+        print "\tCommand: $command\n";
+
+        # Now try to dispatch it.
+        if ( $command =~ /^list_folders/i )
+        {
+            my $folders = cmd_list_folders();
+            my %hash;
+            $hash{ 'folders' } = $folders;
+
+            my $t = JSON->new->allow_nonref;
+            my $o = $t->pretty->encode( \%hash );
+            $conn->print($o);
+        }
+        elsif ( $command =~ /^delete_message ([0-9]+) (.*)/i )
+        {
+            # Delete a message
+            cmd_delete_message( $1, $2 );
+
+            $conn->print("deleted\n");
+        }
+        elsif ( $command =~ /^mark_read ([0-9]+) (.*)/i )
+        {
+            # Mark a message as being read
+            cmd_mark_read( $1, $2 );
+
+            $conn->print("updated\n");
+        }
+        elsif ( $command =~ /^mark_unread ([0-9]+) (.*)/i )
+        {
+            # Mark a message as being unread
+            cmd_mark_unread( $1, $2 );
+
+            $conn->print("updated\n");
+        }
+        elsif ( $command =~ /^get_messages (.*)/i )
+        {
+            my $path = $1;
+            my $tmp  = cmd_get_messages($path);
+
+            my %hash;
+            $hash{ 'messages' } = $tmp;
+
+            my $t = JSON->new->allow_nonref;
+            my $o = $t->pretty->encode( \%hash );
+            $conn->print($o);
+        }
+        elsif ( $command =~ /^save_message (.*) (.*)$/i )
+        {
+            # Save message to folder.
+            cmd_save_message( $1, $2 );
+            $conn->print("saved message to folder.\n");
+        }
+        elsif ( $command =~ /^save_message (.*)$/i )
+        {
+
+            # Save message to outbox.
+            cmd_save_message( $1, undef );
+            $conn->print("saved message to outbox.\n");
+
+        }
+        else
+        {
+            $conn->print("Unknown command: $command\n");
+        }
+        $conn->close();
+    }
+}
+
+
+
+=begin doc
+
+Delete a single message from the specified folder, by ID.
+
+=end doc
+
+=cut
+
+sub cmd_delete_message
+{
+    my ( $id, $folder ) = (@_);
+
+    $handle->select($folder);
+    $handle->delete_message($id);
+    $handle->expunge();
+}
+
+
+
+=begin doc
+
+Mark a single message as having been read, by ID.
+
+=end doc
+
+=cut
+
+sub cmd_mark_read
+{
+    my ( $id, $folder ) = (@_);
+
+    $handle->select($folder);
+
+    $handle->select($folder);
+    $handle->del_flags( $id, "\\Unseen" );
+    $handle->add_flags( $id, "\\Seen" );
+}
+
+
+
+=begin doc
+
+Mark a single message as having been unread, by ID.
+
+=end doc
+
+=cut
+
+sub cmd_mark_unread
+{
+    my ( $id, $folder ) = (@_);
+
+    $handle->select($folder);
+    $handle->del_flags( $id, "\\Seen" );
+
+}
+
+
+
+=begin doc
+
+Return the list of remote folders to the caller, we return this as an array
+of hashes each of which has the following keys:
+
+=over 8
+
+=item name
+The name of the folder.
+
+=item unread
+The number of unread mails in the folder.
+
+=item total
+The total number of mails in the folder.
+
+=back
+
+=end doc
+
+=cut
+
+sub cmd_list_folders
+{
+    # Get all the folders
+    my @folders = $handle->folders();
+
+    # Get the status of each one.
+    my $all = $handle->status( \@folders );
+
+    my $ret;
+
+    while ( my ( $name, $status ) = each %$all )
+    {
+        push( @$ret,
+              {  unread => $status->{ UNSEEN },
+                 total  => $status->{ MESSAGES },
+                 name   => $name
+              } );
+    }
+    return ($ret);
+
+}
+
+
+=begin doc
+
+Return the list of messages in the specified folder, we return this as an
+array of hashes each of which has the following keys:
+
+=over 8
+
+=item id
+The ID of the message.
+
+=item flags
+The flags of the message.
+
+=item msg
+The body of the message.
+
+=back
+
+=cut
+
+sub cmd_get_messages
+{
+    my ($folder) = (@_);
+
+    #
+    #  Count the messages we need to fetch
+    #
+    my $status = $handle->status($folder);
+    my $total  = $status->{ MESSAGES };
+
+    #
+    # Select the folder
+    #
+    $handle->select($folder) or die "Failed to select folder: $folder";
+
+    #
+    #  Perform a search - to ge the message IDs of all the messages
+    # in the given folder.
+    #
+    my $all = $handle->search("all");
+
+    my @ids;
+    foreach my $a (@$all)
+    {
+        push @ids, $a;
+    }
+
+
+    #
+    #  Perform the retrival.  We wish to retrieve both:
+    #
+    #   1.  The flag(s) of each message.
+    #
+    #   2.  The body-text of each message.
+    #
+    my $results = $handle->fetch( \@ids, "FLAGS BODY.PEEK[]" ) or die "fail";
+
+    my $tmp;
+
+    if ( ($results) && ( ref( \$results ) eq "REF" ) )
+    {
+
+        foreach my $hash (@$results)
+        {
+            my @flags;
+            foreach my $x ( @{ $hash->{ 'FLAGS' } } )
+            {
+                push( @flags, $x );
+            }
+            my $flags = join( ",", @flags );
+            push( @$tmp,
+                  {  id    => $hash->{ 'UID' },
+                     msg   => $hash->{ 'BODY[]' },
+                     flags => $flags
+                  } );
+        }
+
+    }
+
+    return ($tmp);
+}
+
+
+
+=begin doc
+
+Read the message from the given path, and save to the specified IMAP
+folder.  If the folder isn't specified then we'll default to saving
+to the first folder which has the C<\Sent> flag set upon it.
+
+(i.e. The default sent-mail path, as determined by the IMAP-server.)
+
+If the folder is specified it will be created if it doesn't yet exist.
+
+=end doc
+
+=cut
+
+sub cmd_save_message
+{
+    my ( $path, $folder ) = (@_);
+
+    # If we didn't get a destination find the default
+    # sent-messages path
+    $folder = get_save_path() unless ($folder);
+
+    return unless ($folder);
+
+    # Read the message
+    my $msg = "";
+
+    open( my $file, "<", $path );
+    while ( my $line = <$file> )
+    {
+        $msg .= $line;
+    }
+    close($file);
+
+    # Ensure the destination-folder exists - by creating it.
+    $handle->create_folder($folder);
+
+    # Now save the message there.
+    $handle->append( $folder, \$msg );
+}
+
+
+
+=begin doc
+
+Find the name of the folder the remote IMAP-server regards as being
+the default sent-items path.
+
+This is the B<first> folder with the C<\Sent> flag set.
+
+=end doc
+
+=cut
+
+sub get_save_path
+{
+    #
+    #  Get the list of folders, and their flags.
+    #
+    my $data = $handle->folders_more();
+
+    #
+    #  For each folder we've found look at the flags, and
+    # see if we can find one with `\Sent`, which is where we'll
+    # save the message.
+    #
+    foreach my $folder (%$data)
+    {
+        my $entry = $data->{ $folder };
+
+        my $flags = $entry->{ 'flags' };
+
+        foreach my $flag (@$flags)
+        {
+            return ($folder) if ( $flag =~ /\\Sent/i );
+        }
+    }
+
+    return undef;
+}
