@@ -77,6 +77,7 @@ std::string get_imap_output(std::string cmd)
 {
     int sockfd;
     sockaddr_un addr;
+    size_t unused __attribute__((unused));
     std::string result = "";
 
     sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
@@ -95,7 +96,7 @@ std::string get_imap_output(std::string cmd)
         return ("Connection failed!");
     }
 
-    write(sockfd, cmd.c_str(), cmd.length());
+    unused = write(sockfd, cmd.c_str(), cmd.length());
 
     char buf[65535];
     int rval;
