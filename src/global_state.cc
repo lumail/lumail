@@ -333,10 +333,14 @@ void CGlobalState::update_messages()
     {
 
         /*
-         * The path to the folder we're operating upon
+         * If we don't have a currently-selected folder then return.
          */
         if ( ! current )
             return;
+
+        /*
+         * Get the path of the currently selected folder.
+         */
         std::string folder = current->path();
 
         /*
