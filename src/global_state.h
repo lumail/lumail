@@ -109,7 +109,7 @@ private:
     /**
      * The list of all currently visible maildirs.
      */
-    std::vector<std::shared_ptr<CMaildir> > *m_maildirs;
+    std::vector<std::shared_ptr<CMaildir> > m_maildirs;
 
     /**
      * The currently selected maildir.

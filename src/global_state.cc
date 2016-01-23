@@ -37,7 +37,6 @@
  */
 CGlobalState::CGlobalState() : Observer(CConfig::instance())
 {
-    m_maildirs = NULL;
     m_messages = NULL;
     m_current_message = NULL;
     update_messages();
@@ -167,7 +166,7 @@ CMessageList * CGlobalState::get_messages()
  */
 std::vector<std::shared_ptr<CMaildir>> CGlobalState::get_maildirs()
 {
-    return (*m_maildirs);
+    return (m_maildirs);
 }
 
 
@@ -177,15 +176,11 @@ std::vector<std::shared_ptr<CMaildir>> CGlobalState::get_maildirs()
 void CGlobalState::update_maildirs()
 {
     /*
-     * If we have items already then free each of them.
+     * If we have items already then remove them.
      */
-    if (m_maildirs != NULL)
-    {
-        delete(m_maildirs);
-        m_maildirs = NULL;
-    }
+    if (!m_maildirs.empty())
+        m_maildirs.clear();
 
-    m_maildirs = new CMaildirList;
 
     /*
      *
@@ -245,7 +240,7 @@ void CGlobalState::update_maildirs()
             m->set_total(total);
             m->set_unread(unread);
 
-            m_maildirs->push_back(m);
+            m_maildirs.push_back(m);
 
             count += 1;
         }
@@ -287,14 +282,14 @@ void CGlobalState::update_maildirs()
         {
             std::shared_ptr<CMaildir> m = std::shared_ptr<CMaildir>(new CMaildir(path));
 
-            m_maildirs->push_back(m);
+            m_maildirs.push_back(m);
         }
     }
 
     /*
      * Setup the size.
      */
-    config->set("maildir.max", m_maildirs->size());
+    config->set("maildir.max", m_maildirs.size());
 }
 
 
