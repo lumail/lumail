@@ -439,8 +439,8 @@ sub cmd_get_messages
     #
     #  Count the messages we need to fetch
     #
-    my $status = $handle->status($folder);
-    my $total  = $status->{ MESSAGES };
+    my $status = $handle->status($folder) || return;
+    my $total = $status->{ MESSAGES };
 
     #
     # Select the folder
@@ -516,8 +516,8 @@ sub cmd_get_message_ids
     #
     #  Count the messages we need to fetch
     #
-    my $status = $handle->status($folder);
-    my $total  = $status->{ MESSAGES };
+    my $status = $handle->status($folder) || return;
+    my $total = $status->{ MESSAGES };
 
     #
     # Select the folder
@@ -531,37 +531,38 @@ sub cmd_get_message_ids
     my $all = $handle->search("all");
 
     my @ids;
-    foreach my $a (@$all)
-    {
-        push @ids, $a;
-    }
+    @ids = @$all if ($all);
 
-
-    #
-    #  Perform the retrival.  We wish to retrieve the flags of each
-    # specified message.
-    #
-    my $results = $handle->fetch( \@ids, "FLAGS" ) or die "fail";
-
+    # The return value
     my $tmp;
 
-    if ( ($results) && ( ref( \$results ) eq "REF" ) )
+    # Process the return values in chunks of 1024
+    while ( my @chunk = splice @ids, 0, 1024 )
     {
+        print "\tProcessing chunk\n";
+        #
+        #  Perform the retrival.  We wish to retrieve the flags of each
+        # specified message.
+        #
+        my $results = $handle->fetch( \@chunk, "FLAGS" ) or die "fail";
 
-        foreach my $hash (@$results)
+        if ( ($results) && ( ref( \$results ) eq "REF" ) )
         {
-            my @flags;
-            foreach my $x ( @{ $hash->{ 'FLAGS' } } )
-            {
-                push( @flags, $x );
-            }
-            my $flags = join( ",", @flags );
-            push( @$tmp,
-                  {  id    => $hash->{ 'UID' },
-                     flags => $flags
-                  } );
-        }
 
+            foreach my $hash (@$results)
+            {
+                my @flags;
+                foreach my $x ( @{ $hash->{ 'FLAGS' } } )
+                {
+                    push( @flags, $x );
+                }
+                my $flags = join( ",", @flags );
+                push( @$tmp,
+                      {  id    => $hash->{ 'UID' },
+                         flags => $flags
+                      } );
+            }
+        }
     }
 
     return ($tmp);
