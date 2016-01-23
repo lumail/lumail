@@ -1519,7 +1519,7 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
         COLOUR_STRING *i = (*it);
         delete(i->string);
         delete(i->colour);
-        delete(i);
+        free(i);
     }
 
 }
