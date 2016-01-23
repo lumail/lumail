@@ -185,7 +185,7 @@ GMimeMessage * CMessage::parse_message()
     }
 
     g_object_unref(parser);
-
+    close(fd);
     return (message);
 }
 
@@ -1065,6 +1065,7 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
     if ((f = fopen(tmp_file, "wb")) == NULL)
     {
         free(tmp_file);
+        close(fd);
         return;
     }
 
@@ -1082,6 +1083,8 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
     if (m_parts.size() > 0)
         m_parts.clear();
 
+    fclose(f);
+    close(fd);
     free(tmp_file);
 }
 
