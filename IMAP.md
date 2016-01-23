@@ -79,7 +79,7 @@ Configure your lumail with suitable IMAP settings:
      Config:set( "imap.server",   "imaps://imap.gmail.com/" )
      Config:set( "imap.username", "steve.login.name" )
      Config:set( "imap.password", "pass.word" )
-
+     Config:set( "index.sort", "none" )
 
 Enjoy.
 
