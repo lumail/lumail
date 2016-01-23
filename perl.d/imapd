@@ -86,7 +86,7 @@ unlink($s_path) if ( -e $s_path );
 #
 # Ignore short-reads/errors
 #
-$SIG{PIPE} = 'IGNORE';
+$SIG{ PIPE } = 'IGNORE';
 
 
 #
@@ -126,7 +126,8 @@ while (1)
     #
     $handle->noop();
 
-    if ( ! $handle ) {
+    if ( !$handle )
+    {
         print "Rebirth\n";
         $handle = Lumail::imap_connect();
     }
@@ -202,6 +203,18 @@ sub read_input
         {
             my $path = $1;
             my $tmp  = cmd_get_messages($path);
+
+            my %hash;
+            $hash{ 'messages' } = $tmp;
+
+            my $t = JSON->new->allow_nonref;
+            my $o = $t->pretty->encode( \%hash );
+            $conn->print($o);
+        }
+        elsif ( $command =~ /^get_message_ids (.*)/i )
+        {
+            my $path = $1;
+            my $tmp  = cmd_get_message_ids($path);
 
             my %hash;
             $hash{ 'messages' } = $tmp;
@@ -377,7 +390,7 @@ sub cmd_get_messages
     $handle->select($folder) or die "Failed to select folder: $folder";
 
     #
-    #  Perform a search - to ge the message IDs of all the messages
+    #  Perform a search - to get the message IDs of all the messages
     # in the given folder.
     #
     my $all = $handle->search("all");
@@ -414,6 +427,75 @@ sub cmd_get_messages
             push( @$tmp,
                   {  id    => $hash->{ 'UID' },
                      msg   => $hash->{ 'BODY[]' },
+                     flags => $flags
+                  } );
+        }
+
+    }
+
+    return ($tmp);
+}
+
+
+
+=begin doc
+
+Get the message ID of each mesasge in the specified folder,
+along with the flags of the messages.
+
+=end doc
+
+=cut
+
+sub cmd_get_message_ids
+{
+    my ($folder) = (@_);
+
+    #
+    #  Count the messages we need to fetch
+    #
+    my $status = $handle->status($folder);
+    my $total  = $status->{ MESSAGES };
+
+    #
+    # Select the folder
+    #
+    $handle->select($folder) or die "Failed to select folder: $folder";
+
+    #
+    #  Perform a search - to get the message IDs of all the messages
+    # in the given folder.
+    #
+    my $all = $handle->search("all");
+
+    my @ids;
+    foreach my $a (@$all)
+    {
+        push @ids, $a;
+    }
+
+
+    #
+    #  Perform the retrival.  We wish to retrieve the flags of each
+    # specified message.
+    #
+    my $results = $handle->fetch( \@ids, "FLAGS" ) or die "fail";
+
+    my $tmp;
+
+    if ( ($results) && ( ref( \$results ) eq "REF" ) )
+    {
+
+        foreach my $hash (@$results)
+        {
+            my @flags;
+            foreach my $x ( @{ $hash->{ 'FLAGS' } } )
+            {
+                push( @flags, $x );
+            }
+            my $flags = join( ",", @flags );
+            push( @$tmp,
+                  {  id    => $hash->{ 'UID' },
                      flags => $flags
                   } );
         }
