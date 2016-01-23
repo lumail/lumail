@@ -335,6 +335,8 @@ void CGlobalState::update_messages()
         /*
          * The path to the folder we're operating upon
          */
+        if ( ! current )
+            return;
         std::string folder = current->path();
 
         /*
