@@ -197,6 +197,11 @@ public:
 private:
 
     /**
+     * Load our IMAP-based body, lazily.
+     */
+    void lazy_load();
+
+    /**
      * Parse a MIME message and return an object suitable for operating
      * upon.
      */

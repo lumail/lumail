@@ -43,6 +43,8 @@
 
 #include "config.h"
 #include "file.h"
+#include "json/json.h"
+#include "lua.h"
 #include "maildir.h"
 #include "message.h"
 #include "message_part.h"
@@ -66,6 +68,8 @@ CMessage::CMessage(const std::string name, bool is_local)
  */
 std::string CMessage::path()
 {
+    if ( m_imap )
+        lazy_load();
     return (m_path);
 }
 
@@ -104,6 +108,14 @@ std::string CMessage::header(std::string name)
  */
 GMimeMessage * CMessage::parse_message()
 {
+
+    /*
+     * If we're an IMAP-messge then we need to ensure
+     * that our file exists locally.
+     */
+    if ( m_imap )
+        lazy_load();
+
     int result __attribute__((unused));
 
     GMimeMessage * message;
@@ -1091,4 +1103,37 @@ int CMessage::get_mtime()
     }
 
     return (m_time);
+}
+
+
+/*
+ * Load our IMAP-based body, lazily.
+ */
+void CMessage::lazy_load()
+{
+    if ( ! CFile::exists( m_path ) )
+    {
+        /*
+         * Fetch our body
+         */
+        std::string cmd = "get_message " ;
+        cmd += std::to_string( m_imap_id );
+        cmd += " ";
+        cmd += m_parent->path();
+        cmd += "\n";
+
+        /*
+         * Get the output.
+         */
+        std::string out = get_imap_output( cmd );
+
+        /*
+         * Write to disk.
+         */
+        std::fstream fs;
+        fs.open(m_path,  std::fstream::out | std::fstream::app);
+        fs << out;
+        fs.close();
+
+    }
 }
