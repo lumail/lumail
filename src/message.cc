@@ -43,6 +43,7 @@
 
 #include "config.h"
 #include "file.h"
+#include "imapproxy.h"
 #include "json/json.h"
 #include "lua.h"
 #include "maildir.h"
@@ -492,7 +493,8 @@ void CMessage::mark_unread()
         /*
          * Get the output.
          */
-        std::string out = get_imap_output(cmd);
+        CIMAPProxy *proxy = CIMAPProxy::instance();
+        std::string out  = proxy->read_imap_output(cmd);
 
         /*
          * Remove `S` flag from m_imap_flags since these are
@@ -564,7 +566,8 @@ void CMessage::mark_read()
         /*
          * Get the output.
          */
-        std::string out = get_imap_output(cmd);
+        CIMAPProxy *proxy = CIMAPProxy::instance();
+        std::string out  = proxy->read_imap_output(cmd);
 
         /*
          * Remove `N` flag from m_imap_flags since these are
@@ -882,7 +885,8 @@ bool CMessage::unlink()
         /*
          * Get the output.
          */
-        std::string out = get_imap_output(cmd);
+        CIMAPProxy *proxy = CIMAPProxy::instance();
+        std::string out  = proxy->read_imap_output(cmd);
 
         /*
          * Increase the modification time of the parent folder.
@@ -1145,7 +1149,8 @@ void CMessage::lazy_load()
         /*
          * Get the output.
          */
-        std::string out = get_imap_output(cmd);
+        CIMAPProxy *proxy = CIMAPProxy::instance();
+        std::string out  = proxy->read_imap_output(cmd);
 
         /*
          * Write to disk.
