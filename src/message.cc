@@ -185,7 +185,6 @@ GMimeMessage * CMessage::parse_message()
     }
 
     g_object_unref(parser);
-    close(fd);
     return (message);
 }
 
