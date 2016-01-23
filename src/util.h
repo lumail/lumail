@@ -62,11 +62,3 @@ std::vector<std::string> split(const std::string &text, char sep);
  * `imaps://example.com/` would become "`imaps:__example.com_`"
  */
 std::string escape_filename(std::string path);
-
-
-/**
- * Send a command over our unix-domain socket to the IMAP intermediary.
- *
- * Return the output of that command as a single string.
- */
-std::string get_imap_output(std::string cmd);
