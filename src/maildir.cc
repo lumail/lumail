@@ -38,6 +38,7 @@
 
 #include "directory.h"
 #include "file.h"
+#include "imapproxy.h"
 #include "maildir.h"
 #include "message.h"
 #include "util.h"
@@ -291,7 +292,8 @@ bool CMaildir::saveMessage(std::shared_ptr <CMessage > msg)
         /*
          * Get the output.
          */
-        std::string out = get_imap_output(cmd);
+        CIMAPProxy *proxy = CIMAPProxy::instance();
+        std::string out  = proxy->read_imap_output(cmd);
 
         return (true);
     }
