@@ -68,8 +68,9 @@ CMessage::CMessage(const std::string name, bool is_local)
  */
 std::string CMessage::path()
 {
-    if ( m_imap )
+    if (m_imap)
         lazy_load();
+
     return (m_path);
 }
 
@@ -113,7 +114,7 @@ GMimeMessage * CMessage::parse_message()
      * If we're an IMAP-messge then we need to ensure
      * that our file exists locally.
      */
-    if ( m_imap )
+    if (m_imap)
         lazy_load();
 
     int result __attribute__((unused));
@@ -123,10 +124,18 @@ GMimeMessage * CMessage::parse_message()
     GMimeStream *stream;
     int fd;
 
-    if ((fd = open(path().c_str(), O_RDONLY, 0)) == -1){
+    if ((fd = open(path().c_str(), O_RDONLY, 0)) == -1)
+    {
+
+        std::string error = strerror(errno);
         CLua *lua = CLua::instance();
-        lua->on_error("Failed to open the message:" + path());
-        return( NULL );
+
+        if (CFile::exists(path()))
+            lua->on_error("Failed to open the existing message file:" + path() + " " + error);
+        else
+            lua->on_error("Failed to open the message file - not found :" + path() + " " + error);
+
+        return (NULL);
     }
 
     stream = g_mime_stream_fs_new(fd);
@@ -199,7 +208,7 @@ std::unordered_map < std::string, std::string > CMessage::headers()
     {
         CLua *lua = CLua::instance();
         lua->on_error("Failed to get headers from message :" + path());
-        return( m_headers );
+        return (m_headers);
     }
 
 
@@ -926,7 +935,7 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
     if ((fd = open(m_path.c_str(), O_RDONLY, 0)) == -1)
     {
         CLua *lua = CLua::instance();
-        lua->on_error("Failed to open the message:" + m_path );
+        lua->on_error("Failed to open the message:" + m_path);
         return;
     }
 
@@ -1120,13 +1129,13 @@ int CMessage::get_mtime()
  */
 void CMessage::lazy_load()
 {
-    if ( ! CFile::exists( m_path ) )
+    if (! CFile::exists(m_path))
     {
         /*
          * Fetch our body
          */
         std::string cmd = "get_message " ;
-        cmd += std::to_string( m_imap_id );
+        cmd += std::to_string(m_imap_id);
         cmd += " ";
         cmd += m_parent->path();
         cmd += "\n";
@@ -1134,7 +1143,7 @@ void CMessage::lazy_load()
         /*
          * Get the output.
          */
-        std::string out = get_imap_output( cmd );
+        std::string out = get_imap_output(cmd);
 
         /*
          * Write to disk.
