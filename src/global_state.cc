@@ -25,6 +25,7 @@
 #include "file.h"
 #include "global_state.h"
 #include "history.h"
+#include "imapproxy.h"
 #include "json/json.h"
 #include "logfile.h"
 #include "lua.h"
@@ -139,15 +140,45 @@ void CGlobalState::update(std::string key_name)
     }
     else if (key_name == "imap.username")
     {
-        update_maildirs();
+        setenv("imap_username", config->get_string("imap.username").c_str(), 1);
+
+        if ((config->get_string("imap.username", "") != "") &&
+            (config->get_string("imap.password", "") != "") &&
+            (config->get_string("imap.server", "") != ""))
+            update_maildirs();
+        else
+        {
+            CIMAPProxy *proxy = CIMAPProxy::instance();
+            proxy->terminate();
+        }
     }
     else if (key_name == "imap.password")
     {
-        update_maildirs();
+        setenv("imap_password", config->get_string("imap.password").c_str(), 1);
+
+        if ((config->get_string("imap.username", "") != "") &&
+            (config->get_string("imap.password", "") != "") &&
+            (config->get_string("imap.server", "") != ""))
+            update_maildirs();
+        else
+        {
+            CIMAPProxy *proxy = CIMAPProxy::instance();
+            proxy->terminate();
+        }
     }
     else if (key_name == "imap.server")
     {
-        update_maildirs();
+        setenv("imap_server", config->get_string("imap.server").c_str(), 1);
+
+        if ((config->get_string("imap.username", "") != "") &&
+            (config->get_string("imap.password", "") != "") &&
+            (config->get_string("imap.server", "") != ""))
+            update_maildirs();
+        else
+        {
+            CIMAPProxy *proxy = CIMAPProxy::instance();
+            proxy->terminate();
+        }
     }
 }
 
@@ -191,20 +222,14 @@ void CGlobalState::update_maildirs()
     CConfig *config = CConfig::instance();
 
     if ((config->get_string("imap.username", "") != "") &&
-            (config->get_string("imap.password", "") != "") &&
-            (config->get_string("imap.server", "") != ""))
+        (config->get_string("imap.password", "") != "") &&
+        (config->get_string("imap.server", "") != ""))
     {
         /*
-         * Set the values in the environment.
+         * Read the output from our IMAP proxy.
          */
-        setenv("imap_username", config->get_string("imap.username").c_str(), 1);
-        setenv("imap_password", config->get_string("imap.password").c_str(), 1);
-        setenv("imap_server", config->get_string("imap.server").c_str(), 1);
-
-        /*
-         * Get the list of folders via our IMAP deamon.
-         */
-        std::string json = get_imap_output("list_folders\n");
+        CIMAPProxy *proxy = CIMAPProxy::instance();
+        std::string json  = proxy->read_imap_output("list_folders\n");
 
         /*
          * Now parse the JSON into objects.
@@ -357,7 +382,8 @@ void CGlobalState::update_messages()
          * CMessage object.
          *
          */
-        std::string json = get_imap_output("get_message_ids " + folder + "\n");
+        CIMAPProxy *proxy = CIMAPProxy::instance();
+        std::string json  = proxy->read_imap_output("get_message_ids " + folder + "\n");
 
         int count = 0;
 
