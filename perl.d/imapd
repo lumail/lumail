@@ -439,13 +439,17 @@ sub cmd_get_messages
     #  Perform a search - to get the message IDs of all the messages
     # in the given folder.
     #
+    print "\tSearchign for messages\n";
     my $all = $handle->search("all");
 
     my @ids;
     foreach my $a (@$all)
     {
         push @ids, $a;
+
+        print "\t\tFound ID: $a\n";
     }
+
 
 
     #
