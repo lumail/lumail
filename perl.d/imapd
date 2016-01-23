@@ -211,6 +211,19 @@ sub read_input
             my $o = $t->pretty->encode( \%hash );
             $conn->print($o);
         }
+        elsif ( $command =~ /^get_message ([0-9]+) (.*)/i )
+        {
+            my $id     = $1;
+            my $folder = $2;
+
+            my $msg = cmd_get_message( $folder, $id );
+            my %hash;
+            $hash{ 'messages' } = $msg;
+
+            my $t = JSON->new->allow_nonref;
+            my $o = $t->pretty->encode( \%hash );
+            $conn->print($o);
+        }
         elsif ( $command =~ /^get_message_ids (.*)/i )
         {
             my $path = $1;
@@ -352,6 +365,41 @@ sub cmd_list_folders
     return ($ret);
 
 }
+
+
+=begin doc
+
+Return the body of a single message.
+
+=end doc
+
+=cut
+
+sub cmd_get_message
+{
+    my ( $folder, $id ) = (@_);
+
+    #
+    # Select the folder
+    #
+    $handle->select($folder) or die "Failed to select folder: $folder";
+
+    #
+    #  Perform the retrival.  We wish to retrieve both:
+    #
+    #   1.  The flag(s) of each message.
+    #
+    #   2.  The body-text of each message.
+    #
+    my $results = $handle->fetch( $id, "BODY.PEEK[]" ) or die "fail";
+
+    if ($results)
+    {
+        return ( $results->{ 'BODY[]' } );
+    }
+    return undef;
+}
+
 
 
 =begin doc
