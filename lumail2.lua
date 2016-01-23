@@ -1884,11 +1884,32 @@ end
 function index_view()
    local result = {}
 
+   -- Get the messages in the maildir
    local messages = sorted_messages()
 
-   -- For each one add the output
+   -- Get the current offset
+   local mode = Config:get("global.mode")
+   local cur  = Config.get_with_default(mode .. ".current", 0)
+
+   -- Find the height of the screen.
+   local height = Screen:height();
+
+   -- The minimum message number we're going to format
+   local min = cur - height;
+   if ( min < 0 ) then min = 0  end
+
+   -- The maximum message-nubmer we're going to format.
+   local max = cur + height;
+
+   --
+   -- For each *VISBLE* message add the output.
+   --
    for offset,object in ipairs( messages ) do
-      local str = object:format()
+
+      local str = "UNFORMATTED"
+      if ( offset >= min ) and ( offset <= max ) then
+         str = object:format()
+      end
       table.insert(result,str)
    end
 
