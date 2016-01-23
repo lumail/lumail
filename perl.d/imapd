@@ -386,7 +386,7 @@ sub cmd_get_message
     #
     #   2.  The body-text of each message.
     #
-    my $results = $handle->fetch( $id, "BODY.PEEK[]" ) or die "fail";
+    my $results = $handle->fetch( $id, "BODY.PEEK[]" );
 
     if ($results)
     {
@@ -394,7 +394,19 @@ sub cmd_get_message
     }
     else
     {
-        return undef;
+        my $fallback = <<EOF;
+To: nobody\@example.com
+From: nobody\@example.com
+Subject: This is an empty message.
+Date: Sat Jan 23 16:20:21 EET 2016
+
+If you're seeing this then fetching the message with id $id
+from the folder $folder failed.
+
+Steve
+--
+EOF
+        return $fallback;
     }
 }
 
