@@ -330,7 +330,7 @@ void CGlobalState::update_messages()
         /*
          * If we don't have a currently-selected folder then return.
          */
-        if ( ! current )
+        if (! current)
             return;
 
         /*
