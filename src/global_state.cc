@@ -354,17 +354,15 @@ void CGlobalState::update_messages()
             imap_cache = "/tmp";
 
         /*
-         * Execute the helper to get all messages.
+         * Use our IMAP-proxy to get the message ID of each message
+         * in the currently selected folder, as well as the flags of
+         * the associated message.
          *
-         * This will return a JSON-array, with entries for each distinct
-         * message.  The array will be an array of hashes - with the keys:
-         *
-         *   id:  The UID of the message.
-         *  msg:  The text-body.
-         * flags: The flags.
+         * The retrival of the body will happen on-demand inside the
+         * CMessage object.
          *
          */
-        std::string json = get_imap_output("get_messages " + folder + "\n");
+        std::string json = get_imap_output("get_message_ids " + folder + "\n");
 
         int count = 0;
 
@@ -389,12 +387,15 @@ void CGlobalState::update_messages()
         for (Json::ValueConstIterator it = messages.begin(); it != messages.end(); ++it)
         {
             /*
-             * Get the values from the JSON array.
+             * The array-member
              */
             Json::Value single = (*it);
-            int id_val = single["id"].asInt();
+
+            /*
+             * The flags and ID of the message.
+             */
+            int id_val            = single["id"].asInt();
             std::string flags_val = single["flags"].asString();
-            std::string msg_val = single["msg"].asString();
 
             /*
              * Create a path to hold the IMAP message.
@@ -413,20 +414,8 @@ void CGlobalState::update_messages()
             path += std::to_string(id_val);
 
             /*
-             * If there is not already a file there then we must fetch
-             * the message and write it out.
-             */
-            if (! CFile::exists(path))
-            {
-                std::fstream fs;
-                fs.open(path,  std::fstream::out | std::fstream::app);
-                fs << msg_val;
-                fs.close();
-            }
-
-            /*
-             * Now create the message-object, pointing to the cached
-             * content, and make sure we mark it as being non-local.
+             * Now create the message-object, pointing to the suitable
+             * path, making sure that it is marked as non-local.
              */
             std::shared_ptr < CMessage > t = std::shared_ptr < CMessage >(new CMessage(path, false));
             t->path(path);
@@ -461,7 +450,11 @@ void CGlobalState::update_messages()
                 f = "N";
 
             /*
-             * Set the flags and link
+             * Set the flags and ID to the message.  The flags will be
+             * usable as-is.
+             *
+             * The ID means that the message-object can fetch its own
+             * body on-demand when it wants to.
              */
             t->parent(current);
             t->set_imap_flags(f);
