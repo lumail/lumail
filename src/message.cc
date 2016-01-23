@@ -123,8 +123,11 @@ GMimeMessage * CMessage::parse_message()
     GMimeStream *stream;
     int fd;
 
-    if ((fd = open(path().c_str(), O_RDONLY, 0)) == -1)
-        throw "Opening the message failed";
+    if ((fd = open(path().c_str(), O_RDONLY, 0)) == -1){
+        CLua *lua = CLua::instance();
+        lua->on_error("Failed to open the message:" + path());
+        return( NULL );
+    }
 
     stream = g_mime_stream_fs_new(fd);
     parser = g_mime_parser_new_with_stream(stream);
@@ -194,7 +197,9 @@ std::unordered_map < std::string, std::string > CMessage::headers()
 
     if (msg == NULL)
     {
-        throw "Failed to parse message " + path();
+        CLua *lua = CLua::instance();
+        lua->on_error("Failed to get headers from message :" + path());
+        return( m_headers );
     }
 
 
@@ -919,7 +924,11 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
         return;
 
     if ((fd = open(m_path.c_str(), O_RDONLY, 0)) == -1)
-        throw "Opening the message failed";
+    {
+        CLua *lua = CLua::instance();
+        lua->on_error("Failed to open the message:" + m_path );
+        return;
+    }
 
     stream = g_mime_stream_fs_new(fd);
 
