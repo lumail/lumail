@@ -2666,7 +2666,7 @@ function next_message()
    local cur = Config.get_with_default("index.current", 0)
    local max = Config:get("index.max")
 
-   if ( cur < max ) then
+   if ( cur < (max-1) ) then
       cur = cur + 1
       Global:select_message( msgs[cur+1] )
       Config:set("index.current",cur)
