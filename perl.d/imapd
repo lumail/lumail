@@ -84,6 +84,12 @@ unlink($s_path) if ( -e $s_path );
 
 
 #
+# Ignore short-reads/errors
+#
+$SIG{PIPE} = 'IGNORE';
+
+
+#
 # Launch our server to listen upon the Unix domain-socket.
 #
 my $server = IO::Socket::UNIX->new( Type   => SOCK_STREAM(),
@@ -119,6 +125,11 @@ while (1)
     #  Send a "still alive" message to our remote IMAP-server.
     #
     $handle->noop();
+
+    if ( ! $handle ) {
+        print "Rebirth\n";
+        $handle = Lumail::imap_connect();
+    }
 }
 
 #
@@ -217,7 +228,10 @@ sub read_input
         {
             $conn->print("Unknown command: $command\n");
         }
+        $conn->flush();
         $conn->close();
+
+        print "\tConnection terminated\n";
     }
 }
 
