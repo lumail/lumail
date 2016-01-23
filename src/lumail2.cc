@@ -24,6 +24,7 @@
 #include "config.h"
 #include "file.h"
 #include "global_state.h"
+#include "imapproxy.h"
 #include "lua.h"
 #include "maildir.h"
 #include "message.h"
@@ -190,6 +191,9 @@ int main(int argc, char *argv[])
     {
         screen->run_main_loop();
         screen->teardown();
+
+        CIMAPProxy *proxy = CIMAPProxy::instance();
+        proxy->terminate();
     }
 
     /*
