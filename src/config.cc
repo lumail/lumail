@@ -50,19 +50,24 @@ CConfig::CConfig()
  */
 CConfig::~CConfig()
 {
+}
+
+
+/*
+ * Delete all keys and their associated values.
+ */
+void CConfig::remove_all()
+{
     /*
      * Get all our known configuration-keys.
      */
     std::vector<std::string> existing = keys();
 
     /*
-     * For each key, free the memory associated with it.
+     * For each key, remove it and the value.
      */
     for (auto it = existing.begin(); it != existing.end(); ++it)
-    {
         delete_key(*it);
-    }
-
 }
 
 

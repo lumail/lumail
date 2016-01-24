@@ -70,10 +70,10 @@ struct CConfigEntry
  * This is a singleton class which is used to get/set configuration
  * values.
  *
- * It also implements the Subejct interface of the Observer design-pattern,
+ * It also implements the Subject interface of the Observer design-pattern,
  * allowing other objects to listen to changes.  We broadcast change events
- * when the value of a given key has changed - and broadcast the name of
- * the key involved.
+ * when the value of a given key has changed.  Each broadcast contains only
+ * the name of the key which has been set/updated.
  */
 class CConfig : public Singleton<CConfig>, public Subject
 {
@@ -133,6 +133,12 @@ public:
      * If the value is not found the supplied default will be used instead.
      */
     std::string get_string(std::string name, std::string default_value = "");
+
+    /**
+     * Delete all keys and their associated values.
+     */
+    void remove_all();
+
 
 private:
 
