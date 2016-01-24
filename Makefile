@@ -147,8 +147,23 @@ serve_docs: docs
 #
 install: lumail2
 	cp lumail2 /usr/bin/
+
+    # make target-directories
 	mkdir -p /etc/lumail2/luarocks.d/  || true
 	mkdir -p /etc/lumail2/perl.d/  || true
+
+    # copy our helpers
 	cp luarocks.d/*.lua /etc/lumail2/luarocks.d/
 	cp perl.d/* /etc/lumail2/perl.d/
+
+    # cleanup old installs
+	rm /etc/lumail2/perl.d/delete-message || true
+	rm /etc/lumail2/perl.d/get-folders || true
+	rm /etc/lumail2/perl.d/get-messages || true
+	rm /etc/lumail2/perl.d/save-message || true
+	rm /etc/lumail2/perl.d/set-flags || true
+
+    # if there is no config in-place, add the default
 	if [ ! -e /etc/lumail2/lumail2.lua ] ; then cp ./lumail2.lua /etc/lumail2/lumail2.lua ; fi
+
+
