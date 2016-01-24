@@ -82,39 +82,7 @@ void CIMAPProxy::launch()
         m_child = fork();
         if ( m_child == 0 )
         {
-#if 0
-            const char *cmd[]  = { "./perl.d/imapd", NULL };
-            const char *env[5];
-
-            CConfig *config = CConfig::instance();
-
-            std::string i_u = std::string( "imap_username=" );
-            i_u += config->get_string( "imap.username");
-
-            std::string i_p = std::string( "imap_password=" );
-            i_p += config->get_string( "imap.password");
-
-            std::string i_s = std::string( "imap_server=" );
-            i_s += config->get_string( "imap.server");
-
-            std::string home = std::string("HOME=");
-            home += getenv( "HOME" );
-
-            env[0] = strdup( i_u.c_str());
-            env[1] = strdup( i_p.c_str());
-            env[2] = strdup( i_s.c_str());
-            env[3] = strdup( home.c_str());
-            env[4] = NULL;
-
-            /*
-             * Cause the child to go to /dev/null.
-             */
-            int fd = open("/dev/null", O_WRONLY);
-            dup2(fd, 1);
-            dup2(fd, 2);
-#endif
             unused = execl( "./perl.d/imapd","imapd", NULL );
-//            execve ("./perl.d/imapd", (char * const*)cmd, (char * const*)env);
         }
 
         sleep( 1.0 );
