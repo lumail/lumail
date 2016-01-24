@@ -32,6 +32,7 @@
 
 
 #include "config.h"
+#include "file.h"
 #include "imapproxy.h"
 #include "screen.h"
 
@@ -56,12 +57,11 @@ CIMAPProxy::~CIMAPProxy()
  */
 void CIMAPProxy::terminate()
 {
-    if ( m_child != -1 )
+    if (m_child != -1)
     {
         kill(m_child, SIGKILL);
         m_child = -1;
     }
-
 }
 
 
@@ -73,19 +73,45 @@ void CIMAPProxy::launch()
 {
     size_t unused __attribute__((unused));
 
-    if ( m_child == -1 )
+    if (m_child == -1)
     {
-
+        /*
+         * Screen handle.
+         */
         CScreen *screen = CScreen::instance();
-        screen->status_panel_append("Launching IMAP proxy... ");
 
-        m_child = fork();
-        if ( m_child == 0 )
+        /*
+         * Get the path to the proxy
+         */
+        CConfig *config = CConfig::instance();
+        std::string path = config->get_string("imap.proxy");
+
+        if (path.empty())
+            path = "/etc/lumail2/perl.d/imap-proxy" ;
+
+
+        /*
+         * If the proxy exists then we can launch it, if not we'll
+         * error.
+         */
+        if (CFile::exists(path))
         {
-            unused = execl( "./perl.d/imapd","imapd", NULL );
-        }
+            screen->status_panel_append("Launching IMAP proxy " + path);
 
-        sleep( 1.0 );
+            m_child = fork();
+
+            if (m_child == 0)
+            {
+                unused = execl(path.c_str(), CFile::basename(path).c_str(), NULL);
+            }
+
+            sleep(1.0);
+        }
+        else
+        {
+            screen->status_panel_append("IMAP proxy not found at " + path);
+            return;
+        }
     }
 }
 
