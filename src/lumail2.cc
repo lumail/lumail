@@ -191,10 +191,20 @@ int main(int argc, char *argv[])
     {
         screen->run_main_loop();
         screen->teardown();
-
-        CIMAPProxy *proxy = CIMAPProxy::instance();
-        proxy->terminate();
     }
+
+
+    /*
+     * Cleanup: Delete the config-values.
+     */
+    CConfig *config = CConfig::instance();
+    config->remove_all();
+
+    /*
+     * Cleanup: Kill the imap-proxy
+     */
+    CIMAPProxy *proxy = CIMAPProxy::instance();
+    proxy->terminate();
 
     /*
      * Close GMime.
