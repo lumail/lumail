@@ -353,6 +353,12 @@ void CScreen::setup()
  */
 void CScreen::teardown()
 {
+    /*
+     * Remove old panel/window - in the correct order.
+     */
+    del_panel(g_status_bar);
+    delwin(g_status_bar_window);
+
     endwin();
 }
 
