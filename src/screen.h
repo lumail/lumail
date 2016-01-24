@@ -277,7 +277,7 @@ public:
     /**
      * Draw a single text line, paying attention to our colour strings.
      *
-     * **NOTE**: This function is grossly inefficiant, although functional.
+     * **NOTE**: This function is grossly inefficient, although functional.
      */
     void draw_single_line(int row, int col_offset, std::string text, WINDOW * screen);
 
@@ -345,7 +345,7 @@ private:
      * virtual class which implements its display.
      *
      * All display-classes are derived from CViewMode so that we can
-     * refer to thim in this generic/interface way.
+     * refer to them in this generic/interface way.
      */
     std::unordered_map < std::string, CViewMode * >m_views;
 

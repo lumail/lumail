@@ -30,7 +30,7 @@
  *
  *  - The screen interface.
  *
- *  - The embedded Lua intepreter.
+ *  - The embedded Lua interpreter.
  *
  * This template base-class is used to give each of them a common
  * implementation and style.

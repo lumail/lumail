@@ -56,7 +56,7 @@ public:
  * This interface allows a class to be notified of a change
  * in state, via our subject-class.
  *
- * Ths is part of the Observer-pattern, but it is a simplified
+ * This is part of the Observer-pattern, but it is a simplified
  * implementation because we don't keep a reference to the
  * actual subject - instead when we broadcast the "update"
  * message we transmit the change as parameter.

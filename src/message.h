@@ -39,7 +39,7 @@ class CMessagePart;
  *
  * This is the C++ object which represents an email message.
  *
- * The lua binding is modeled after this class structure too.
+ * The lua binding is modelled after this class structure too.
  *
  */
 class CMessage

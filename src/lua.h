@@ -1,5 +1,5 @@
 /*
- * lua.h - Wrapper for the lua interpretter.
+ * lua.h - Wrapper for the lua interpreter.
  *
  * This file is part of lumail - http://lumail.org/
  *
