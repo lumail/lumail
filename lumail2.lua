@@ -1112,22 +1112,7 @@ end
 function Message.archive_outgoing( msg_path )
 
    --
-   -- If we're using IMAP ..
-   --
-   local user = Config:get("imap.username")
-   local pass = Config:get("imap.password")
-   local host = Config:get("imap.server")
-
-   if ( user and pass and host ) then
-
-      -- We're saving in a remote host - do it
-      os.execute( "/etc/lumail2/perl.d/save-message '" .. msg_path .. "'" )
-      Panel:append("Saved message to remote IMAP server.")
-      return
-   end
-
-   --
-   -- Otherwise just save globally.
+   -- Save globally.
    --
    local sent = Config:get( "global.sent-mail" )
    if ( sent ) then
