@@ -3127,9 +3127,9 @@ local host = Net:hostname()
 local file = HOME .. "/.lumail2/" .. host .. ".lua"
 if ( File:exists( file ) ) then
    dofile( file )
-   Panel:append( "Loaded local file " .. file )
+   Panel:append( "Loaded per-host configuration-file - " .. file )
 else
-   Panel:append( "Skipped local file " .. file )
+   Panel:append( "Skipped per-host configuration-file - " .. file )
 end
 
 
