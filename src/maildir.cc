@@ -38,7 +38,7 @@
 
 #include "directory.h"
 #include "file.h"
-#include "imapproxy.h"
+#include "imap_proxy.h"
 #include "maildir.h"
 #include "message.h"
 #include "util.h"

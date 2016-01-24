@@ -33,7 +33,7 @@
 
 #include "config.h"
 #include "file.h"
-#include "imapproxy.h"
+#include "imap_proxy.h"
 #include "screen.h"
 
 

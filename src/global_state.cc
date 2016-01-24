@@ -25,7 +25,7 @@
 #include "file.h"
 #include "global_state.h"
 #include "history.h"
-#include "imapproxy.h"
+#include "imap_proxy.h"
 #include "json/json.h"
 #include "logfile.h"
 #include "lua.h"

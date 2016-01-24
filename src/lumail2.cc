@@ -24,7 +24,7 @@
 #include "config.h"
 #include "file.h"
 #include "global_state.h"
-#include "imapproxy.h"
+#include "imap_proxy.h"
 #include "lua.h"
 #include "maildir.h"
 #include "message.h"

@@ -1,5 +1,5 @@
 /*
- * imapproxy.h - Manage our IMAP-proxy
+ * imap_proxy.h - Manage our IMAP-proxy
  *
  * This file is part of lumail - http://lumail.org/
  *
