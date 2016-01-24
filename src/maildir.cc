@@ -55,6 +55,11 @@ CMaildir::CMaildir(const std::string name, bool is_local)
         m_imap = false;
     else
         m_imap = true;
+
+    /*
+     * Default cache-time.
+     */
+    m_modified = -1;
 }
 
 
