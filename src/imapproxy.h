@@ -47,7 +47,7 @@ public:
      * Read a string from our IMAP proxy, launching it first
      * if required.
      */
-    std::string read_imap_output( std::string cmd );
+    std::string read_imap_output(std::string cmd);
 
     /**
      * Launch an IMAP-proxy.

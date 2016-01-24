@@ -143,8 +143,8 @@ void CGlobalState::update(std::string key_name)
         setenv("imap_username", config->get_string("imap.username").c_str(), 1);
 
         if ((config->get_string("imap.username", "") != "") &&
-            (config->get_string("imap.password", "") != "") &&
-            (config->get_string("imap.server", "") != ""))
+                (config->get_string("imap.password", "") != "") &&
+                (config->get_string("imap.server", "") != ""))
             update_maildirs();
         else
         {
@@ -157,8 +157,8 @@ void CGlobalState::update(std::string key_name)
         setenv("imap_password", config->get_string("imap.password").c_str(), 1);
 
         if ((config->get_string("imap.username", "") != "") &&
-            (config->get_string("imap.password", "") != "") &&
-            (config->get_string("imap.server", "") != ""))
+                (config->get_string("imap.password", "") != "") &&
+                (config->get_string("imap.server", "") != ""))
             update_maildirs();
         else
         {
@@ -171,8 +171,8 @@ void CGlobalState::update(std::string key_name)
         setenv("imap_server", config->get_string("imap.server").c_str(), 1);
 
         if ((config->get_string("imap.username", "") != "") &&
-            (config->get_string("imap.password", "") != "") &&
-            (config->get_string("imap.server", "") != ""))
+                (config->get_string("imap.password", "") != "") &&
+                (config->get_string("imap.server", "") != ""))
             update_maildirs();
         else
         {
@@ -222,8 +222,8 @@ void CGlobalState::update_maildirs()
     CConfig *config = CConfig::instance();
 
     if ((config->get_string("imap.username", "") != "") &&
-        (config->get_string("imap.password", "") != "") &&
-        (config->get_string("imap.server", "") != ""))
+            (config->get_string("imap.password", "") != "") &&
+            (config->get_string("imap.server", "") != ""))
     {
         /*
          * Read the output from our IMAP proxy.
