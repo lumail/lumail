@@ -14,6 +14,7 @@ IMAP server via the following settings:
    --
    Config:set( "imap.cache", HOME .. "/.lumail2/imap.cache" )
    Config:set( "imap.proxy", "/etc/lumail2/perl.d/imap-proxy" )
+   Config:set( "index.sort", "none" )
 
    --
    -- Account details
@@ -29,6 +30,10 @@ How IMAP Works
 All IMAP operations are carried out by talking to a persistent
 program `imap-proxy` which connects to the remote IMAP server
 and also listens upon a Unix domain-socket.
+
+When Lumail wishes to perform an action, such as listing the remote
+folders, it will open a connection to the domain-socket, send the
+request, and read the reply.
 
 Lumail will launch the proxy-process when necessary, and it will
 read the connection-details via environmental variables.
