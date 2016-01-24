@@ -64,8 +64,9 @@ exit
     !Getopt::Long::GetOptions(
 
         # Help options
-        "help",   \$CONFIG{ 'help' },
-        "manual", \$CONFIG{ 'manual' } ) );
+        "help",    \$CONFIG{ 'help' },
+        "manual",  \$CONFIG{ 'manual' },
+        "verbose", \$CONFIG{ 'verbose' } ) );
 
 #
 #  If we have a --help|--manual flag specified then honour them.
@@ -128,7 +129,6 @@ while (1)
 
     if ( !$handle )
     {
-        print "Rebirth\n";
         $handle = Lumail::imap_connect();
     }
 }
@@ -160,12 +160,12 @@ sub read_input
     while ( my $conn = $server->accept() )
     {
         # Read a one-line command from the client.
-        print "Accepted connection.\n";
+        $CONFIG{ 'verbose' } && print "Accepted connection.\n";
         my $command = <$conn>;
         chomp($command);
 
         # Show it.
-        print "\tCommand: $command\n";
+        $CONFIG{ 'verbose' } && print "\tCommand: $command\n";
 
         # Now try to dispatch it.
         if ( $command =~ /^list_folders/i )
@@ -252,7 +252,7 @@ sub read_input
         $conn->flush();
         $conn->close();
 
-        print "\tConnection terminated\n";
+        $CONFIG{ 'verbose' } && print "\tConnection terminated\n";
     }
 }
 
@@ -451,7 +451,7 @@ sub cmd_get_messages
     #  Perform a search - to get the message IDs of all the messages
     # in the given folder.
     #
-    print "\tSearchign for messages\n";
+    $CONFIG{ 'verbose' } && print "\tSearchign for messages\n";
     my $all = $handle->search("all");
 
     my @ids;
@@ -459,7 +459,7 @@ sub cmd_get_messages
     {
         push @ids, $a;
 
-        print "\t\tFound ID: $a\n";
+        $CONFIG{ 'verbose' } && print "\t\tFound ID: $a\n";
     }
 
 
@@ -539,7 +539,7 @@ sub cmd_get_message_ids
     # Process the return values in chunks of 1024
     while ( my @chunk = splice @ids, 0, 1024 )
     {
-        print "\tProcessing chunk\n";
+        $CONFIG{ 'verbose' } && print "\tProcessing chunk\n";
         #
         #  Perform the retrival.  We wish to retrieve the flags of each
         # specified message.
