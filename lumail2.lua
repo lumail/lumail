@@ -3059,7 +3059,14 @@ cache_load()
 -- to do that set the following values appropriately
 --
 --
+--   -- Setup defaults
 --   Config:set( "imap.cache", HOME .. "/.lumail2/imap.cache" )
+--   Config:set( "index.sort", "none" )
+--
+--   -- The proxy-program we're using
+--   Config:set( "imap.proxy", "/etc/lumail2/perl.d/imap-proxy" )
+--
+--   -- Now setup login-details
 --   Config:set( "imap.server",   "imaps://imap.gmail.com/" )
 --   Config:set( "imap.username", "gmail.username" )
 --   Config:set( "imap.password", "pass.word.here" )
