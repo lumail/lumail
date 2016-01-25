@@ -106,25 +106,56 @@ via:
 
 
 
-Using Lumail
-------------
+Configuring Lumail
+-------------------
 
-When `lumail2` starts it will load each of the following files, in order,
-if they exit:
+When `lumail2` starts it will load each of the following files:
 
 * `/etc/lumail2/lumail2.lua`
+    * This will also load `~/.lumail2/$HOSTNAME.lua` if present.
 * `~/.lumail2/lumail2.lua`
 
-Once you've done that you'll be in the `maildir`-mode, and you can
-navigate with `j`/`k`, and select items with `enter`.
+The intention is that you will always run `make install` to ensure
+that the global file is present, and you will then place your own
+configuration in the file `~/.lumail2/lumail2.lua`.
+
+If you keep your personal configuration settings beneath `~/.lumail2/`
+then they will remain effective if/when you ever upgrade lumail.
+
+The following settings are probably the minimum you'll require,
+given the sensible defaults in the global configuration file:
+
+
+     -- Set the location of your Maildir folders, and your sent-folder
+     Config:set( "maildir.prefix", os.getenv( "HOME" ) .. "/Maildir/" );
+     Config:set( "global.sent-mail", os.getenv( "HOME" ) .. "/Maildir/sent/" )
+
+     -- Set your outgoing mail-handler, and email-address:
+     Config:set( "global.mailer", "/usr/lib/sendmail -t" )
+     Config:set( "global.sender", "Some User <steve@example.com>" )
+
+     -- Set your editor
+     Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )
+
+Other options are possible, and you'll find if you wish to
+[use IMAP](IMAP.md) you need some more options.  For more details
+please do read the [sample lumail2.lua file](lumail2.lua).
+
+
+
+Using Lumail2
+-------------
+
+By default you'll be in the `maildir`-mode, and you can navigate with `j`/`k`, and select items with `enter`.
 
 For a quick-start you can use the following bindings:
 
-* `TAB` - Toggle the panel
-* `M` - Maildir mode
-* `I` - Index mode
+* `TAB` - Toggle the display of the status-panel.
+* `P` - Toggle the size of the panel.
+* `M` - Maildir mode.
+* `I` - Index mode.
 * `L` - Lua-mode.
-* `Q` - Exit
+* `Q` - Exit.
 
 
 Further Notes
