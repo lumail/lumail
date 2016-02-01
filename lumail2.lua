@@ -2966,6 +2966,11 @@ keymap['maildir']['p'] = 'toggle_variable( "maildir.truncate" )'
 keymap['global']['P'] = 'panel_size_toggle()'
 
 --
+-- Toggle line-wrap
+--
+keymap['global']['w'] = 'toggle_variable( "line.wrap" )'
+
+--
 -- Toggle the display of full headers / all parts
 --
 keymap['message']['H'] = 'toggle_variable( "message.headers" )'

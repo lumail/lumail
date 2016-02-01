@@ -278,8 +278,10 @@ public:
      * Draw a single text line, paying attention to our colour strings.
      *
      * **NOTE**: This function is grossly inefficient, although functional.
+     *
+     * The return value is the number of characters drawn.
      */
-    void draw_single_line(int row, int col_offset, std::string text, WINDOW * screen);
+    int draw_single_line(int row, int col_offset, std::string text, WINDOW * screen);
 
 
 private:

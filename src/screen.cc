@@ -491,7 +491,9 @@ void CScreen::status_panel_draw()
 
     if (! x.title.empty())
     {
-        draw_single_line(1, 1, x.title, g_status_bar_window);
+        int result __attribute__((unused));
+
+        result = draw_single_line(1, 1, x.title, g_status_bar_window);
     }
 
 
@@ -1300,8 +1302,18 @@ int CScreen::get_colour(std::string name)
  */
 void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int max, bool simple)
 {
+    /*
+     * Get the dimensions of the screen.
+     */
     CScreen *screen = CScreen::instance();
-    int height = CScreen::height();
+    int height      = CScreen::height();
+    int width       = CScreen::width();
+
+    /*
+     * Is line-wrapping enabled?
+     */
+    CConfig *config = CConfig::instance();
+    int wrap = config->get_integer("line.wrap", 0);
 
     /*
      * Take off the panel, if visible.
@@ -1316,7 +1328,16 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
      */
     if (simple)
     {
+        /*
+         * The number of lines to draw.
+         */
         int size = lines.size();
+
+        /*
+         * The width of each line drawn.
+         */
+        int result __attribute__((unused));
+
 
         for (int i = 0; i < height; i++)
         {
@@ -1324,7 +1345,20 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
             {
                 std::string buf = lines.at(i + selected);
 
-                draw_single_line(i, 0, buf, stdscr);
+                result = draw_single_line(i, 0, buf, stdscr);
+
+                /*
+                 * Did we draw more than a single line?
+                 */
+                if (result > width)
+                {
+                    /*
+                     * If we've got wrapping enabled bump to the next
+                     * line.
+                     */
+                    if (wrap == 1)
+                        i += (result / width);
+                }
             }
         }
 
@@ -1411,7 +1445,9 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         else
             wattrset(stdscr, A_NORMAL);
 
-        draw_single_line(row, 0, buf, stdscr);
+        int result __attribute__((unused));
+
+        result = draw_single_line(row, 0, buf, stdscr);
     }
 
     /*
@@ -1432,11 +1468,12 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
  *
  *  * The handling of horizontal scrolling via `global.horizontal`.
  *
+ * The return value is the number of characters drawn.
  */
-void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW * screen)
+int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW * screen)
 {
     /*
-     * Move to the correct location
+     * Move to the correct location.
      */
     wmove(screen, row, col_offset);
 
@@ -1528,6 +1565,10 @@ void CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW 
         free(i);
     }
 
+    /*
+     * Return the width of the line we drew.
+     */
+    return (width);
 }
 
 
