@@ -324,7 +324,7 @@ end
 
 --
 -- Given a line add the given colour to it - removing any
--- existing colour, uunless that colour is "UNREAD".
+-- existing colour, unless that colour is "UNREAD".
 --
 -- For example an input line such as "Bob" will be made red
 -- like so:
