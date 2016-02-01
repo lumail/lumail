@@ -2109,13 +2109,29 @@ end
 
 --
 -- Given a line of text escape any colour-definitions
--- by changing `$[RED]Line ..` into `$$[RED]Line` - ie. add
--- a leading `$`.
+--
+-- The formatting of colours that lumail2 uses is very
+-- simple, the following is an example:#
+--
+--   $[RED]This is red $[GREEN]This is green.
+--
+-- To display this text literally we'd add "#" to the name
+-- of the colour, so for example you might have this:
+--
+--   $[#PINK]This is actually white - the "#" escapes it.
+--
+-- To escape the value of any formatting that might be in the
+-- message body we thus turn this:
+--
+--   $[GREEN]Green $[Blue]Blue
+--
+-- to this:
+--
+--   $[#GREEN]Green $[#BLUE]Blue
+--
 --
 function escape_message_colours( txt )
-
-   txt = string.gsub(txt, "$%[", "$$[" )
-
+   txt = string.gsub(txt, "$%[([a-zA-Z|])", "$[#%1" )
    return txt
 end
 
