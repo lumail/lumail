@@ -1338,12 +1338,13 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
          */
         int result __attribute__((unused));
 
+        int off = 0;
 
         for (int i = 0; i < height; i++)
         {
-            if ((i + selected) < size)
+            if ((off + selected) < size)
             {
-                std::string buf = lines.at(i + selected);
+                std::string buf = lines.at(off + selected);
 
                 result = draw_single_line(i, 0, buf, stdscr);
 
@@ -1360,6 +1361,8 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
                         i += (result / width);
                 }
             }
+
+            off += 1;
         }
 
         return;
@@ -1446,8 +1449,8 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
             wattrset(stdscr, A_NORMAL);
 
         int result __attribute__((unused));
-
         result = draw_single_line(row, 0, buf, stdscr);
+
     }
 
     /*
