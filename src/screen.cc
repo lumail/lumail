@@ -1518,6 +1518,7 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
      * the string - and that might make it too short once again.
      */
     int width = 0;
+    std::string prev = "white";
 
     for (auto it = parts.begin(); it != parts.end() ; ++it)
     {
@@ -1528,11 +1529,43 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
         std::string *colour = i->colour;
         std::string *text   = i->string;
 
+
+        /*
+         * If the colour starts with "#" then use the previous colour.
+         *
+         * i.e. We avoid using the colour, and we rewrite the text to
+         * include this $[COLOUR].  This is how escaping the patterns
+         * works:
+         *
+         *    $[RED]THis is red
+         *
+         *    $[#RED]This is not red - the "#" negates the colouring
+         *
+         */
+        std::string col = *colour;
+
+        if ((col.size() > 0) && (col.at(0) == '#'))
+        {
+            /* Rewrite the text - i.e escape the whole damn thing. */
+            *text = "$[" + col.substr(1) + "]" + *text;
+
+            /* avoid using the selected colour */
+            col = prev;
+        }
+        else
+        {
+            /*
+             * Record the previous colour, to handle the case of a future
+             * string not updating itself because it is escaped.
+             */
+            prev = col;
+        }
+
         /*
          * Set the colour + draw the component.
          */
         wattrset(screen, def_col);
-        wattron(screen, get_colour(*colour));
+        wattron(screen, get_colour(col));
         waddstr(screen, (char *)(*text).c_str());
 
         width += (*text).size();
@@ -1590,7 +1623,7 @@ std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
      * back of the string forward.  This is definitely the simpler
      * of the approaches I trialled.
      */
-    pcrecpp::RE re("^(.*)\\$\\[([a-zA-Z|]+)\\](.*)$");
+    pcrecpp::RE re("^(.*)\\$\\[([#a-zA-Z|]+)\\](.*)$");
 
     std::string pre;
     std::string col;
