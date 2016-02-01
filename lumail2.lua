@@ -2107,6 +2107,19 @@ function maildir_view()
 end
 
 
+--
+-- Given a line of text escape any colour-definitions
+-- by changing `$[RED]Line ..` into `$$[RED]Line` - ie. add
+-- a leading `$`.
+--
+function escape_message_colours( txt )
+
+   txt = string.gsub(txt, "$%[", "$$[" )
+
+   return txt
+end
+
+
 
 --
 -- This method returns the text which is displayed in message-mode.
@@ -2295,6 +2308,14 @@ function message_view( msg )
       "Failed to find a plain-text part in the message."
 
 
+   --
+   -- Escape the colours in the body
+   --
+   txt = escape_message_colours( txt )
+
+   --
+   -- Now add to the body.
+   --
    output = output .. txt
 
    --
