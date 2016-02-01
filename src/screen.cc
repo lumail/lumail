@@ -1590,7 +1590,7 @@ std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
      * back of the string forward.  This is definitely the simpler
      * of the approaches I trialled.
      */
-    pcrecpp::RE re("^(.*)\\$\\[([a-zA-Z|]+)\\](.*)$");
+    pcrecpp::RE re("^(.*)[^\\$]\\$\\[([a-zA-Z|]+)\\](.*)$");
 
     std::string pre;
     std::string col;
@@ -1602,6 +1602,16 @@ std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
          * Allocate a structure to hold this match.
          */
         COLOUR_STRING *tmp = (COLOUR_STRING *)malloc(sizeof(COLOUR_STRING));
+
+        /*
+         * If our text contains `$$[` replace with `$[`.
+         */
+        std::size_t found = 0;
+
+        while ((found = txt.find("$$[", found) != std::string::npos))
+        {
+            txt.erase(found, 1);
+        }
 
         /*
          * Save our match away.
@@ -1624,6 +1634,18 @@ std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
          */
         COLOUR_STRING *tmp = (COLOUR_STRING *)malloc(sizeof(COLOUR_STRING));
         tmp->colour = new std::string("white");
+
+
+        /*
+         * If our text contains `$$[` replace with `$[`.
+         */
+        std::size_t found = 0;
+
+        while ((found = input.find("$$[", found) != std::string::npos))
+        {
+            input.erase(found, 1);
+        }
+
         tmp->string = new std::string(input);
         results.push_back(tmp);
     }
