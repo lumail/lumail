@@ -15,6 +15,7 @@ IMAP server via the following settings:
      Config:set( "imap.cache", HOME .. "/.lumail2/imap.cache" )
      Config:set( "imap.proxy", "/etc/lumail2/perl.d/imap-proxy" )
      Config:set( "index.sort", "none" )
+     Config:set( "index.fast", "1" )
 
      --
      -- Account details

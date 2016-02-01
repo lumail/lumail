@@ -1866,10 +1866,14 @@ end
 -- It fetches the list of current messages, and calls `Message:format()`
 -- on each one.
 --
+-- As an optimization, primarily useful for large Maildirs, or when
+-- using IMAP we can instead elect to only format the visible messages
+-- if the setting `index.fast` is enabled.
+--
 function index_view()
    local result = {}
 
-   -- Get the messages in the maildir
+   -- Get the available messages.
    local messages = sorted_messages()
 
    -- Get the current offset
@@ -1883,16 +1887,27 @@ function index_view()
    local min = cur - height;
    if ( min < 0 ) then min = 0  end
 
-   -- The maximum message-nubmer we're going to format.
+   -- The maximum message-number we're going to format.
    local max = cur + height;
 
+   -- Are we optimizing?
+   local fast = Config.get_with_default( "index.fast", 0 )
+
    --
-   -- For each *VISBLE* message add the output.
+   -- Format entries
    --
    for offset,object in ipairs( messages ) do
 
       local str = "UNFORMATTED"
-      if ( offset >= min ) and ( offset <= max ) then
+
+      -- If optimizing
+      if ( fast == 1 ) then
+         -- Only format if visible.
+         if ( offset >= min ) and ( offset <= max ) then
+            str = object:format()
+         end
+      else
+         -- Else format all entries
          str = object:format()
       end
       table.insert(result,str)
@@ -2977,7 +2992,21 @@ keymap['message']['T'] = 'toggle_variable( "message.all_parts" )'
 --
 Config:set( "global.iconv", 1 )
 
+
 --
+-- The following flag configures our index-mode to only format
+-- messages which are visible.
+--
+-- This is a huge performance boost if you have thousands of messages
+-- in a folder, OR if you're using IMAP.
+--
+-- The downside is that searching through messages "/" and `?`,
+-- will break, as items off the screen won't be formatted.
+--
+Config:set( "index.fast", 1 )
+
+
+
 -- Get our home-directory, as this is often used.
 --
 local HOME = os.getenv("HOME")
@@ -3062,6 +3091,7 @@ cache_load()
 --   -- Setup defaults
 --   Config:set( "imap.cache", HOME .. "/.lumail2/imap.cache" )
 --   Config:set( "index.sort", "none" )
+--   Config:set( "index.fast", "1" )
 --
 --   -- The proxy-program we're using
 --   Config:set( "imap.proxy", "/etc/lumail2/perl.d/imap-proxy" )
