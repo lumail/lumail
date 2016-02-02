@@ -357,7 +357,7 @@ end
 --
 -- Return the contents of the named file.
 --
-function read_file( path )
+function File.contents( path )
    local f = io.open(path, "rb")
    if ( f ) then
       local content = f:read("*all")
@@ -825,14 +825,14 @@ function Message.generate_signature()
    -- Look for the domain-file ~/.sigs/$domain
    file = home .. "/.sigs/" .. domain
    if ( File:exists( file ) ) then
-      return( read_file( file ) )
+      return( File.contents( file ) )
    end
 
    --
    -- Fallback to ~/.signature if present
    --
    if ( File:exists( home .. "/.signature" ) ) then
-      return( read_file( home .. "/.signature" ) )
+      return( File.contents( home .. "/.signature" ) )
    end
 
    return ""
