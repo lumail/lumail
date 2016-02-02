@@ -213,9 +213,9 @@ end
 --
 -- Usage:
 --
---   print( interp( "Hello $(name)", { name = "World" } )
+--   print( string.interp( "Hello $(name)", { name = "World" } )
 --
-function interp(s, tab)
+function string.interp(s, tab)
    return (s:gsub('($%b{})', function(w) return tab[w:sub(3, -2)] or w end))
 end
 
@@ -850,7 +850,7 @@ Date: ${date}
 ${sig}
 ]]
 
-   file:write( interp( header, { to      = to,
+   file:write( string.interp( header, { to      = to,
                                  from    = from,
                                  subject = subject,
                                  msgid   = msgid,
@@ -1012,7 +1012,7 @@ Date: ${date}
 
 ]]
 
-   file:write( interp( header, { to      = to,
+   file:write( string.interp( header, { to      = to,
                                  cc      = cc,
                                  from    = Config:get("global.sender" ),
                                  subject = subject,
@@ -1243,7 +1243,7 @@ Begin forwarded message.
    local from = Config:get("global.sender" )
    local subject = msg:header("Subject")
 
-   file:write( interp( header, { from    = from,
+   file:write( string.interp( header, { from    = from,
                                  to      = to,
                                  subject = subject,
                                  msgid   = Message:generate_message_id(),
