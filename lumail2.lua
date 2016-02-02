@@ -229,6 +229,19 @@ end
 
 
 --
+-- Split a string on newlines, and return the result as a table.
+--
+-- This is used in some drawing modes.
+--
+function string.to_table(str)
+   local t = {}
+   local function helper(line) table.insert(t, line) return "" end
+   helper((str:gsub("(.-)\r?\n", helper)))
+   return t
+end
+
+
+--
 -- Split a string by a separator character, and return the resulting
 -- table.
 --
@@ -309,18 +322,6 @@ function os.exit(code)
 end
 
 
---
--- Split a string on newlines, and return the result as a table.
---
--- This is used in some drawing modes.
---
-function string.to_table(str)
-   local t = {}
-   local function helper(line) table.insert(t, line) return "" end
-   helper((str:gsub("(.-)\r?\n", helper)))
-   return t
-end
-
 
 --
 -- Given a line add the given colour to it - removing any
@@ -367,6 +368,30 @@ function read_file( path )
    end
 end
 
+
+
+--
+-- If this function is defined it will be invoked any time
+-- a configuration-key has its value changed.
+--
+-- The single argument will be the name of the key which has
+-- been updated - the value can be retrieved via Config:get, but
+-- remember that the value might be a string or a table.
+--
+function Config.key_changed( name )
+
+   --
+   -- If the index.limit value has changed then we can
+   -- update our state.
+   --
+   if ( name == "index.limit" ) then
+      global_msgs = {}
+      log_message( "index.limit changed - flushing message cache" )
+   end
+
+end
+
+
 --
 -- Given a key toggle the setting of that key from
 -- true -> false, and vice-versa.
@@ -388,15 +413,6 @@ end
 
 
 --
--- Change the mode - and update the panel-title, if we have one.
---
-function change_mode( new_mode )
-   Config:set( "global.mode", new_mode )
-   log_message("Mode changed to:" .. new_mode )
-end
-
-
---
 -- Configuration values are retrieved/set via Config:get() and Config:set().
 --
 -- There is no built-in way of getting a value with a default, so we
@@ -409,6 +425,15 @@ function Config.get_with_default(key,default)
    end
 
    return( value )
+end
+
+
+--
+-- Change the mode - and update the panel-title, if we have one.
+--
+function change_mode( new_mode )
+   Config:set( "global.mode", new_mode )
+   log_message("Mode changed to:" .. new_mode )
 end
 
 
@@ -2844,28 +2869,6 @@ do
       -- Panel:append("The date is " .. Message.generate_date())
       --
    end
-end
-
-
---
--- If this function is defined it will be invoked any time
--- a configuration-key has its value changed.
---
--- The single argument will be the name of the key which has
--- been updated - the value can be retrieved via Config:get, but
--- remember that the value might be a string or a table.
---
-function Config.key_changed( name )
-
-   --
-   -- If the index.limit value has changed then we can
-   -- update our state.
-   --
-   if ( name == "index.limit" ) then
-      global_msgs = {}
-      log_message( "index.limit changed - flushing message cache" )
-   end
-
 end
 
 
