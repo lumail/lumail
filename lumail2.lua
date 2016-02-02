@@ -314,7 +314,7 @@ end
 --
 -- This is used in some drawing modes.
 --
-function string_to_table(str)
+function string.to_table(str)
    local t = {}
    local function helper(line) table.insert(t, line) return "" end
    helper((str:gsub("(.-)\r?\n", helper)))
@@ -2337,7 +2337,7 @@ function message_view( msg )
    --
    -- The command output is now split into rows.
    --
-   local result = string_to_table( output )
+   local result = string.to_table( output )
 
    --
    -- Update the colours
