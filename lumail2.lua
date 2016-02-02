@@ -979,6 +979,7 @@ function Message.reply()
 
       if ( not msgs ) then
          Panel:append( "There are no messages!")
+         return
       end
       msg = msgs[offset+1]
    end
@@ -1182,6 +1183,7 @@ function Message.delete()
       local msgs    = sorted_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
+         return
       end
 
       msg = msgs[offset+1]
@@ -1228,6 +1230,7 @@ function Message.forward()
       local msgs    = sorted_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
+         return
       end
 
       msg = msgs[offset+1]
@@ -1377,6 +1380,7 @@ function Message.save()
       local msgs    = sorted_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
+         return
       end
 
       msg = msgs[offset+1]
