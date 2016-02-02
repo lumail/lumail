@@ -371,7 +371,7 @@ end
 -- Given a key toggle the setting of that key from
 -- true -> false, and vice-versa.
 --
-function toggle_variable( name )
+function Config.toggle( name )
 
    local current = Config:get( name )
    if ( current == nil ) then current = 0 end
@@ -2174,7 +2174,7 @@ function message_view( msg )
    -- The user may choose to view all headers by pressing `H`,
    -- which will invoke:
    --
-   --     toggle_variable( "message.headers" );
+   --     Config.toggle( "message.headers" );
    --
    local full_headers = Config.get_with_default("message.headers", 0)
 
@@ -2995,7 +2995,7 @@ keymap['index']['s']   = 'Message.save()'
 --
 -- Toggle display of full maildir paths
 --
-keymap['maildir']['p'] = 'toggle_variable( "maildir.truncate" )'
+keymap['maildir']['p'] = 'Config.toggle( "maildir.truncate" )'
 
 --
 -- Toggle the size of the panel
@@ -3005,13 +3005,13 @@ keymap['global']['P'] = 'panel_size_toggle()'
 --
 -- Toggle line-wrap
 --
-keymap['global']['w'] = 'toggle_variable( "line.wrap" )'
+keymap['global']['w'] = 'Config.toggle( "line.wrap" )'
 
 --
 -- Toggle the display of full headers / all parts
 --
-keymap['message']['H'] = 'toggle_variable( "message.headers" )'
-keymap['message']['T'] = 'toggle_variable( "message.all_parts" )'
+keymap['message']['H'] = 'Config.toggle( "message.headers" )'
+keymap['message']['T'] = 'Config.toggle( "message.all_parts" )'
 
 
 --
