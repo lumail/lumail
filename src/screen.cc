@@ -1740,7 +1740,7 @@ std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_
     /*
      * Now remove the parts that we should skip.
      */
-    for (int i = 0; i < offset && ((int)results.size() > 1); i++)
+    for (int i = 0; i < offset && ((int)results.size() >= 1); i++)
     {
         COLOUR_STRING *x = results.at(0);
         delete(x->string);
