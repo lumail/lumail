@@ -506,7 +506,7 @@ function Message:to_ctime()
       local date = luarocks_libraries["date"]
 
       -- Call the data function
-      local success,output = pcall( date, str )
+      local success,output = pcall( date, d )
 
       -- If it worked, get the age in seconds, and update the cahce
       if ( success == true ) then
