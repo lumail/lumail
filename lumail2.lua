@@ -876,12 +876,12 @@ ${sig}
 ]]
 
    file:write( string.interp( header, { to      = to,
-                                 from    = from,
-                                 subject = subject,
-                                 msgid   = msgid,
-                                 date    = date,
-                                 sig     = Message.generate_signature()
-                               } ) )
+                                        from    = from,
+                                        subject = subject,
+                                        msgid   = msgid,
+                                        date    = date,
+                                        sig     = Message.generate_signature()
+                                      } ) )
 
    file:close()
 
@@ -1039,12 +1039,12 @@ Date: ${date}
 ]]
 
    file:write( string.interp( header, { to      = to,
-                                 cc      = cc,
-                                 from    = Config:get("global.sender" ),
-                                 subject = subject,
-                                 msgid   = Message:generate_message_id(),
-                                 date    = Message.generate_date()
-                               } ) )
+                                        cc      = cc,
+                                        from    = Config:get("global.sender" ),
+                                        subject = subject,
+                                        msgid   = Message:generate_message_id(),
+                                        date    = Message.generate_date()
+                                      } ) )
 
 
    for i,l in ipairs(txt) do
@@ -1272,11 +1272,11 @@ Begin forwarded message.
    local subject = msg:header("Subject")
 
    file:write( string.interp( header, { from    = from,
-                                 to      = to,
-                                 subject = subject,
-                                 msgid   = Message:generate_message_id(),
-                                 date    = Message.generate_date()
-                               } ) )
+                                        to      = to,
+                                        subject = subject,
+                                        msgid   = Message:generate_message_id(),
+                                        date    = Message.generate_date()
+                                      } ) )
 
 
    for i,l in ipairs(txt) do
@@ -1663,7 +1663,7 @@ function view_mime_part()
       file:close()
 
       -- Get the MIME-type of the attachment
-      local mime = found:type()
+      local mime = found:type():lower()
 
       -- Lookup the viewer, and put the filename in place
       local cmd = get_mime_viewer(mime)
@@ -1804,11 +1804,11 @@ function attachment_view()
    for k,v in ipairs( parts ) do
       if ( v:is_attachment() ) then
          local tmp = string.format( "%02d │  %06d - %20s [%32s]", c,
-                                    v:size(), v:type(), v:filename() )
+                                    v:size(), v:type():lower(), v:filename() )
          table.insert( result, tmp )
       else
          local tmp = string.format( "%02d │  %06d - %20s", c,
-                                    v:size(), v:type() )
+                                    v:size(), v:type():lower() )
          table.insert( result, tmp )
       end
 
@@ -1821,11 +1821,11 @@ function attachment_view()
             c = c + 1
             if ( o:is_attachment() ) then
                local tmp = string.format( "%02d └─>%06d - %20s [%32s]", c,
-                                          o:size(), o:type(), o:filename() )
+                                          o:size(), o:type():lower(), o:filename() )
                table.insert( result, tmp )
             else
                local tmp = string.format( "%02d └─>%06d - %20s", c,
-                                          o:size(), o:type() )
+                                          o:size(), o:type():lower() )
                table.insert( result, tmp )
             end
 
