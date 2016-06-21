@@ -17,6 +17,7 @@
  */
 
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -41,6 +42,13 @@ CMessagePart::CMessagePart(std::string type, std::string filename,
         m_content = content;
         m_content_length = content_length;
     }
+
+    /*
+     * To allow users to make use of the MIME type more easily
+     * we'll only store it as lower-case.
+     */
+    std::transform(m_type.begin(), m_type.end(), m_type.begin(), ::tolower);
+
 }
 
 /*
