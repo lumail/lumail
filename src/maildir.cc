@@ -304,7 +304,7 @@ bool CMaildir::saveMessage(std::shared_ptr <CMessage > msg)
     }
     else
     {
-        std::string path = generate_filename(msg->is_new());
+        std::string path = generate_filename(false);
 
         return (CFile::copy(msg->path(), path));
     }

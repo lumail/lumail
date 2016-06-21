@@ -457,9 +457,6 @@ void CGlobalState::update_messages()
                 if (flag == "\\Unseen")
                     f += "N";
 
-                if (flag == "\\Recent")
-                    f += "N";
-
                 if (flag == "\\Answered")
                     f += "R";
             }
