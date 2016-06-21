@@ -1670,26 +1670,33 @@ std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
 
 
 /*
-     * Given an array of colour parts which might look like this
-     *
-     * <code>
-     *   [ "RED",   "This is in red" ],
-     *   [ "YELLOW", "**"]
-     * </code>
-     *
-     * We want to return an updated array that is suitable for drawing column
-     * by column such as:
-     *
-     * <code>
-     *  [ "RED", "T" ],
-     *  [ "RED", "h" ],
-     * ...
-     *  [ "YELLOW", *" ],
-     *  [ "YELLOW", *" ]
-     * </code>
-     *
-     * This is used to implement horizontal scrolling.
-     */
+ * Given an array of colour parts which might look like this
+ *
+ * <code>
+ *   [ "RED",   "This is in red" ],
+ *   [ "YELLOW", "**"]
+ * </code>
+ *
+ * We want to return an updated array that is suitable for drawing column
+ * by column such as:
+ *
+ * <code>
+ *  [ "RED", "T" ],
+ *  [ "RED", "h" ],
+ * ...
+ *  [ "YELLOW", *" ],
+ *  [ "YELLOW", *" ]
+ * </code>
+ *
+ * This is used to implement horizontal scrolling.
+ *
+ * NOTE: We do some magic here to try to scroll in one *character* steps
+ * even if we're dealing with mult-byte characters (i.e. UTF).
+ *
+ * This is based on the observation that you can determine the length of
+ * a UTF-8 character by looking at the prefix.
+ *
+ */
 std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_STRING *> parts, int offset)
 {
     std::vector<COLOUR_STRING *> results;
@@ -1715,11 +1722,81 @@ std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_
         /*
          * Copy the colour, and the one-character string.
          */
-        for (int i = 0; i < (int)text->length(); i++)
+        int max = (int)text->length();
+
+        for (int i = 0; i < max; i++)
         {
+            /*
+             * Get the single byte at the position.
+             * We'll test this to see if it is a multi-byte chacter
+             * and if it is we'll bump it up.
+             */
+            unsigned char byte = text->at(i);
+
+            /*
+             * The "single character" we'll draw, which might
+             * actually be comprised of multiple bytes.
+             */
+            std::string txt;
+
+            if ((byte & 0x80) == 0)
+            {
+                txt += byte;
+            }
+            else if ((byte & 0xE0) == 0xC0)     // 110x xxxx
+            {
+                /*
+                 * Don't walk off our string.
+                 */
+                if (i + 1 <= max)
+                {
+                    txt += text->at(i);
+                    txt += text->at(i + 1);
+
+                    i += 1;
+                }
+            }
+            else if ((byte & 0xF0) == 0xE0)    // 1110 xxxx
+            {
+                /*
+                 * Don't walk off our string.
+                 */
+                if (i + 2 <= max)
+                {
+                    txt += text->at(i);
+                    txt += text->at(i + 1);
+                    txt += text->at(i + 2);
+
+                    i += 2;
+                }
+            }
+            else if ((byte & 0xF8) == 0xF0)    // 1111 0xxx
+            {
+                /*
+                 * Don't walk off our string.
+                 */
+                if (i + 3 <= max)
+                {
+                    txt += text->at(i);
+                    txt += text->at(i + 1);
+                    txt += text->at(i + 2);
+                    txt += text->at(i + 3);
+
+                    i += 3;
+                }
+            }
+            else
+            {
+                // Invalid byte sequence?
+                assert(false);
+
+                // http://stackoverflow.com/a/2853000
+            }
+
+
             COLOUR_STRING *tmp = (COLOUR_STRING *)malloc(sizeof(COLOUR_STRING));
             tmp->colour = new std::string(*colour);
-            tmp->string = new std::string(text->substr(i, 1));
+            tmp->string = new std::string(txt);
             results.push_back(tmp);
         }
     }
