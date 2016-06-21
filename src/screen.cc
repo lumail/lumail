@@ -1476,6 +1476,12 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
 int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW * screen)
 {
     /*
+     * Is line-wrapping enabled?
+     */
+    CConfig *config = CConfig::instance();
+    int wrap = config->get_integer("line.wrap", 0);
+
+    /*
      * Move to the correct location.
      */
     wmove(screen, row, col_offset);
@@ -1493,7 +1499,6 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
     /*
      * Get the horizontal scroll offset.
      */
-    CConfig *config = CConfig::instance();
     int horiz = config->get_integer("global.horizontal", 0);
 
     /*
@@ -1522,6 +1527,15 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
 
     for (auto it = parts.begin(); it != parts.end() ; ++it)
     {
+        /*
+         * If we've drawn more characters than the width
+         * of the screen then we should stop
+         *
+         * Because otherwise we'll wrap onto the next line.
+         */
+        if ((width >= swidth) && (wrap == 0))
+            continue;
+
         /*
          * Get the text/colour.
          */
@@ -1700,13 +1714,6 @@ std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
 std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_STRING *> parts, int offset)
 {
     std::vector<COLOUR_STRING *> results;
-
-    /*
-     * No offset?  Then just return as-is.
-     */
-    if (offset == 0)
-        return parts;
-
 
     /*
      * Iterate over the entries.
