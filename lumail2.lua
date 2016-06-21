@@ -270,8 +270,11 @@ end
 function get_mime_viewer( mime_type )
    local ret  = "less %s"
 
+    -- Mailcap file
+    local mailcap_file = "/etc/mailcap"
+
    -- Return if the file doesn't exist.
-   if ( not File:exists( "/etc/mailcap" ) ) then
+   if ( not File:exists( mailcap_file ) ) then
       return( ret )
    end
 
@@ -281,10 +284,10 @@ function get_mime_viewer( mime_type )
       return(ret)
    end
 
-   local f    = io.input ("/etc/mailcap")
+   local f    = io.input ( mailcap_file )
    local line = nil
 
-   for line in io.lines(file) do
+   for line in io.lines() do
 
       --
       -- Split the line by ";", and if that worked
