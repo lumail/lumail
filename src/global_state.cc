@@ -521,9 +521,12 @@ std::shared_ptr<CMaildir>CGlobalState::current_maildir()
 
 
 /*
- * Update the currently selected maildir.
+ * Update the currently selected maildir, and trigger a refresh
+ * of the message-cache.
  */
 void CGlobalState::set_maildir(std::shared_ptr<CMaildir> updated)
 {
     m_current_maildir = updated;
+
+    update_messages();
 }

@@ -80,7 +80,8 @@ public:
     std::shared_ptr<CMaildir > current_maildir();
 
     /**
-     * Update the currently selected maildir.
+     * Update the currently selected maildir, and trigger a refresh
+     * of the message-cache.
      */
     void set_maildir(std::shared_ptr<CMaildir >  folder);
 
