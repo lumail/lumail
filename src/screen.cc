@@ -1787,10 +1787,12 @@ std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_
             }
             else
             {
-                // Invalid byte sequence?
+                /**
+                 *  Invalid byte sequence?
+                 *
+                 *     http://stackoverflow.com/a/2853000
+                 */
                 assert(false);
-
-                // http://stackoverflow.com/a/2853000
             }
 
 
