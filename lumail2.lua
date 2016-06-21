@@ -2593,6 +2593,9 @@ do
          pattern = search_text
       end
 
+      -- Pattern is lower-cased to make searchs case-insensitive.
+      pattern = pattern:lower()
+
       -- Save for next time.
       search_text = pattern
 
@@ -2630,6 +2633,7 @@ do
 
          -- Get the current entry
          local line = out[cur]
+         line = line:lower()
 
          -- Does it match?
          if ( string.match( line, pattern ) ) then
