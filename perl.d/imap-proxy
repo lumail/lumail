@@ -604,11 +604,15 @@ sub cmd_save_message
     }
     close($file);
 
+    # Setup the flags for the copied-message.
+    my $flags;
+    push (@$flags, "\\Seen" );
+
     # Ensure the destination-folder exists - by creating it.
     $handle->create_folder($folder);
 
     # Now save the message there.
-    $handle->append( $folder, \$msg );
+    $handle->append( $folder, \$msg, \@$flags );
 }
 
 
