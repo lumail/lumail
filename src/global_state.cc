@@ -72,10 +72,12 @@ void CGlobalState::set_message(std::shared_ptr<CMessage> update)
 
     /*
      * If the message has changed then we reset the scroll
-     * position to the top.
+     * position to the top - we'll also set the attachment
+     * index to zero.
      */
     CConfig *config = CConfig::instance();
     config->set("message.current", 0);
+    config->set("attachment.current", 0);
 }
 
 
