@@ -725,6 +725,11 @@ function sorted_messages()
          -- get current date of the message
          local ctime = o:to_ctime()
 
+         -- ensure we compare times/numbers
+         if ( type( ctime ) == "string" ) then
+            ctime = tonumber(ctime)
+         end
+
          -- if it was within the past 24 hours then add it
          if ( ctime > today ) then
             table.insert(ret, o)
