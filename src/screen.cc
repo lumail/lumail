@@ -1173,19 +1173,8 @@ bool CScreen::on_keypress(const char *key)
     /*
      * Get the current global-mode.
      */
-    std::string mode = "";
-
-    CConfig *config = CConfig::instance();
-    CConfigEntry *ent = config->get("global.mode");
-
-    if ((ent != NULL) && (ent->type == CONFIG_STRING))
-        mode = *ent->value.str;
-
-    /*
-     * Default mode.
-     */
-    if (mode.empty())
-        mode = "message";
+    CConfig *config  = CConfig::instance();
+    std::string mode = config->get_string("global.mode", "message");
 
     /*
      * Lookup the keypress in the current-mode-keymap.
