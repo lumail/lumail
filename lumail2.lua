@@ -2156,7 +2156,7 @@ end
 -- Given a line of text escape any colour-definitions
 --
 -- The formatting of colours that lumail2 uses is very
--- simple, the following is an example:#
+-- simple, the following is an example:
 --
 --   $[RED]This is red $[GREEN]This is green.
 --
