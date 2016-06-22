@@ -268,13 +268,17 @@ end
 -- Reference: https://en.wikipedia.org/wiki/Mailcap
 --
 function get_mime_viewer( mime_type )
+
+   --
+   -- The default viewer.
+   --
    local ret  = "less %s"
 
-    -- Mailcap file
-    local mailcap_file = "/etc/mailcap"
+   -- The file we lookup values in.
+   local filename = Config.get_with_default( "global.mime-file", "/etc/mailcap" )
 
-   -- Return if the file doesn't exist.
-   if ( not File:exists( mailcap_file ) ) then
+   -- Return the default value if the input file doesn't exist.
+   if ( not File:exists( filename ) ) then
       return( ret )
    end
 
@@ -284,7 +288,7 @@ function get_mime_viewer( mime_type )
       return(ret)
    end
 
-   local f    = io.input ( mailcap_file )
+   local f    = io.input ( filename )
    local line = nil
 
    for line in io.lines() do
@@ -293,16 +297,17 @@ function get_mime_viewer( mime_type )
       -- Split the line by ";", and if that worked
       --
       local entries = string.split(line, ";")
-      if ( #entries > 0 ) then
+      if ( #entries >= 2 ) then
 
          --
-         -- Look to see if the MIME-type is a match against
-         -- what we're looking for.  If it is then we can
-         -- return the program to use.
+         -- The values
          --
-         if ( entries[1] == mime_type ) then
+         local type = string.trim(entries[1])
+         local exec = string.trim(entries[2])
+
+         if ( type == mime_type ) then
             f:close()
-            return( entries[2] )
+            return( exec )
          end
       end
    end
@@ -310,7 +315,7 @@ function get_mime_viewer( mime_type )
    f:close ()
 
    --
-   -- We just don't know.  Try `less`.
+   -- We didn't find an obvious match, return the default.
    --
    return(ret)
 end
