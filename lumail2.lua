@@ -1979,6 +1979,9 @@ function lua_view()
    table.insert(output,"$[RED]This $[GREEN]is $[YELLOW|UNDERLINE|BOLD]Lumail2$[CYAN|NORMAL] version $[BLUE|BOLD]" .. Config:get("global.version" ))
    table.insert(output,"")
 
+   table.insert(output,"$[RED]This RED - and not $[#GREEN]!" )
+   table.insert(output,"")
+
    --
    -- Test UTF-8
    --
