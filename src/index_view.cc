@@ -102,8 +102,12 @@ void CIndexView::draw()
      */
     if (cur > max)
     {
-        config->set("index.current", max, false);
-        cur = max;
+        if ( max > 0 )
+            cur = max-1;
+        else
+            cur = 0;
+
+        config->set("index.current", cur, false);
     }
 
     /*

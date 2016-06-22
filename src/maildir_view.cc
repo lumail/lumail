@@ -110,10 +110,17 @@ void CMaildirView::draw()
     /*
      * Ensure we highlight the correct line.
      */
+    /*
+     * Ensure we highlight the correct line.
+     */
     if (cur > max)
     {
-        config->set("maildir.current", max, false);
-        cur = max;
+        if ( max > 0 )
+            cur = max-1;
+        else
+            cur = 0;
+
+        config->set("maildir.current", cur, false);
     }
 
     /*
