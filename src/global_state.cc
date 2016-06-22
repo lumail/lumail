@@ -69,6 +69,13 @@ std::shared_ptr<CMessage> CGlobalState::current_message()
 void CGlobalState::set_message(std::shared_ptr<CMessage> update)
 {
     m_current_message = update;
+
+    /*
+     * If the message has changed then we reset the scroll
+     * position to the top.
+     */
+    CConfig *config = CConfig::instance();
+    config->set("message.current", 0);
 }
 
 
