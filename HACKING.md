@@ -88,3 +88,6 @@ to invoke it please run:
 
     $ lumail2 --test
 
+Testing is accomplished via the CuTest library, as somethign I picked
+on a whim many years ago and stuck with.  The implementation of our
+tests is stored in files with a `_test.cc` suffix.
