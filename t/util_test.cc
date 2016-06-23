@@ -34,7 +34,8 @@
 /**
  * Helper for expected tests.
  */
-typedef struct _split_test_case{
+typedef struct _split_test_case
+{
     std::string input;
     char c;
     int expected;
@@ -47,7 +48,8 @@ typedef struct _split_test_case{
  */
 void TestSplit(CuTest * tc)
 {
-    split_test_case tests[] = {
+    split_test_case tests[] =
+    {
         {"", ';', 1},
         {"test", ';', 1},
         {"test;me", ';', 2},
@@ -60,19 +62,19 @@ void TestSplit(CuTest * tc)
     /*
      * Number of test-cases in the array above.
      */
-    int max = sizeof(tests)/sizeof(tests[0]);
-    CuAssertIntEquals(tc, 7,max);
+    int max = sizeof(tests) / sizeof(tests[0]);
+    CuAssertIntEquals(tc, 7, max);
 
     /*
      * Run each test
      */
-    for( int i = 0; i < max; i++ )
+    for (int i = 0; i < max; i++)
     {
         split_test_case cur = tests[i];
 
-        std::vector<std::string> out = split( cur.input, cur.c);
+        std::vector<std::string> out = split(cur.input, cur.c);
 
-        CuAssertIntEquals(tc, cur.expected, out.size() );
+        CuAssertIntEquals(tc, cur.expected, out.size());
     }
 
 }
