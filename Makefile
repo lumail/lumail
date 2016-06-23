@@ -142,9 +142,12 @@ serve_docs: docs
 	cd docs/html && python -m SimpleHTTPServer
 
 
+#
+# Run our test-cases, from the main binary.
+#
+test: lumail2
+	./lumail2 --test
 
-test:
-	cd t/ && make
 
 #
 #  Install the binary, and our luarocks.d directory
