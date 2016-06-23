@@ -34,6 +34,64 @@
 
 
 /**
+ * Test CFile::copy()
+ */
+void TestFileCopy(CuTest * tc)
+{
+    /**
+     * Generate a temporary filename.
+     */
+    char *t_src = strdup("srcXXXXXX");
+    char *src   = tmpnam(t_src);
+
+    char *t_dst = strdup("dstXXXXXX");
+    char *dst  = tmpnam(t_dst);
+
+    /**
+     * Ensure both source and destination don't exist.
+     */
+    CuAssertTrue(tc, ! CFile::exists(src));
+    CuAssertTrue(tc, ! CFile::exists(dst));
+
+    /*
+     * Now create the source file.
+     */
+    std::fstream fs;
+    fs.open(src,  std::fstream::out | std::fstream::app);
+    fs << "Gordon's alive!" << "\n";
+    fs.close();
+
+    /*
+     * Ensure the source now exists, and the copied file doesn't.
+     */
+    CuAssertTrue(tc, CFile::exists(src));
+    CuAssertTrue(tc, !CFile::exists(dst));
+
+    /*
+     * Copy
+     */
+    CFile::copy(src, dst);
+
+    /*
+     * Both should now exist.
+     */
+    CuAssertTrue(tc, CFile::exists(src));
+    CuAssertTrue(tc, CFile::exists(dst));
+
+    /*
+     * TODO: Test contents?  Or size?
+     */
+
+    /*
+     * Finally cleanup.
+     */
+    CFile::delete_file(src);
+    CFile::delete_file(dst);
+
+}
+
+
+/**
  * Test CFile::exists()
  */
 void TestFileExists(CuTest * tc)
@@ -68,8 +126,59 @@ void TestFileExists(CuTest * tc)
      */
     CFile::delete_file(filename);
     CuAssertTrue(tc, ! CFile::exists(filename));
+}
 
 
+/**
+ * Test CFile::move()
+ */
+void TestFileMove(CuTest * tc)
+{
+    /**
+     * Generate a temporary filename.
+     */
+    char *t_src = strdup("srcXXXXXX");
+    char *src   = tmpnam(t_src);
+
+    char *t_dst = strdup("dstXXXXXX");
+    char *dst  = tmpnam(t_dst);
+
+    /**
+     * Ensure both source and destination don't exist.
+     */
+    CuAssertTrue(tc, ! CFile::exists(src));
+    CuAssertTrue(tc, ! CFile::exists(dst));
+
+    /*
+     * Now create the source file.
+     */
+    std::fstream fs;
+    fs.open(src,  std::fstream::out | std::fstream::app);
+    fs << "Gordon's alive!" << "\n";
+    fs.close();
+
+    /*
+     * Ensure the source now exists, but the destination doesn't.
+     */
+    CuAssertTrue(tc, CFile::exists(src));
+    CuAssertTrue(tc, !CFile::exists(dst));
+
+    /*
+     * Move
+     */
+    CFile::move(src, dst);
+
+    /*
+     * The reverse should now be true.
+     */
+    CuAssertTrue(tc, !CFile::exists(src));
+    CuAssertTrue(tc, CFile::exists(dst));
+
+    /*
+     * Finally cleanup.
+     */
+    CFile::delete_file(src);
+    CFile::delete_file(dst);
 }
 
 
@@ -181,5 +290,7 @@ file_getsuite()
     SUITE_ADD_TEST(suite, TestFileExists);
     SUITE_ADD_TEST(suite, TestFileDirectory);
     SUITE_ADD_TEST(suite, TestFileMaildir);
+    SUITE_ADD_TEST(suite, TestFileCopy);
+    SUITE_ADD_TEST(suite, TestFileMove);
     return suite;
 }
