@@ -39,9 +39,10 @@
  */
 void TestEmptyConfig(CuTest * tc)
 {
-    CConfig *instance             = CConfig::instance();
-    std::vector<std::string> keys = instance->keys();
+    CConfig *instance = CConfig::instance();
+    CuAssertPtrNotNull(tc, instance);
 
+    std::vector<std::string> keys = instance->keys();
     CuAssertIntEquals(tc, keys.size(), 8);
 }
 
@@ -52,6 +53,7 @@ void TestEmptyConfig(CuTest * tc)
 void TestKeynames(CuTest * tc)
 {
     CConfig *config = CConfig::instance();
+    CuAssertPtrNotNull(tc, config);
 
     /**
      * Count the original set of keys
@@ -104,6 +106,7 @@ void TestKeynames(CuTest * tc)
 void TestKeyDeletion(CuTest * tc)
 {
     CConfig *config = CConfig::instance();
+    CuAssertPtrNotNull(tc, config);
 
     config->set("steve", "kemp");
     config->set("lumi", "kemp");
