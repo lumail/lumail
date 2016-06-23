@@ -34,6 +34,52 @@
 
 
 /**
+ * Helper for basename-tests.
+ */
+typedef struct _basename_test_case
+{
+    std::string input;
+    std::string expected;
+} basename_test_case;
+
+
+
+/**
+ * Test CFile::basename()
+ */
+void TestFileBasename(CuTest * tc)
+{
+    basename_test_case tests[] =
+    {
+        {"/etc/passwd", "passwd" },
+        {"/path/etc/passwd", "passwd" },
+        {"//passwd", "passwd" },
+        {"passwd", "passwd" },
+        {"`ls`blah-%/passwd", "passwd" },
+
+        {"\\etc\\passwd", "passwd" },
+        {"\\path\\etc\\passwd", "passwd" },
+        {"\\passwd", "passwd" },
+        {"passwd", "passwd" },
+        {"`ls`blah-%\\passwd", "passwd" },
+    };
+
+    int max = sizeof(tests) / sizeof(tests[0]);
+    CuAssertIntEquals(tc, 10, max);
+
+    for (int i = 0; i < max; i++)
+    {
+        basename_test_case cur = tests[i];
+
+        std::string out = CFile::basename(cur.input);
+
+        CuAssertStrEquals(tc, cur.expected.c_str(), out.c_str());
+
+    }
+}
+
+
+/**
  * Test CFile::copy()
  */
 void TestFileCopy(CuTest * tc)
@@ -287,10 +333,11 @@ CuSuite *
 file_getsuite()
 {
     CuSuite *suite = CuSuiteNew();
-    SUITE_ADD_TEST(suite, TestFileExists);
-    SUITE_ADD_TEST(suite, TestFileDirectory);
-    SUITE_ADD_TEST(suite, TestFileMaildir);
+    SUITE_ADD_TEST(suite, TestFileBasename);
     SUITE_ADD_TEST(suite, TestFileCopy);
+    SUITE_ADD_TEST(suite, TestFileDirectory);
+    SUITE_ADD_TEST(suite, TestFileExists);
+    SUITE_ADD_TEST(suite, TestFileMaildir);
     SUITE_ADD_TEST(suite, TestFileMove);
     return suite;
 }
