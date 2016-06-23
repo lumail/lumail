@@ -110,11 +110,76 @@ void TestFileDirectory(CuTest * tc)
 }
 
 
+/**
+ * Test CFile::is_maildir()
+ */
+void TestFileMaildir(CuTest * tc)
+{
+    /**
+     * Generate a temporary filename.
+     */
+    char *tmpl = strdup("blahXXXXXX");
+    char *filename = tmpnam(tmpl);
+    std::string p = std::string(filename);
+
+    /**
+     * Ensure it doesn't exist.
+     */
+    CuAssertTrue(tc, ! CFile::exists(filename));
+    CuAssertTrue(tc, ! CFile::is_directory(filename));
+    CuAssertTrue(tc, ! CFile::is_maildir(filename));
+
+    /**
+     * Create the directory.
+     */
+    CDirectory::mkdir_p(filename);
+    CuAssertTrue(tc, CFile::is_directory(filename));
+    CuAssertTrue(tc, ! CFile::is_maildir(filename));
+
+    /**
+     * Now make the components once created all of `new`, `cur` & `tmp`
+     * it will magically transform into a Maildir.
+     */
+    CDirectory::mkdir_p(p + "/new");
+    CuAssertTrue(tc, ! CFile::is_maildir(filename));
+
+    CDirectory::mkdir_p(p + "/cur");
+    CuAssertTrue(tc, ! CFile::is_maildir(filename));
+
+    CDirectory::mkdir_p(p + "/tmp");
+    CuAssertTrue(tc, CFile::is_maildir(filename));
+
+
+    /**
+     * Cleanup.
+     */
+    std::vector < std::string > dirs;
+    dirs.push_back(p + "/cur");
+    dirs.push_back(p + "/tmp");
+    dirs.push_back(p + "/new");
+    dirs.push_back(p);
+
+    for (std::vector < std::string >::iterator it = dirs.begin();
+            it != dirs.end(); ++it)
+    {
+        std::string path = (*it);
+
+        CuAssertTrue(tc, CFile::is_directory(path));
+        rmdir(path.c_str());
+        CuAssertTrue(tc, !CFile::is_directory(path));
+        CuAssertTrue(tc, !CFile::is_maildir(filename));
+    }
+
+}
+
+
+
 CuSuite *
 file_getsuite()
 {
     CuSuite *suite = CuSuiteNew();
     SUITE_ADD_TEST(suite, TestFileExists);
     SUITE_ADD_TEST(suite, TestFileDirectory);
+    SUITE_ADD_TEST(suite, TestFileMaildir);
     return suite;
 }
