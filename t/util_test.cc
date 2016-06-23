@@ -118,9 +118,9 @@ void TestEscape(CuTest * tc)
     {
         escape_test_case cur = tests[i];
 
-        std::string out = escape_filename( cur.input );
+        std::string out = escape_filename(cur.input);
 
-        CuAssertStrEquals(tc, cur.output.c_str(), out.c_str() );
+        CuAssertStrEquals(tc, cur.output.c_str(), out.c_str());
     }
 
 }
