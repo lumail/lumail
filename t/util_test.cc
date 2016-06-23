@@ -32,7 +32,7 @@
 
 
 /**
- * Helper for expected tests.
+ * Helper for split-tests.
  */
 typedef struct _split_test_case
 {
@@ -40,6 +40,16 @@ typedef struct _split_test_case
     char c;
     int expected;
 } split_test_case;
+
+
+/**
+ * Helper for escape-tests.
+ */
+typedef struct _escape_test_case
+{
+    std::string input;
+    std::string output;
+} escape_test_case;
 
 
 
@@ -79,10 +89,47 @@ void TestSplit(CuTest * tc)
 
 }
 
+
+/**
+ * Test our escape function.
+ */
+void TestEscape(CuTest * tc)
+{
+    escape_test_case tests[] =
+    {
+        {"", ""},
+        {"foo", "foo"},
+        {"/", "_" },
+        {"\\", "_" },
+        {"http://", "http:__"},
+        {"`ls`", "`ls`"},
+    };
+
+    /*
+     * Number of test-cases in the array above.
+     */
+    int max = sizeof(tests) / sizeof(tests[0]);
+    CuAssertIntEquals(tc, 6, max);
+
+    /*
+     * Run each test
+     */
+    for (int i = 0; i < max; i++)
+    {
+        escape_test_case cur = tests[i];
+
+        std::string out = escape_filename( cur.input );
+
+        CuAssertStrEquals(tc, cur.output.c_str(), out.c_str() );
+    }
+
+}
+
 CuSuite *
 util_getsuite()
 {
     CuSuite *suite = CuSuiteNew();
     SUITE_ADD_TEST(suite, TestSplit);
+    SUITE_ADD_TEST(suite, TestEscape);
     return suite;
 }
