@@ -493,7 +493,7 @@ void CScreen::status_panel_draw()
     {
         int result __attribute__((unused));
 
-        result = draw_single_line(1, 1, x.title, g_status_bar_window);
+        result = draw_single_line(1, 1, x.title, g_status_bar_window, false);
     }
 
 
@@ -519,7 +519,7 @@ void CScreen::status_panel_draw()
             else
                 text = "";
 
-            draw_single_line((height - 2 - i), 1, text, g_status_bar_window);
+            draw_single_line((height - 2 - i), 1, text, g_status_bar_window, false);
             i++;
         }
     }
@@ -1336,7 +1336,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
             {
                 std::string buf = lines.at(off + selected);
 
-                result = draw_single_line(i, 0, buf, stdscr);
+                result = draw_single_line(i, 0, buf, stdscr, true);
 
                 /*
                  * Did we draw more than a single line?
@@ -1439,11 +1439,11 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
             wattrset(stdscr, A_NORMAL);
 
         int result __attribute__((unused));
-        result = draw_single_line(row, 0, buf, stdscr);
+        result = draw_single_line(row, 0, buf, stdscr, true);
 
         // HACK - overdraw
         if (over == 0)
-            draw_single_line(row + 1, 0, " ", stdscr);
+            draw_single_line(row + 1, 0, " ", stdscr, true);
     }
 
     /*
@@ -1466,7 +1466,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
  *
  * The return value is the number of characters drawn.
  */
-int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW * screen)
+int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW * screen, bool enable_scroll)
 {
     /*
      * Move to the correct location.
@@ -1490,6 +1490,12 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
     int horiz = config->get_integer("global.horizontal", 0);
     int wrap  = config->get_integer("line.wrap", 0);
 
+    /*
+     * If scrolling is disabled (i.e. drawing the panel) we
+     * reset the horiz-position.
+     */
+    if (enable_scroll == false)
+        horiz = 0;
 
     /*
      * Split the string into segments in ONE CHARACTER pieces.

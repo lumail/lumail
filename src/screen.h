@@ -281,7 +281,7 @@ public:
      *
      * The return value is the number of characters drawn.
      */
-    int draw_single_line(int row, int col_offset, std::string text, WINDOW * screen);
+    int draw_single_line(int row, int col_offset, std::string text, WINDOW * screen, bool enable_scroll = false);
 
 
 private:
