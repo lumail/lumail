@@ -115,8 +115,8 @@ void CMaildirView::draw()
      */
     if (cur > max)
     {
-        if ( max > 0 )
-            cur = max-1;
+        if (max > 0)
+            cur = max - 1;
         else
             cur = 0;
 

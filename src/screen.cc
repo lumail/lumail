@@ -1442,8 +1442,8 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         result = draw_single_line(row, 0, buf, stdscr);
 
         // HACK - overdraw
-        if ( over == 0 )
-            draw_single_line( row + 1, 0, " ", stdscr );
+        if (over == 0)
+            draw_single_line(row + 1, 0, " ", stdscr);
     }
 
     /*
@@ -1512,7 +1512,7 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
          * of the screen then we should stop - unless we've got
          * wrapping enabled.
          */
-        if ( (drawn >= swidth) && ( wrap == 0 ) )
+        if ((drawn >= swidth) && (wrap == 0))
             continue;
 
         /*
