@@ -34,19 +34,19 @@
 
 /**
  * Test we have no keys by default.
+ *
+ * This might require explanation : We are looking for an empty
+ * set of keys, but some values are created at constructor-time,
+ * such as the version of Lua, the version of Lumail.
+ *
+ * Because of that we're looking for a non-zero set of keys even though
+ * we pretend we're looking for zero.
  */
 void TestEmptyConfig(CuTest * tc)
 {
     CConfig *instance             = CConfig::instance();
     std::vector<std::string> keys = instance->keys();
 
-    /**
-     * This might require explanation : We are looking for an empty
-     * set of keys, but some values are created at constructor-time,
-     * such as the version of Lua, the version of Lumail.
-     *
-     * Because of that we're looking for a non-zero set of keys.
-     */
     CuAssertIntEquals(tc, keys.size(), 7);
 }
 
@@ -103,11 +103,56 @@ void TestKeynames(CuTest * tc)
 }
 
 
+/**
+ * Test that we can delete all our known key/values.
+ */
+void TestKeyDeletion(CuTest * tc)
+{
+    CConfig *config = CConfig::instance();
+
+    config->set("steve", "kemp");
+    config->set("lumi", "kemp");
+    config->set("pi", 3);
+    config->set("pie", "delicious");
+
+    /*
+     * Count keys
+     */
+    std::vector<std::string> keys = config->keys();
+    CuAssertTrue(tc, (keys.size() > 3));
+
+
+    /*
+     * Fetching one works
+     */
+    CConfigEntry *value = config->get("pie");
+    CuAssertPtrNotNull(tc, value);
+
+    /*
+     * Empty the keys
+     */
+    config->remove_all();
+
+    /*
+     * Now we've empted the count should be zero
+     */
+    keys = config->keys();
+    CuAssertIntEquals(tc, 0, keys.size());
+
+    /*
+     * And fetching should fail.
+     */
+    value = config->get("pie");
+    CuAssertPtrEquals(tc, NULL, value);
+}
+
+
 CuSuite *
 config_getsuite()
 {
     CuSuite *suite = CuSuiteNew();
     SUITE_ADD_TEST(suite, TestEmptyConfig);
     SUITE_ADD_TEST(suite, TestKeynames);
+    SUITE_ADD_TEST(suite, TestKeyDeletion);
     return suite;
 }
