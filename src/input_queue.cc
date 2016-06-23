@@ -40,12 +40,16 @@ void CInputQueue::add_input(std::string text)
     m_queue += text;
 }
 
+/*
+ * Return the next input from our faux input queue, or failing
+ * that poll for keyboard input with ncurses.
+ */
 int CInputQueue::get_input()
 {
     /*
      * No queued input?  Return via curses.
      */
-    if (m_queue.empty())
+    if (! has_pending_input())
     {
         return (getch());
     }
@@ -57,4 +61,12 @@ int CInputQueue::get_input()
     m_queue = m_queue.substr(1);
 
     return tmp;
+}
+
+/*
+ * Is there more input pending in our faux input-buffer?
+ */
+bool CInputQueue::has_pending_input()
+{
+    return (m_queue.empty() == false);
 }

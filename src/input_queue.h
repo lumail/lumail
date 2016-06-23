@@ -50,6 +50,11 @@ public:
      */
     int get_input();
 
+    /**
+     * Is there more input pending in our faux input-buffer?
+     */
+    bool has_pending_input();
+
 public:
 
     /**
