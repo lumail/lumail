@@ -1,5 +1,5 @@
 /*
- * coloured_string_test.cc - Test-cases for our coloured string utility.
+ * colour_string_test.cc - Test-cases for our coloured string utility.
  *
  * This file is part of lumail - http://lumail.org/
  *
