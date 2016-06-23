@@ -1,0 +1,77 @@
+/*
+ * file_test.cc - Test-cases for our CFile class.
+ *
+ * This file is part of lumail - http://lumail.org/
+ *
+ * Copyright (c) 2016 by Steve Kemp.  All rights reserved.
+ *
+ **
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 dated June, 1991, or (at your
+ * option) any later version.
+ *
+ * On Debian GNU/Linux systems, the complete text of version 2 of the GNU
+ * General Public License can be found in `/usr/share/common-licenses/GPL-2'
+ */
+
+
+
+#include <stdlib.h>
+#include <string.h>
+#include <malloc.h>
+
+#include "file.h"
+#include "CuTest.h"
+
+/*
+ * GROSS:
+ */
+#include "file.cc"
+
+
+
+void TestFileExists(CuTest * tc)
+{
+    /**
+     * Generate a temporary filename.
+     */
+    char *tmpl = strdup("blahXXXXXX");
+    char *filename = tmpnam(tmpl);
+
+    /**
+     * Ensure it doesn't exist.
+     */
+    CuAssertTrue(tc, ! CFile::exists(filename));
+
+    /*
+     * Now create it.
+     */
+    std::fstream fs;
+    fs.open(filename,  std::fstream::out | std::fstream::app);
+    fs << "Gordon's alive!" << "\n";
+    fs.close();
+
+
+    /*
+     * Ensure it exists
+     */
+    CuAssertTrue(tc, CFile::exists(filename));
+
+    /*
+     * Finally remove it, and confirm it is gone.
+     */
+    CFile::delete_file(filename);
+    CuAssertTrue(tc, ! CFile::exists(filename));
+
+
+}
+
+CuSuite *
+file_getsuite()
+{
+    CuSuite *suite = CuSuiteNew();
+    SUITE_ADD_TEST(suite, TestFileExists);
+    return suite;
+}
