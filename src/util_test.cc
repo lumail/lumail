@@ -18,16 +18,11 @@
 
 
 
-#include <stdlib.h>
-#include <string.h>
-#include <malloc.h>
+#include <string>
+#include <vector>
 
+#include "util.h"
 #include "CuTest.h"
-
-/*
- * GROSS:
- */
-#include "util.cc"
 
 
 

@@ -25,11 +25,6 @@
 #include "colour_string.h"
 #include "CuTest.h"
 
-/*
- * GROSS:
- */
-#include "colour_string.cc"
-
 
 
 /**

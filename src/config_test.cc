@@ -25,11 +25,6 @@
 #include "config.h"
 #include "CuTest.h"
 
-/*
- * GROSS:
- */
-#include "config.cc"
-
 
 
 /**
@@ -47,7 +42,7 @@ void TestEmptyConfig(CuTest * tc)
     CConfig *instance             = CConfig::instance();
     std::vector<std::string> keys = instance->keys();
 
-    CuAssertIntEquals(tc, keys.size(), 7);
+    CuAssertIntEquals(tc, keys.size(), 8);
 }
 
 

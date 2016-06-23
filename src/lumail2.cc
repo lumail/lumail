@@ -30,7 +30,7 @@
 #include "message.h"
 #include "message_part.h"
 #include "screen.h"
-
+#include "tests.h"
 
 /*
  * External flag for getopt - when set we can ignore unknown
@@ -39,6 +39,21 @@
 extern int opterr;
 
 
+void run_all_tests()
+{
+    CuString *output = CuStringNew();
+    CuSuite *suite = CuSuiteNew();
+
+    CuSuiteAddSuite(suite, coloured_string_getsuite());
+    CuSuiteAddSuite(suite, config_getsuite());
+    CuSuiteAddSuite(suite, file_getsuite());
+    CuSuiteAddSuite(suite, util_getsuite());
+
+    CuSuiteRun(suite);
+    CuSuiteSummary(suite, output);
+    CuSuiteDetails(suite, output);
+    printf("%s\n", (char *) output->buffer);
+}
 
 /*
  * The entry point to our code.
@@ -100,6 +115,7 @@ int main(int argc, char *argv[])
         {
             {"no-curses", no_argument, 0, 'n'},
             {"load-file", required_argument, 0, 'l'},
+            {"test", no_argument, 0, 't'},
             {"version", no_argument, 0, 'v'},
             {0, 0, 0, 0}
         };
@@ -119,10 +135,15 @@ int main(int argc, char *argv[])
             load.push_back(optarg);
             break;
 
+
         case 'n':
             curses = false;
             break;
 
+        case 't':
+            run_all_tests();
+            return 0;
+            break;
         case 'v':
             std::cout << "Lumail2 " << LUMAIL_VERSION << std::endl;
             return 0;

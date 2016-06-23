@@ -18,19 +18,14 @@
 
 
 
-#include <stdlib.h>
+#include <fstream>
+#include <iostream>
 #include <string.h>
-#include <malloc.h>
+#include <unistd.h>
 
 #include "directory.h"
 #include "file.h"
 #include "CuTest.h"
-
-/*
- * GROSS:
- */
-#include "directory.cc"
-#include "file.cc"
 
 
 /**

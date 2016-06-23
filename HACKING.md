@@ -83,5 +83,8 @@ Testing
 
 Regretably much of our code is not tested in a systematic fashion.
 
-There is some test-code available beneath `t/` and it is hoped that
-new additions to our core will contain more test-cases.
+However there is some test-code which is built into our main binary,
+to invoke it please run:
+
+    $ lumail2 --test
+
