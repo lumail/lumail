@@ -28,6 +28,9 @@
 /* defined in coloured_string_test.cc */
 CuSuite *coloured_string_getsuite();
 
+/* defined in util_test.cc */
+CuSuite *util_getsuite();
+
 
 /**
  * Run all the available tests, and report upon their results.

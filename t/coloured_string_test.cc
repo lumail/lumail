@@ -25,6 +25,12 @@
 #include "colour_string.h"
 #include "CuTest.h"
 
+/*
+ * GROSS:
+ */
+#include "colour_string.cc"
+
+
 
 /**
  * Test an empty string parses to zero parts.
