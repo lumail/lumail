@@ -28,7 +28,6 @@
 #include <unistd.h>
 
 #include "file.h"
-#include "maildir.h"
 
 
 
