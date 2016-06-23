@@ -40,7 +40,9 @@ CConfig::CConfig()
     set("maildir.max", "0", false);
 
     set("global.mailer", "/usr/lib/sendmail -t", false);
+#ifdef LUMAIL_VERSION
     set("global.version", LUMAIL_VERSION, false);
+#endif
     set("global.timeout", 750, false);
 }
 
