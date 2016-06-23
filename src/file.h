@@ -74,6 +74,12 @@ public:
     static bool move(std::string src, std::string dst);
 
     /**
+     * Get the size of the given file, in bytes.  -1 on error.
+     */
+    static int size(std::string path);
+
+
+    /**
      * Return a sorted list of maildirs beneath the given prefix.
      */
     static std::vector < std::string > get_all_maildirs(std::string prefix);

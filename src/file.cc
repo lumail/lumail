@@ -132,6 +132,20 @@ bool CFile::move(std::string src, std::string dst)
 
 
 /*
+ * Return the size of a file in bytes, -1 on error.
+ */
+int CFile::size(std::string path)
+{
+    struct stat sb;
+
+    if ((stat(path.c_str(), &sb) == 0))
+        return sb.st_size;
+    else
+        return -1;
+}
+
+
+/*
  * Return a sorted list of maildirs beneath the given prefix.
  */
 std::vector < std::string > CFile::get_all_maildirs(std::string prefix)
