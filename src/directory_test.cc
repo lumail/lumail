@@ -24,7 +24,44 @@
 #include <unistd.h>
 
 #include "directory.h"
+#include "file.h"
 #include "CuTest.h"
+
+
+/**
+ * Test CDirectory::entries()
+ */
+void TestDirectoryEntries(CuTest * tc)
+{
+    /*
+     * We're going to look for source files.
+     */
+    if (CFile::is_directory("/etc"))
+    {
+        std::vector<std::string> entries;
+        entries = CDirectory::entries("/etc");
+
+        /*
+         * If we have /etc it should be non-empty.
+         */
+        CuAssertTrue(tc, (entries.size() > 0));
+
+        /*
+         * At least one file should match the pattern "host"
+         */
+        int count = 0;
+
+        for (std::vector<std::string>::iterator it = entries.begin(); it != entries.end() ; ++it)
+        {
+            if (strstr((*it).c_str(), "host") != NULL)
+            {
+                count += 1;
+            }
+        }
+
+        CuAssertTrue(tc, (count > 0));
+    }
+}
 
 
 /**
@@ -46,23 +83,87 @@ void TestDirectoryExists(CuTest * tc)
     /*
      * Make it
      */
-    CDirectory::mkdir_p( filename );
+    CDirectory::mkdir_p(filename);
 
     CuAssertTrue(tc,  CDirectory::exists(filename));
 
     /*
      * Remove it.
      */
-    rmdir( filename );
+    rmdir(filename);
     CuAssertTrue(tc, ! CDirectory::exists(filename));
 }
 
+
+/*
+ * Create a temporary directory, then create "foo/bar/baz" beneath it.
+ */
+void TestDirectoryMkdir(CuTest * tc)
+{
+    char *tmpl = strdup("blahXXXXXX");
+    std::string prefix = tmpnam(tmpl);
+
+    /*
+     * The complete tree we want.
+     */
+    std::string desired = prefix +  "/foo/bar/baz";
+
+    /*
+     * None of the parts will exist.
+     */
+    CuAssertTrue(tc, !CDirectory::exists(prefix));
+    CuAssertTrue(tc, !CDirectory::exists(prefix + "/foo"));
+    CuAssertTrue(tc, !CDirectory::exists(prefix + "/foo/bar"));
+    CuAssertTrue(tc, !CDirectory::exists(prefix + "/foo/bar/baz"));
+
+    CDirectory::mkdir_p(desired);
+
+    /*
+     * Post-creation they all should.
+     */
+    CuAssertTrue(tc, CDirectory::exists(prefix + "/foo/bar/baz"));
+    CuAssertTrue(tc, CFile::is_directory(prefix + "/foo/bar/baz"));
+
+    CuAssertTrue(tc, CDirectory::exists(prefix + "/foo/bar"));
+    CuAssertTrue(tc, CFile::is_directory(prefix + "/foo/bar"));
+
+    CuAssertTrue(tc, CDirectory::exists(prefix + "/foo"));
+    CuAssertTrue(tc, CFile::is_directory(prefix + "/foo"));
+
+    CuAssertTrue(tc, CDirectory::exists(prefix));
+    CuAssertTrue(tc, CFile::is_directory(prefix));
+
+    /*
+     * Cleanup
+     */
+    rmdir(std::string(prefix + "/foo/bar/baz").c_str());
+    rmdir(std::string(prefix + "/foo/bar").c_str());
+    rmdir(std::string(prefix + "/foo").c_str());
+    rmdir(prefix.c_str());
+
+    /*
+     * None of the parts should exist now.
+     */
+    CuAssertTrue(tc, !CDirectory::exists(prefix));
+    CuAssertTrue(tc, !CFile::is_directory(prefix));
+
+    CuAssertTrue(tc, !CDirectory::exists(prefix + "/foo"));
+    CuAssertTrue(tc, !CFile::is_directory(prefix + "/foo"));
+
+    CuAssertTrue(tc, !CDirectory::exists(prefix + "/foo/bar"));
+    CuAssertTrue(tc, !CFile::is_directory(prefix + "/foo/bar"));
+
+    CuAssertTrue(tc, !CDirectory::exists(prefix + "/foo/bar/baz"));
+    CuAssertTrue(tc, !CFile::is_directory(prefix + "/foo/bar/baz"));
+}
 
 
 CuSuite *
 directory_getsuite()
 {
     CuSuite *suite = CuSuiteNew();
+    SUITE_ADD_TEST(suite, TestDirectoryEntries);
     SUITE_ADD_TEST(suite, TestDirectoryExists);
+    SUITE_ADD_TEST(suite, TestDirectoryMkdir);
     return suite;
 }
