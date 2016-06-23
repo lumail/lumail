@@ -22,16 +22,20 @@
 #include <string.h>
 #include <malloc.h>
 
+#include "directory.h"
 #include "file.h"
 #include "CuTest.h"
 
 /*
  * GROSS:
  */
+#include "directory.cc"
 #include "file.cc"
 
 
-
+/**
+ * Test CFile::exists()
+ */
 void TestFileExists(CuTest * tc)
 {
     /**
@@ -68,10 +72,49 @@ void TestFileExists(CuTest * tc)
 
 }
 
+
+/**
+ * Test CFile::is_directory()
+ */
+void TestFileDirectory(CuTest * tc)
+{
+    /**
+     * Generate a temporary filename.
+     */
+    char *tmpl = strdup("blahXXXXXX");
+    char *filename = tmpnam(tmpl);
+
+    /**
+     * Ensure it doesn't exist.
+     */
+    CuAssertTrue(tc, ! CFile::exists(filename));
+    CuAssertTrue(tc, ! CFile::is_directory(filename));
+
+    /**
+     * Make the directory.
+     */
+    CDirectory::mkdir_p(filename);
+
+    /**
+     * Ensure it exists now.
+     */
+    CuAssertTrue(tc, CFile::exists(filename));
+    CuAssertTrue(tc, CFile::is_directory(filename));
+
+    /**
+     * Cleanup
+     */
+    rmdir(filename);
+    CuAssertTrue(tc, !CFile::exists(filename));
+    CuAssertTrue(tc, !CFile::is_directory(filename));
+}
+
+
 CuSuite *
 file_getsuite()
 {
     CuSuite *suite = CuSuiteNew();
     SUITE_ADD_TEST(suite, TestFileExists);
+    SUITE_ADD_TEST(suite, TestFileDirectory);
     return suite;
 }
