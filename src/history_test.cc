@@ -102,12 +102,12 @@ void TestHistoryPersistence(CuTest * tc)
      * The history file shouldn't exist, which means its size will be -1.
      */
     CuAssertTrue(tc, !CFile::exists(src));
-    CuAssertIntEquals(tc, CFile::size(src),-1);
+    CuAssertIntEquals(tc, CFile::size(src), -1);
 
     /*
      * Set the file, and write some strings.
      */
-    instance->set_file( src );
+    instance->set_file(src);
 
     /*
      * Ensure the size increases
@@ -129,13 +129,13 @@ void TestHistoryPersistence(CuTest * tc)
         instance->add(txt);
 
 
-        int size = CFile::size( src );
+        int size = CFile::size(src);
 
         /*
          * Test the size of the file is the existing size,
          * plus the added-line, plus the newline.
          */
-        CuAssertIntEquals(tc, base+txt.size()+1, size );
+        CuAssertIntEquals(tc, base + txt.size() + 1, size);
 
         /*
          * Bump our base-size - also add the newline.
@@ -148,14 +148,14 @@ void TestHistoryPersistence(CuTest * tc)
      * Now change the filename, and we should find our history
      * is empty.
      */
-    instance->set_file( "bogus/path" );
-    CuAssertIntEquals(tc, 0,instance->size());
+    instance->set_file("bogus/path");
+    CuAssertIntEquals(tc, 0, instance->size());
 
     /*
      * But if we go back to the file we read we should have
      * our history, as expected.
      */
-    instance->set_file( src );
+    instance->set_file(src);
 
     /*
      * Size should be three
@@ -173,9 +173,9 @@ void TestHistoryPersistence(CuTest * tc)
     /*
      * Remove our file
      */
-    CFile::delete_file( src );
+    CFile::delete_file(src);
     CuAssertTrue(tc, !CFile::exists(src));
-    CuAssertIntEquals(tc, CFile::size(src),-1);
+    CuAssertIntEquals(tc, CFile::size(src), -1);
 }
 
 
