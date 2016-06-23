@@ -123,7 +123,7 @@ $(DEBUG_OBJECTS): $(DEBUG_OBJDIR)/%.o : $(SRCDIR)/%.cc
 #
 .PHONY: indent
 indent:
-	astyle --style=allman -A1 --indent=spaces=4   --break-blocks --pad-oper --pad-header --unpad-paren --max-code-length=200 $(SRCDIR)/*.cc $(SRCDIR)/*.h
+	astyle --style=allman -A1 --indent=spaces=4   --break-blocks --pad-oper --pad-header --unpad-paren --max-code-length=200 $(SRCDIR)/*.cc $(SRCDIR)/*.h *.cc
 
 
 #
@@ -141,6 +141,10 @@ serve_docs: docs
 	echo "Visit http://127.0.0.1:8000/"
 	cd docs/html && python -m SimpleHTTPServer
 
+
+
+test:
+	cd t/ && make
 
 #
 #  Install the binary, and our luarocks.d directory
@@ -165,5 +169,3 @@ install: lumail2
 
     # if there is no config in-place, add the default
 	if [ ! -e /etc/lumail2/lumail2.lua ] ; then cp ./lumail2.lua /etc/lumail2/lumail2.lua ; fi
-
-
