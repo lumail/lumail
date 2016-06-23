@@ -67,43 +67,6 @@ public:
 
 
 
-
-
-/**
- * The output function `draw_text_lines` is used to draw lines of text upon
- * the screen, and this function is capable of performing colour output
- * given input containing special markup.
- *
- * Colours are specified via the `$[COLOUR]` prefix, and the specified colour
- * persists until the end of the line.  The following, for example, will draw
- * a line of text with two colours:
- *
- * <code>$[RED]This is red$[YELLOW]This is yellow.</code>
- *
- * Internally the line of text is parsed into segments of text, each of
- * which contains:
- *
- * * The colour to draw
- * * The text to draw.
- *
- * This structure is used to hold that result.
- */
-typedef struct _COLOUR_STRING
-{
-    /**
-     * The colour to use for this segment.
-     */
-    std::string *colour;
-
-    /**
-     * The text to draw for this segment.
-     */
-    std::string *string;
-
-} COLOUR_STRING;
-
-
-
 /**
  *
  * This class contains simple functions relating to the screen-handling.
@@ -305,43 +268,6 @@ private:
      * Convert ^I -> TAB, etc.
      */
     const char *lookup_key(int c);
-
-    /**
-     * Parse a string into an array of "string + colour" pairs,
-     * which will be useful for drawing strings.
-     *
-     * The output of this routine will be an array of COLOUR_STRING
-     * objects - each object will contain a colour and ONE CHARACTER
-     * of text to draw.
-     *
-     * This needs re-emphasising:  The entries will contain one character
-     * which may be displayed, even if that character might be made from
-     * multiple *BYTES*.
-     */
-    std::vector<COLOUR_STRING *> parse_coloured_string(std::string input, int offset);
-
-    /**
-     * Given an array of colour parts which might look like this
-     *
-     * <code>
-     *   [ "RED",   "This is in red" ],
-     *   [ "YELLOW", "**"]
-     * </code>
-     *
-     * We want to return an updated array that is suitable for drawing column
-     * by column such as:
-     *
-     * <code>
-     *  [ "RED", "T" ],
-     *  [ "RED", "h" ],
-     * ...
-     *  [ "YELLOW", *" ],
-     *  [ "YELLOW", *" ]
-     * </code>
-     *
-     * This is used to implement horizontal scrolling.
-     */
-    std::vector<COLOUR_STRING *> coloured_string_scroll(std::vector<COLOUR_STRING *> parts , int offset);
 
 private:
 
