@@ -309,8 +309,16 @@ private:
     /**
      * Parse a string into an array of "string + colour" pairs,
      * which will be useful for drawing strings.
+     *
+     * The output of this routine will be an array of COLOUR_STRING
+     * objects - each object will contain a colour and ONE CHARACTER
+     * of text to draw.
+     *
+     * This needs re-emphasising:  The entries will contain one character
+     * which may be displayed, even if that character might be made from
+     * multiple *BYTES*.
      */
-    std::vector<COLOUR_STRING *> parse_coloured_string(std::string input);
+    std::vector<COLOUR_STRING *> parse_coloured_string(std::string input, int offset);
 
     /**
      * Given an array of colour parts which might look like this

@@ -1303,6 +1303,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
      */
     CConfig *config = CConfig::instance();
     int wrap = config->get_integer("line.wrap", 0);
+    int over = config->get_integer("global.over-draw", 1);
 
     /*
      * Take off the panel, if visible.
@@ -1440,6 +1441,9 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         int result __attribute__((unused));
         result = draw_single_line(row, 0, buf, stdscr);
 
+        // HACK - overdraw
+        if ( over == 0 )
+            draw_single_line( row + 1, 0, " ", stdscr );
     }
 
     /*
@@ -1465,12 +1469,6 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
 int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW * screen)
 {
     /*
-     * Is line-wrapping enabled?
-     */
-    CConfig *config = CConfig::instance();
-    int wrap = config->get_integer("line.wrap", 0);
-
-    /*
      * Move to the correct location.
      */
     wmove(screen, row, col_offset);
@@ -1488,41 +1486,33 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
     /*
      * Get the horizontal scroll offset.
      */
+    CConfig *config = CConfig::instance();
     int horiz = config->get_integer("global.horizontal", 0);
+    int wrap  = config->get_integer("line.wrap", 0);
+
 
     /*
-     * Split the string into segments, each of which might
-     * have a different colour.
+     * Split the string into segments in ONE CHARACTER pieces.
+     *
+     * These single characters may well consist of multiple bytes, but
+     * that is not important.
      */
-    std::vector<COLOUR_STRING *> parts = parse_coloured_string(buf);
-
-    /*
-     * Handle the horizontal offset by filtering our array of
-     * lines to start at the given offset.
-     */
-    parts = coloured_string_scroll(parts, horiz);
+    std::vector<COLOUR_STRING *> parts = parse_coloured_string(buf, horiz);
 
     /*
      * Draw each piece - tracking the width of the text we've drawn
      * such that we can later add padding to short-strings.
-     *
-     * Yes: We already padded the string, but consider the case where
-     * the string was "$[YELLOW]Yellow, $[GREEN]Green".  We'd pad it,
-     * but then the tokenizer would remove `$[YELLOW]` & `$[GREEN]` from
-     * the string - and that might make it too short once again.
      */
-    int width = 0;
-    std::string prev = "white";
+    int drawn = 0;
 
-    for (auto it = parts.begin(); it != parts.end() ; ++it)
+    for (auto it = parts.begin(); it != parts.end() &&  drawn <= swidth ; ++it)
     {
         /*
          * If we've drawn more characters than the width
-         * of the screen then we should stop
-         *
-         * Because otherwise we'll wrap onto the next line.
+         * of the screen then we should stop - unless we've got
+         * wrapping enabled.
          */
-        if ((width >= swidth) && (wrap == 0))
+        if ( (drawn >= swidth) && ( wrap == 0 ) )
             continue;
 
         /*
@@ -1532,46 +1522,14 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
         std::string *colour = i->colour;
         std::string *text   = i->string;
 
-
-        /*
-         * If the colour starts with "#" then use the previous colour.
-         *
-         * i.e. We avoid using the colour, and we rewrite the text to
-         * include this $[COLOUR].  This is how escaping the patterns
-         * works:
-         *
-         *    $[RED]THis is red
-         *
-         *    $[#RED]This is not red - the "#" negates the colouring
-         *
-         */
-        std::string col = *colour;
-
-        if ((col.size() > 0) && (col.at(0) == '#'))
-        {
-            /* Rewrite the text - i.e escape the whole damn thing. */
-            *text = "$[" + col.substr(1) + "]" + *text;
-
-            /* avoid using the selected colour */
-            col = prev;
-        }
-        else
-        {
-            /*
-             * Record the previous colour, to handle the case of a future
-             * string not updating itself because it is escaped.
-             */
-            prev = col;
-        }
-
         /*
          * Set the colour + draw the component.
          */
         wattrset(screen, def_col);
-        wattron(screen, get_colour(col));
+        wattron(screen, get_colour(*colour));
         waddstr(screen, (char *)(*text).c_str());
 
-        width += (*text).size();
+        drawn += 1;
     }
 
 
@@ -1581,10 +1539,10 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
      * Although this might seem pointless it is required to ensure that any
      * highlighting/underlining/blinking persists to the end of the line.
      */
-    while (width < (swidth - col_offset))
+    while (drawn < swidth)
     {
         waddstr(screen, (char *)" ");
-        width += 1;
+        drawn += 1;
     }
 
 
@@ -1607,16 +1565,32 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
     /*
      * Return the width of the line we drew.
      */
-    return (width);
+    return (drawn);
 }
 
 
 /*
  * Parse a string into an array of "string + colour" pairs,
  * which will be useful for drawing strings.
+ *
+ * The output of this routine will be an array of COLOUR_STRING
+ * objects - each object will contain a colour and ONE CHARACTER
+ * of text to draw.
+ *
+ * This needs re-emphasising:  The entries will contain one character
+ * which may be displayed, even if that character might be made from
+ * multiple *BYTES*.
  */
-std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
+std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input, int offset)
 {
+    /**
+     * Vector we use while building.
+     */
+    std::vector<COLOUR_STRING *> temp;
+
+    /**
+     * Returned to the caller.
+     */
     std::vector<COLOUR_STRING *> results;
 
     /*
@@ -1644,7 +1618,7 @@ std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
          */
         tmp->colour = new std::string(col);
         tmp->string = new std::string(txt);
-        results.push_back(tmp);
+        temp.push_back(tmp);
 
         input = pre;
     }
@@ -1661,59 +1635,85 @@ std::vector<COLOUR_STRING *> CScreen::parse_coloured_string(std::string input)
         COLOUR_STRING *tmp = (COLOUR_STRING *)malloc(sizeof(COLOUR_STRING));
         tmp->colour = new std::string("white");
         tmp->string = new std::string(input);
-        results.push_back(tmp);
+        temp.push_back(tmp);
     }
 
     /*
      * Remember we searched backwards?  Reverse so all makes sense.
      */
-    std::reverse(results.begin(), results.end());
-    return (results);
-}
+    std::reverse(temp.begin(), temp.end());
 
 
-/*
- * Given an array of colour parts which might look like this
- *
- * <code>
- *   [ "RED",   "This is in red" ],
- *   [ "YELLOW", "**"]
- * </code>
- *
- * We want to return an updated array that is suitable for drawing column
- * by column such as:
- *
- * <code>
- *  [ "RED", "T" ],
- *  [ "RED", "h" ],
- * ...
- *  [ "YELLOW", *" ],
- *  [ "YELLOW", *" ]
- * </code>
- *
- * This is used to implement horizontal scrolling.
- *
- * NOTE: We do some magic here to try to scroll in one *character* steps
- * even if we're dealing with mult-byte characters (i.e. UTF).
- *
- * This is based on the observation that you can determine the length of
- * a UTF-8 character by looking at the prefix.
- *
- */
-std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_STRING *> parts, int offset)
-{
-    std::vector<COLOUR_STRING *> results;
+    /**
+     * At this point we're half done.
+     *
+     * We've turned this input:
+     *
+     *   $[RED]This is red $[BLUE]This is blue
+     *
+     * Into this intermediary step:
+     *
+     *  [colour:RED, text:"This is red "],
+     *  [colour:BLUE, text:"This is blue"],
+     *
+     * We now need to turn that middle-step into:
+     *
+     *  [colour:RED, text:T]
+     *  [colour:RED, text:h]
+     *  [colour:RED, text:i]
+     *  [colour:RED, text:s]
+     *  [colour:RED, text: ]
+     *  [colour:RED, text:i]
+     *  [colour:RED, text:s]
+     *  [colour:RED, text: ]
+     *  [colour:RED, text:r]
+     *  [colour:RED, text:e]
+     *  [colour:RED, text:d]
+     *  [colour:RED, text: ]
+     *  [colour:BLUE, text:T]
+     *  [colour:BLUE, text:h]
+     *  [colour:BLUE, text:i]
+     *  ..
+     *
+     * We do this because it is significantly more efficient to handle
+     * scrolling when we have a set of characters, since we just remove
+     * the ones to the left of the scroll-index.
+     */
+
+
+    /*
+     * Starting/Previous colour.
+     */
+    std::string *prev_colour =  new std::string("white");
 
     /*
      * Iterate over the entries.
      */
-    for (auto it = parts.begin(); it != parts.end() ; ++it)
+    for (std::vector<COLOUR_STRING *>::iterator it = temp.begin(); it != temp.end() ; ++it)
     {
-        /*
-         * Get the text/colour.
-         */
         std::string *colour = (*it)->colour;
         std::string *text   = (*it)->string;
+
+        /**
+         * Expand $[#RED]", appropriately.
+         */
+        if ((colour->size() > 0) && (colour->at(0) == '#'))
+        {
+            /* Rewrite the text - i.e escape the whole damn thing. */
+            *text = "$[" + colour->substr(1) + "]" + *text;
+
+            /* avoid using the selected colour */
+            colour = prev_colour;
+        }
+        else
+        {
+            /*
+             * Record the previous colour, to handle the case of a future
+             * string not updating itself because it is escaped.
+             */
+            prev_colour = colour;
+        }
+
 
         /*
          * Copy the colour, and the one-character string.
@@ -1733,11 +1733,11 @@ std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_
              * The "single character" we'll draw, which might
              * actually be comprised of multiple bytes.
              */
-            std::string txt;
+            std::string chr;
 
             if ((byte & 0x80) == 0)
             {
-                txt += byte;
+                chr += byte;
             }
             else if ((byte & 0xE0) == 0xC0)     // 110x xxxx
             {
@@ -1746,8 +1746,8 @@ std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_
                  */
                 if (i + 1 <= max)
                 {
-                    txt += text->at(i);
-                    txt += text->at(i + 1);
+                    chr += text->at(i);
+                    chr += text->at(i + 1);
 
                     i += 1;
                 }
@@ -1759,9 +1759,9 @@ std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_
                  */
                 if (i + 2 <= max)
                 {
-                    txt += text->at(i);
-                    txt += text->at(i + 1);
-                    txt += text->at(i + 2);
+                    chr += text->at(i);
+                    chr += text->at(i + 1);
+                    chr += text->at(i + 2);
 
                     i += 2;
                 }
@@ -1773,10 +1773,10 @@ std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_
                  */
                 if (i + 3 <= max)
                 {
-                    txt += text->at(i);
-                    txt += text->at(i + 1);
-                    txt += text->at(i + 2);
-                    txt += text->at(i + 3);
+                    chr += text->at(i);
+                    chr += text->at(i + 1);
+                    chr += text->at(i + 2);
+                    chr += text->at(i + 3);
 
                     i += 3;
                 }
@@ -1791,19 +1791,18 @@ std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_
                 assert(false);
             }
 
-
             COLOUR_STRING *tmp = (COLOUR_STRING *)malloc(sizeof(COLOUR_STRING));
             tmp->colour = new std::string(*colour);
-            tmp->string = new std::string(txt);
+            tmp->string = new std::string(chr);
             results.push_back(tmp);
         }
     }
 
 
     /*
-     * Free the input.
+     * Free the array we built in the middle.
      */
-    for (auto it = parts.begin(); it != parts.end() ; ++it)
+    for (std::vector<COLOUR_STRING *>::iterator it = temp.begin(); it != temp.end() ; ++it)
     {
         COLOUR_STRING *i = (*it);
         delete(i->string);
@@ -1812,8 +1811,10 @@ std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_
     }
 
 
+
     /*
-     * Now remove the parts that we should skip.
+     * Now remove the parts that we should skip because we have
+     * scrolling in effect.
      */
     for (int i = 0; i < offset && ((int)results.size() >= 1); i++)
     {
@@ -1821,7 +1822,7 @@ std::vector<COLOUR_STRING *> CScreen::coloured_string_scroll(std::vector<COLOUR_
         delete(x->string);
         delete(x->colour);
         delete(x);
-        results.erase(results.begin());
+        results.erase(results.begin(), results.begin() + 1);
     }
 
     /*
