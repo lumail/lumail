@@ -33,6 +33,9 @@ CuSuite *directory_getsuite();
 /* defined in file_test.cc */
 CuSuite *file_getsuite();
 
+/* defined in history_test.cc */
+CuSuite *history_getsuite();
+
 /* defined in input_queue_test.cc */
 CuSuite *input_queue_getsuite();
 
