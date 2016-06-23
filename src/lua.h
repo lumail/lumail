@@ -94,6 +94,12 @@ public:
      */
     void on_error(std::string msg);
 
+    /**
+     * Return the (string) contents of a variable.
+     * Used for our test suite only.
+     */
+    std::string get_variable(std::string name);
+
 private:
 
     /**

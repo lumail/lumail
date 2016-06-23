@@ -395,3 +395,21 @@ std::vector<std::string> CLua::function2table(std::string function)
 
     return (result);
 }
+
+
+/*
+ * Return the (string) contents of a variable.
+ * Used for our test suite only.
+ */
+std::string CLua::get_variable(std::string name)
+{
+    lua_getglobal(m_lua, name.c_str());
+
+    if (lua_isnil(m_lua, -1))
+        return "";
+
+    if (lua_isstring(m_lua, -1))
+        return lua_tostring(m_lua, -1);
+
+    return ("");
+}
