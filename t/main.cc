@@ -25,6 +25,9 @@
 
 
 
+/* defined in config_test.cc */
+CuSuite *config_getsuite();
+
 /* defined in coloured_string_test.cc */
 CuSuite *coloured_string_getsuite();
 
@@ -41,6 +44,7 @@ void RunAllTests(void)
     CuSuite *suite = CuSuiteNew();
 
     CuSuiteAddSuite(suite, coloured_string_getsuite());
+    CuSuiteAddSuite(suite, config_getsuite());
     CuSuiteAddSuite(suite, util_getsuite());
 
     CuSuiteRun(suite);
