@@ -24,8 +24,11 @@
 /* defined in config_test.cc */
 CuSuite *config_getsuite();
 
-/* defined in coloured_string_test.cc */
+/* defined in colour_string_test.cc */
 CuSuite *coloured_string_getsuite();
+
+/* defined in directory_test.cc */
+CuSuite *directory_getsuite();
 
 /* defined in file_test.cc */
 CuSuite *file_getsuite();
