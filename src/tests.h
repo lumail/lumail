@@ -36,5 +36,8 @@ CuSuite *file_getsuite();
 /* defined in input_queue_test.cc */
 CuSuite *input_queue_getsuite();
 
+/* defined in lua_test.cc */
+CuSuite *lua_getsuite();
+
 /* defined in util_test.cc */
 CuSuite *util_getsuite();

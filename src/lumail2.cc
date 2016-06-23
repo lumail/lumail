@@ -49,6 +49,7 @@ void run_all_tests()
     CuSuiteAddSuite(suite, directory_getsuite());
     CuSuiteAddSuite(suite, file_getsuite());
     CuSuiteAddSuite(suite, input_queue_getsuite());
+    CuSuiteAddSuite(suite, lua_getsuite());
     CuSuiteAddSuite(suite, util_getsuite());
 
     CuSuiteRun(suite);
