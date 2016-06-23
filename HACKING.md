@@ -78,3 +78,10 @@ class is defined in `config_lua.cc`.
 The wrappers are very simple, and follow a template.
 
 
+Testing
+-------
+
+Regretably much of our code is not tested in a systematic fashion.
+
+There is some test-code available beneath `t/` and it is hoped that
+new additions to our core will contain more test-cases.
