@@ -41,6 +41,7 @@ void RunAllTests(void)
     CuSuite *suite = CuSuiteNew();
 
     CuSuiteAddSuite(suite, coloured_string_getsuite());
+    CuSuiteAddSuite(suite, util_getsuite());
 
     CuSuiteRun(suite);
     CuSuiteSummary(suite, output);
