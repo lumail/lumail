@@ -54,6 +54,12 @@ int l_CMime_type(lua_State * L)
 
     const char *file = lua_tostring(L, 1);
 
+    if (file == NULL)
+    {
+        lua_pushnil(L);
+        return 1;
+    }
+
     std::string ctype = mime->type(file);
 
     if (ctype.empty())
