@@ -9,17 +9,13 @@ Assuming you have the required dependencies present, which are covered
 below, then you can configure your instance of lumail to use a remote
 IMAP server via the following settings:
 
-     --
-     -- Defaults
-     --
+     --[[ Defaults ]]
      Config:set( "imap.cache", HOME .. "/.lumail2/imap.cache" )
      Config:set( "imap.proxy", "/etc/lumail2/perl.d/imap-proxy" )
      Config:set( "index.sort", "none" )
      Config:set( "index.fast", "1" )
 
-     --
-     -- Account details
-     --
+     --[[ Account details ]]
      Config:set( "imap.server",   "imaps://imap.gmail.com/" )
      Config:set( "imap.username", "username" )
      Config:set( "imap.password", "password" )
