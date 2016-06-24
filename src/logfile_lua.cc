@@ -54,6 +54,9 @@ int l_CLog_append(lua_State * L)
 {
     const char *msg = lua_tostring(L, 2);
 
+    if (msg == NULL)
+        return 0;
+
     CLogfile *log = CLogfile::instance();
     log->append(msg);
     return 0;
