@@ -54,6 +54,12 @@ int l_CFile_basename(lua_State * l)
 {
     const char *str = lua_tostring(l, 2);
 
+    if (str == NULL)
+    {
+        lua_pushnil(l);
+        return 1;
+    }
+
     std::string result = CFile::basename(str);
 
     lua_pushstring(l , result.c_str());
@@ -82,17 +88,18 @@ int l_CFile_exists(lua_State * l)
 {
     const char *str = lua_tostring(l, 2);
 
-    if (str != NULL)
+    if (str == NULL)
     {
-        if (CFile::exists(str))
-            lua_pushboolean(l , 1);
-        else
-            lua_pushboolean(l , 0);
-
+        lua_pushnil(l);
         return 1;
     }
 
-    return 0;
+    if (CFile::exists(str))
+        lua_pushboolean(l , 1);
+    else
+        lua_pushboolean(l , 0);
+
+    return 1;
 }
 
 
@@ -108,7 +115,8 @@ int l_CFile_stat(lua_State * l)
 
     if (str == NULL)
     {
-        return 0;
+        lua_pushnil(l);
+        return 1;
     }
 
     /*
