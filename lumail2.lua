@@ -3061,6 +3061,16 @@ keymap['message']['T'] = 'Config.toggle( "message.all_parts" )'
 --
 Config:set( "global.iconv", 1 )
 
+--
+-- The following line will draw one blank line at the bottom of the screen
+-- and is designed to mask any artifacts caused by bogus wrapping and drawing
+-- which might become evident.
+--
+-- It is disabled by default.
+--
+-- Config:set( "global.over-draw", 1 )
+--
+
 
 --
 -- The following flag configures our index-mode to only format

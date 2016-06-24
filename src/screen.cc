@@ -1304,7 +1304,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
      */
     CConfig *config = CConfig::instance();
     int wrap = config->get_integer("line.wrap", 0);
-    int over = config->get_integer("global.over-draw", 1);
+    int over = config->get_integer("global.over-draw", 0);
 
     /*
      * Take off the panel, if visible.
@@ -1443,7 +1443,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         result = draw_single_line(row, 0, buf, stdscr, true);
 
         // HACK - overdraw
-        if (over == 0)
+        if (over == 1)
             draw_single_line(row + 1, 0, " ", stdscr, true);
     }
 
