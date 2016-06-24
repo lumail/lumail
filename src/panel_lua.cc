@@ -51,8 +51,12 @@ int l_CPanel_append(lua_State * l)
 {
     const char *str = lua_tostring(l, 2);
 
-    CScreen *screen = CScreen::instance();
-    screen->status_panel_append(str);
+    if (str != NULL)
+    {
+        CScreen *screen = CScreen::instance();
+        screen->status_panel_append(str);
+    }
+
     return 0;
 }
 
