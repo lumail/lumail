@@ -52,17 +52,18 @@ int l_CDirectory_exists(lua_State * l)
 {
     const char *str = lua_tostring(l, 2);
 
-    if (str != NULL)
+    if (str == NULL)
     {
-        if (CDirectory::exists(str))
-            lua_pushboolean(l , 1);
-        else
-            lua_pushboolean(l , 0);
-
+        lua_pushnil(l);
         return 1;
     }
 
-    return 0;
+    if (CDirectory::exists(str))
+        lua_pushboolean(l , 1);
+    else
+        lua_pushboolean(l , 0);
+
+    return 1;
 }
 
 
@@ -72,22 +73,25 @@ int l_CDirectory_exists(lua_State * l)
 int l_CDirectory_entries(lua_State * l)
 {
     const char *str = lua_tostring(l, 2);
-    std::vector<std::string> entries = CDirectory::entries(str);
 
     lua_newtable(l);
 
-    int i = 1;
-
-    for (auto it = entries.begin(); it != entries.end(); ++it)
+    if (str != NULL)
     {
-        std::string value = (*it);
+        int i = 1;
+        std::vector<std::string> entries = CDirectory::entries(str);
 
-        lua_pushinteger(l, i);
-        lua_pushstring(l, value.c_str());
+        for (auto it = entries.begin(); it != entries.end(); ++it)
+        {
+            std::string value = (*it);
 
-        lua_settable(l, -3);
+            lua_pushinteger(l, i);
+            lua_pushstring(l, value.c_str());
 
-        i += 1;
+            lua_settable(l, -3);
+
+            i += 1;
+        }
     }
 
     return 1;
@@ -100,7 +104,12 @@ int l_CDirectory_entries(lua_State * l)
 int l_CDirectory_mkdir(lua_State * l)
 {
     const char *str = lua_tostring(l, 2);
-    CDirectory::mkdir_p(str);
+
+    if (str != NULL)
+    {
+        CDirectory::mkdir_p(str);
+    }
+
     return 0;
 }
 
@@ -112,17 +121,18 @@ int l_CDirectory_is_maildir(lua_State * l)
 {
     const char *str = lua_tostring(l, 2);
 
-    if (str != NULL)
+    if (str == NULL)
     {
-        if (CFile::is_maildir(str))
-            lua_pushboolean(l , 1);
-        else
-            lua_pushboolean(l , 0);
-
+        lua_pushnil(l);
         return 1;
     }
 
-    return 0;
+    if (CFile::is_maildir(str))
+        lua_pushboolean(l , 1);
+    else
+        lua_pushboolean(l , 0);
+
+    return 1;
 }
 
 /**
