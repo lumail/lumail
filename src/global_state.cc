@@ -68,6 +68,13 @@ std::shared_ptr<CMessage> CGlobalState::current_message()
  */
 void CGlobalState::set_message(std::shared_ptr<CMessage> update)
 {
+    /*
+     * If the user is re-selecting the currently selected
+     * item then we can avoid doing anything.
+     */
+    if (m_current_message && (m_current_message->path() == update->path()))
+        return;
+
     m_current_message = update;
 
     /*
@@ -532,7 +539,23 @@ std::shared_ptr<CMaildir>CGlobalState::current_maildir()
  */
 void CGlobalState::set_maildir(std::shared_ptr<CMaildir> updated)
 {
+    /*
+     * If the user is re-selecting the currently selected
+     * item then we can avoid doing anything.
+     */
+    if (m_current_maildir && (m_current_maildir->path() == updated->path()))
+        return;
+
+
     m_current_maildir = updated;
 
     update_messages();
+
+    /*
+     * If the folder has changed then we reset the scroll
+     * position to the top - we'll also set the attachment
+     * index to zero.
+     */
+    CConfig *config = CConfig::instance();
+    config->set("index.current", 0);
 }
