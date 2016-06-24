@@ -8,8 +8,7 @@ lumail2
 This repository contains the `lumail2` console-based email
 client, with fully integrated scripting provided by Lua.
 
-This project is built upon of the previous [Lumail client](https://github.com/lumail/lumail/), and was initiated to improve both the user-interface and
-the internal implementation:
+This project is based upon of the previous [Lumail client](https://github.com/lumail/lumail/), and was initiated to improve both the user-interface and the internal implementation:
 
 * The C++ core, and Lua scripting, is much more consistent.
 * The more things that can be pushed to Lua the better.
@@ -19,18 +18,19 @@ the internal implementation:
 The project is perpetually a work in-progress, but the core of the client
 is complete and robust:
 
-* Basic operations may be carried out against email:
+* All the obvious operations may be carried out:
      * Viewing folder-hierarchies.
      * Viewing the contents of a folder.
      * Reading emails.
      * Replying to emails.
      * Forwarding emails.
      * Composing fresh emails.
+     * Deleting emails.
 
 All of these things work against local Maildir-hierarchies __and__ remote
 IMAP servers.
 
-**NOTE**: Lumail2 may well eat your email, corrupt your email, or
+**NOTE**: `lumail2` may well eat your email, corrupt your email, or
 otherwise cause data loss.  If you have no current backups of your
 email you should **NO USE FOR THIS PROJECT**.
 
@@ -38,7 +38,7 @@ email you should **NO USE FOR THIS PROJECT**.
 User-Interface
 --------------
 
-The user-interface will be familiar to users of prior `lumail` release.
+The user-interface will be familiar to users of previous `lumail` project.
 
 The only obvious change, in terms of visual appearance, is the addition of
 the status-panel which can display persistent output, under the control of
@@ -50,7 +50,6 @@ customized output.
 
 Because this is a modal-application you're always in one of a fixed number
 of modes:
-
 
 * `maildir`-mode
     * Allows viewing lists of mail-folders.
@@ -84,7 +83,11 @@ Upon a Debian GNU/Linux host, running the Jessie (stable) release, the following
 
 With the dependencies installed you should find the code builds cleanly with:
 
-    make
+    $ make
+
+The integrated test-suite can be executed by running:
+
+    $ make test
 
 
 
@@ -112,7 +115,7 @@ Configuring Lumail
 When `lumail2` starts it will load each of the following files:
 
 * `/etc/lumail2/lumail2.lua`
-    * This will also load `~/.lumail2/$HOSTNAME.lua` if present.
+    * This will then load `~/.lumail2/$HOSTNAME.lua` if present.
 * `~/.lumail2/lumail2.lua`
 
 The intention is that you will always run `make install` to ensure
@@ -146,7 +149,7 @@ please do read the [sample lumail2.lua file](lumail2.lua).
 Using Lumail2
 -------------
 
-By default you'll be in the `maildir`-mode, and you can navigate with `j`/`k`, and select items with `enter`.
+By default you'll be in the `maildir`-mode, and you can navigate with `j`/`k`, and select items with `ENTER`.
 
 For a quick-start you can use the following bindings:
 
