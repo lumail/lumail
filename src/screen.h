@@ -208,11 +208,6 @@ public:
     void status_panel_title(std::string new_title);
 
     /**
-     * Toggle the visibility of the status-panel.
-     */
-    void status_panel_toggle();
-
-    /**
      * Get the height of the status-panel, in lines.
      */
     int status_panel_height();

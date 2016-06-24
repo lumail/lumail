@@ -175,7 +175,12 @@ int l_CPanel_toggle(lua_State * l)
 {
     (void)l;
     CScreen *screen = CScreen::instance();
-    screen->status_panel_toggle();
+
+    if (screen->status_panel_visible())
+        screen->status_panel_hide();
+    else
+        screen->status_panel_show();
+
     return 0;
 }
 

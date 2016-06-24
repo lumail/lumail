@@ -1079,14 +1079,6 @@ void CScreen::status_panel_hide()
     g_status_bar_data.hidden = true;
 }
 
-void CScreen::status_panel_toggle()
-{
-    if (status_panel_visible())
-        status_panel_hide();
-    else
-        status_panel_show();
-}
-
 int CScreen::status_panel_height()
 {
     return (g_status_bar_data.height);
