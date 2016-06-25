@@ -87,6 +87,9 @@ void CGlobalState::set_message(std::shared_ptr<CMessage> update)
  */
 void CGlobalState::update(std::string key_name)
 {
+    CLogfile *logger = CLogfile::instance();
+    logger->append("CConfig variable changed " + key_name);
+
     CConfig *config = CConfig::instance();
 
     /*
@@ -332,11 +335,15 @@ void CGlobalState::update_maildirs()
  */
 void CGlobalState::update_messages()
 {
+    CLogfile *logger = CLogfile::instance();
+    logger->append("Updating list of messages.");
+
     /*
      * If we have items already then free each of them.
      */
     if (m_messages != NULL)
         delete(m_messages);
+
 
     /*
      * create a new store.
@@ -360,6 +367,7 @@ void CGlobalState::update_messages()
             (config->get_string("imap.password", "") != "") &&
             (config->get_string("imap.server", "") != ""))
     {
+        logger->append("\tIMAP is in use.");
 
         /*
          * If we don't have a currently-selected folder then return.
@@ -505,6 +513,7 @@ void CGlobalState::update_messages()
      */
     if (current)
     {
+        logger->append("\tFetching messages.");
         CMessageList contents = current->getMessages();
 
         for (std::shared_ptr<CMessage> content : contents)
@@ -512,6 +521,8 @@ void CGlobalState::update_messages()
             m_messages->push_back(content) ;
         }
     }
+
+    logger->append("\tFound " + std::to_string(m_messages->size()) + " message(s).");
 
     config->set("index.max", m_messages->size());
 }
