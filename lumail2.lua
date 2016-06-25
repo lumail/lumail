@@ -45,7 +45,7 @@
 --      Config:set( "global.logfile", "lumail2.log" )
 --
 function log_message( txt )
-   Log:append( os.date() .. " " .. txt )
+   Log:append( txt )
 end
 
 
