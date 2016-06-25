@@ -144,8 +144,10 @@ void TestNestedTable(CuTest * tc)
      * Define a nested table.
      */
     instance->execute("parent = {}");
+
     instance->execute("parent['child1'] = {}");
     instance->execute("parent['child1']['steve'] = 'smith'");
+
     instance->execute("parent['child2'] = {}");
     instance->execute("parent['child2']['kirsi'] = 'kemp'");
 
@@ -160,8 +162,22 @@ void TestNestedTable(CuTest * tc)
     CuAssertPtrNotNull(tc, p_c2_k);
     CuAssertStrEquals(tc, "kemp", p_c2_k);
 
-    char *p_c3_k = instance->get_nested_table("parent", "childX", "lumi");
+    /*
+     * Missing value returns null.
+     */
+    char *p_c3_k = instance->get_nested_table("parent", "childX", "forename");
     CuAssertTrue(tc, p_c3_k == NULL);
+
+    /*
+     * Defining the missing value does good though.
+     */
+    instance->execute("parent['childX'] = {}");
+    instance->execute("parent['childX']['forename'] = 'surname'");
+
+    p_c3_k = instance->get_nested_table("parent", "childX", "forename");
+    CuAssertPtrNotNull(tc, p_c3_k);
+    CuAssertStrEquals(tc, "surname", p_c3_k);
+
 }
 
 CuSuite *
