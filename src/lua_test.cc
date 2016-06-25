@@ -94,11 +94,83 @@ void TestErrorHandler(CuTest * tc)
 }
 
 
+
+/**
+ * Test a Lua function returning a table works.
+ */
+void TestFunctionToTable(CuTest * tc)
+{
+    /*
+     * Get the singleton
+     */
+    CLua *instance = CLua::instance();
+    CuAssertPtrNotNull(tc, instance);
+
+    /*
+     * Define a function that returns a table.
+     */
+    instance->execute("function get_table() t ={} t[1] = 'bar' t[2]= 'baz' return t end ");
+
+
+    /*
+     * Get the results
+     */
+    std::vector<std::string> results = instance->function2table("get_table");
+
+    CuAssertTrue(tc, ! results.empty());
+    CuAssertIntEquals(tc, 2, results.size());
+
+    /*
+     * Test we got the values we expected.
+     */
+    CuAssertStrEquals(tc, "bar", results.at(0).c_str());
+    CuAssertStrEquals(tc, "baz", results.at(1).c_str());
+
+}
+
+
+/**
+ * Test a Lua function returning the value from a nested table works.
+ */
+void TestNestedTable(CuTest * tc)
+{
+    /*
+     * Get the singleton
+     */
+    CLua *instance = CLua::instance();
+    CuAssertPtrNotNull(tc, instance);
+
+    /*
+     * Define a nested table.
+     */
+    instance->execute("parent = {}");
+    instance->execute("parent['child1'] = {}");
+    instance->execute("parent['child1']['steve'] = 'smith'");
+    instance->execute("parent['child2'] = {}");
+    instance->execute("parent['child2']['kirsi'] = 'kemp'");
+
+    /*
+     * Get the nested values.
+     */
+    char *p_c1_k = instance->get_nested_table("parent", "child1", "steve");
+    CuAssertPtrNotNull(tc, p_c1_k);
+    CuAssertStrEquals(tc, "smith", p_c1_k);
+
+    char *p_c2_k = instance->get_nested_table("parent", "child2", "kirsi");
+    CuAssertPtrNotNull(tc, p_c2_k);
+    CuAssertStrEquals(tc, "kemp", p_c2_k);
+
+    char *p_c3_k = instance->get_nested_table("parent", "childX", "lumi");
+    CuAssertTrue(tc, p_c3_k == NULL);
+}
+
 CuSuite *
 lua_getsuite()
 {
     CuSuite *suite = CuSuiteNew();
     SUITE_ADD_TEST(suite, TestLua);
     SUITE_ADD_TEST(suite, TestErrorHandler);
+    SUITE_ADD_TEST(suite, TestFunctionToTable);
+    SUITE_ADD_TEST(suite, TestNestedTable);
     return suite;
 }
