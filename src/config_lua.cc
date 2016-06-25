@@ -178,6 +178,10 @@ int l_Config_set(lua_State * l)
         const char *value = luaL_checkstring(l, 3);
         foo->set(name, value);
     }
+    else if (lua_isnil(l, 3))
+    {
+        foo->delete_key(name);
+    }
     else
     {
         throw ("Invalid set-type");

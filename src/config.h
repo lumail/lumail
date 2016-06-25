@@ -140,13 +140,13 @@ public:
     void remove_all();
 
 
-private:
-
     /**
      * Remove the value of the given key, freeing the associated
      * CConfigEntry structure.
      */
     void delete_key(std::string key);
+
+private:
 
     /**
      * Notify any watchers that the value of a configuration-key
