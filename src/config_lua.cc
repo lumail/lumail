@@ -153,6 +153,12 @@ int l_Config_set(lua_State * l)
     CConfig *foo = CConfig::instance();
     const char *name = luaL_checkstring(l, 2);
 
+    if ((lua_gettop(l) != 3) || (lua_isnil(l, 3)))
+    {
+        foo->delete_key(name);
+        return 0;
+    }
+
     if (lua_istable(l, 3))
     {
         std::vector < std::string > vals;
@@ -177,10 +183,6 @@ int l_Config_set(lua_State * l)
     {
         const char *value = luaL_checkstring(l, 3);
         foo->set(name, value);
-    }
-    else if (lua_isnil(l, 3))
-    {
-        foo->delete_key(name);
     }
     else
     {
