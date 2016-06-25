@@ -62,6 +62,11 @@ void TestLogfile(CuTest * tc)
     tmp.push_back("kuusi");
     tmp.push_back("seitsemän");
 
+    /*
+     * Log-lines are prefixed with a date-string.
+     */
+    std::string date = "25/06/2016 11:47:54.119 ";
+
     int base = 0;
 
     for (std::vector<std::string>::iterator it = tmp.begin(); it != tmp.end() ; ++it)
@@ -80,13 +85,14 @@ void TestLogfile(CuTest * tc)
          * Test the size of the file is the existing size,
          * plus the added-line, plus the newline.
          */
-        CuAssertIntEquals(tc, base + txt.size() + 1, size);
+        CuAssertIntEquals(tc, base + txt.size() + 1 + date.size(), size);
 
         /*
          * Bump our base-size - also add the newline.
          */
         base += txt.size();
         base += 1;
+        base += date.size();
     }
 
 
