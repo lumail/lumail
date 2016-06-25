@@ -509,6 +509,7 @@ function Message:to_ctime()
    -- and handle the sorting that way.
    --
    if ( not luarocks_libraries["date"] ) then
+      Log:append( "WARNING: luarocks - date library missing" )
       local stat = File:stat( self:path() )
       local res  = stat['mtime']
       cache["ctime:" .. p] = res
@@ -558,11 +559,11 @@ function compare_by_file(a,b)
    --
    local a_time = table_sort_cache[a_path]
    if ( not a_time ) then
-      a_time = File:stat(a_path)['mtime']
+      a_time = File:stat(a_path)['ctime']
       table_sort_cache[a_path] = a_time
    end
    if ( not b_time ) then
-      b_time = File:stat(b_path)['mtime']
+      b_time = File:stat(b_path)['ctime']
       table_sort_cache[b_path] = b_time
    end
 
@@ -576,9 +577,6 @@ function compare_by_file(a,b)
       b_time = tonumber(b_time)
    end
 
-   --
-   -- Actually compare
-   --
    return a_time < b_time
 end
 
@@ -699,46 +697,36 @@ function maildirs()
    local all = Global:maildirs()
 
    --
-   -- Sort them, case-insensitively
-   --
-   table.sort(all, function (a, b) return a:path():lower() < b:path():lower() end)
-
-   --
-   -- Get the maildir.limit
-   --
-   local limit = Config:get("maildir.limit" )
-
-   --
-   -- Temporary copies.
+   -- The return value.
    --
    local ret = {}
 
    --
-   -- All
+   -- Filter them according to the limit.
    --
-   if ( limit == nil ) or ( limit == "all" ) then
+   local limit = Config.get_with_default("maildir.limit", "all" )
+
+   if ( limit == "all" ) then
+      --
+      -- All
+      --
       for i,o in ipairs(all) do
          table.insert(ret, o)
       end
-      Config:set("maildir.max", #ret)
-      return ret
-   end
-
-   --
-   -- New
-   --
-   if ( limit == "new" ) then
+   elseif ( limit == "new" ) then
+      --
+      -- New
+      --
       for i,o in ipairs(all) do
          local unread = o:unread_messages()
          if ( unread > 0 ) then
             table.insert(ret, o)
          end
       end
-      Config:set("maildir.max", #ret)
-      return ret
-   end
-
-   if ( limit == "today" ) then
+   elseif ( limit == "today" ) then
+      --
+      -- Today
+      --
       local time = os.time()
       local today = time - ( 60 * 60 * 24 )
 
@@ -751,27 +739,25 @@ function maildirs()
             table.insert(ret, o)
          end
       end
-      Config:set("maildir.max", #ret)
-      return(ret)
-   end
-
-   --
-   -- Some string to match against.
-   --
-   if ( limit ) then
+   else
+      --
+      -- "Pattern"
+      --
       for i,o in ipairs(all) do
          local fmt = o:format()
          if ( string.find(fmt, limit) ) then
             table.insert(ret, o)
          end
       end
-      Config:set("maildir.max", #ret)
-      return(ret)
    end
 
    --
-   -- Not reached
+   -- Sort them, case-insensitively
    --
+   table.sort(ret, function (a, b) return a:path():lower() < b:path():lower() end)
+
+   Config:set("maildir.max", #ret)
+   return ret
 end
 
 --
@@ -787,76 +773,43 @@ function sorted_messages()
    end
 
    --
-   -- Otherwise get all the current messages,
-   -- filter them appropriately, and set the
-   -- current selection.
+   -- Otherwise fetch all the current messages.
    --
    local msgs = Global:current_messages()
 
-   -- What sort method should we use?
-   local method = Config.get_with_default("index.sort", "file")
-
    --
-   -- Reset the cache which is used for sorting.
+   -- Now apply any limit which should be present.
    --
-   for k in pairs (table_sort_cache) do
-      table_sort_cache[k] = nil
-   end
-
-   if ( method == "file" ) then
-      table.sort(msgs, compare_by_file)
-   end
-
-   if ( method == "date" ) then
-      table.sort(msgs, compare_by_date)
-   end
-
-   if ( method == "from" ) then
-      table.sort(msgs, compare_by_from)
-   end
-
-   if ( method == "subject" ) then
-      table.sort(msgs, compare_by_subject)
-   end
-
-   if ( method == "none" ) then
-      -- NOP
-   end
-
-
+   -- Valid limits are:
    --
-   -- Now limit the messages by limit
+   --   All      -> All messages.
+   --   New      -> All messages which are unread.
+   --   Today    -> Show messages arrived today.
+   --  "pattern" -> All messages matching the given pattern.
    --
    local limit = Config.get_with_default("index.limit", "all")
 
-   --
-   -- Temporary copies.
-   --
-   local ret = {}
-
    if ( limit == "all" ) then
+      --
+      -- "All"
+      --
       for i,o in ipairs(msgs) do
-         table.insert(ret, o)
+         table.insert(global_msgs, o)
       end
-
-      -- update our cache
-      global_msgs = ret
-      return ret
-   end
-
-   if ( limit == "new" ) then
+   elseif ( limit == "new" ) then
+      --
+      -- "New"
+      --
       for i,o in ipairs(msgs) do
          if ( o:is_new() ) then
-            table.insert(ret, o)
+            table.insert(global_msgs, o)
          end
       end
 
-      -- update our cache
-      global_msgs = ret
-      return(ret)
-   end
-
-   if ( limit == "today" ) then
+   elseif ( limit == "today" ) then
+      --
+      -- "Today"
+      --
       local time = os.time()
       local today = time - ( 60 * 60 * 24 )
 
@@ -871,31 +824,66 @@ function sorted_messages()
 
          -- if it was within the past 24 hours then add it
          if ( ctime > today ) then
-            table.insert(ret, o)
+            table.insert(global_msgs, o)
          end
       end
-
-      -- update our cache
-      global_msgs = ret
-      return(ret)
-   end
-
-   if ( limit ) then
+   else
+      --
+      -- "Pattern"
+      --
       for i,o in ipairs(msgs) do
          local fmt = o:format()
          if ( string.find(fmt, limit) ) then
-            table.insert(ret, o)
+            table.insert(global_msgs, o)
          end
       end
+   end
 
-      -- update our cache
-      global_msgs = ret
-      return(ret)
+
+   --
+   -- Now we've:
+   --
+   --  1. Found all messages.
+   --  2. Limited that selection appropriately.
+   --
+   -- We just need to sort them now.
+   --
+
+
+   -- What sort method should we use?
+   local method = Config.get_with_default("index.sort", "file")
+
+   --
+   -- Reset the cache which is used for sorting.
+   --
+   for k in pairs (table_sort_cache) do
+      table_sort_cache[k] = nil
+   end
+
+   if ( method == "file" ) then
+      table.sort(global_msgs, compare_by_file)
+   end
+
+   if ( method == "date" ) then
+      table.sort(global_msgs, compare_by_date)
+   end
+
+   if ( method == "from" ) then
+      table.sort(global_msgs, compare_by_from)
+   end
+
+   if ( method == "subject" ) then
+      table.sort(global_msgs, compare_by_subject)
+   end
+
+   if ( method == "none" ) then
+      -- NOP
    end
 
    --
-   -- NOT REACHED
+   -- Return the limited and sorted messages.
    --
+   return(global_msgs)
 end
 
 
