@@ -100,7 +100,7 @@ We have a number of variables which are special, the most important ones are:
     * If this is set to 1 we'll only format messages which are _visible_ when opening folders.
     * This is a speed optimization for large Maildirs, or when using IMAP.
 * `index.sort`
-    * The method to sort messages by: `date`, `from`, `none`, or `subject` at this time.
+    * The method to sort messages by: `date`, `file`, `from`, `none`, or `subject` at this time.
 * `global.editor`
     * The user's editor.
 * `global.from`

@@ -102,6 +102,7 @@ end
 -----------------------------------------------------------------------------
 
 local cache = {}
+local table_sort_cache = {}
 
 
 --
@@ -188,6 +189,17 @@ function cache_flush()
    cache_save()
 end
 
+
+--
+-- Utility for counting the size of a table
+--
+function table_size( obj )
+   local i = 0
+   for k,v in pairs (obj) do
+      i = i + 1
+   end
+   return i
+end
 
 
 --
@@ -530,23 +542,87 @@ end
 
 
 --
+-- Compare two messages, based upon the modification of their
+-- filenames.
+--
+-- We make sure we compare numbers, as these might have been
+-- cached and saved as strings.
+--
+function compare_by_file(a,b)
+   local a_path = a:path()
+   local b_path = b:path()
+
+   --
+   -- Get the time of the file - cached
+   -- locally if possible.
+   --
+   local a_time = table_sort_cache[a_path]
+   if ( not a_time ) then
+      a_time = File:stat(a_path)['mtime']
+      table_sort_cache[a_path] = a_time
+   end
+   if ( not b_time ) then
+      b_time = File:stat(b_path)['mtime']
+      table_sort_cache[b_path] = b_time
+   end
+
+   --
+   -- Ensure we're comparing numbers, not strings
+   --
+   if ( type(a_time) == "string" ) then
+      a_time = tonumber(a_time)
+   end
+   if ( type(b_time) == "string" ) then
+      b_time = tonumber(b_time)
+   end
+
+   --
+   -- Actually compare
+   --
+   return a_time < b_time
+end
+
+
+--
 -- Compare two messages, based upon their date-headers.
 --
 -- We make sure we compare numbers, as these might have been
 -- cached and saved as strings.
 --
 function compare_by_date(a,b)
-   local a_time = a:to_ctime()
-   local b_time = b:to_ctime()
+   --
+   -- Get the message-path to use as a cache-key.
+   --
+   local a_path = a:path()
+   local b_path = b:path()
 
+   --
+   -- Lookup the Date: header, via the cache if we can.
+   --
+   local a_time = table_sort_cache[a_path]
+   if ( not a_time ) then
+      a_time = a:to_ctime()
+      table_sort_cache[a_path] = a_time
+   end
+   local b_time = table_sort_cache[b_path]
+   if ( not b_time ) then
+      b_time = b:to_ctime()
+      table_sort_cache[b_path] = b_time
+   end
+
+   --
+   -- Ensure we're comparing numbers, not strings
+   --
    if ( type(a_time) == "string" ) then
       a_time = tonumber(a_time)
    end
-
    if ( type(b_time) == "string" ) then
       b_time = tonumber(b_time)
    end
 
+   --
+   -- Actually compare
+   --
    return a_time < b_time
 end
 
@@ -554,14 +630,60 @@ end
 -- Compare two messages, based upon from-header.
 --
 function compare_by_from(a,b)
-   return a:header("From") < b:header("From")
+   --
+   -- Get the message-path to use as a cache-key.
+   --
+   local a_path = a:path()
+   local b_path = b:path()
+
+   --
+   -- Lookup the sender, via the cache if we can.
+   --
+   local a_from = table_sort_cache[a_path]
+   if ( not a_from ) then
+      a_from = a:header("From")
+      table_sort_cache[a_path] = a_from
+   end
+   local b_from = table_sort_cache[b_path]
+   if ( not b_from ) then
+      b_from = b:header("From")
+      table_sort_cache[b_path] = b_from
+   end
+
+   --
+   -- Actually compare
+   --
+   return a_from < b_from
 end
 
 --
 -- Compare two messages, based upon subject-header.
 --
 function compare_by_subject(a,b)
-   return a:header("Subject") < b:header("Subject")
+   --
+   -- Get the message-path to use as a cache-key.
+   --
+   local a_path = a:path()
+   local b_path = b:path()
+
+   --
+   -- Lookup the sender, via the cache if we can.
+   --
+   local a_sub = table_sort_cache[a_path]
+   if ( not a_sub ) then
+      a_sub = a:header("Subject")
+      table_sort_cache[a_path] = a_sub
+   end
+   local b_sub = table_sort_cache[b_path]
+   if ( not b_sub ) then
+      b_sub = b:header("Subject")
+      table_sort_cache[b_path] = b_sub
+   end
+
+   --
+   -- Actually compare
+   --
+   return a_sub < b_sub
 end
 
 
@@ -672,7 +794,18 @@ function sorted_messages()
    local msgs = Global:current_messages()
 
    -- What sort method should we use?
-   local method = Config.get_with_default("index.sort", "date")
+   local method = Config.get_with_default("index.sort", "file")
+
+   --
+   -- Reset the cache which is used for sorting.
+   --
+   for k in pairs (table_sort_cache) do
+      table_sort_cache[k] = nil
+   end
+
+   if ( method == "file" ) then
+      table.sort(msgs, compare_by_file)
+   end
 
    if ( method == "date" ) then
       table.sort(msgs, compare_by_date)
@@ -689,6 +822,7 @@ function sorted_messages()
    if ( method == "none" ) then
       -- NOP
    end
+
 
    --
    -- Now limit the messages by limit
