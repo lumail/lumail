@@ -1250,13 +1250,23 @@ function Message.delete()
    local mode = Config:get("global.mode")
 
    if ( mode == "message" ) then
+
+      -- Get the current offset and the number of messages.
+      local cur = Config.get_with_default("index.current", 0)
+      local max = Config:get("index.max")
+
+      -- Delete the current message.
       local msg = Global:current_message()
       msg:unlink()
-      change_mode("index")
 
-      -- Flush the cached message-list
+      -- Flush the cached message-list, and get the updated set.
       global_msgs = {}
+      local msgs = get_messages()
 
+      if ( cur <= ( #msgs - 1 ) ) then
+         Global:select_message( msgs[cur+1] )
+         Config:set("index.current",cur)
+      end
       return
    end
 
@@ -1272,6 +1282,11 @@ function Message.delete()
       end
 
       msg = msgs[offset+1]
+
+      if ( not msg ) then
+         Panel:append( "Failed to find a message" )
+         return
+      end
 
       -- delete it
       msg:unlink()
@@ -1324,6 +1339,7 @@ function Message.forward()
 
    -- Failed to find a mesage?
    if ( not msg ) then
+      Panel:append("Failed to find message!")
       return
    end
 
