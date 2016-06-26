@@ -32,6 +32,7 @@ extern "C"
 
 #include "observer.h"
 #include "singleton.h"
+#include "message_lua.h"
 
 /**
  * A singleton class holding our Lua interpreter state.
@@ -99,6 +100,12 @@ public:
      * Used for our test suite only.
      */
     std::string get_variable(std::string name);
+
+    /**
+     * Call the given sort method, with the specified
+     * result.
+     */
+    bool call_sort(std::string method, std::shared_ptr<CMessage> a, std::shared_ptr<CMessage> b);
 
 private:
 
