@@ -494,7 +494,13 @@ void CScreen::status_panel_draw()
     {
         int result __attribute__((unused));
 
-        result = draw_single_line(1, 1, x.title, g_status_bar_window, false);
+        /*
+         * Last two false variables are:
+         *
+         *  enable scroll: false
+         *  enable wrap: false
+         */
+        result = draw_single_line(1, 1, x.title, g_status_bar_window, false, false);
     }
 
 
@@ -520,7 +526,14 @@ void CScreen::status_panel_draw()
             else
                 text = "";
 
-            draw_single_line((height - 2 - i), 1, text, g_status_bar_window, false);
+
+            /*
+             * Last two false variables are:
+             *
+             *  enable scroll: false
+             *  enable wrap: false
+             */
+            draw_single_line((height - 2 - i), 1, text, g_status_bar_window, false, false);
             i++;
         }
     }
@@ -1329,7 +1342,13 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
             {
                 std::string buf = lines.at(off + selected);
 
-                result = draw_single_line(i, 0, buf, stdscr, true);
+                /*
+                 * Last two parameters are:
+                 *
+                 *  enable scroll: true
+                 *  enable wrap: true
+                 */
+                result = draw_single_line(i, 0, buf, stdscr, true, true);
 
                 /*
                  * Did we draw more than a single line?
@@ -1431,12 +1450,25 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
         else
             wattrset(stdscr, A_NORMAL);
 
+        /*
+         * Last two parameters are:
+         *
+         *  enable scroll: true
+         *  enable wrap: false
+         */
         int result __attribute__((unused));
-        result = draw_single_line(row, 0, buf, stdscr, true);
+
+        /*
+         * Last two parameters are:
+         *
+         *  enable scroll: true
+         *  enable wrap: false
+         */
+        result = draw_single_line(row, 0, buf, stdscr, true, false);
 
         // HACK - overdraw
         if (over == 1)
-            draw_single_line(row + 1, 0, " ", stdscr, true);
+            draw_single_line(row + 1, 0, " ", stdscr, true, false);
     }
 
     /*
@@ -1459,7 +1491,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
  *
  * The return value is the number of characters drawn.
  */
-int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW * screen, bool enable_scroll)
+int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW * screen, bool enable_scroll, bool enable_wrap)
 {
     /*
      * Move to the correct location.
@@ -1481,7 +1513,19 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
      */
     CConfig *config = CConfig::instance();
     int horiz = config->get_integer("global.horizontal", 0);
-    int wrap  = config->get_integer("line.wrap", 0);
+
+    /*
+     * Is wrapping enabled?
+     *
+     * Here we only allow this to be enabled if this function
+     * was called with `enable_wrap: true`.  This is so that
+     * we don't try to pointlessly enable wrap for modes that
+     * it doesn't make sense with.
+     */
+    int wrap = config->get_integer("line.wrap", 0);
+
+    if ((wrap != 0) && (enable_wrap == true))
+        enable_wrap = true;
 
     /*
      * If scrolling is disabled (i.e. drawing the panel) we
@@ -1511,7 +1555,7 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
          * of the screen then we should stop - unless we've got
          * wrapping enabled.
          */
-        if ((drawn >= swidth) && (wrap == 0))
+        if ((drawn >= swidth) && ! enable_wrap)
             continue;
 
         /*

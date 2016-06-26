@@ -2088,6 +2088,8 @@ function lua_view()
    table.insert(output, "This line is for UTF-8 testing $[RED]«ÜßÄ$€»$[CYAN]‹ÅåÄäÖö›" )
    table.insert(output, "")
 
+   table.insert(output, "This line is for testing word-wrapping:  123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 " )
+   table.insert(output, "")
    --
    -- Now show the current maildir, message, etc.
    --
