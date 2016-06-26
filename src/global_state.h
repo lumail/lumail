@@ -106,7 +106,6 @@ public:
 
 private:
 
-
     /**
      * The list of all currently visible maildirs.
      */
