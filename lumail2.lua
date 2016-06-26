@@ -2010,7 +2010,15 @@ function index_view()
 
    -- Get the current offset
    local mode = Config:get("global.mode")
-   local cur  = Config.get_with_default(mode .. ".current", 0)
+   local cur  = tonumber(Config.get_with_default("index.current", 0))
+
+   --
+   -- If the current line is bigger than the count of messages
+   -- then something has gone wrong.
+   --
+   if ( cur >= #messages ) then
+      cur = #messages-1
+   end
 
    -- Find the height of the screen.
    local height = Screen:height();
@@ -2024,24 +2032,26 @@ function index_view()
 
    -- Are we optimizing?
    local fast = Config.get_with_default( "index.fast", 0 )
-
-   --
-   -- Format entries
-   --
    for offset,object in ipairs( messages ) do
 
-      local str = "UNFORMATTED"
+      local str = "INVISIBLE"
 
       -- If optimizing
-      if ( fast == 1 ) then
-         -- Only format if visible.
-         if ( offset >= min ) and ( offset <= max ) then
+      if ( fast ~= 0 ) then
+
+         --
+         -- Only show the message if it will fit on the screen
+         --
+         if ( ( offset >= min ) and ( offset < max ) ) then
             str = object:format()
+         else
+            str = "INVISIBLE - Outside the viewport!"
          end
       else
          -- Else format all entries
          str = object:format()
       end
+
       table.insert(result,str)
    end
 
