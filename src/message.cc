@@ -43,6 +43,7 @@
 
 #include "config.h"
 #include "file.h"
+#include "global_state.h"
 #include "imap_proxy.h"
 #include "json/json.h"
 #include "lua.h"
@@ -63,6 +64,25 @@ CMessage::CMessage(const std::string name, bool is_local)
     m_imap = !is_local;
 }
 
+
+/*
+ * Comparison function used for sorting.
+ */
+//bool CMessage::operator()(std::shared_ptr<CMessage> a, std::shared_ptr<CMessage> b)
+bool CMessage::compare(std::shared_ptr<CMessage> a, std::shared_ptr<CMessage> b)
+{
+    /*
+     * Get the sort method.
+     */
+    CConfig *config = CConfig::instance();
+    std::string method = config->get_string("index.sort", "file");
+
+    /*
+     * Call the lua method...
+     */
+    CLua *lua = CLua::instance();
+    return (lua->call_sort(method, a, b));
+}
 
 /*
  * Return the path to this message.
@@ -893,10 +913,16 @@ bool CMessage::unlink()
          */
         m_parent->bump_mtime();
 
+        CGlobalState *global = CGlobalState::instance();
+        global->update_messages();
         return true;
     }
 
-    return (CFile::delete_file(path()));
+    bool ret = CFile::delete_file(path());
+
+    CGlobalState *global = CGlobalState::instance();
+    global->update_messages();
+    return ret;
 }
 
 

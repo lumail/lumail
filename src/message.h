@@ -55,6 +55,10 @@ public:
      */
     ~CMessage();
 
+    /**
+     * Comparison operator - used for sorting.
+     */
+    static bool compare(std::shared_ptr<CMessage> a, std::shared_ptr<CMessage> b);
 
     /**
      * Is this message a local one?
@@ -211,7 +215,6 @@ private:
      * Convert a message-part from the MIME message to a CMessagePart object.
      */
     std::shared_ptr<CMessagePart> part2obj(GMimeObject *part);
-
 
 private:
 
