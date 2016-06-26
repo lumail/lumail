@@ -241,6 +241,14 @@ end
 
 
 --
+-- Does the specified string end with the given string?
+--
+function string.ends(String,End)
+   return End=='' or string.sub(String,-string.len(End))==End
+end
+
+
+--
 -- Split a string on newlines, and return the result as a table.
 --
 -- This is used in some drawing modes.
@@ -1594,7 +1602,7 @@ function Maildir.select( desired )
    for index,object in ipairs( folders ) do
 
       local path = object:path()
-      if ( string.find( path, desired ) ) then
+      if ( string.ends( path, desired ) ) then
 
          -- Select the maildir, to make it current.
          Global:select_maildir(object)
