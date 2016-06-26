@@ -1,7 +1,7 @@
 # Lua API
 
 
-The core idea beind lumail2, and the reason for writing it rather than
+The core idea behind lumail2, and the reason for writing it rather than
 continuing to extend the legacy-project, is that all the items that are
 involved are Objects.
 
@@ -101,6 +101,7 @@ We have a number of variables which are special, the most important ones are:
     * This is a speed optimization for large Maildirs, or when using IMAP.
 * `index.sort`
     * The method to sort messages by: `date`, `file`, `from`, `none`, or `subject` at this time.
+    * Sorting is documented below.
 * `global.editor`
     * The user's editor.
 * `global.from`
@@ -143,6 +144,33 @@ displays things, these are:
     * Specifies whether additional MIME-parts should be appended/prepended to the display.
 * `maildir.truncate`
     * Alternate between showing the full/truncated Maildir path in maildir-mode.
+
+
+### Sorting Messages
+
+The sorting of messages is implemented in C++, but uses the Lua
+functionality to ensure the user can influence the behaviour.
+
+The sorting method is stored in the variable `index.sort`, which
+will select the appropriate Lua callback function to perform the sorting.
+
+For example:
+
+* If `index.sort` is set to `date`.
+    * Sorting calls `compare_by_date`.
+* If `index.sort` is set to `from`.
+    * Sorting calls `compare_by_from`.
+
+(i.e. "compare_by_XXX" is invoked when `index.sort` is `XXX`.)
+
+To define your local sorting solution you should:
+
+* Set `index.sort` to `local`.
+* Implement `function compare_by_local()`.
+
+
+
+
 
 ### Directories
 
@@ -204,7 +232,8 @@ The following API methods are available to help you with this:
      * This pays attention to the `index.limit` variable.
 * `Global:select_message(msg)`
      * Set the specified Message as current.
-
+* `Global:sort_messages(tbl)
+     * Return the given table of message, sorted according to `index.sort`.
 
 
 ### Logfile Usage
@@ -328,7 +357,7 @@ Sample code is available in `sample.lua/show_message.lua`.
 ### MIME-Type
 
 There is a simple helper-object allowing you to retrieve the MIME-type
-of files, based upon their containts.   This lookup is achieved via
+of files, based upon their contents.   This lookup is achieved via
 `libmagic`.
 
 * `MIME:type(file)`

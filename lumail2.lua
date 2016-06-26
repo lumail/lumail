@@ -102,7 +102,7 @@ end
 -----------------------------------------------------------------------------
 
 local cache = {}
-local table_sort_cache = {}
+local sort_cache = {}
 
 
 --
@@ -400,13 +400,17 @@ end
 --
 function Config.key_changed( name )
 
-   --
    -- If the index.limit value has changed then we can
    -- update our state.
    --
    if ( name == "index.limit" ) then
       global_msgs = {}
       log_message( "index.limit changed - flushing message cache" )
+   end
+   if ( name == "index.sort" ) then
+      global_msgs = {}
+      sort_cache  = {}
+      Panel:append( "index.sort changed - flushing message/sort cache" )
    end
 
 end
@@ -549,35 +553,27 @@ end
 -- We make sure we compare numbers, as these might have been
 -- cached and saved as strings.
 --
+-- Invoked when `index.sort` is set to `file`.
+--
 function compare_by_file(a,b)
    local a_path = a:path()
-   local b_path = b:path()
+   local a_time = sort_cache[a_path]
 
-   --
-   -- Get the time of the file - cached
-   -- locally if possible.
-   --
-   local a_time = table_sort_cache[a_path]
-   if ( not a_time ) then
+   if ( a_time == nil ) then
       a_time = File:stat(a_path)['ctime']
-      table_sort_cache[a_path] = a_time
+      sort_cache[a_path] = a_time
    end
-   if ( not b_time ) then
+
+
+   local b_path = b:path()
+   local b_time = sort_cache[b_path]
+
+   if ( b_time == nil ) then
       b_time = File:stat(b_path)['ctime']
-      table_sort_cache[b_path] = b_time
+      sort_cache[b_path] = b_time
    end
 
-   --
-   -- Ensure we're comparing numbers, not strings
-   --
-   if ( type(a_time) == "string" ) then
-      a_time = tonumber(a_time)
-   end
-   if ( type(b_time) == "string" ) then
-      b_time = tonumber(b_time)
-   end
-
-   return a_time < b_time
+   return tonumber(a_time) < tonumber(b_time)
 end
 
 
@@ -587,105 +583,89 @@ end
 -- We make sure we compare numbers, as these might have been
 -- cached and saved as strings.
 --
+-- Invoked when `index.sort` is set to `date`.
+--
 function compare_by_date(a,b)
-   --
-   -- Get the message-path to use as a cache-key.
-   --
+
    local a_path = a:path()
+   local a_date = sort_cache[a_path]
+
+   if ( a_date == nil ) then
+      a_date = a:to_ctime();
+      sort_cache[a_path] = a_date
+   end
+
    local b_path = b:path()
+   local b_date = sort_cache[b_path]
 
-   --
-   -- Lookup the Date: header, via the cache if we can.
-   --
-   local a_time = table_sort_cache[a_path]
-   if ( not a_time ) then
-      a_time = a:to_ctime()
-      table_sort_cache[a_path] = a_time
-   end
-   local b_time = table_sort_cache[b_path]
-   if ( not b_time ) then
-      b_time = b:to_ctime()
-      table_sort_cache[b_path] = b_time
-   end
-
-   --
-   -- Ensure we're comparing numbers, not strings
-   --
-   if ( type(a_time) == "string" ) then
-      a_time = tonumber(a_time)
-   end
-   if ( type(b_time) == "string" ) then
-      b_time = tonumber(b_time)
+   if ( b_date == nil ) then
+      b_date = b:to_ctime();
+      sort_cache[b_path] = b_date
    end
 
    --
    -- Actually compare
    --
-   return a_time < b_time
+   return tonumber(a_date) < tonumber(b_date)
 end
 
 --
 -- Compare two messages, based upon from-header.
 --
+-- Invoked when `index.sort` is set to `from`.
+--
 function compare_by_from(a,b)
-   --
-   -- Get the message-path to use as a cache-key.
-   --
    local a_path = a:path()
+   local a_from = sort_cache[a_path]
+
+   if ( a_from == nil ) then
+      a_from = a:header("From"):lower()
+      sort_cache[a_path] = a_from
+   end
+
    local b_path = b:path()
+   local b_from = sort_cache[b_path]
 
-   --
-   -- Lookup the sender, via the cache if we can.
-   --
-   local a_from = table_sort_cache[a_path]
-   if ( not a_from ) then
-      a_from = a:header("From")
-      table_sort_cache[a_path] = a_from
+   if ( b_from == nil ) then
+      b_from = b:header("From"):lower()
+      sort_cache[b_path] = b_from
    end
-   local b_from = table_sort_cache[b_path]
-   if ( not b_from ) then
-      b_from = b:header("From")
-      table_sort_cache[b_path] = b_from
-   end
-
-   --
-   -- Actually compare
-   --
-   return a_from < b_from
+   return( a_from < b_from )
 end
 
 --
 -- Compare two messages, based upon subject-header.
 --
+-- Invoked when `index.sort` is set to `subject`.
+--
 function compare_by_subject(a,b)
-   --
-   -- Get the message-path to use as a cache-key.
-   --
    local a_path = a:path()
+   local a_sub  = sort_cache[a_path]
+
+   if ( a_sub == nil ) then
+      a_sub = a:header("Subject"):lower()
+      sort_cache[a_path] = a_sub
+   end
+
    local b_path = b:path()
+   local b_sub  = sort_cache[b_path]
 
-   --
-   -- Lookup the sender, via the cache if we can.
-   --
-   local a_sub = table_sort_cache[a_path]
-   if ( not a_sub ) then
-      a_sub = a:header("Subject")
-      table_sort_cache[a_path] = a_sub
+   if ( b_sub == nil ) then
+      b_sub = b:header("Subject"):lower()
+      sort_cache[b_path] = b_sub
    end
-   local b_sub = table_sort_cache[b_path]
-   if ( not b_sub ) then
-      b_sub = b:header("Subject")
-      table_sort_cache[b_path] = b_sub
-   end
-
-   --
-   -- Actually compare
-   --
-   return a_sub < b_sub
+   return( a_sub < b_sub )
 end
 
 
-
+--
+-- Utility method to change the sorting method, and flush our caches
+--
+function set_sorting_method( value )
+   Config:set( "index.sort", value )
+   global_msgs = {}
+   sort_cache  = {}
+end
 --
 -- Return our maildirs
 --
@@ -761,9 +741,15 @@ function maildirs()
 end
 
 --
--- Return our sorted messages
+-- Return the appropriate set of messages:
 --
-function sorted_messages()
+--  1.  Get all messages.
+--
+--  2.  Apply our index.limit.
+--
+--  3.  Sort them.
+--
+function get_messages()
 
    --
    -- If we have a cached selection then we'll return it
@@ -839,49 +825,13 @@ function sorted_messages()
       end
    end
 
+   --
+   -- Sort.
+   --
+   global_msgs = Global:sort_messages(global_msgs)
 
    --
-   -- Now we've:
-   --
-   --  1. Found all messages.
-   --  2. Limited that selection appropriately.
-   --
-   -- We just need to sort them now.
-   --
-
-
-   -- What sort method should we use?
-   local method = Config.get_with_default("index.sort", "file")
-
-   --
-   -- Reset the cache which is used for sorting.
-   --
-   for k in pairs (table_sort_cache) do
-      table_sort_cache[k] = nil
-   end
-
-   if ( method == "file" ) then
-      table.sort(global_msgs, compare_by_file)
-   end
-
-   if ( method == "date" ) then
-      table.sort(global_msgs, compare_by_date)
-   end
-
-   if ( method == "from" ) then
-      table.sort(global_msgs, compare_by_from)
-   end
-
-   if ( method == "subject" ) then
-      table.sort(global_msgs, compare_by_subject)
-   end
-
-   if ( method == "none" ) then
-      -- NOP
-   end
-
-   --
-   -- Return the limited and sorted messages.
+   -- Return the limited messages.
    --
    return(global_msgs)
 end
@@ -1110,7 +1060,7 @@ function Message.reply()
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
       local offset  = Config.get_with_default( "index.current", 0 )
-      local msgs    = sorted_messages()
+      local msgs    = get_messages()
 
       if ( not msgs ) then
          Panel:append( "There are no messages!")
@@ -1315,7 +1265,7 @@ function Message.delete()
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
       local offset  = Config.get_with_default( "index.current", 0)
-      local msgs    = sorted_messages()
+      local msgs    = get_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
          return
@@ -1326,10 +1276,11 @@ function Message.delete()
       -- delete it
       msg:unlink()
 
-      -- now select the previous message.
-      offset = offset - 1
-      if ( offset < 0 ) then offset = 0 end
-      Config:set( "index.current", offset )
+      -- if deleting the last message move the selection down.
+      if ( offset >= (#msgs-1) ) then
+         offset = offset - 1
+         Config:set( "index.current", offset )
+      end
 
       -- Flush the cached message-list
       global_msgs = {}
@@ -1362,7 +1313,7 @@ function Message.forward()
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
       local offset  = Config.get_with_default( "index.current", 0 )
-      local msgs    = sorted_messages()
+      local msgs    = get_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
          return
@@ -1512,7 +1463,7 @@ function Message.save()
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
       local offset  = Config.get_with_default( "index.current", 0 )
-      local msgs    = sorted_messages()
+      local msgs    = get_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
          return
@@ -1641,6 +1592,7 @@ function Maildir.select( desired )
          -- And update the current selection for when
          -- we return to Maildir-mode.
          Config:set("maildir.current", index -1)
+
          return
       end
    end
@@ -2038,7 +1990,7 @@ function index_view()
    local result = {}
 
    -- Get the available messages.
-   local messages = sorted_messages()
+   local messages = get_messages()
 
    -- Get the current offset
    local mode = Config:get("global.mode")
@@ -2598,7 +2550,7 @@ function select()
       --
       -- Get the messages
       --
-      local msgs = sorted_messages()
+      local msgs = get_messages()
 
       --
       -- Get the current offset.
@@ -2848,7 +2800,7 @@ end
 function prev_message()
 
    -- Get the messages, and sort.
-   local msgs = sorted_messages()
+   local msgs = get_messages()
 
    -- Get the current offset
    local cur = Config.get_with_default("index.current",0)
@@ -2868,7 +2820,7 @@ end
 function next_message()
 
    -- Get the messages, and sort.
-   local msgs = sorted_messages()
+   local msgs = get_messages()
 
    -- Get the current offset + max
    local cur = Config.get_with_default("index.current", 0)
@@ -3101,6 +3053,14 @@ keymap['maildir']['t'] = 'Config:set( "maildir.limit", "today" )'
 keymap['index']['a']   = 'Config:set( "index.limit", "all" )'
 keymap['index']['n']   = 'Config:set( "index.limit", "new" )'
 keymap['index']['t']   = 'Config:set( "index.limit", "today" )'
+
+--
+-- Change the sorting method.
+--
+keymap['index']['A'] = 'set_sorting_method( "file")'
+keymap['index']['S'] = 'set_sorting_method( "subject")'
+keymap['index']['D'] = 'set_sorting_method( "date")'
+keymap['index']['F'] = 'set_sorting_method( "from")'
 
 --
 -- Force a cache flush - via a sleazy hack.
