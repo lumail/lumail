@@ -1504,7 +1504,7 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
      */
     int drawn = 0;
 
-    for (auto it = parts.begin(); it != parts.end() &&  drawn <= swidth ; ++it)
+    for (auto it = parts.begin(); it != parts.end() ; ++it)
     {
         /*
          * If we've drawn more characters than the width
