@@ -23,6 +23,49 @@
 
 #include "colour_string.h"
 
+
+
+/*
+ * Returns length indicated by first byte.
+ *
+ * This function should use a table lookup.
+ */
+int dsutil_utf8_charlen(const unsigned char  c)
+{
+    if ((c & 0xfe) == 0xfc)
+    {
+        return 6;
+    }
+
+    if ((c & 0xfc) == 0xf8)
+    {
+        return 5;
+    }
+
+    if ((c & 0xf8) == 0xf0)
+    {
+        return 4;
+    }
+
+    if ((c & 0xf0) == 0xe0)
+    {
+        return 3;
+    }
+
+    if ((c & 0xe0) == 0xc0)
+    {
+        return 2;
+    }
+
+    if ((c & 0x80) == 0x80)
+    {
+        /* INVALID */
+        return 0;
+    }
+
+    return 1;
+}
+
 /*
  * Parse a string into an array of "string + colour" pairs,
  * which will be useful for drawing strings.
@@ -177,78 +220,52 @@ std::vector<COLOUR_STRING *> CColourString::parse_coloured_string(std::string in
         for (int i = 0; i < max; i++)
         {
             /*
-             * Get the single byte at the position.
-             * We'll test this to see if it is a multi-byte chacter
-             * and if it is we'll bump it up.
-             */
-            unsigned char byte = text->at(i);
-
-            /*
              * The "single character" we'll draw, which might
              * actually be comprised of multiple bytes.
              */
             std::string chr;
 
-            if ((byte & 0x80) == 0)
-            {
-                chr += byte;
-            }
-            else if ((byte & 0xE0) == 0xC0)     // 110x xxxx
-            {
-                /*
-                 * Don't walk off our string.
-                 */
-                if (i + 1 <= max)
-                {
-                    chr += text->at(i);
-                    chr += text->at(i + 1);
+            /*
+             * Get the single byte at the position.
+             * We'll test this to see if it is a multi-byte chacter
+             * and if it is we'll bump it up.
+             */
+            const char byte = text->at(i);
 
-                    i += 1;
-                }
-            }
-            else if ((byte & 0xF0) == 0xE0)    // 1110 xxxx
-            {
-                /*
-                 * Don't walk off our string.
-                 */
-                if (i + 2 <= max)
-                {
-                    chr += text->at(i);
-                    chr += text->at(i + 1);
-                    chr += text->at(i + 2);
+            /*
+             * Lookup the size of the UTF-character, in bytes.
+             */
+            int size = dsutil_utf8_charlen(byte);
 
-                    i += 2;
-                }
-            }
-            else if ((byte & 0xF8) == 0xF0)    // 1111 0xxx
+            /*
+             * If that failed because the UTF-8 is invalid we're
+             * gonna have to fake it.
+             */
+            if (size == 0)
             {
-                /*
-                 * Don't walk off our string.
-                 */
-                if (i + 3 <= max)
-                {
-                    chr += text->at(i);
-                    chr += text->at(i + 1);
-                    chr += text->at(i + 2);
-                    chr += text->at(i + 3);
-
-                    i += 3;
-                }
+                chr = "?";
             }
             else
             {
-                /**
-                 *  Invalid byte sequence?
-                 *
-                 *     http://stackoverflow.com/a/2853000
+                /*
+                 * Otherwise add each byte
                  */
-                assert(false);
+                for (int j = 0; j < size; j++)
+                {
+                    chr += text->at(i + j);
+                }
+
+                /*
+                 * Bump past the bytes we've added
+                 */
+                i += (size - 1);
             }
 
             COLOUR_STRING *tmp = (COLOUR_STRING *)malloc(sizeof(COLOUR_STRING));
             tmp->colour = new std::string(*colour);
             tmp->string = new std::string(chr);
             results.push_back(tmp);
+
         }
     }
 
