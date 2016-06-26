@@ -157,6 +157,10 @@ int l_CFile_stat(lua_State * l)
     lua_pushstring(l, mode + 3);
     lua_settable(l, -3);
 
+    lua_pushstring(l, "inode");
+    lua_pushinteger(l, sb.st_ino);
+    lua_settable(l, -3);
+
     lua_pushstring(l, "mtime");
     lua_pushinteger(l, sb.st_mtime);
     lua_settable(l, -3);
