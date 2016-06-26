@@ -549,9 +549,15 @@ void CGlobalState::set_maildir(std::shared_ptr<CMaildir> updated)
 
     /*
      * If the folder has changed then we reset the scroll
-     * position to the top - we'll also set the attachment
-     * index to zero.
+     * position to the bottom.
+     *
+     * e.g. You might be in folder A at offset 3, but if you change to
+     * folder B you shouldn't be in the same place.
+     *
+     * The choice of offset=FIRST vs offset=LAST is personal, but the
+     * old default was to choose the latter.
      */
     CConfig *config = CConfig::instance();
-    config->set("index.current", 0);
+    int max = config->get_integer("index.max");
+    config->set("index.current", max > 0 ? max - 1 : 0, false);
 }
