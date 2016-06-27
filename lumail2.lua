@@ -98,20 +98,26 @@ end
 -- Setup a cache for objects, and define functions for loading/saving
 -- the cache-state.
 --
-----------------------------------------------------------------------------
------------------------------------------------------------------------------
 
 local cache = {}
+
+
+--
+-- Setup a cache for sorting purposes.  This ensures that we don't
+-- perform expensive calculations more often than is necessary.
+--
+
 local sort_cache = {}
 
 
 --
--- This holder contains the messages which are currently visible.
+-- This contains the messages which are currently visible.
 --
 -- When the user selects a Maildir, or changes the active selection
 -- via the `index.limit` setting, then this set of messages will be
 -- updated.
 --
+
 local global_msgs = {}
 
 
@@ -155,8 +161,9 @@ function cache_load()
    end
 end
 
+
 --
--- Write out the key/vals from our local cache object to the filename
+-- Write out the key/values from our local cache object to the filename
 -- the user has set.  If there is no filename then don't write.
 --
 function cache_save()
@@ -177,6 +184,7 @@ function cache_save()
       log_message("Wrote cache to " .. file )
    end
 end
+
 
 --
 -- Flush our (on-disk) cache
@@ -276,14 +284,14 @@ end
 
 
 --
--- Return the program which can be used to view/show
--- a file which has the particular MIME-type
+-- Return the program which can be used to view/show a file which has
+-- the specified MIME-type.
 --
--- For example if the input is "image/jpeg" we'd expect
--- this function to return something like "display %s".
+-- For example if the input is "image/jpeg" we'd expect this function
+-- to return something like "display %s".
 --
--- The caller is expected to replace "%s" with the name
--- of the file which is to be viewed.
+-- The caller is expected to replace "%s" with the name of the file
+-- which is to be viewed.
 --
 -- Reference: https://en.wikipedia.org/wiki/Mailcap
 --
@@ -404,17 +412,22 @@ end
 --
 -- The single argument will be the name of the key which has
 -- been updated - the value can be retrieved via Config:get, but
--- remember that the value might be a string or a table.
+-- remember that the value might be a string, an integer, or a table.
 --
 function Config.key_changed( name )
 
-   -- If the index.limit value has changed then we can
-   -- update our state.
+   --
+   -- If index.limit changes then we must flush our message cache.
    --
    if ( name == "index.limit" ) then
       global_msgs = {}
       log_message( "index.limit changed - flushing message cache" )
    end
+
+   --
+   -- If the sort method has changed we need to do the same, and also
+   -- flush our sorting-cache.
+   --
    if ( name == "index.sort" ) then
       global_msgs = {}
       sort_cache  = {}
@@ -461,11 +474,10 @@ end
 
 
 --
--- Change the mode - and update the panel-title, if we have one.
+-- Change the global mode.
 --
 function change_mode( new_mode )
    Config:set( "global.mode", new_mode )
-   log_message("Mode changed to:" .. new_mode )
 end
 
 
@@ -674,6 +686,8 @@ function set_sorting_method( value )
    global_msgs = {}
    sort_cache  = {}
 end
+
+
 --
 -- Return our maildirs
 --
@@ -880,6 +894,7 @@ function show_unread()
    Panel:append("Unread messages: " .. count )
 end
 
+
 --
 -- Get the current date - used to set the Date: header when
 -- we reply, compose, or forward an email.
@@ -899,8 +914,7 @@ function Message.generate_signature()
    local sender = Config:get("global.sender")
 
    --
-   -- Get the home directory, if this fails we'll return
-   -- an empty string.
+   -- Get the home directory, if this fails we'll return an empty sig.
    --
    home = os.getenv( "HOME" )
    if ( home == nil or home == "" ) then
@@ -1591,7 +1605,11 @@ end
 --
 -- Utility function to open the Maildir with the given name.
 --
--- This matches against the path, and the first match wins.
+-- This matches against the path, literally, and the first match wins.
+--
+-- A literal match means we don't use either PCRE regular expressions
+-- or Lua regular expressions.  That means you don't need to escape
+-- any special characters.
 --
 function Maildir.select( desired )
 
@@ -1617,6 +1635,7 @@ function Maildir.select( desired )
          -- we return to Maildir-mode.
          Config:set("maildir.current", index -1)
 
+         -- First match wins, so we return after updating.
          return
       end
    end
@@ -1811,7 +1830,7 @@ colour_table['message'] = {}
 
 
 --
--- Remove a colour-prefix from the given string
+-- Remove a colour-prefix from the given string.
 --
 -- Our drawing code allows lines to be different coloured based upon
 -- a prefix.  So for example the text "$[RED]I like Helsinki" would be
