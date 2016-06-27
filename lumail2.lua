@@ -2007,7 +2007,7 @@ function Message:format()
    --
    -- If the message is unread then show it in the "unread" colour
    --
-   if ( string.find( self:flags(), "N" ) ) then
+   if ( self:is_new() ) then
       output = "$[UNREAD]" .. output
    end
 
