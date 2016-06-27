@@ -2923,6 +2923,7 @@ function on_complete( token )
    objs["Directory:"] = Directory
    objs["File:"]      = File
    objs["Global:"]    = Global
+   objs["Log:"]       = Log
    objs["Maildir:"]   = Maildir
    objs["Message:"]   = Message
    objs["Net:"]       = Net
