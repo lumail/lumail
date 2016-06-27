@@ -2835,6 +2835,85 @@ end
 
 
 --
+-- Scroll to the next maildir containing unread messages, or message
+-- which is unread.
+--
+function next_unread()
+
+   --
+   -- This function only works in maildir or index modes.
+   --
+   local mode = Config:get("global.mode")
+   if ( mode ~= "index" ) and ( mode ~= "maildir" ) then
+      return
+   end
+
+
+   --
+   -- We know the current offset is stored in `$mode.current`.
+   --
+   -- We know the maximum offset is stored in `$mode.max`.
+   --
+   local cur = Config.get_with_default(mode .. ".current", 0)
+   local max = Config:get(mode .. ".max")
+
+   --
+   -- We'll keep track of how many times we've moved forward
+   -- to avoid looping indefinitely.
+   --
+   local count = -1
+   cur = cur + 1
+
+
+   -- Get the maildirs/messages we'll operate upon.
+   local objs
+
+   if ( mode == "index" ) then
+      objs = get_messages()
+   elseif ( mode == "maildir" ) then
+      objs = maildirs()
+   end
+
+   --
+   -- Start searching from the current-position
+   --
+   while( count < max ) do
+
+      -- Bump to the next position, wrapping appropriately.
+      cur = cur + 1
+      if ( cur > max ) then cur = 1 end
+      if ( cur < 1 )   then cur = max end
+
+      -- Does this position show an unread "thing" ?
+      local unread = false
+
+      if ( mode == "maildir" ) then
+         -- A maildir is unread if it contains non-read messages.
+         local folder = objs[cur]
+         if ( folder:unread_messages() > 0 ) then
+            unread = true
+         end
+      elseif ( mode  == "index" ) then
+         -- A message is unread if .. it is unread!
+         local msg = objs[cur]
+         if ( msg:is_new() ) then
+            unread = true
+         end
+      end
+
+      -- If we found an unread thing, then select it
+      -- and return - first match wins.
+      if ( unread ) then
+         Config:set(mode .. ".current", (cur - 1))
+         return
+      end
+
+      count = count + 1
+   end
+end
+
+
+--
 -- Toggle the panel height between "small" and "large".
 --
 function panel_size_toggle()
@@ -3105,6 +3184,13 @@ keymap['global']['?'] = 'find(-1)'
 keymap['maildir']['a'] = 'Config:set( "maildir.limit", "all" )'
 keymap['maildir']['n'] = 'Config:set( "maildir.limit", "new" )'
 keymap['maildir']['t'] = 'Config:set( "maildir.limit", "today" )'
+
+--
+-- Move to the next unread thing.
+--
+keymap['maildir']['N'] = 'next_unread()'
+keymap['index']['N']   = 'next_unread()'
+
 
 --
 -- Limit the display of messages appropriately
