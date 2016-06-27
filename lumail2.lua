@@ -681,10 +681,13 @@ end
 --
 -- Utility method to change the sorting method, and flush our caches
 --
-function set_sorting_method( value )
-   Config:set( "index.sort", value )
-   global_msgs = {}
-   sort_cache  = {}
+function sorting_method( value )
+   if ( value ) then
+      Config:set( "index.sort", value )
+      global_msgs = {}
+      sort_cache  = {}
+   end
+   return( Config:get( "index.sort" ) )
 end
 
 
@@ -3113,10 +3116,10 @@ keymap['index']['t']   = 'Config:set( "index.limit", "today" )'
 --
 -- Change the sorting method.
 --
-keymap['index']['A'] = 'set_sorting_method( "file")'
-keymap['index']['S'] = 'set_sorting_method( "subject")'
-keymap['index']['D'] = 'set_sorting_method( "date")'
-keymap['index']['F'] = 'set_sorting_method( "from")'
+keymap['index']['A'] = 'sorting_method( "file")'
+keymap['index']['S'] = 'sorting_method( "subject")'
+keymap['index']['D'] = 'sorting_method( "date")'
+keymap['index']['F'] = 'sorting_method( "from")'
 
 --
 -- Force a cache flush - via a sleazy hack.
@@ -3293,7 +3296,16 @@ Config:set( "global.history", HOME .. "/.lumail2.history" )
 Config:set( "message.cache", HOME .. "/.lumail2.cache" )
 cache_load()
 
-
+--
+-- Set the default sorting method.  Valid choices are:
+--
+--  `file`   - Use the mtime of the files in the maildir.
+--  `date`   - Read the `Date` header of the message(s) - slower than the
+--             above method, but works on IMAP too.
+--  `subject` - Sort by subject.
+--  `from`    - Sort by sender.
+--
+sorting_method( "file" )
 
 --
 --  IMAP setup
