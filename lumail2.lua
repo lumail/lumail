@@ -1482,6 +1482,89 @@ end
 
 
 --
+-- Mark a message as new/unread.
+--
+function Message.mark_new()
+
+   --
+   -- If we're in message-mode then we can get the current-message
+   -- directly.
+   --
+   -- If instead we're in index-mode then we'll need to select the message
+   -- under the cursor to proceed.
+   --
+   local mode = Config:get("global.mode")
+   local msg = nil
+
+   if ( mode == "message" ) then
+      msg = Global:current_message()
+   end
+   if ( mode == "index" ) then
+
+      -- Get the list of messages, and the current offset
+      -- that'll let us find the message.
+      local offset  = Config.get_with_default( "index.current", 0 )
+      local msgs    = get_messages()
+      if ( not msgs ) then
+         Panel:append( "There are no messages!")
+         return
+      end
+
+      msg = msgs[offset+1]
+   end
+
+   if ( not msg ) then
+      Panel:append( "Failed to find a message" )
+      return
+   end
+
+   msg:mark_unread()
+end
+
+
+--
+-- Mark a message as old/read.
+--
+function Message.mark_old()
+
+   --
+   -- If we're in message-mode then we can get the current-message
+   -- directly.
+   --
+   -- If instead we're in index-mode then we'll need to select the message
+   -- under the cursor to proceed.
+   --
+   local mode = Config:get("global.mode")
+   local msg = nil
+
+   if ( mode == "message" ) then
+      msg = Global:current_message()
+   end
+   if ( mode == "index" ) then
+
+      -- Get the list of messages, and the current offset
+      -- that'll let us find the message.
+      local offset  = Config.get_with_default( "index.current", 0 )
+      local msgs    = get_messages()
+      if ( not msgs ) then
+         Panel:append( "There are no messages!")
+         return
+      end
+
+      msg = msgs[offset+1]
+   end
+
+   if ( not msg ) then
+      Panel:append( "Failed to find a message" )
+      return
+   end
+
+   msg:mark_read()
+end
+
+
+
+--
 -- Save a copy of the current message elsehwere.
 --
 function Message.save()
