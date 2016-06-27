@@ -3246,6 +3246,8 @@ keymap['index']['d']   = 'Message:delete()'
 keymap['message']['s'] = 'Message.save()'
 keymap['index']['s']   = 'Message.save()'
 
+keymap['message']['SPACE'] = 'next(10)'
+
 --
 -- Toggle display of full maildir paths
 --
