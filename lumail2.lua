@@ -2484,65 +2484,45 @@ function message_view( msg )
    local cat = Config.get_with_default("message.prepend", 0)
 
    --
-   -- Process each part.
+   -- Process each MIME-part of the message to find the body.
    --
-   parts = msg:parts()
+   local parts = mimeparts2table( msg )
    for i,part in ipairs( parts ) do
 
-      local ct = part:type():lower()
-      local sz = part:size()
+      -- Content-Type
+      local ct = part['type']:lower()
 
+      -- Size
+      local sz = part['size']
+
+      -- Content
+      local con = part['object']:content()
+
+      -- If this is a text/BLAH part, which is not empty.
       if ( string.find( ct, "text/" ) ) and ( sz > 0 )  then
+
+         -- If we're showing all parts ..
          if ( all == 1 ) then
-            -- Prepend the content, unless nothing saved.
             if ( content[ct]  ) then
+               -- There is existing content.
                if ( cat == 0 ) then
-                  content[ct] = part:content() .. content[ct]
+                  -- Prepend the new part.
+                  content[ct] = con .. content[ct]
                else
-                  content[ct] = content[ct] .. part:content()
+                  -- Append the new part.
+                  content[ct] = content[ct] .. con
                end
             else
-               content[ct] = part:content()
+               content[ct] = con
             end
          else
             -- Only store the content if we didn't find a part already.
             if ( content[ct] == nil ) then
-               content[ct] = part:content()
+               content[ct] = con
             end
          end
       end
 
-      --
-      -- Now check the children.
-      --
-      local children = part:children()
-      if ( #children > 0) then
-         for a,b in ipairs( children ) do
-
-            ct = b:type():lower()
-            sz = b:size()
-
-            if ( string.find( ct, "text/" ) ) and ( sz > 0 )  then
-               if ( all == 1 ) then
-                  -- Prepend the content, unless nothing saved.
-                  if ( content[ct]  ) then
-                     if ( cat == 0 ) then
-                        content[ct] = b:content() .. content[ct]
-                     else
-                        content[ct] = content[ct] .. b:content()
-                     end
-                  else
-                     content[ct] = b:content()
-                  end
-               else
-                  -- Only store the content if we didn't find a part already.
-                  if ( content[ct] == nil ) then
-                     content[ct] = b:content()
-                  end
-               end
-            end
-         end
-      end
    end
 
 
@@ -2551,8 +2531,7 @@ function message_view( msg )
    --
    local txt = content["text/plain"] or
       content["text/html"] or
-      "Failed to find a plain-text part in the message."
-
+      "Failed to find suitable text/plain or text/html content."
 
    --
    -- Escape the colours in the body
