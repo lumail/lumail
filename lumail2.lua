@@ -1061,6 +1061,7 @@ ${sig}
    while( run ) do
 
       -- Once the editor quits ask for an action
+      Screen:clear()
       local a = Screen:prompt( "Send mail : (y)es, (n)o, re-(e)dit, or (a)dd an attachment?", "yYnNeEaA" )
 
       if ( a == "e" ) or ( a == "E" ) then
@@ -1232,6 +1233,7 @@ Date: ${date}
    while( run ) do
 
       -- Once the editor quits ask for an action
+      Screen:clear()
       local a = Screen:prompt( "Send mail : (y)es, (n)o, re-(e)dit, or (a)dd an attachment?", "yYnNeEaA" )
 
       if ( a == "e" ) or ( a == "E" ) then
@@ -1481,6 +1483,7 @@ Begin forwarded message.
    while( run ) do
 
       -- Once the editor quits ask for an action
+      Screen:clear()
       local a = Screen:prompt( "Forward mail : (y)es, (n)o, re-(e)dit, or (a)dd an attachment?", "yYnNeEaA" )
 
       if ( a == "e" ) or ( a == "E" ) then
@@ -3139,6 +3142,31 @@ do
    end
 end
 
+
+--
+-- Utility function to show what a key is bound to.
+--
+function show_key()
+   local c = Screen:get_char( "Input key?" )
+   if ( c == nil or c == "" ) then
+      return
+   end
+
+   -- Lookup per-mode
+   --
+   local mode = Config:get("global.mode")
+
+   if ( keymap[mode][c] ) then
+      Panel:append( c .. " is bound to " .. keymap[mode][c] )
+      return
+   end
+
+   if ( keymap['global'][c] ) then
+      Panel:append( c .. " is bound to " .. keymap['global'][c] )
+      return
+   end
+   Panel:append( c .. " is not bound to anything" )
+end
 
 
 
