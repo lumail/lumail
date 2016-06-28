@@ -862,6 +862,58 @@ function get_messages()
 end
 
 
+--
+--  Get the `parts` of a message as a table, handling all sub-parts too.
+--
+--  This uses the nested function, insert_parts, which will recursively
+-- call itself to handle any children-parts.
+--
+--  This function is used to create the display in attachment-mode,
+-- as well as for viewing/saving the various MIME-parts.
+--
+function mimeparts2table( msg )
+
+   local t = {}
+
+   --
+   -- Nested function.
+   --
+   -- Insert each part into the specified table, along with
+   -- the children (recursively).
+   --
+   function insert_parts( tbl, parts )
+      for i,o in ipairs(parts) do
+
+         -- Count the existing parts.
+         local c= #tbl
+
+         -- Build up the entry of each part
+         local tmp = {
+            count    = c,
+            filename = o:filename(),
+            -- the actual part.
+            object   = o,
+            size     = o:size(),
+            type     = o:type():lower(),
+         }
+
+         -- Insert the entry.
+         table.insert( tbl, tmp )
+
+         -- Now add the children of this part.
+         insert_parts( tbl, o:children() )
+      end
+   end
+
+   --
+   -- Call our (nested) function with the top-level parts of the
+   -- message.  In turn this will result in expansion.
+   --
+   insert_parts( t, msg:parts() )
+   return t
+end
+
+
 
 --
 -- Simple utility function to test if the given message is
@@ -1746,48 +1798,16 @@ function save_mime_part()
       return
    end
 
-   --
-   -- Get the current message, and then the parts.
-   --
-   local msg  = Global:current_message()
-   if ( not msg ) then
-      return
-   end
+   -- Parse the MIME parts into an ordered list.
+   local out = mimeparts2table(msg)
 
-   -- Get the parts
-   local parts = msg:parts()
+   -- Get the part we should view
+   local found = out[cur + 1]
 
-   -- Count of the child
-   local i = 0
-
-   -- The part we're looking for - if this is non-nil at the end
-   -- of our loop then we got what we wanted.
-   local found = nil
-
-   -- For each part look for a match, if we found it update "found"
-   for k,v in ipairs( parts ) do
-      if ( i == cur ) then
-         found = v
-      end
-
-      local children = v:children()
-      if ( #children > 0) then
-         for a,b in ipairs( children ) do
-            i = i + 1
-            if ( i == cur ) then
-               found = b
-            end
-         end
-      end
-      i = i + 1
-   end
-
-   --
    --  If we found the part.
-   --
    if ( found  ) then
       -- Get the path of the attachment, if any
-      local path = found:filename()
+      local path = found['filename']
       if ( path == nil or path == "" ) then
          path = "attachment"
       end
@@ -1797,13 +1817,16 @@ function save_mime_part()
       local output = Screen:get_line( "Save to:", path )
 
       if ( output == nil or output == "" ) then
-         Panel:append( "Attachment saving aborted" )
+         Panel:append( "Attachment saving aborted!" )
          return
       end
 
       -- save it
       local f = io.open(output, "wb")
-      f:write( found:content() )
+
+      -- save the content there
+      f:write( found['object']:content() )
+
       f:close()
 
       Panel:append( "Wrote attachment to " .. output )
@@ -1832,41 +1855,17 @@ function view_mime_part()
       return
    end
 
-   -- Get the parts
-   local parts = msg:parts()
+   -- Parse the MIME parts into an ordered list.
+   local out = mimeparts2table(msg)
 
-   -- Count of the child
-   local i = 0
+   -- Get the part we should view
+   local found = out[cur + 1]
 
-   -- The part we're looking for - if this is non-nil at the end
-   -- of our loop then we got what we wanted.
-   local found = nil
-
-   -- For each part look for a match, if we found it update "found"
-   for k,v in ipairs( parts ) do
-      if ( i == cur ) then
-         found = v
-      end
-
-      local children = v:children()
-      if ( #children > 0) then
-         for a,b in ipairs( children ) do
-            i = i + 1
-            if ( i == cur ) then
-               found = b
-            end
-         end
-      end
-      i = i + 1
-   end
-
-   --
    --  If we found the part.
-   --
    if ( found  ) then
 
-      if ( found:size() == 0 ) then
-         Panel:append("This MIME-part is empty" )
+      if ( found['size'] == 0 ) then
+         Panel:append("This MIME-part is empty!" )
          return
       end
 
@@ -1875,11 +1874,11 @@ function view_mime_part()
       local file  = assert(io.open(tmp, "w"))
 
       -- save the content there
-      file:write( found:content() )
+      file:write( found['object']:content() )
       file:close()
 
       -- Get the MIME-type of the attachment
-      local mime = found:type():lower()
+      local mime = found['type']:lower()
 
       -- Lookup the viewer, and put the filename in place
       local cmd = get_mime_viewer(mime)
@@ -2011,45 +2010,16 @@ function attachment_view()
       return( { "No message selected!" } )
    end
 
-   local parts = msg:parts()
-   local c = 1
+   local out = mimeparts2table(msg)
 
-   --
-   -- For each one - add it to the display, if it is an attachment.
-   --
-   for k,v in ipairs( parts ) do
-      if ( v:is_attachment() ) then
-         local tmp = string.format( "%02d │  %06d - %20s [%32s]", c,
-                                    v:size(), v:type():lower(), v:filename() )
-         table.insert( result, tmp )
-      else
-         local tmp = string.format( "%02d │  %06d - %20s", c,
-                                    v:size(), v:type():lower() )
-         table.insert( result, tmp )
-      end
+   for i,o in ipairs( out ) do
 
-      --
-      -- This is suboptimal - but we now insert the children
-      --
-      local children =  v:children()
-      if ( #children > 0) then
-         for i,o in ipairs( children ) do
-            c = c + 1
-            if ( o:is_attachment() ) then
-               local tmp = string.format( "%02d └─>%06d - %20s [%32s]", c,
-                                          o:size(), o:type():lower(), o:filename() )
-               table.insert( result, tmp )
-            else
-               local tmp = string.format( "%02d └─>%06d - %20s", c,
-                                          o:size(), o:type():lower() )
-               table.insert( result, tmp )
-            end
-
-         end
-
-      end
-
-      c = c + 1
+      local tmp = string.format( "%3d| %6d - %25s [%30s]",
+                                 o["count"] + 1,
+                                 o["size"] or "",
+                                 o["type"],
+                                 o["filename"] or "" )
+      table.insert( result, tmp )
    end
 
    return( result )
