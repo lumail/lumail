@@ -1008,7 +1008,7 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
     getyx(stdscr, orig_y, orig_x);
 
     /*
-     * Ensure we draw a complete line.
+     * Ensure we draw a complete line when showing our prompt.
      */
     while ((int)prompt.length() < CScreen::width())
         prompt += " ";
@@ -1079,6 +1079,85 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
     }
 }
 
+
+/*
+ * Show a prompt and wait for a single character.
+ */
+std::string CScreen::get_char(std::string prompt)
+{
+    int orig_x, x;
+    int orig_y, y;
+
+    /*
+     * Get the cursor position
+     */
+    getyx(stdscr, orig_y, orig_x);
+
+    /*
+     * Ensure we draw a complete line when showing our prompt.
+     */
+    while ((int)prompt.length() < CScreen::width())
+        prompt += " ";
+
+    /*
+     * Determine where to move the cursor to.  If the panel is visible it'll
+     * be above that.
+     */
+    x = 0;
+    y = height() - 1;
+
+    if (!g_status_bar_data.hidden)
+    {
+        y -= g_status_bar_data.height;
+    }
+
+    /*
+     * Get the mode so we can update the display mid-input.
+     */
+    CConfig *config  = CConfig::instance();
+    std::string mode = config->get_string("global.mode", "maildir");
+    CViewMode *view  = m_views[mode];
+
+    /*
+     * We'll call our idle function too.
+     */
+    CLua *lua = CLua::instance();
+
+
+    while (true)
+    {
+        int  c;
+
+        /*
+         * Redraw the main display.
+         */
+        if (view)
+        {
+            view->draw();
+            update_panels();
+        }
+
+        /*
+         * Call the Lua on_idle() function.
+         */
+        lua->execute("on_idle()");
+
+        mvaddnstr(y, x, prompt.c_str(), prompt.length());
+
+        /*
+         * Read input from the queue / keyboard.
+         */
+        CInputQueue *input = CInputQueue::instance();
+        c = input->get_input();
+
+        if (c > 0)
+        {
+            std::string out;
+            out = lookup_key(c);
+            return (out);
+        }
+    }
+}
 
 void CScreen::status_panel_show()
 {

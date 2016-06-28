@@ -148,6 +148,13 @@ public:
     std::string choose_string(std::vector<std::string> choices);
 
     /**
+     * Show a message and read a single character of input.
+     *
+     * Faux input may be consumed via our CInputQueue object.
+     */
+    std::string get_char(std::string prompt);
+
+    /**
      * Read a line of input via the status-line.
      *
      * History is handled via our `CHistory` singleton, and faux input

@@ -404,8 +404,10 @@ The Screen object is registered automatically and doesn't need to be constructed
     * Execute the given command, resetting the screen first.
 * `Screen:exit()`
     * Exit the main event-loop, and terminate the program.
+* `Screen:get_char( prompt-string )`
+    * Prompt for the input of a single character.
 * `Screen:get_line( prompt-string, default-input )`
-    * Receive a line of input, from the prompt.
+    * Prompt for the input of a single line of text.
 * `Screen:height()`
     * Return the height of the screen.
 * `Screen:prompt("Text", "chars" )`

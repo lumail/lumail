@@ -138,6 +138,22 @@ int l_CScreen_prompt_chars(lua_State * l)
 }
 
 
+
+/**
+ * Implementation of Screen:get_char().
+ */
+int l_CScreen_get_char(lua_State * l)
+{
+    const char *prompt = luaL_checkstring(l, 2);
+
+    CScreen *foo    = CScreen::instance();
+    std::string out = foo->get_char(prompt);
+
+    lua_pushstring(l, out.c_str());
+    return 1;
+}
+
+
 /**
  * Implementation of Screen:height().
  */
@@ -194,6 +210,7 @@ void InitScreen(lua_State * l)
         {"clear", l_CScreen_clear},
         {"execute",  l_CScreen_execute},
         {"exit",  l_CScreen_exit},
+        {"get_char", l_CScreen_get_char},
         {"get_line", l_CScreen_get_line},
         {"height", l_CScreen_height},
         {"prompt", l_CScreen_prompt_chars},
