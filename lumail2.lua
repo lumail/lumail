@@ -1537,9 +1537,9 @@ end
 
 
 --
--- Mark a message as new/unread.
+-- Toggle the new/old status of a message.
 --
-function Message.mark_new()
+function Message.toggle()
 
    --
    -- If we're in message-mode then we can get the current-message
@@ -1573,49 +1573,14 @@ function Message.mark_new()
       return
    end
 
-   msg:mark_unread()
+   if ( msg:is_new() ) then
+      msg:mark_read()
+   else
+      msg:mark_unread()
+   end
 end
 
 
---
--- Mark a message as old/read.
---
-function Message.mark_old()
-
-   --
-   -- If we're in message-mode then we can get the current-message
-   -- directly.
-   --
-   -- If instead we're in index-mode then we'll need to select the message
-   -- under the cursor to proceed.
-   --
-   local mode = Config:get("global.mode")
-   local msg = nil
-
-   if ( mode == "message" ) then
-      msg = Global:current_message()
-   end
-   if ( mode == "index" ) then
-
-      -- Get the list of messages, and the current offset
-      -- that'll let us find the message.
-      local offset  = Config.get_with_default( "index.current", 0 )
-      local msgs    = get_messages()
-      if ( not msgs ) then
-         Panel:append( "There are no messages!")
-         return
-      end
-
-      msg = msgs[offset+1]
-   end
-
-   if ( not msg ) then
-      Panel:append( "Failed to find a message" )
-      return
-   end
-
-   msg:mark_read()
-end
 
 
 
@@ -3239,6 +3204,11 @@ keymap['global']['/'] = 'find(1)'
 keymap['global']['?'] = 'find(-1)'
 
 --
+-- Describe key
+--
+keymap['global']['H'] = 'show_key()'
+
+--
 -- Change the display-limits
 --
 keymap['maildir']['a'] = 'Config:set( "maildir.limit", "all" )'
@@ -3266,6 +3236,10 @@ keymap['index']['A'] = 'sorting_method( "file")'
 keymap['index']['S'] = 'sorting_method( "subject")'
 keymap['index']['D'] = 'sorting_method( "date")'
 keymap['index']['F'] = 'sorting_method( "from")'
+
+--
+-- Toggle a message from new to old, or back.
+keymap['index']['T'] = 'Message.toggle()'
 
 --
 -- Force a cache flush - via a sleazy hack.
@@ -3326,7 +3300,7 @@ keymap['global']['w'] = 'Config.toggle( "line.wrap" )'
 --
 -- Toggle the display of full headers / all parts
 --
-keymap['message']['H'] = 'Config.toggle( "message.headers" )'
+keymap['message']['G'] = 'Config.toggle( "message.headers" )'
 keymap['message']['T'] = 'Config.toggle( "message.all_parts" )'
 
 
