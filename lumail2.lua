@@ -2263,6 +2263,14 @@ end
 
 
 --
+-- Show all the output from the panel.
+-- 
+function panel_view()
+    local result = Panel:text()
+    return(result)
+end
+
+--
 -- This method returns the text which is displayed when a maildir is
 -- to be show in maildir-mode.
 --
@@ -3238,7 +3246,9 @@ keymap = {}
 keymap['attachment'] = {}
 keymap['global']     = {}
 keymap['index']      = {}
+keymap['lua']        = {}
 keymap['keybinding'] = {}
+keymap['panel']      = {}
 keymap['maildir']    = {}
 keymap['message']    = {}
 
@@ -3251,6 +3261,7 @@ keymap['global']['TAB'] = "Panel:toggle()"
 keymap['global']['M']   = "change_mode( 'maildir' )"
 keymap['global']['I']   = "change_mode( 'index' )"
 keymap['global']['L']   = "change_mode( 'lua' )"
+keymap['global']['^P']   = "change_mode( 'panel' )"
 
 
 --
@@ -3346,6 +3357,8 @@ keymap['index']['q']      = "change_mode('maildir')"
 keymap['message']['q']    = "change_mode('index')"
 keymap['attachment']['q'] = "change_mode('message')"
 keymap['keybinding']['q'] = "change_mode('maildir')"
+keymap['lua']['q']        = "change_mode('maildir')"
+keymap['panel']['q']      = "change_mode('maildir')"
 
 --
 -- Enter attachment-mode
