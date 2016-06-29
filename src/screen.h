@@ -37,20 +37,12 @@
  *
  * This is the base-class for our virtual views.
  *
- * In the future this will be more advanced, based on the observation
- * that all of our modes contain some magic relating to "scrolling".
- *
- * With that in mind we'll allow derived classes to implement "min", "max", and
- * "current_offset".
- *
- * We'll have a "next" and "prev" class in the base which implements movement
- * within the defined ranges.
- *
- * Or something like that anyway :)
- *
  * View modes are registered at run-time via `CScreen::register_view`,
  * which allows them to be instantiated dynamically.
  *
+ * Each view mode is responsible for drawing its output to the screen,
+ * almost certainly via `CScreen::draw_text_lines()`, but it is free
+ * to do other things.
  */
 class CViewMode
 {
@@ -335,7 +327,7 @@ private:
         klass##Factory() \
         { \
            CScreen *x = CScreen::instance(); \
-           x->register_view(#name, new klass); \
+           x->register_view(#name, (CViewMode *)new klass);     \
         } \
     }; \
     static klass##Factory global_##klass##Factory;
