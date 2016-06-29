@@ -1224,6 +1224,13 @@ Date: ${date}
    --
    local reply = Config.get_with_default( "global.reply-header", "" )
 
+   --
+   -- If one is set then use it.
+   --
+   -- The value can use any value from the message, e.g:
+   --
+   -- Config:set( "global.reply-header", "${from} wrote:" )
+   --
    if ( reply ~= "" ) then
       local headers = msg:headers()
       local line = string.interp( reply, headers  )
