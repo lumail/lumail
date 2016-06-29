@@ -28,6 +28,11 @@
 
 
 /*
+ * Ensure we're registered as a valid view mode.
+ */
+REGISTER_VIEW_MODE(maildir, CMaildirView)
+
+/*
  * Constructor.
  */
 CMaildirView::CMaildirView()

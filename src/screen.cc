@@ -86,15 +86,6 @@ PANEL_DATA g_status_bar_data;
  */
 CScreen::CScreen()
 {
-    /*
-     * Register our view-modes.
-     */
-    m_views["attachment"] = new CAttachmentView();
-    m_views["index"]      = new CIndexView();
-    m_views["lua"]        = new CLuaView();
-    m_views["keybinding"] = new CKeyBindingView();
-    m_views["maildir"]    = new CMaildirView();
-    m_views["message"]    = new CMessageView();
 }
 
 
@@ -106,6 +97,19 @@ CScreen::~CScreen()
 {
     teardown();
 }
+
+
+/*
+ * Register a view mode.
+ *
+ * The name will be the name of the mode, as seen by lua, and the
+ * implementation will be a class derived from CViewMode.
+ */
+void CScreen::register_view(std::string name, CViewMode *impl)
+{
+    m_views[name] = impl;
+}
+
 
 /*
  * Run our event loop.

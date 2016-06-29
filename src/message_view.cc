@@ -30,6 +30,12 @@
 #include "screen.h"
 
 /*
+ * Ensure we're registered as a valid view mode.
+ */
+REGISTER_VIEW_MODE(message, CMessageView)
+
+
+/*
  * Constructor
  */
 CMessageView::CMessageView()

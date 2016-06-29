@@ -29,6 +29,13 @@
 #include "attachment_view.h"
 #include "screen.h"
 
+
+/*
+ * Ensure we're registered as a valid view mode.
+ */
+REGISTER_VIEW_MODE(attachment, CAttachmentView)
+
+
 /*
  * Constructor.
  */

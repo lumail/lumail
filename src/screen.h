@@ -32,6 +32,7 @@
 #include "singleton.h"
 
 
+
 /**
  *
  * This is the base-class for our virtual views.
@@ -46,6 +47,9 @@
  * within the defined ranges.
  *
  * Or something like that anyway :)
+ *
+ * View modes are registered at run-time via `CScreen::register_view`,
+ * which allows them to be instantiated dynamically.
  *
  */
 class CViewMode
@@ -92,6 +96,14 @@ public:
      * Destructor.
      */
     ~CScreen();
+
+    /**
+     * Register a view mode.
+     *
+     * The name will be the name of the mode, as seen by lua, and the
+     * implementation will be a class derived from CViewMode.
+     */
+    void register_view(std::string name, CViewMode *impl);
 
 public:
 
@@ -311,3 +323,20 @@ private:
     };
 
 };
+
+
+/*
+ * Allow registration of a view mode, via a macro.
+ */
+#ifndef REGISTER_VIEW_MODE
+#define REGISTER_VIEW_MODE(name,klass) \
+    class klass##Factory { \
+    public: \
+        klass##Factory() \
+        { \
+           CScreen *x = CScreen::instance(); \
+           x->register_view(#name, new klass); \
+        } \
+    }; \
+    static klass##Factory global_##klass##Factory;
+#endif

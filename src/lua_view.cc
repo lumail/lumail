@@ -26,6 +26,13 @@
 #include "screen.h"
 
 
+
+/*
+ * Ensure we're registered as a valid view mode.
+ */
+REGISTER_VIEW_MODE(lua, CLuaView)
+
+
 /*
  * Constructor.
  */

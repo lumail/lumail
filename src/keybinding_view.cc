@@ -27,6 +27,12 @@
 
 
 /*
+ * Ensure we're registered as a valid view mode.
+ */
+REGISTER_VIEW_MODE(keybinding, CKeyBindingView)
+
+
+/*
  * Constructor.
  */
 CKeyBindingView::CKeyBindingView()
