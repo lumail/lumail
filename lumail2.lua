@@ -2072,6 +2072,11 @@ function index_view()
    -- Get the available messages.
    local messages = get_messages()
 
+   if ( messages == nil ) or ( #messages == 0 ) then
+      Screen:draw( 10, 10, "There are no visible messages." );
+      return result
+   end
+
    -- Get the current offset
    local mode = Config:get("global.mode")
    local cur  = tonumber(Config.get_with_default("index.current", 0))
@@ -2354,6 +2359,11 @@ function maildir_view()
 
    -- Get the maildirs
    local folders = maildirs()
+
+   if ( folders == nil ) or ( #folders == 0 ) then
+      Screen:draw( 10, 10, "There are no visible folders." );
+      return result
+   end
 
    -- For each one add the output
    for index,object in ipairs( folders ) do
@@ -2638,10 +2648,27 @@ function select()
    if ( mode == "maildir" ) then
       local folders = maildirs()
       local folder  = folders[cur+1]
-      Global:select_maildir( folder )
 
-      -- Log the change of maildir.
-      Panel:append( "Selected maildir " .. folder:path() )
+      if ( folder == nil ) then
+         Panel:append( "There is nothing to select!" )
+         return
+      end
+
+      --
+      -- Select the folder and flush the message-cache.
+      --
+      Global:select_maildir( folder )
+      global_msgs = {}
+
+      --
+      -- Now show the folder we selected and the number of messages.
+      --
+      local size = #get_messages()
+      if ( size == 1 ) then
+         Panel:append( "Selected " .. folder:path() .. " with 1 message." )
+      else
+         Panel:append( "Selected " .. folder:path() .. " with " .. size .. " messages." )
+      end
 
       --
       -- The user might want to change email addresses
@@ -2653,17 +2680,12 @@ function select()
          end
       end
 
-
       --
       -- Change to the index-mode, so we can see the messages in
       -- the folder.
       --
       Config:set("global.mode", "index" )
 
-      --
-      -- Flush the cached message-list
-      --
-      global_msgs = {}
 
       return
    end
@@ -2678,6 +2700,11 @@ function select()
       -- Get the current offset.
       --
       local msg  = msgs[cur+1]
+
+      if ( msg == nil ) then
+         Panel:append( "There is nothing to select!" )
+         return
+      end
 
       --
       -- Now select
