@@ -210,6 +210,16 @@ function table_size( obj )
 end
 
 
+function sortedKeys(tbl)
+   local keys = {}
+   for key in pairs(tbl) do
+      table.insert(keys, key)
+   end
+   table.sort(keys, function(a, b) return ( a:lower() < b:lower() ) end)
+   return keys
+end
+
+
 --
 -- Define some utility functions
 --
@@ -1573,6 +1583,9 @@ function Message.toggle()
       return
    end
 
+   --
+   -- Toggle the status.
+   --
    if ( msg:is_new() ) then
       msg:mark_read()
    else
@@ -2114,6 +2127,57 @@ function index_view()
 end
 
 
+--
+-- Change to keybinding mode.
+--
+function keybinding()
+   change_mode( 'keybinding' )
+end
+--
+-- This function shows our keybindings
+--
+function keybinding_view()
+   --
+   -- The output we'll display.
+   --
+   output = { }
+
+
+   --
+   -- If we have globals
+   --
+   globals = keymap['global']
+   if ( globals ) then
+      table.insert(output, "$[RED]Global Keybindings")
+      table.insert(output, "\n" )
+
+      local keys = keymap['global']
+      for i,o in pairs(sortedKeys( keys) ) do
+         local entry = string.format( "   %10s -> %s", o, keys[o] );
+         table.insert(output,entry)
+      end
+   end
+
+   for i,o in pairs(keymap) do
+      if ( i and ( i ~= "global" )  ) then
+         local mode = i
+         local bind = keymap[mode]
+         table.insert(output, "\n\n" )
+         table.insert(output, "$[BLUE]Keybindings for " .. mode .. "-mode" )
+         table.insert(output, "\n" )
+         if (table_size(bind) > 0 ) then
+            for i,o in pairs(sortedKeys(bind) ) do
+               local entry = string.format( "   %10s -> %s", o, bind[o] );
+               table.insert(output,entry)
+            end
+         else
+            table.insert( output, "      NONE." )
+         end
+      end
+   end
+
+   return(output)
+end
 
 --
 -- This function returns the output which is displayed in `lua`-mode.
@@ -3121,7 +3185,7 @@ function show_key()
    --
    local mode = Config:get("global.mode")
 
-   if ( keymap[mode][c] ) then
+   if ( keymap[mode] and keymap[mode][c] ) then
       Panel:append( c .. " is bound to " .. keymap[mode][c] )
       return
    end
@@ -3146,8 +3210,9 @@ end
 keymap = {}
 keymap['attachment'] = {}
 keymap['global']     = {}
-keymap['maildir']    = {}
 keymap['index']      = {}
+keymap['keybinding'] = {}
+keymap['maildir']    = {}
 keymap['message']    = {}
 
 --
@@ -3253,6 +3318,7 @@ keymap['maildir']['q']    = "os.exit()"
 keymap['index']['q']      = "change_mode('maildir')"
 keymap['message']['q']    = "change_mode('index')"
 keymap['attachment']['q'] = "change_mode('message')"
+keymap['keybinding']['q'] = "change_mode('maildir')"
 
 --
 -- Enter attachment-mode

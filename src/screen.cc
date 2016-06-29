@@ -30,6 +30,7 @@
 #include "history.h"
 #include "index_view.h"
 #include "input_queue.h"
+#include "keybinding_view.h"
 #include "lua.h"
 #include "lua_view.h"
 #include "maildir_view.h"
@@ -91,6 +92,7 @@ CScreen::CScreen()
     m_views["attachment"] = new CAttachmentView();
     m_views["index"]      = new CIndexView();
     m_views["lua"]        = new CLuaView();
+    m_views["keybinding"] = new CKeyBindingView();
     m_views["maildir"]    = new CMaildirView();
     m_views["message"]    = new CMessageView();
 }
