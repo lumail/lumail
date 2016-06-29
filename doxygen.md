@@ -10,4 +10,4 @@ layer of Lua scripting. This documentation describes the C++ details.
 
 The Lua API is described seperately in the file [API.md](API.md), which is
 included within the repository and which is
-[also available online](https://luamil.org/api/).
+[also available online](https://lumail.org/api/).
