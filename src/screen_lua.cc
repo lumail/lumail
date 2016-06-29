@@ -63,6 +63,19 @@ int l_CScreen_clear(lua_State * l)
 
 
 /**
+ * Implementation of Screen:draw().
+ */
+int l_CScreen_draw(lua_State * l)
+{
+    int x = luaL_checkinteger(l, 2);
+    int y = luaL_checkinteger(l, 3);
+    const char *txt = luaL_checkstring(l, 4);
+
+    mvprintw(x, y, txt);
+    return 0;
+}
+
+/**
  * Implementation of Screen:execute().
  */
 int l_CScreen_execute(lua_State *l)
@@ -208,6 +221,7 @@ void InitScreen(lua_State * l)
     luaL_Reg sFooRegs[] =
     {
         {"clear", l_CScreen_clear},
+        {"draw", l_CScreen_draw},
         {"execute",  l_CScreen_execute},
         {"exit",  l_CScreen_exit},
         {"get_char", l_CScreen_get_char},

@@ -400,6 +400,8 @@ The Screen object is registered automatically and doesn't need to be constructed
 
 * `Screen:clear()`
     * Clear the screan-area.
+* `Screen:draw(x, y, txt)`
+    * Draw some text on the screen.
 * `Screen:execute(cmd)`
     * Execute the given command, resetting the screen first.
 * `Screen:exit()`
