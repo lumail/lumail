@@ -221,6 +221,35 @@ end
 
 
 --
+-- Simple implementation of a stack, in pure Lua.
+--
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
+local Stack = {}
+Stack.__index = Stack
+
+function Stack.new()
+   local self = setmetatable({}, Stack)
+   self.stack = {}
+   return self
+end
+function Stack.push( self ,value )
+   local size = #self.stack
+   self.stack[ size+1 ] = value
+end
+function Stack.pop(self)
+   local size = #self.stack
+   if ( size <= 0 ) then
+      return nil
+   end
+   local value = self.stack[size]
+   self.stack[size] = nil
+   return value
+end
+
+
+--
 -- Define some utility functions
 --
 -----------------------------------------------------------------------------
@@ -486,8 +515,24 @@ end
 --
 -- Change the global mode.
 --
-function change_mode( new_mode )
-   Config:set( "global.mode", new_mode )
+do
+   local mode_stack = Stack.new()
+
+   -- Change to a new mode
+   function change_mode( new_mode )
+      -- Record previous mode
+      mode_stack:push( Config:get( "global.mode" ) )
+      Config:set( "global.mode", new_mode )
+   end
+
+   -- Restore to the previous mode
+   function previous_mode()
+      local prev = mode_stack:pop()
+      if ( prev == nil ) then
+         prev = "maildir"
+      end
+      Config:set( "global.mode", prev )
+   end
 end
 
 
@@ -1773,7 +1818,7 @@ function Maildir.select( desired )
          Global:select_maildir(object)
 
          -- change the mode, to make it work
-         Config:set("global.mode", "index")
+         change_mode("index")
 
          -- Flush the cached message-list
          global_msgs = {}
@@ -2294,8 +2339,8 @@ end
 -- Show all the output from the panel.
 --
 function panel_view()
-    local result = Panel:text()
-    return(result)
+   local result = Panel:text()
+   return(result)
 end
 
 --
@@ -2720,7 +2765,7 @@ function select()
       -- Change to the index-mode, so we can see the messages in
       -- the folder.
       --
-      Config:set("global.mode", "index" )
+      change_mode("index")
 
 
       return
@@ -2746,7 +2791,7 @@ function select()
       -- Now select
       --
       Global:select_message( msg )
-      Config:set("global.mode", "message" )
+      change_mode("message")
       return
    end
 end
@@ -3289,7 +3334,7 @@ keymap['global']['TAB'] = "Panel:toggle()"
 keymap['global']['M']   = "change_mode( 'maildir' )"
 keymap['global']['I']   = "change_mode( 'index' )"
 keymap['global']['L']   = "change_mode( 'lua' )"
-keymap['global']['^P']   = "change_mode( 'panel' )"
+keymap['global']['^P']  = "change_mode( 'panel' )"
 
 
 --
@@ -3380,13 +3425,7 @@ keymap['global']['^L'] = 'Config.key_changed( "index.limit" )'
 --
 -- Exit out of modes
 --
-keymap['maildir']['q']    = "os.exit()"
-keymap['index']['q']      = "change_mode('maildir')"
-keymap['message']['q']    = "change_mode('index')"
-keymap['attachment']['q'] = "change_mode('message')"
-keymap['keybinding']['q'] = "change_mode('maildir')"
-keymap['lua']['q']        = "change_mode('maildir')"
-keymap['panel']['q']      = "change_mode('maildir')"
+keymap['global']['q']    = "previous_mode()"
 
 --
 -- Enter attachment-mode
