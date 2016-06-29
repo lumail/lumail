@@ -77,7 +77,7 @@ void CBasicView::draw()
      * If we don't have a function to invoke, to get our
      * display-text we must abort.
      */
-    if ( m_function.empty() )
+    if (m_function.empty())
         return;
 
     /*
@@ -85,7 +85,7 @@ void CBasicView::draw()
      * setup the `$mode.max` variable, so the scrolling won't
      * work.  Simplest to return.
      */
-    if ( m_name.empty() )
+    if (m_name.empty())
         return;
 
     /*
@@ -117,7 +117,8 @@ void CBasicView::draw()
         config->set(m_name + ".current", max - 1, false);
         cur = max - 1;
     }
-    if (cur < 0 )
+
+    if (cur < 0)
     {
         config->set(m_name + ".current", 0, false);
         cur = 0;
