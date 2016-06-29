@@ -19,9 +19,7 @@
 
 #pragma once
 
-#include <string>
-#include "maildir.h"
-#include "screen.h"
+#include "basic_view.h"
 
 
 /**
@@ -30,7 +28,7 @@
  * The list is created, and maintained, by lumail2, but the drawing is
  * deferred to Lua.
  */
-class CIndexView: public CViewMode
+class CIndexView: public CBasicView
 {
 
 public:
@@ -43,21 +41,4 @@ public:
      * Destructor.
      */
     ~CIndexView();
-
-    /**
-     * Drawing routine - called when the current.mode=="index".
-     */
-    void draw();
-
-    /**
-     * Called when things are idle.
-     */
-    void on_idle();
-
-private:
-
-    /**
-     * Get the output of calling `index_view`, which is the text we'll display.
-     */
-    std::vector<std::string> get_text();
 };

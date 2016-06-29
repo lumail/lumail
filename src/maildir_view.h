@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "screen.h"
+#include "basic_view.h"
 
 
 /**
@@ -28,7 +28,7 @@
  *
  * The list is created/maintained by lumail2, but the drawing is  deferred to Lua.
  */
-class CMaildirView: public CViewMode
+class CMaildirView: public CBasicView
 {
 
 public:
@@ -41,22 +41,5 @@ public:
      * Destructor.
      */
     ~CMaildirView();
-
-    /**
-     * Drawing routine - called when the current.mode=="maildir".
-     */
-    void draw();
-
-    /**
-     * Called when things are idle.
-     */
-    void on_idle();
-
-private:
-
-    /**
-     * Get the output of calling `maildir_view`, which is what we'll display.
-     */
-    std::vector<std::string> get_text();
 
 };

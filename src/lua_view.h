@@ -21,8 +21,7 @@
 
 #include <vector>
 #include <string>
-#include "screen.h"
-
+#include "basic_view.h"
 
 /**
  * This is a lua-view of the screen - it shows lists of text.
@@ -30,7 +29,7 @@
  * The output drawn comes from the `lua_view()` function implemented
  * in Lua, which by default just dumps configuration values.
  */
-class CLuaView: public CViewMode
+class CLuaView: public CBasicView
 {
 
 public:
@@ -43,22 +42,5 @@ public:
      * Destructor.
      */
     ~CLuaView();
-
-    /**
-     * Drawing routine - called when the current.mode=="lua".
-     */
-    void draw();
-
-    /**
-     * Called when things are idle.
-     */
-    void on_idle();
-
-private:
-
-    /**
-     * Get the output of calling `lua_view`, which is the text we'll display.
-     */
-    std::vector<std::string> get_text();
 
 };

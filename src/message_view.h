@@ -19,13 +19,13 @@
 
 #pragma once
 
-#include "screen.h"
+#include "basic_view.h"
 
 
 /**
  * This is a message-view of the screen, it shows a single message.
  */
-class CMessageView: public CViewMode
+class CMessageView: public CBasicView
 {
 
 public:
@@ -38,23 +38,4 @@ public:
      * Destructor.
      */
     ~CMessageView();
-
-    /**
-     * Drawing routine - called when the current.mode=="message".
-     */
-    void draw();
-
-    /**
-     * Called when things are idle.
-     */
-    void on_idle();
-
-private:
-
-    /**
-     * Return an array of lines of the message we're to draw,
-     * via the `Message.to_string()` lua function.
-     */
-    std::vector<std::string> get_text();
-
 };

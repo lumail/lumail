@@ -19,9 +19,7 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
-#include "screen.h"
+#include "basic_view.h"
 
 
 /**
@@ -30,7 +28,7 @@
  * The output drawn comes from the `keybinding_view()` function implemented
  * in Lua, which by default just dumps configuration values.
  */
-class CKeyBindingView: public CViewMode
+class CKeyBindingView: public CBasicView
 {
 
 public:
@@ -43,23 +41,4 @@ public:
      * Destructor.
      */
     ~CKeyBindingView();
-
-    /**
-     * Drawing routine - called when the current.mode=="keybinding".
-     */
-    void draw();
-
-    /**
-     * Called when things are idle.
-     */
-    void on_idle();
-
-private:
-
-    /**
-     * Get the output of calling `keybinding_view`, which is the text
-     * we'll display.
-     */
-    std::vector<std::string> get_text();
-
 };
