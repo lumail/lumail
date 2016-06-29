@@ -1219,9 +1219,30 @@ Date: ${date}
                                         date    = Message.generate_date()
                                       } ) )
 
+   --
+   -- Header to the message
+   --
+   local reply = Config.get_with_default( "global.reply-header", "" )
 
+   if ( reply ~= "" ) then
+      local headers = msg:headers()
+      local line = string.interp( reply, headers  )
+      file:write( line .. "\n" )
+   end
+
+   --
+   -- We don't want to include the header in the mesage,
+   -- just the text of the body.
+   --
+   local in_header = true
    for i,l in ipairs(txt) do
-      file:write( "> " .. l .. "\n")
+      if ( in_header ) then
+         if ( l == "" ) then
+            in_header = false
+         end
+      else
+         file:write( "> " .. l .. "\n")
+      end
    end
 
    -- Append a signature
@@ -2264,7 +2285,7 @@ end
 
 --
 -- Show all the output from the panel.
--- 
+--
 function panel_view()
     local result = Panel:text()
     return(result)
