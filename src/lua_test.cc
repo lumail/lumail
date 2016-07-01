@@ -180,6 +180,81 @@ void TestNestedTable(CuTest * tc)
 
 }
 
+
+
+
+/**
+ * Test function detection works.
+ */
+void TestFunctionExists(CuTest * tc)
+{
+    /*
+     * Get the singleton
+     */
+    CLua *instance = CLua::instance();
+    CuAssertPtrNotNull(tc, instance);
+
+    /*
+     * The functon will not exist to start with.
+     */
+    CuAssertTrue(tc, instance->function_exists("hello") == false);
+
+    /*
+     * Define the function.
+     */
+    instance->execute("function hello() return \"world\" end");
+
+    CuAssertTrue(tc, instance->function_exists("hello") == true);
+}
+
+
+
+/**
+ * Test calling a function we expect to return a string.
+ */
+void TestStringFunction(CuTest * tc)
+{
+    /*
+     * Get the singleton
+     */
+    CLua *instance = CLua::instance();
+    CuAssertPtrNotNull(tc, instance);
+
+    /*
+     * Define the function.
+     */
+    instance->execute("function hello() return \"world\" end");
+
+    std::string out = instance->function2string("hello", "moi");
+    CuAssertTrue(tc, ! out.empty());
+    CuAssertStrEquals(tc, out.c_str(), "world");
+
+    /*
+     * Redefine the function to return the input argument.
+     */
+    instance->execute("function hello(name) return \"hello, \" .. name end");
+
+    /*
+     * Test on various inputs.
+     */
+    out = instance->function2string("hello", "moi");
+    CuAssertTrue(tc, ! out.empty());
+    CuAssertStrEquals(tc, out.c_str(), "hello, moi");
+
+    /*
+     * NOTE: Can't test NULL as that won't create a std::string.
+     */
+    out = instance->function2string("hello", "");
+    CuAssertTrue(tc, ! out.empty());
+    CuAssertStrEquals(tc, out.c_str(), "hello, ");
+
+    out = instance->function2string("hello", std::to_string(2));
+    CuAssertTrue(tc, ! out.empty());
+    CuAssertStrEquals(tc, out.c_str(), "hello, 2");
+
+}
+
+
 CuSuite *
 lua_getsuite()
 {
@@ -188,5 +263,7 @@ lua_getsuite()
     SUITE_ADD_TEST(suite, TestErrorHandler);
     SUITE_ADD_TEST(suite, TestFunctionToTable);
     SUITE_ADD_TEST(suite, TestNestedTable);
+    SUITE_ADD_TEST(suite, TestFunctionExists);
+    SUITE_ADD_TEST(suite, TestStringFunction);
     return suite;
 }

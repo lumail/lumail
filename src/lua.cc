@@ -199,6 +199,35 @@ bool CLua::execute(std::string lua)
 }
 
 
+
+/*
+ * Does the specified function exist (in lua)?
+ */
+bool CLua::function_exists(std::string function)
+{
+    /*
+     * Get the function.
+     */
+    lua_getglobal(m_lua, function.c_str());
+
+    /*
+     * If the result was nil then it doesn't exist.
+     */
+    if (lua_isnil(m_lua, -1))
+        return false;
+
+    /*
+     * If the type of the global is not a function then
+     * it doesn't exist.
+     */
+    if (! lua_isfunction(m_lua, -1))
+        return false;
+
+
+    return true;
+}
+
+
 /*
  * Lookup a value in a nested-table - used for keyboard lookups.
  */
@@ -457,4 +486,69 @@ bool CLua::call_sort(std::string method, std::shared_ptr<CMessage> a, std::share
 
     bool ret = lua_toboolean(m_lua, -1);
     return (ret);
+}
+
+
+/*
+ * Call a Lua function with a string argument, and return
+ * the single string it will return.
+ *
+ * If the function returns nothing, or a non-string, return "".
+ *
+ */
+std::string CLua::function2string(std::string function, std::string input)
+{
+    /*
+     * Get the function - if it doesn't exist we're done.
+     */
+    lua_getglobal(m_lua, function.c_str());
+
+    if (lua_isnil(m_lua, -1))
+        return ("");
+
+
+    if (input.empty())
+        lua_pushstring(m_lua, "");
+    else
+        lua_pushstring(m_lua, input.c_str());
+
+    /*
+     * Call the function - and handle any error.
+     */
+    if (lua_pcall(m_lua, 1, 1, 0) != 0)
+    {
+        if (lua_isstring(m_lua, -1))
+        {
+            /*
+             * The error message will be on the stack..
+             */
+            char *err = strdup(lua_tostring(m_lua, -1));
+            lua_pop(m_lua, 1);
+
+            on_error(err);
+
+            /*
+             * Avoid a leak.
+             */
+            free(err);
+        }
+        else
+            lua_pop(m_lua, 1);
+
+        return ("");
+    }
+
+    /*
+     * Now get the table we expected.
+     */
+    if (lua_isstring(m_lua, -1))
+    {
+        const char *result = lua_tostring(m_lua, -1);
+        return (result);
+    }
+    else
+    {
+        return "";
+    }
+
 }

@@ -70,6 +70,11 @@ public:
     bool execute(std::string lua);
 
     /**
+     * Does the specified function exist (in lua)?
+     */
+    bool function_exists(std::string function);
+
+    /**
      * Lookup a key in a nested table structure - used for keyboard lookups.
      */
     char *get_nested_table(std::string table, const char *key, const char *subkey);
@@ -106,6 +111,17 @@ public:
      * result.
      */
     bool call_sort(std::string method, std::shared_ptr<CMessage> a, std::shared_ptr<CMessage> b);
+
+    /**
+     * Call a Lua function with a string argument, and return
+     * the single string it will return.
+     *
+     * If the function returns nothing, or a non-string, return "".
+     *
+     * TODO: Rethink this.
+     */
+    std::string function2string(std::string function, std::string input);
+
 
 private:
 
