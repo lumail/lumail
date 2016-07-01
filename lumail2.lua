@@ -1094,7 +1094,19 @@ Date: ${date}
    -- Config:set( "global.reply-header", "${from} wrote:" )
    --
    if ( reply ~= "" ) then
+      -- The headers from the messages will be available
       local headers = msg:headers()
+
+      --
+      -- Populate "email" and "name" is distinct values, based
+      -- upon the from: header.
+      --
+      h['email'] = string.match(h['from'], "<(.*)>" )     or h['from']
+      h['name']  = string.match(h['from'], "(.*)<(.*)>" ) or h['from']
+      if ( h['email'] ) then h['email'] = string.trim( h['email']) end
+      if ( h['name'] ) then h['name'] = string.trim( h['name']) end
+
+      -- Format the header appropriately.
       local line = string.interp( reply, headers  )
       file:write( line .. "\n" )
    end
