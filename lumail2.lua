@@ -71,17 +71,26 @@ end
 --    /etc/lumail2/lib/
 --    ~/.lumail2/lib/
 --
-package.path = package.path .. ';/etc/lumail2/lib/?.lua'
-package.path = package.path .. ';/' .. os.getenv("HOME") .. '/.lumail2/lib/?.lua'
+-- If running from a source-checkout we'll instead only load "./lib", because
+-- we'll want to ensure we're running the libraries from that git checkout
+-- and not any globally-installed version.
+--
+--
 
---
--- We'll load from the CWD only if this looks like a lumail2 source
--- checkout.  This avoids a security issue.
---
+local is_source = false
 if ( File:exists( "./lumail2" ) and File:exists( ".git" ) ) then
-   package.path = package.path .. ';./lib/?.lua'
+   is_source = true
 end
 
+if ( is_source ) then
+   Panel:append( "Running from git checkout - load path is only ./lib" )
+   package.path = package.path .. ';./lib/?.lua'
+else
+   package.path = package.path .. ';/etc/lumail2/lib/?.lua'
+   package.path = package.path .. ';/' .. os.getenv("HOME") .. '/.lumail2/lib/?.lua'
+end
+
+--
 --
 -- Load libraries
 --
@@ -96,6 +105,8 @@ Stack = require( "stack" )
 --
 SU = require( "string_utilities" )
 TU = require( "table_utilities" )
+
+
 
 
 
