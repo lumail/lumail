@@ -1,16 +1,16 @@
 Lumail GPG Support
 ==================
 
-GPG is supported for the verification of messages, but nothing else at
-the moment:
+GPG is supported for incoming messages at the moment:
 
-* You can validate signed messages.
+* Working
+    * You can validate signed messages.
+    * You can decrypt outgoing messages.
 
-* You cannot sign outgoing messages.
+* Not Working, or implemented.
+    * You cannot sign outgoing messages.
+    * You cannot encrypt outgoing messages.
 
-* You cannot encrypt outgoing messages.
-
-* You cannot decrypt outgoing messages.
 
 
 Configuration
