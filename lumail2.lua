@@ -100,15 +100,18 @@ TU = require( "table_utilities" )
 
 
 --
--- Setup a cache for objects.  This is primarily used to cache
--- formatted objects, etc.
+-- Setup a cache for objects.
+--
+-- This is primarily used to cache formatted objects, etc.
 --
 cache = Cache.new()
 
 --
 -- A second cache which is used solely for sorting purposes.
 --
--- NOTE: It uses the same caching library - code-reuse is good.
+-- NOTE: This uses the same library as the cache above, code-reuse
+-- is good.  The main difference is this cache is flushed explicitly
+-- and never persisted to disk.
 --
 sort_cache = Cache.new()
 
