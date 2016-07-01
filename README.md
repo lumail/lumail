@@ -168,6 +168,7 @@ Further Notes
    * Documents the Lua classes.
 * [Contributor Guide](CONTRIBUTING.md)
 * [Notes on IMAP](IMAP.md)
+* [Notes on GPG Support](GPG.md)
 * [Notes on implementation & structure](HACKING.md)
    * See also the [experiments repository](https://github.com/lumail/experiments) where some standalone code has been isolated for testing/learning purposes.
 
