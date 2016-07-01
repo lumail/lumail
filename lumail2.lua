@@ -941,7 +941,7 @@ ${sig}
          Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
       end
 
-      if ( a == "y" ) or ( "a" == "Y" ) then
+      if ( a == "y" ) or ( a == "Y" ) then
 
          -- If the user has added attachments then process them
          if ( #attachments > 0 ) then
