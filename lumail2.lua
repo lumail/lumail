@@ -1296,6 +1296,74 @@ end
 
 
 --
+-- This is a function which is inserted into the *MIDDLE*
+-- of a message parsing operation.
+--
+-- This means you CANNOT call `parts()` or similar, on a constructed
+-- message, because if you do you'll end up in a never-ending recursive
+-- loop.
+--
+-- The only thing you can do is *replace* the contents of the body
+-- if you wish.
+--
+-- This function allows the caller to modify the message _before_ it
+-- is parsed, and the way this is done is to replace the file that
+-- is operated upon.
+--
+-- In short :
+--
+--  * This function is called with the path to the message, on-disk.
+--
+--  * This function may return "" to leave things as-is.
+--
+-- OR
+--
+--  * THis function may generate and return a filename.  That file
+--    will be operated upon instead of the input message, and once
+--    parsed will be deleted.
+--
+--
+-- So if you wanted to do something crazy, like read only upper-case
+-- messages, you could do that by running:
+--
+--   function message_replace(path)
+--     local out = "/tmp/blah"
+--     os.execute( "tr '[a-z]' '[A-Z]' <" .. path .. " >" .. out )
+--     return( out )
+--   end
+--
+--
+function message_replace( path )
+
+   --
+   --  If the file doesn't reference GPG then we're OK to return
+   -- early.
+   --
+   local found = false
+
+   for line in io.lines(path) do
+      if ( line == "-----BEGIN PGP SIGNATURE-----" ) then
+         found = true
+      end
+   end
+
+   if ( found == false ) then
+      return ""
+   end
+   --
+   -- Do we have the binary we want?
+   --
+   if (string.path( "mimegpg" ) ~= "" ) then
+      local out = os.tmpname();
+      os.execute( "mimegpg -d -c -- --batch < " .. path .. " > " .. out )
+      return( out )
+   else
+      return ""
+   end
+end
+
+
+--
 -- Forward the current message
 --
 function Message.forward()
@@ -1929,19 +1997,33 @@ function Message:format()
    local sender  = self:header( "From" )
 
    --
-   -- Count the attachments - and add an "A" if there are any
+   -- Get the message-flags - these flags are informational, and
+   -- unrelated to the flags a message might have.
    --
-   local acount  = Message.count_attachments(self)
-   local a_flags = " "
-   if ( acount > 0 ) then
-      a_flags = "A"
+   --   A => Message has attachments.
+   --   S => Message is signed.
+   --
+   local m_flags = ""
+   local parts   = mimeparts2table( self )
+   local a_count = 0
+   for i,o in ipairs( parts ) do
+      if ( o['type'] == "text/x-gpg-output" ) then
+         m_flags = m_flags .. "S"
+      end
+      if ( o['filename'] ~= nil and o['filename'] ~= "" ) then
+         a_count = a_count + 1
+      end
    end
+   if (a_count > 0 ) then
+      m_flags = "A" .. m_flags;
+   end
+
 
    --
    -- Format this message for display
    --
-   local output = string.format( "[%4s] %s - %s - %s",
-                                 flags, a_flags, sender, subject )
+   local output = string.format( "[%4s] %2s - %s - %s",
+                                 flags, m_flags, sender, subject )
 
    --
    -- If the message is unread then show it in the "unread" colour
@@ -2427,6 +2509,19 @@ function message_view( msg )
    local a_count = Message.count_attachments(msg)
    if ( a_count > 0 ) then
       output = output .. "$[BLUE]Attachments: " .. a_count .. "\n"
+   end
+
+   --
+   -- Is there any GPG-signature?
+   --
+   local parts = mimeparts2table( msg )
+   for i,o in ipairs( parts ) do
+      if ( o['type'] == "text/x-gpg-output" ) then
+         local gpg = o['object']:content()
+         for ii,oo in pairs( string.to_table(gpg) ) do
+            output = output .. "$[RED]" .. oo .. "\n"
+         end
+      end
    end
 
    --

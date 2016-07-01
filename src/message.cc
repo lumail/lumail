@@ -145,7 +145,28 @@ GMimeMessage * CMessage::parse_message()
     GMimeStream *stream;
     int fd;
 
-    if ((fd = open(path().c_str(), O_RDONLY, 0)) == -1)
+    /*
+     * The filename we'll operate upon.
+     */
+    std::string file = path();
+    bool replaced = false;
+
+    /*
+     * There is a Lua filter which *might* return an *updated* path to
+     * use.
+     */
+    CLua *lua = CLua::instance();
+    if ( lua->function_exists( "message_replace" ) )
+    {
+        std::string updated = lua->function2string( "message_replace", file );
+        if ( ! updated.empty() ){
+            file = updated;
+            replaced = true;
+        }
+    }
+
+
+    if ((fd = open(file.c_str(), O_RDONLY, 0)) == -1)
     {
 
         std::string error = strerror(errno);
@@ -156,6 +177,8 @@ GMimeMessage * CMessage::parse_message()
         else
             lua->on_error("Failed to open the message file - not found :" + path() + " " + error);
 
+        if ( replaced == true )
+            CFile::delete_file( file );
         return (NULL);
     }
 
@@ -181,7 +204,7 @@ GMimeMessage * CMessage::parse_message()
          * skipping two lines.
          */
         close(fd);
-        fd = open(path().c_str(), O_RDONLY, 0);
+        fd = open(file.c_str(), O_RDONLY, 0);
 
         int newline = 2;
         char buf[2] = { '\0', '\0' };
@@ -204,6 +227,9 @@ GMimeMessage * CMessage::parse_message()
         message = g_mime_parser_construct_message(parser);
 
     }
+
+    if ( replaced == true )
+        CFile::delete_file( file );
 
     g_object_unref(parser);
     return (message);

@@ -20,6 +20,20 @@ _G['string']['interp'] = function(s, tab)
    return (s:gsub('($%b{})', function(w) return tab[w:sub(3, -2)] or w end))
 end
 
+--
+-- Find the given binary on the $PATH, and return the full filename.
+--
+_G['string']['path'] = function(file)
+   local path = os.getenv( "PATH" )
+   local paths = string.split( path, ":;" )
+   for i,o in pairs(paths) do
+      if ( File:exists( o .. "/" .. file ) ) then
+         return( o .. "/" .. file )
+      end
+   end
+   return ""
+end
+
 
 --
 -- Strip leading/trailing whitespace from the given string.
