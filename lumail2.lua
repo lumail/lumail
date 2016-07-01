@@ -1341,8 +1341,16 @@ function message_replace( path )
    --
    local found = false
 
+   --
+   -- We're going to invoke `mimegpg` and that will EITHER decrypt
+   -- OR verify.
+   --
+   -- So we need to accept both kinds of messages here.
+   --
    for line in io.lines(path) do
-      if ( line == "-----BEGIN PGP SIGNATURE-----" ) then
+      if ( ( line == "-----BEGIN PGP SIGNATURE-----" ) or
+           ( line == "-----BEGIN PGP MESSAGE-----" )  )
+      then
          found = true
       end
    end
