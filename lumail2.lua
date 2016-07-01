@@ -5,18 +5,25 @@
 -----------------------------------------------------------------------------
 --
 -- This is the configuration file for the Lumail 2.x command-line email
--- client.
---
--- The configuration is carried out solely by Lua.
+-- client, which is configured solely by Lua.
 --
 -- The client will load two files at startup if they exist:
 --
 --    /etc/lumail2/lumail2.lua
---
+--       * Which will then load ~/.lumail2/$HOSTNAME.lua
 --    ~/.lumail2/lumail2.lua
 --
--- If you wish to load additional files please specify them on the
--- command-line:
+-- The expectation is that you will NOT EDIT this file, instead
+-- you will place your own configuration in one of:
+--
+--   ~/.lumail2/$HOSTNAME.lua
+--   ~/.lumail2/lumail2.lua
+--
+-- This will make upgrading less painful, as this file will almost
+-- certainly change between releases.
+--
+-- That said you're free to do as you wish, and you may load additional
+-- files if specify them on the command-line:
 --
 --    lumail2 --load-file /path/to/code.lua
 --
@@ -61,36 +68,33 @@ end
 --
 -- We'll configure the load-path to search the following two directories:
 --
---    /etc/lumail2/luarocks.d/
---    ~/.lumail2/luarocks.d/
+--    /etc/lumail2/lib/
+--    ~/.lumail2/lib/
 --
-package.path = package.path .. ';/etc/lumail2/luarocks.d/?.lua'
-package.path = package.path .. ';/' .. os.getenv("HOME") .. '/.lumail2/luarocks.d/?.lua'
+package.path = package.path .. ';/etc/lumail2/lib/?.lua'
+package.path = package.path .. ';/' .. os.getenv("HOME") .. '/.lumail2/lib/?.lua'
 
 --
--- The libraries we've loaded.
+-- We'll load from the CWD only if this looks like a lumail2 source
+-- checkout.  This avoids a security issue.
 --
-luarocks_libraries = {}
-
---
--- The libraries that we want to load
---
-luarocks_desired = { "date" }
-
---
--- Load a library by name.
---
-function load_luarocks(name)
-   luarocks_libraries[name] = require(name)
+if ( File:exists( "./lumail2" ) and File:exists( ".git" ) ) then
+   package.path = package.path .. ';./lib/?.lua'
 end
 
 --
--- Ensure we've loaded our `date` library.
+-- Load libraries
 --
-for index,name in ipairs(luarocks_desired) do
-   pcall( _ENV['load_luarocks'], name)
-end
+Cache = require( "cache" )
+Date  = require( "date" )
+Life  = require( "life" )
+Stack = require( "stack" )
 
+--
+-- Load libraries which directly poke functions into the global
+-- namespace (bad).
+--
+SU = require( "string_utilities" )
 
 
 
@@ -98,8 +102,7 @@ end
 -- Setup a cache for objects, and define functions for loading/saving
 -- the cache-state.
 --
-
-local cache = {}
+cache = Cache.new()
 
 
 --
@@ -119,83 +122,6 @@ local sort_cache = {}
 --
 
 local global_msgs = {}
-
-
-
---
--- (Re)load our cache, if we have a cache-file defined, and it exists.
---
-function cache_load()
-   local file = Config:get("message.cache")
-   if (file) and File:exists( file ) then
-
-      -- Log the load
-      log_message("Loading cache from: " .. file )
-
-      -- our version
-      local cur = "VERSION=" .. Config:get( "global.version" )
-      -- The version from the cache-file.
-      local ver = nil
-
-      for line in io.lines(file) do
-
-         -- If we've not got a version then the first line we see will be it.
-         if ( not ver ) then
-            ver = line
-         end
-
-         -- Does the version match our current release?
-         if ( ver == cur ) then
-            -- greedy match on key-name.
-            key, val = line:match("^(.*)=([^=]+)$")
-            if ( key and val ) then
-               cache[key] = val
-            end
-         end
-      end
-
-      if ( ver == cur ) then
-         log_message("The cache is for this version of lumail2 : " .. ver )
-      end
-
-   end
-end
-
-
---
--- Write out the key/values from our local cache object to the filename
--- the user has set.  If there is no filename then don't write.
---
-function cache_save()
-   local file = Config:get("message.cache")
-
-   if (file) then
-      local hand = io.open(file,"w")
-
-      -- write out our version
-      hand:write( "VERSION=" .. Config:get( "global.version" ) .. "\n" )
-
-      -- Now the key/values from our cache.
-      for key,val in pairs(cache) do
-         hand:write( key .. "=" .. val  .. "\n")
-      end
-      hand:close()
-
-      log_message("Wrote cache to " .. file )
-   end
-end
-
-
---
--- Flush our (on-disk) cache
---
-function cache_flush()
-   for k in pairs (cache) do
-      cache[k] = nil
-   end
-   log_message("Flushed cache")
-   cache_save()
-end
 
 
 --
@@ -220,144 +146,6 @@ function sortedKeys(tbl)
 end
 
 
---
--- Simple implementation of a stack, in pure Lua.
---
------------------------------------------------------------------------------
------------------------------------------------------------------------------
-
-local Stack = {}
-Stack.__index = Stack
-
-function Stack.new()
-   local self = setmetatable({}, Stack)
-   self.stack = {}
-   return self
-end
-function Stack.push( self ,value )
-   local size = #self.stack
-   self.stack[ size+1 ] = value
-end
-function Stack.pop(self)
-   local size = #self.stack
-   if ( size <= 0 ) then
-      return nil
-   end
-   local value = self.stack[size]
-   self.stack[size] = nil
-   return value
-end
-
-
---
--- Simple implementation of life, in pure Lua.
---
------------------------------------------------------------------------------
------------------------------------------------------------------------------
-do
-   Life = {}
-   local mt = { __index = Life }
-
-   function Life.new(m, n)
-      local matrix = {}
-
-      for i = 1, m do
-         local row = {}
-         for j = 1, n do
-            row[j] = 0
-         end
-         matrix[i] = row
-      end
-
-      for i=1,50 do
-         local r_x = math.random(m)
-         local r_y = math.random(n)
-
-         -- Horrid
-         if ( ( r_x > 0 ) and
-              ( r_x < ( m - 2) ) and
-              ( r_y > 0 ) and
-              ( r_y < ( n - 2) ) ) then
-
-            matrix[r_x][r_y]     = 1
-            matrix[r_x+1][r_y]   = 1
-            matrix[r_x+2][r_y]   = 1
-            matrix[r_x+1][r_y+2] = 1
-            matrix[r_x+2][r_y+1] = 1
-         end
-      end
-
-      return setmetatable({
-                             matrix = matrix,
-                             m = m,
-                             n = n,
-                          }, mt)
-   end
-
-   function Life:set_pos(x,y)
-      self.matrix[x][y] = 1
-   end
-
-   function Life:unset_pos(x,y)
-      self.matrix[x][y] = 0
-   end
-
-   function Life:next_gen()
-      local X = deepcopy(self.matrix)
-      local matrix = self.matrix
-      for i = 1, self.m do
-         for j = 1, self.n do
-            local s = 0
-            for p = i-1,i+1 do
-               for q = j-1,j+1 do
-                  if p > 0 and p <= self.m and q > 0 and q <= self.n then
-                     s = s + self.matrix[p][q]
-                  end
-               end
-            end
-            s = s - self.matrix[i][j]
-            if s == 3 or (s+self.matrix[i][j]) == 3 then
-               X[i][j] = 1
-            else
-               X[i][j] = 0
-            end
-         end
-      end
-      self.matrix = deepcopy(X)
-   end
-
-   function Life:print_matrix()
-      local matrix = self.matrix
-      for i = 1, self.m do
-         for j = 1, self.n do
-            if matrix[i][j] == 0 then
-               Screen:draw( i, j, " " )
-            else
-               Screen:draw( i, j, "*" )
-            end
-         end
-
-      end
-   end
-end
-
-function deepcopy(object)
-   local lookup_table = {}
-   local function _copy(object)
-      if type(object) ~= "table" then
-         return object
-      elseif lookup_table[object] then
-         return lookup_table[object]
-      end
-      local new_table = {}
-      lookup_table[object] = new_table
-      for index, value in pairs(object) do
-         new_table[_copy(index)] = _copy(value)
-      end
-      return setmetatable(new_table, getmetatable(object))
-   end
-   return _copy(object)
-end
 
 
 
@@ -374,63 +162,6 @@ end
 function on_error( msg )
    Panel:append( "An error was caught " .. msg )
    log_message("An error was caught: " .. msg )
-end
-
-
---
--- String interopolation function, taken from the Lua wiki:
---
---   http://lua-users.org/wiki/StringInterpolation
---
--- Usage:
---
---   print( string.interp( "Hello $(name)", { name = "World" } )
---
-function string.interp(s, tab)
-   return (s:gsub('($%b{})', function(w) return tab[w:sub(3, -2)] or w end))
-end
-
-
---
--- Strip leading/trailing whitespace from the given string.
---
-function string.trim(s)
-   return string.match(s,'^()%s*$') and '' or string.match(s,'^%s*(.*%S)')
-end
-
-
---
--- Does the specified string end with the given string?
---
-function string.ends(String,End)
-   return End=='' or string.sub(String,-string.len(End))==End
-end
-
-
---
--- Split a string on newlines, and return the result as a table.
---
--- This is used in some drawing modes.
---
-function string.to_table(str)
-   local t = {}
-   local function helper(line) table.insert(t, line) return "" end
-   helper((str:gsub("(.-)\r?\n", helper)))
-   return t
-end
-
-
---
--- Split a string by a separator character, and return the resulting
--- table.
---
-function string.split(str, sep)
-   local result = {}
-   local regex = ("([^%s]+)"):format(sep)
-   for each in str:gmatch(regex) do
-      table.insert(result, each)
-   end
-   return result
 end
 
 
@@ -691,19 +422,20 @@ end
 function Message:to_ctime()
 
    local p = self:path()
-   if ( cache["ctime:" .. p] ) then
-      return(cache["ctime:" .. p] )
+   if ( cache:get("ctime:" .. p) ) then
+      return(cache:get("ctime:" .. p) )
    end
 
    --
    -- If luarocks library is not present then stat() the message
    -- and handle the sorting that way.
    --
-   if ( not luarocks_libraries["date"] ) then
+   if ( not Date ) then
       Log:append( "WARNING: luarocks - date library missing" )
+      Panel:append( "WARNING: luarocks - date library missing" )
       local stat = File:stat( self:path() )
       local res  = stat['mtime']
-      cache["ctime:" .. p] = res
+      cache:set("ctime:" .. p, res)
       return(res)
    end
 
@@ -714,16 +446,13 @@ function Message:to_ctime()
    local d = self:header("Date" )
    if ( d ) then
 
-      -- Get the handle to the lua-rocks date library
-      local date = luarocks_libraries["date"]
-
       -- Call the data function
-      local success,output = pcall( date, d )
+      local success,output = pcall( Date, d )
 
       -- If it worked, get the age in seconds, and update the cahce
       if ( success == true ) then
-         local seconds = date.diff(output, date.epoch()):spanseconds()
-         cache["ctime:" ..p] = seconds
+         local seconds = Date.diff(output, Date.epoch()):spanseconds()
+         cache:set("ctime:" ..p, seconds)
          return seconds
       end
    end
@@ -2203,8 +1932,8 @@ function Message:format()
    local time   = self:mtime()
 
    -- Do we have this cached?  If so return it
-   if ( cache["message:" .. time .. path] ) then
-      return(cache["message:" .. time .. path])
+   if ( cache:get("message:" .. time .. path) ) then
+      return(cache:get("message:" .. time .. path))
    end
 
    local flags   = self:flags()
@@ -2234,7 +1963,7 @@ function Message:format()
    end
 
    -- Update the cache.
-   cache["message:" .. time .. path] = output
+   cache:set("message:" .. time .. path, output)
 
    return( output )
 end
@@ -2374,7 +2103,6 @@ end
 -- This function handles the display of life-view
 --
 do
-
    -- If we don't have life enabled, then create some.
    if ( not life ) then
       life = Life.new( Screen:height(), Screen:width() )
@@ -2502,8 +2230,8 @@ function Maildir:format()
    end
 
    -- Do we have this cached?  If so return it
-   if ( cache["maildir:" .. trunc .. src .. time .. path] ) then
-      return(cache["maildir:" .. trunc .. src .. time .. path])
+   if ( cache:get("maildir:" .. trunc .. src .. time .. path) ) then
+      return(cache:get("maildir:" .. trunc .. src .. time .. path))
    end
 
    local total  = self:total_messages()
@@ -2556,7 +2284,7 @@ function Maildir:format()
    end
 
    -- update the cache
-   cache["maildir:" .. trunc .. src .. time .. path] = output
+   cache:set("maildir:" .. trunc .. src .. time .. path, output)
 
    return output
 end
@@ -3400,7 +3128,7 @@ do
       -- If it is two minutes then save our cache to disk
       if ( ( ct - ls ) >= ( 60 * 2 ) ) then
          ls = ct
-         cache_save()
+         cache:save(Config:get( "message.cache" ) )
       end
 
       --
@@ -3724,7 +3452,7 @@ Config:set( "global.history", HOME .. "/.lumail2.history" )
 -- Configure a cache-file, and populate it
 --
 Config:set( "message.cache", HOME .. "/.lumail2.cache" )
-cache_load()
+cache:load( Config:get( "message.cache") )
 
 --
 -- Set the default sorting method.  Valid choices are:
