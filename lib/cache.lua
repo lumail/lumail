@@ -29,7 +29,7 @@ function Cache.new()
 end
 
 --
--- Flush all known keys
+-- Flush all known keys - i.e. empty the cache.
 --
 function Cache.flush( self )
    self.store = nil
@@ -37,21 +37,35 @@ function Cache.flush( self )
 end
 
 --
--- Setter.
+-- Set a value in the cache.
 --
 function Cache.set( self, name, value )
    self.store[name] = value
 end
 
+
 --
--- Getter.
+-- Get the size of our cache.
+--
+function Cache.size( self )
+   local i = 0
+   for k,v in pairs (self.store) do
+      i = i + 1
+   end
+   return i
+end
+
+
+--
+-- Get a value from the cache, if it exists.
 --
 function Cache.get( self, name )
    return( self.store[name] )
 end
 
 --
--- Loader
+-- Load our cache from disk.  If it is too large empty it
+-- afterwards to avoid excessive size.
 --
 function Cache.load( self, file )
    if (file) and File:exists( file ) then
@@ -78,12 +92,16 @@ function Cache.load( self, file )
          end
       end
    end
+
+   self:trim()
 end
 
 --
--- Saver
+-- Save our cache - trim it if it is too large first.
 --
 function Cache.save(self, file)
+
+   self:trim()
 
    if (file) then
       local hand = io.open(file,"w")
@@ -100,8 +118,13 @@ function Cache.save(self, file)
 end
 
 --
--- TODO: Expire if too large
+-- Flush our cache if it is "too large".
 --
-
+function Cache.trim(self)
+   local size = self:size()
+   if ( size and ( size > 50000 ) ) then
+      self:flush()
+   end
+end
 
 return Cache
