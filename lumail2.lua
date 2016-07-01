@@ -95,6 +95,7 @@ Stack = require( "stack" )
 -- namespace (bad).
 --
 SU = require( "string_utilities" )
+TU = require( "table_utilities" )
 
 
 
@@ -122,28 +123,6 @@ local sort_cache = {}
 --
 
 local global_msgs = {}
-
-
---
--- Utility for counting the size of a table
---
-function table_size( obj )
-   local i = 0
-   for k,v in pairs (obj) do
-      i = i + 1
-   end
-   return i
-end
-
-
-function sortedKeys(tbl)
-   local keys = {}
-   for key in pairs(tbl) do
-      table.insert(keys, key)
-   end
-   table.sort(keys, function(a, b) return ( a:lower() < b:lower() ) end)
-   return keys
-end
 
 
 
@@ -2071,7 +2050,7 @@ function keybinding_view()
       table.insert(output, "\n" )
 
       local keys = keymap['global']
-      for i,o in pairs(sortedKeys( keys) ) do
+      for i,o in pairs( table.sorted_keys( keys) ) do
          local entry = string.format( "   %10s -> %s", o, keys[o] );
          table.insert(output,entry)
       end
@@ -2084,8 +2063,8 @@ function keybinding_view()
          table.insert(output, "\n\n" )
          table.insert(output, "$[BLUE]Keybindings for " .. mode .. "-mode" )
          table.insert(output, "\n" )
-         if (table_size(bind) > 0 ) then
-            for i,o in pairs(sortedKeys(bind) ) do
+         if (table.size(bind) >0 ) then
+            for i,o in pairs( table.sorted_keys(bind) ) do
                local entry = string.format( "   %10s -> %s", o, bind[o] );
                table.insert(output,entry)
             end
