@@ -359,35 +359,20 @@ end
 
 
 --
--- Count the attachments a message contains
+-- Count the number of attachments a message has.
 --
 function Message.count_attachments(msg)
 
-   local parts = msg:parts()
-   local ret   = 0
+   local parts = mimeparts2table(msg)
+   local count = 0
 
-   -- For each part look for a match, if we found it update "found"
-   for k,v in ipairs( parts ) do
-
-      -- The part
-      if ( v:is_attachment() ) then
-         ret = ret + 1
-      end
-
-      -- The children
-      local children = v:children()
-      if ( #children > 0) then
-         for a,b in ipairs( children ) do
-
-            -- Does this have an attachment
-            if ( b:is_attachment() ) then
-               ret = ret + 1
-            end
-         end
+   for i,o in ipairs( parts ) do
+      if ( o['filename'] ~= nil and o['filename'] ~= "" ) then
+         count = count + 1
       end
    end
 
-   return(ret)
+   return( count )
 end
 
 
@@ -411,7 +396,6 @@ function Message:to_ctime()
    --
    if ( not Date ) then
       Log:append( "WARNING: luarocks - date library missing" )
-      Panel:append( "WARNING: luarocks - date library missing" )
       local stat = File:stat( self:path() )
       local res  = stat['mtime']
       cache:set("ctime:" .. p, res)
