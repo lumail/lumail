@@ -2010,13 +2010,7 @@ end
 
 
 --
--- Change to keybinding mode.
---
-function keybinding()
-   change_mode( 'keybinding' )
-end
---
--- This function shows our keybindings
+-- This function shows our keybindings, both globally and for each mode.
 --
 function keybinding_view()
    --
@@ -2040,9 +2034,8 @@ function keybinding_view()
       end
    end
 
-   for i,o in pairs(keymap) do
-      if ( i and ( i ~= "global" )  ) then
-         local mode = i
+   for i,mode in pairs(table.sorted_keys(keymap)) do
+      if ( mode and ( mode ~= "global" )  ) then
          local bind = keymap[mode]
          table.insert(output, "\n\n" )
          table.insert(output, "$[BLUE]Keybindings for " .. mode .. "-mode" )
@@ -3107,13 +3100,16 @@ end
 --
 -- Utility function to show what a key is bound to.
 --
-function show_key()
+-- Bound to "?" in keybinding-mode.
+--
+function show_key_binding()
    local c = Screen:get_char( "Input key?" )
    if ( c == nil or c == "" ) then
       return
    end
 
-   -- Lookup per-mode
+   --
+   -- Lookup per-mode value.
    --
    local mode = Config:get("global.mode")
 
@@ -3122,6 +3118,9 @@ function show_key()
       return
    end
 
+   --
+   -- Lookup global mode.
+   --
    if ( keymap['global'][c] ) then
       Panel:append( c .. " is bound to " .. keymap['global'][c] )
       return
@@ -3206,9 +3205,10 @@ keymap['global']['/'] = 'find(1)'
 keymap['global']['?'] = 'find(-1)'
 
 --
--- Describe key
+-- Show keybindings: first of all global, then for a given key.
 --
-keymap['global']['H'] = 'show_key()'
+keymap['global']['H']     = "change_mode('keybinding')"
+keymap['keybinding']['?'] = 'show_key_binding()'
 
 --
 -- Life
