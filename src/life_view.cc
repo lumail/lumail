@@ -52,6 +52,6 @@ void CLifeView::on_idle()
 {
     CLua *lua = CLua::instance();
 
-    lua->execute( "life:print_matrix()" );
-    lua->execute( "life:next_gen()" );
+    lua->execute("life:print_matrix()");
+    lua->execute("life:next_gen()");
 }
