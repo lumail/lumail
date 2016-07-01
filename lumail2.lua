@@ -2056,7 +2056,7 @@ end
 
 
 --
--- This function handles the display of life-view
+-- Functions related to life-view
 --
 do
    -- If we don't have life enabled, then create some.
@@ -2064,10 +2064,14 @@ do
       life = Life.new( Screen:height(), Screen:width() )
    end
 
+   -- Kill all life, and create a new (random) set of gliders.
    function kill_life()
       life = nil
       life = Life.new( Screen:height(), Screen:width() )
    end
+
+   -- Don't output anything for display.  The C++ code will then
+   -- call its `on_idle()` function to display things directly.
    function life_view()
       output = {}
       return output
@@ -2154,6 +2158,10 @@ end
 
 --
 -- Show all the output from the panel.
+--
+-- This is more useful than it sounds because the panel is not scrollable
+-- nor can you add line-wrapping, but the panel-mode allows both those
+-- things.
 --
 function panel_view()
    local result = Panel:text()
