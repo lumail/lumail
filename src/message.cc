@@ -156,10 +156,13 @@ GMimeMessage * CMessage::parse_message()
      * use.
      */
     CLua *lua = CLua::instance();
-    if ( lua->function_exists( "message_replace" ) )
+
+    if (lua->function_exists("message_replace"))
     {
-        std::string updated = lua->function2string( "message_replace", file );
-        if ( ! updated.empty() ){
+        std::string updated = lua->function2string("message_replace", file);
+
+        if (! updated.empty())
+        {
             file = updated;
             replaced = true;
         }
@@ -177,8 +180,9 @@ GMimeMessage * CMessage::parse_message()
         else
             lua->on_error("Failed to open the message file - not found :" + path() + " " + error);
 
-        if ( replaced == true )
-            CFile::delete_file( file );
+        if (replaced == true)
+            CFile::delete_file(file);
+
         return (NULL);
     }
 
@@ -228,8 +232,8 @@ GMimeMessage * CMessage::parse_message()
 
     }
 
-    if ( replaced == true )
-        CFile::delete_file( file );
+    if (replaced == true)
+        CFile::delete_file(file);
 
     g_object_unref(parser);
     return (message);
