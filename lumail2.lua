@@ -100,18 +100,17 @@ TU = require( "table_utilities" )
 
 
 --
--- Setup a cache for objects, and define functions for loading/saving
--- the cache-state.
+-- Setup a cache for objects.  This is primarily used to cache
+-- formatted objects, etc.
 --
 cache = Cache.new()
 
-
 --
--- Setup a cache for sorting purposes.  This ensures that we don't
--- perform expensive calculations more often than is necessary.
+-- A second cache which is used solely for sorting purposes.
 --
-
-local sort_cache = {}
+-- NOTE: It uses the same caching library - code-reuse is good.
+--
+sort_cache = Cache.new()
 
 
 --
@@ -291,7 +290,7 @@ function Config.key_changed( name )
    --
    if ( name == "index.sort" ) then
       global_msgs = {}
-      sort_cache  = {}
+      sort_cache:flush()
       Panel:append( "index.sort changed - flushing message/sort cache" )
    end
 
@@ -436,20 +435,20 @@ end
 --
 function compare_by_file(a,b)
    local a_path = a:path()
-   local a_time = sort_cache[a_path]
+   local a_time = sort_cache:get(a_path)
 
    if ( a_time == nil ) then
       a_time = File:stat(a_path)['ctime']
-      sort_cache[a_path] = a_time
+      sort_cache:set(a_path, a_time)
    end
 
 
    local b_path = b:path()
-   local b_time = sort_cache[b_path]
+   local b_time = sort_cache:get(b_path)
 
    if ( b_time == nil ) then
       b_time = File:stat(b_path)['ctime']
-      sort_cache[b_path] = b_time
+      sort_cache:set(b_path, b_time)
    end
 
    return tonumber(a_time) < tonumber(b_time)
@@ -467,19 +466,19 @@ end
 function compare_by_date(a,b)
 
    local a_path = a:path()
-   local a_date = sort_cache[a_path]
+   local a_date = sort_cache:get(a_path)
 
    if ( a_date == nil ) then
       a_date = a:to_ctime();
-      sort_cache[a_path] = a_date
+      sort_cache:set(a_path, a_date)
    end
 
    local b_path = b:path()
-   local b_date = sort_cache[b_path]
+   local b_date = sort_cache:get(b_path)
 
    if ( b_date == nil ) then
       b_date = b:to_ctime();
-      sort_cache[b_path] = b_date
+      sort_cache:set(b_path, b_date)
    end
 
    --
@@ -495,19 +494,19 @@ end
 --
 function compare_by_from(a,b)
    local a_path = a:path()
-   local a_from = sort_cache[a_path]
+   local a_from = sort_cache:get(a_path)
 
    if ( a_from == nil ) then
       a_from = a:header("From"):lower()
-      sort_cache[a_path] = a_from
+      sort_cache:set(a_path, a_from)
    end
 
    local b_path = b:path()
-   local b_from = sort_cache[b_path]
+   local b_from = sort_cache:get(b_path)
 
    if ( b_from == nil ) then
       b_from = b:header("From"):lower()
-      sort_cache[b_path] = b_from
+      sort_cache:set(b_path, b_from)
    end
    return( a_from < b_from )
 end
@@ -519,19 +518,19 @@ end
 --
 function compare_by_subject(a,b)
    local a_path = a:path()
-   local a_sub  = sort_cache[a_path]
+   local a_sub  = sort_cache:get(a_path)
 
    if ( a_sub == nil ) then
       a_sub = a:header("Subject"):lower()
-      sort_cache[a_path] = a_sub
+      sort_cache:set(a_path, a_sub)
    end
 
    local b_path = b:path()
-   local b_sub  = sort_cache[b_path]
+   local b_sub  = sort_cache:get(b_path)
 
    if ( b_sub == nil ) then
       b_sub = b:header("Subject"):lower()
-      sort_cache[b_path] = b_sub
+      sort_cache:set(b_path, b_sub)
    end
    return( a_sub < b_sub )
 end
@@ -544,7 +543,7 @@ function sorting_method( value )
    if ( value ) then
       Config:set( "index.sort", value )
       global_msgs = {}
-      sort_cache  = {}
+      sort_cache:flush()
    end
    return( Config:get( "index.sort" ) )
 end

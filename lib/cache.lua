@@ -29,6 +29,14 @@ function Cache.new()
 end
 
 --
+-- Flush all known keys
+--
+function Cache.flush( self )
+   self.store = nil
+   self.store = {}
+end
+
+--
 -- Setter.
 --
 function Cache.set( self, name, value )
