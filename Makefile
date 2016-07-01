@@ -156,11 +156,11 @@ install: lumail2
 	cp lumail2 /usr/bin/
 
     # make target-directories
-	mkdir -p /etc/lumail2/luarocks.d/  || true
+	mkdir -p /etc/lumail2/lib/  || true
 	mkdir -p /etc/lumail2/perl.d/  || true
 
     # copy our helpers
-	cp luarocks.d/*.lua /etc/lumail2/luarocks.d/
+	cp lib/*.lua /etc/lumail2/lib/
 	cp perl.d/* /etc/lumail2/perl.d/
 
     # cleanup old installs

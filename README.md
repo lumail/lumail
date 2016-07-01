@@ -94,11 +94,11 @@ The integrated test-suite can be executed by running:
 Installing lumail2
 ------------------
 
-Running `make install` will install the binary and the [luarocks](https://luarocks.org/) libraries that we bundle, along with the perl-utiities which are required for IMAP-operation.
+Running `make install` will install the binary, the libraries that we bundle, and the perl-utiities which are required for IMAP-operation.
 
 If you wish to install manually copy:
 
-* The contents of `luarocks.d` to `/etc/lumail2/luarocks.d`.
+* The contents of `lib/` to `/etc/lumail2/lib`.
 * The contents of `perl.d` to `/etc/lumail2/perl.d`.
 
 NOTE: If you wish to use IMAP you'll need to install the two perl modules `JSON` and `Net::IMAP::Client`.  Upon a Debian GNU/Linux system this can be done
