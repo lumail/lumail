@@ -385,7 +385,7 @@ function Message.count_attachments(msg)
       end
    end
 
-   return( count )
+   return count
 end
 
 
@@ -1101,10 +1101,10 @@ Date: ${date}
       -- Populate "email" and "name" is distinct values, based
       -- upon the from: header.
       --
-      h['email'] = string.match(h['from'], "<(.*)>" )     or h['from']
-      h['name']  = string.match(h['from'], "(.*)<(.*)>" ) or h['from']
-      if ( h['email'] ) then h['email'] = string.trim( h['email']) end
-      if ( h['name'] ) then h['name'] = string.trim( h['name']) end
+      headers['email'] = string.match(headers['from'], "<(.*)>" )     or h['from']
+      headers['name']  = string.match(headers['from'], "(.*)<(.*)>" ) or h['from']
+      if ( headers['email'] ) then headers['email'] = string.trim( headers['email']) end
+      if ( headers['name'] ) then headers['name'] = string.trim( headers['name']) end
 
       -- Format the header appropriately.
       local line = string.interp( reply, headers  )
