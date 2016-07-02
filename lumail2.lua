@@ -1875,7 +1875,7 @@ end
 --
 -- This function is called by pressing `SPACE`/`ENTER` in attachment-mode
 --
-function view_mime_part()
+function view_mime_part(cmd)
    --
    -- Get the currently highlighted attachment-offset
    --
@@ -1915,8 +1915,12 @@ function view_mime_part()
       -- Get the MIME-type of the attachment
       local mime = found['type']:lower()
 
-      -- Lookup the viewer, and put the filename in place
-      local cmd = get_mime_viewer(mime)
+      -- Lookup the viewer to use, if not specified.
+      if ( not cmd ) or ( cmd == "" )  then
+         cmd = get_mime_viewer(mime)
+      end
+
+      -- Replace "%s" with the filename, and run the command
       cmd = string.gsub(cmd, "%%s", tmp)
 
       -- Execute it
@@ -3477,6 +3481,7 @@ keymap['message']['A']    = "change_mode('attachment')"
 keymap['attachment']['s']     = "save_mime_part()"
 keymap['attachment']['SPACE'] = "view_mime_part()"
 keymap['attachment']['ENTER'] = "view_mime_part()"
+keymap['attachment']['l']     = "view_mime_part( 'lynx -force_html %s' )"
 
 
 --
