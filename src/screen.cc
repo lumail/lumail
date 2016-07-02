@@ -770,15 +770,22 @@ std::string CScreen::get_line(std::string prompt, std::string input)
          * Redraw the main display.
          */
         if (view)
-        {
             view->draw();
-            update_panels();
-        }
 
         /*
-         * Call the Lua on_idle() function.
+         * Run our on_idle() functions.
          */
         lua->execute("on_idle()");
+
+        if (view)
+            view->on_idle();
+
+        /*
+         * Refresh our panels.
+         */
+        update_panels();
+        doupdate();
+        refresh();
 
         mvaddnstr(y, 0, prompt.c_str(), prompt.length());
         mvaddnstr(y, x, buffer.c_str(), buffer.size());
@@ -1048,15 +1055,22 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
          * Redraw the main display.
          */
         if (view)
-        {
             view->draw();
-            update_panels();
-        }
 
         /*
-         * Call the Lua on_idle() function.
+         * Run our on_idle() functions.
          */
         lua->execute("on_idle()");
+
+        if (view)
+            view->on_idle();
+
+        /*
+         * Refresh our panels.
+         */
+        update_panels();
+        doupdate();
+        refresh();
 
         mvaddnstr(y, x, prompt.c_str(), prompt.length());
 
@@ -1131,15 +1145,22 @@ std::string CScreen::get_char(std::string prompt)
          * Redraw the main display.
          */
         if (view)
-        {
             view->draw();
-            update_panels();
-        }
 
         /*
-         * Call the Lua on_idle() function.
+         * Run our on_idle() functions.
          */
         lua->execute("on_idle()");
+
+        if (view)
+            view->on_idle();
+
+        /*
+         * Refresh our panels.
+         */
+        update_panels();
+        doupdate();
+        refresh();
 
         mvaddnstr(y, x, prompt.c_str(), prompt.length());
 
