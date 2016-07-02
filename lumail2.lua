@@ -106,6 +106,13 @@ Stack = require( "stack" )
 SU = require( "string_utilities" )
 TU = require( "table_utilities" )
 
+--
+-- GPG support will only be present if `mimegpg` is present.
+--
+GPG = nil
+if ( string.path( "mimegpg" ) ) then
+   GPG = require( "gpg" )
+end
 
 
 
@@ -944,18 +951,23 @@ ${sig}
       --
       if ( a == "g" ) or ( a == "G" ) then
 
-         local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
-         if ( gpg == "c" ) or ( gpg == "C" ) then
-            encrypt = ""
-         end
-         if ( gpg == "s" ) or ( gpg == "S" ) then
-            encrypt = "-s"
-         end
-         if ( gpg == "e" ) or ( gpg == "E" ) then
-            encrypt = "-E -- --batch -r ${recipient} --trust-model always"
-         end
-         if ( gpg == "b" ) or ( gpg == "b" ) then
-            encrypt = "-s -E -- --batch -r ${recipient} --trust-model always"
+         -- Is GPG enabled?
+         if ( GPG == nil ) then
+            Panel:append( "GPG support disabled!" )
+         else
+            local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
+            if ( gpg == "c" ) or ( gpg == "C" ) then
+               encrypt = ""
+            end
+            if ( gpg == "s" ) or ( gpg == "S" ) then
+               encrypt = "-s"
+            end
+            if ( gpg == "e" ) or ( gpg == "E" ) then
+               encrypt = "-E -- --batch -r ${recipient} --trust-model always"
+            end
+            if ( gpg == "b" ) or ( gpg == "b" ) then
+               encrypt = "-s -E -- --batch -r ${recipient} --trust-model always"
+            end
          end
       end
 
@@ -1200,18 +1212,23 @@ Date: ${date}
       --
       if ( a == "g" ) or ( a == "G" ) then
 
-         local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
-         if ( gpg == "c" ) or ( gpg == "C" ) then
-            encrypt = ""
-         end
-         if ( gpg == "s" ) or ( gpg == "S" ) then
-            encrypt = "-s"
-         end
-         if ( gpg == "e" ) or ( gpg == "E" ) then
-            encrypt = "-E -- --batch -r ${recipient} --trust-model always"
-         end
-         if ( gpg == "b" ) or ( gpg == "b" ) then
-            encrypt = "-s -E -- --batch -r ${recipient} --trust-model always"
+         -- Is GPG enabled?
+         if ( GPG == nil ) then
+            Panel:append( "GPG support disabled!" )
+         else
+            local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
+            if ( gpg == "c" ) or ( gpg == "C" ) then
+               encrypt = ""
+            end
+            if ( gpg == "s" ) or ( gpg == "S" ) then
+               encrypt = "-s"
+            end
+            if ( gpg == "e" ) or ( gpg == "E" ) then
+               encrypt = "-E -- --batch -r ${recipient} --trust-model always"
+            end
+            if ( gpg == "b" ) or ( gpg == "b" ) then
+               encrypt = "-s -E -- --batch -r ${recipient} --trust-model always"
+            end
          end
       end
 
@@ -1377,83 +1394,6 @@ function Message.delete()
 
       -- Flush the cached message-list
       global_msgs = {}
-
-   end
-end
-
-
---
--- This is a function which is inserted into the *MIDDLE*
--- of a message parsing operation.
---
--- This means you CANNOT call `parts()` or similar, on a constructed
--- message, because if you do you'll end up in a never-ending recursive
--- loop.
---
--- The only thing you can do is *replace* the contents of the body
--- if you wish.
---
--- This function allows the caller to modify the message _before_ it
--- is parsed, and the way this is done is to replace the file that
--- is operated upon.
---
--- In short :
---
---  * This function is called with the path to the message, on-disk.
---
---  * This function may return "" to leave things as-is.
---
--- OR
---
---  * THis function may generate and return a filename.  That file
---    will be operated upon instead of the input message, and once
---    parsed will be deleted.
---
---
--- So if you wanted to do something crazy, like read only upper-case
--- messages, you could do that by running:
---
---   function message_replace(path)
---     local out = "/tmp/blah"
---     os.execute( "tr '[a-z]' '[A-Z]' <" .. path .. " >" .. out )
---     return( out )
---   end
---
---
-function message_replace( path )
-
-   --
-   --  If the file doesn't reference GPG then we're OK to return
-   -- early.
-   --
-   local found = false
-
-   --
-   -- We're going to invoke `mimegpg` and that will EITHER decrypt
-   -- OR verify.
-   --
-   -- So we need to accept both kinds of messages here.
-   --
-   for line in io.lines(path) do
-      if ( ( line == "-----BEGIN PGP SIGNATURE-----" ) or
-           ( line == "-----BEGIN PGP MESSAGE-----" )  )
-      then
-         found = true
-      end
-   end
-
-   if ( found == false ) then
-      return ""
-   end
-   --
-   -- Do we have the binary we want?
-   --
-   if (string.path( "mimegpg" ) ~= "" ) then
-      local out = os.tmpname();
-      os.execute( "mimegpg -d -c -- --batch < " .. path .. " > " .. out )
-      return( out )
-   else
-      return ""
    end
 end
 
@@ -1569,18 +1509,23 @@ Begin forwarded message.
       --
       if ( a == "g" ) or ( a == "G" ) then
 
-         local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
-         if ( gpg == "c" ) or ( gpg == "C" ) then
-            encrypt = ""
-         end
-         if ( gpg == "s" ) or ( gpg == "S" ) then
-            encrypt = "-s"
-         end
-         if ( gpg == "e" ) or ( gpg == "E" ) then
-            encrypt = "-E -- --batch -r ${recipient} --trust-model always"
-         end
-         if ( gpg == "b" ) or ( gpg == "b" ) then
-            encrypt = "-s -E -- --batch -r ${recipient} --trust-model always"
+         -- Is GPG enabled?
+         if ( GPG == nil ) then
+            Panel:append( "GPG support disabled!" )
+         else
+            local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
+            if ( gpg == "c" ) or ( gpg == "C" ) then
+               encrypt = ""
+            end
+            if ( gpg == "s" ) or ( gpg == "S" ) then
+               encrypt = "-s"
+            end
+            if ( gpg == "e" ) or ( gpg == "E" ) then
+               encrypt = "-E -- --batch -r ${recipient} --trust-model always"
+            end
+            if ( gpg == "b" ) or ( gpg == "b" ) then
+               encrypt = "-s -E -- --batch -r ${recipient} --trust-model always"
+            end
          end
       end
 
@@ -1590,7 +1535,6 @@ Begin forwarded message.
       end
 
       if ( a == "y" ) or ( a == "Y" ) then
-
 
          -- If the user has added attachments then process them
          if ( #attachments > 0 ) then
