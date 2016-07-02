@@ -27,12 +27,13 @@ is complete and robust:
      * Composing fresh emails.
      * Deleting emails.
 
-All of these things work against local Maildir-hierarchies __and__ remote
-IMAP servers.
+Each of the operations works against both local-maildir hierarchies,
+and [remote IMAP servers](IMAP.md).
+
 
 **NOTE**: `lumail2` may well eat your email, corrupt your email, or
 otherwise cause data loss.  If you have no current backups of your
-email you should **NO USE FOR THIS PROJECT**.
+email you should **NOT USE THIS PROJECT**.
 
 
 User-Interface
@@ -52,15 +53,19 @@ Because this is a modal-application you're always in one of a fixed number
 of modes:
 
 * `maildir`-mode
-    * Allows viewing lists of mail-folders.
+    * Allows you to see a list of message-folders.
 * `index`-mode
-    * Allows viewing a list of messages, i.e. the contents of a folder.
+    * Allows you to view a list of messages.
+    * i.e. The contents of a folder.
 * `message`-mode
     * Allows you to view a single message.
-    * `attachment`-mode is a submode, and allows you to view the attachments associated with a particular message.
+    * `attachment`-mode is a submode, allowing you to view the attachments associated with a particular message.
 * `lua`-mode.
     * This mode displays output created by Lua.
     * By default it dumps configuration values, & etc.
+* `keybinding`-mode.
+    * Shows you the keybindings which are in-use.
+    * Press `H` to enter this mode, and `q` to return from it.
 
 
 Building Lumail2
@@ -73,12 +78,9 @@ The core of the project relies upon a small number of libraries:
 * libgmime-2.6, the MIME-library.
 * libncursesw, the console input/graphics library.
 
-Upon a Debian GNU/Linux host, running the Jessie (stable) release, the following two commands are sufficient to install the dependencies:
+Upon a Debian GNU/Linux host, running the Jessie (stable) release, the following command is sufficient to install the required dependencies:
 
-    apt-get install build-essential make pkg-config
-
-    apt-get install liblua5.2-dev libgmime-2.6-dev  \
-       libncursesw5-dev libpcre3-dev libmagic-dev
+     apt-get install build-essential libgmime-2.6-dev liblua5.2-dev libmagic-dev libncursesw5-dev libpcre3-dev make pkg-config
 
 
 With the dependencies installed you should find the code builds cleanly with:
@@ -91,10 +93,10 @@ The integrated test-suite can be executed by running:
 
 
 
-Installing lumail2
-------------------
+Installation and Configuration
+------------------------------
 
-Running `make install` will install the binary, the libraries that we bundle, and the perl-utiities which are required for IMAP-operation.
+Running `make install` will install the binary, the libraries that we bundle, and the perl-utilities which are required for IMAP-operation.
 
 If you wish to install manually copy:
 
@@ -106,28 +108,20 @@ via:
 
      apt-get install libnet-imap-client-perl libjson-perl
 
+Once installed you'll want to create your own personal configuration file.
 
+To allow smooth upgrades it is __recommended__ you do not edit the global configuration file `/etc/lumail2/lumail2.lua`.  Instead you should copy the sample user-configuration file into place:
 
+      $ mkdir ~/.lumail2/
+      $ cp lumail2.user.lua ~/.lumail2/lumail2.lua
 
-Configuring Lumail
--------------------
+If you prefer you can name your configuration file after the hostname of the local system - this is useful if you store your dotfiles under revision control, and share them:
 
-When `lumail2` starts it will load each of the following files:
+      $ mkdir ~/.lumail2/
+      $ cp lumail2.user.lua ~/.lumail2/$(hostname --fqdn).lua
 
-* `/etc/lumail2/lumail2.lua`
-    * This will then load `~/.lumail2/$HOSTNAME.lua` if present.
-* `~/.lumail2/lumail2.lua`
-
-The intention is that you will always run `make install` to ensure
-that the global file is present, and you will then place your own
-configuration in the file `~/.lumail2/lumail2.lua`.
-
-If you keep your personal configuration settings beneath `~/.lumail2/`
-then they will remain effective if/when you ever upgrade lumail.
-
-The following settings are probably the minimum you'll require,
-given the sensible defaults in the global configuration file:
-
+The defaults in the per-user configuration file should be adequately
+documented, but in-brief you'll want to ensure you set at least the following:
 
      -- Set the location of your Maildir folders, and your sent-folder
      Config:set( "maildir.prefix", os.getenv( "HOME" ) .. "/Maildir/" );
@@ -137,13 +131,10 @@ given the sensible defaults in the global configuration file:
      Config:set( "global.mailer", "/usr/lib/sendmail -t" )
      Config:set( "global.sender", "Some User <steve@example.com>" )
 
-     -- Set your editor
+     -- Set your preferred editor
      Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )
 
-Other options are possible, and you'll find if you wish to
-[use IMAP](IMAP.md) you need some more options.  For more details
-please do read the [sample lumail2.lua file](lumail2.lua).
-
+Other options are possible, and you'll find if you wish to [use IMAP](IMAP.md) you need some more options.  If you wish to use encryption you should also read the [GPG notes](GPG.md).
 
 
 Using Lumail2
@@ -154,22 +145,25 @@ By default you'll be in the `maildir`-mode, and you can navigate with `j`/`k`, a
 For a quick-start you can use the following bindings:
 
 * `TAB` - Toggle the display of the status-panel.
-* `P` - Toggle the size of the panel.
-* `M` - Maildir mode.
-* `I` - Index mode.
-* `L` - Lua-mode.
+   * The panel displays brief messages when "things" happen.
+   * `P` - Toggle the size of the panel.
+   * `ctrl-p` enters you into a mode were you can view/scroll through past messages.
+* `H` - Shows the keybindings which are configured.
+* `M` - See your list of folders.
+* `q` - Always takes you out of the current mode and into the previous one.
+   * Stopping at the folder-list (`maildir`-mode).
 * `Q` - Exit.
 
 
 Further Notes
 -------------
 
-* [API Documentation](API.md)
+* [API Documentation](API.md).
    * Documents the Lua classes.
-* [Contributor Guide](CONTRIBUTING.md)
-* [Notes on IMAP](IMAP.md)
-* [Notes on GPG Support](GPG.md)
-* [Notes on implementation & structure](HACKING.md)
+* [Contributor Guide](CONTRIBUTING.md).
+* [Notes on IMAP](IMAP.md).
+* [Notes on GPG Support](GPG.md).
+* [Notes on implementation & structure](HACKING.md).
    * See also the [experiments repository](https://github.com/lumail/experiments) where some standalone code has been isolated for testing/learning purposes.
 
 
