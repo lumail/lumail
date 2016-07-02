@@ -21,7 +21,7 @@
 
 --
 -- NOTE: If you wish you may re-declare any global configuration functions
--- in this file, or remap keybindings.
+--       in this file, or remap keybindings.
 --
 -- For example I like to use `ctrl-w` to exit the client:
 --
@@ -67,7 +67,6 @@ Config:set( "global.iconv", 1 )
 --
 Config:set( "index.fast", 1 )
 
-
 --
 -- Get our home-directory, as this is often used.
 --
@@ -76,18 +75,14 @@ local HOME = os.getenv("HOME")
 --
 -- The default Maildir location is ~/Maildir
 --
-local def_maildir = HOME .. "/Maildir"
+Config:set( "maildir.prefix", HOME .. "/Maildir" );
 
 --
--- Set the maildir-prefix, if it exists.
+-- NOTE: You could also set an array of prefixes, which will be
+-- merged and sorted.
 --
--- NOTE: You could also set an array of prefixes.
+-- Config:set( "maildir.prefix", { "/home/steve/Maildir", "/tmp/Maildir" } )
 --
--- To set multiple values simply configure a table, not a string:
---
--- Config:set( "maildir.prefix", { def_maildir, "/tmp/Maildir" } )
---
-Config:set( "maildir.prefix", def_maildir );
 
 
 --
