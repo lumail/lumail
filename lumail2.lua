@@ -43,7 +43,7 @@
 
 
 --
--- Define a method for logging information  which is disabled
+-- Define a method for logging information which is disabled
 -- by default.
 --
 --  To enable this uncomment the following line which sets up a path
@@ -181,7 +181,7 @@ function get_mime_viewer( mime_type )
    --
    -- The default viewer.
    --
-   local ret  = "less %s"
+   local ret = "less %s"
 
    -- The file we lookup values in.
    local filename = Config.get_with_default( "global.mime-file", "/etc/mailcap" )
@@ -772,7 +772,6 @@ function mimeparts2table( msg )
          local tmp = {
             count    = c,
             filename = o:filename(),
-            -- the actual part.
             object   = o,
             size     = o:size(),
             type     = o:type():lower(),
@@ -898,8 +897,8 @@ function Message.compose()
    end
 
    -- Get a temporary file, and opening it for writing
-   local tmp   = os.tmpname()
-   local file  = assert(io.open(tmp, "w"))
+   local tmp  = os.tmpname()
+   local file = assert(io.open(tmp, "w"))
 
    --
    -- Populate the header variables
@@ -996,7 +995,7 @@ ${sig}
             local cmd = "mimegpg " .. encrypt .. "< " .. tmp .. " > " .. tmp2
 
             -- Replace the recipient, if present.
-            cmd = string.interp( cmd, { recipient  = to} )
+            cmd = string.interp( cmd, { recipient = to} )
 
             -- Run the command.
             os.execute( cmd)
@@ -1066,8 +1065,8 @@ function Message.reply()
 
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
-      local offset  = Config.get_with_default( "index.current", 0 )
-      local msgs    = get_messages()
+      local offset = Config.get_with_default( "index.current", 0 )
+      local msgs   = get_messages()
 
       if ( not msgs ) then
          Panel:append( "There are no messages!")
@@ -1257,7 +1256,7 @@ Date: ${date}
             local cmd = "mimegpg " .. encrypt .. "< " .. tmp .. " > " .. tmp2
 
             -- Replace the recipient, if present.
-            cmd = string.interp( cmd, { recipient  = to} )
+            cmd = string.interp( cmd, { recipient = to} )
 
             -- Run the command.
             os.execute( cmd)
@@ -1371,8 +1370,8 @@ function Message.delete()
 
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
-      local offset  = Config.get_with_default( "index.current", 0)
-      local msgs    = get_messages()
+      local offset = Config.get_with_default( "index.current", 0)
+      local msgs   = get_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
          return
@@ -1423,8 +1422,8 @@ function Message.forward()
 
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
-      local offset  = Config.get_with_default( "index.current", 0 )
-      local msgs    = get_messages()
+      local offset = Config.get_with_default( "index.current", 0 )
+      local msgs   = get_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
          return
@@ -1554,7 +1553,7 @@ Begin forwarded message.
             local cmd = "mimegpg " .. encrypt .. "< " .. tmp .. " > " .. tmp2
 
             -- Replace the recipient, if present.
-            cmd = string.interp( cmd, { recipient  = to} )
+            cmd = string.interp( cmd, { recipient = to} )
 
             -- Run the command.
             os.execute( cmd)
@@ -1622,8 +1621,8 @@ function Message.toggle()
 
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
-      local offset  = Config.get_with_default( "index.current", 0 )
-      local msgs    = get_messages()
+      local offset = Config.get_with_default( "index.current", 0 )
+      local msgs   = get_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
          return
@@ -1673,8 +1672,8 @@ function Message.save()
 
       -- Get the list of messages, and the current offset
       -- that'll let us find the message.
-      local offset  = Config.get_with_default( "index.current", 0 )
-      local msgs    = get_messages()
+      local offset = Config.get_with_default( "index.current", 0 )
+      local msgs   = get_messages()
       if ( not msgs ) then
          Panel:append( "There are no messages!")
          return
@@ -1828,7 +1827,7 @@ function save_mime_part()
    --
    -- Get the current message, and then the parts.
    --
-   local msg  = Global:current_message()
+   local msg = Global:current_message()
    if ( not msg ) then
       return
    end
@@ -1885,7 +1884,7 @@ function view_mime_part(cmd)
    --
    -- Get the current message, and then the parts.
    --
-   local msg  = Global:current_message()
+   local msg = Global:current_message()
    if ( not msg ) then
       return
    end
@@ -1905,8 +1904,8 @@ function view_mime_part(cmd)
       end
 
       -- Generate a temporary file
-      local tmp   = os.tmpname()
-      local file  = assert(io.open(tmp, "w"))
+      local tmp  = os.tmpname()
+      local file = assert(io.open(tmp, "w"))
 
       -- save the content there
       file:write( found['object']:content() )
@@ -2072,8 +2071,8 @@ end
 -- it is called by the `index_view()` function defined next.
 --
 function Message:format()
-   local path   = self:path()
-   local time   = self:mtime()
+   local path = self:path()
+   local time = self:mtime()
 
    -- Do we have this cached?  If so return it
    if ( cache:get("message:" .. time .. path) ) then
@@ -2371,10 +2370,10 @@ end
 -- which is defined below.
 --
 function Maildir:format()
-   local path   = self:path()
-   local time   = self:mtime()
-   local trunc  = Config.get_with_default("maildir.truncate", 0)
-   local src    = "maildir"
+   local path  = self:path()
+   local time  = self:mtime()
+   local trunc = Config.get_with_default("maildir.truncate", 0)
+   local src   = "maildir"
 
    --
    -- If we're a remote IMAP Maildir then we cache that based on the
@@ -2813,7 +2812,7 @@ function select()
       --
       -- Get the current offset.
       --
-      local msg  = msgs[cur+1]
+      local msg = msgs[cur+1]
 
       if ( msg == nil ) then
          Panel:append( "There is nothing to select!" )
@@ -2938,7 +2937,7 @@ do
    function find( offset )
 
       -- Get the search pattern.
-      local pattern  = Screen:get_line( "/:" )
+      local pattern = Screen:get_line( "/:" )
 
       -- If the user didn't enter anything then use the previous
       -- input, if any.
@@ -3098,7 +3097,7 @@ function next_unread()
          if ( folder:unread_messages() > 0 ) then
             unread = true
          end
-      elseif ( mode  == "index" ) then
+      elseif ( mode == "index" ) then
          -- A message is unread if .. it is unread!
          local msg = objs[cur]
          if ( msg:is_new() ) then
@@ -3448,9 +3447,9 @@ keymap['index']['N']   = 'next_unread()'
 --
 -- Limit the display of messages appropriately
 --
-keymap['index']['a']   = 'Config:set( "index.limit", "all" )'
-keymap['index']['n']   = 'Config:set( "index.limit", "new" )'
-keymap['index']['t']   = 'Config:set( "index.limit", "today" )'
+keymap['index']['a'] = 'Config:set( "index.limit", "all" )'
+keymap['index']['n'] = 'Config:set( "index.limit", "new" )'
+keymap['index']['t'] = 'Config:set( "index.limit", "today" )'
 
 --
 -- Change the sorting method.
@@ -3467,20 +3466,20 @@ keymap['index']['T'] = 'Message.toggle()'
 --
 -- Exit out of modes, and the application.
 --
-keymap['global']['q']    = "previous_mode()"
-keymap['global']['Q']    = "os.exit(0)"
+keymap['global']['q'] = "previous_mode()"
+keymap['global']['Q'] = "os.exit(0)"
 
 --
 -- Enter attachment-mode
 --
-keymap['message']['A']    = "change_mode('attachment')"
+keymap['message']['A'] = "change_mode('attachment')"
 
 
 --
 -- Attachment-mode
 --
 -- Save the current attachment
-keymap['attachment']['s']     = "save_mime_part()"
+keymap['attachment']['s'] = "save_mime_part()"
 -- View the current attachment.
 keymap['attachment']['SPACE'] = "view_mime_part()"
 keymap['attachment']['ENTER'] = "view_mime_part()"
