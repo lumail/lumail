@@ -323,7 +323,7 @@ function Config.key_changed( name )
    if ( name == "index.sort" ) then
       global_msgs = {}
       sort_cache:flush()
-      Panel:append( "index.sort changed - flushing message/sort cache" )
+      Panel:append( "Sorting changed to '" .. Config:get( "index.sort" ) .. "' flushing message/sort cache" )
    end
 
 end
