@@ -166,15 +166,6 @@ void CScreen::run_main_loop()
         CViewMode *view = m_views[mode];
 
         /*
-         * If the user wanted to quit - do that.
-         */
-        if (ch == 'Q')
-        {
-            m_running = false;
-            continue;
-        }
-
-        /*
          * If the key fetching timed out then call our idle functions.
          */
         if (ch == ERR)

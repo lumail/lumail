@@ -235,6 +235,8 @@ end
 -- we reset the screen neatly, etc.
 --
 function os.exit(code)
+   Panel:append( "Saving cache .." )
+   cache:save(Config:get( "message.cache" ) )
    Screen:exit()
 end
 
@@ -3459,9 +3461,10 @@ keymap['index']['F'] = 'sorting_method( "from")'
 keymap['index']['T'] = 'Message.toggle()'
 
 --
--- Exit out of modes
+-- Exit out of modes, and the application.
 --
 keymap['global']['q']    = "previous_mode()"
+keymap['global']['Q']    = "os.exit(0)"
 
 --
 -- Enter attachment-mode
