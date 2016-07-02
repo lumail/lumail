@@ -13,7 +13,6 @@ All of this GPG-support is implemented via the use of the `mimegpg` tool, which 
     # apt-get install sqwebmail
 
 
-
 Configuring & Testing mimegpg
 -----------------------------
 
