@@ -930,11 +930,34 @@ ${sig}
    -- Open the editor
    Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
 
+   -- GPG options
+   local encrypt = "";
+
    while( run ) do
 
       -- Once the editor quits ask for an action
       Screen:clear()
-      local a = Screen:prompt( "Send mail : (y)es, (n)o, re-(e)dit, or (a)dd an attachment?", "yYnNeEaA" )
+      local a = Screen:prompt( "Send mail : (y)es, (n)o, re-(e)dit, (g)pg, or (a)dd an attachment?", "yYnNeEaAgG" )
+
+      --
+      -- GPG options.
+      --
+      if ( a == "g" ) or ( a == "G" ) then
+
+         local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
+         if ( gpg == "c" ) or ( gpg == "C" ) then
+            encrypt = ""
+         end
+         if ( gpg == "s" ) or ( gpg == "S" ) then
+            encrypt = "-s"
+         end
+         if ( gpg == "e" ) or ( gpg == "E" ) then
+            encrypt = "-E -- --batch -r ${recipient} --trust-model always"
+         end
+         if ( gpg == "b" ) or ( gpg == "b" ) then
+            encrypt = "-s -E -- --batch -r ${recipient} --trust-model always"
+         end
+      end
 
       if ( a == "e" ) or ( a == "E" ) then
          -- Re-edit.
@@ -947,6 +970,26 @@ ${sig}
          if ( #attachments > 0 ) then
             amsg = Message.new(tmp)
             amsg:add_attachments( attachments )
+         end
+
+         --
+         -- If the user has encryption options then do the necessary
+         --
+         if ( encrypt ~= "" ) then
+            local tmp2 = os.tmpname()
+
+            -- Build up the command
+            local cmd = "mimegpg " .. encrypt .. "< " .. tmp .. " > " .. tmp2
+
+            -- Replace the recipient, if present.
+            cmd = string.interp( cmd, { recipient  = to} )
+
+            -- Run the command.
+            os.execute( cmd)
+
+            -- Now replace the temporary file we're to use
+            File:copy( tmp2, tmp )
+            os.remove( tmp2 )
          end
 
          -- Send the mail.
@@ -1142,11 +1185,35 @@ Date: ${date}
    -- Open the editor
    Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
 
+   -- GPG options
+   local encrypt = "";
+
+
    while( run ) do
 
       -- Once the editor quits ask for an action
       Screen:clear()
-      local a = Screen:prompt( "Send mail : (y)es, (n)o, re-(e)dit, or (a)dd an attachment?", "yYnNeEaA" )
+      local a = Screen:prompt( "Send mail : (y)es, (n)o, re-(e)dit, (g)pg, or (a)dd an attachment?", "yYnNeEaAgG" )
+
+      --
+      -- GPG options.
+      --
+      if ( a == "g" ) or ( a == "G" ) then
+
+         local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
+         if ( gpg == "c" ) or ( gpg == "C" ) then
+            encrypt = ""
+         end
+         if ( gpg == "s" ) or ( gpg == "S" ) then
+            encrypt = "-s"
+         end
+         if ( gpg == "e" ) or ( gpg == "E" ) then
+            encrypt = "-E -- --batch -r ${recipient} --trust-model always"
+         end
+         if ( gpg == "b" ) or ( gpg == "b" ) then
+            encrypt = "-s -E -- --batch -r ${recipient} --trust-model always"
+         end
+      end
 
       if ( a == "e" ) or ( a == "E" ) then
          -- Re-edit.
@@ -1159,6 +1226,26 @@ Date: ${date}
          if ( #attachments > 0 ) then
             amsg = Message.new(tmp)
             amsg:add_attachments( attachments )
+         end
+
+         --
+         -- If the user has encryption options then do the necessary
+         --
+         if ( encrypt ~= "" ) then
+            local tmp2 = os.tmpname()
+
+            -- Build up the command
+            local cmd = "mimegpg " .. encrypt .. "< " .. tmp .. " > " .. tmp2
+
+            -- Replace the recipient, if present.
+            cmd = string.interp( cmd, { recipient  = to} )
+
+            -- Run the command.
+            os.execute( cmd)
+
+            -- Now replace the temporary file we're to use
+            File:copy( tmp2, tmp )
+            os.remove( tmp2 )
          end
 
          -- Send the mail.
@@ -1468,11 +1555,34 @@ Begin forwarded message.
    -- Open the editor
    Screen:execute( Config:get( "global.editor" ) .. " " .. tmp )
 
+   -- GPG options
+   local encrypt = "";
+
    while( run ) do
 
       -- Once the editor quits ask for an action
       Screen:clear()
-      local a = Screen:prompt( "Forward mail : (y)es, (n)o, re-(e)dit, or (a)dd an attachment?", "yYnNeEaA" )
+      local a = Screen:prompt( "Forward mail : (y)es, (n)o, re-(e)dit, (g)pg, or (a)dd an attachment?", "yYnNeEaAgG" )
+
+      --
+      -- GPG options.
+      --
+      if ( a == "g" ) or ( a == "G" ) then
+
+         local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
+         if ( gpg == "c" ) or ( gpg == "C" ) then
+            encrypt = ""
+         end
+         if ( gpg == "s" ) or ( gpg == "S" ) then
+            encrypt = "-s"
+         end
+         if ( gpg == "e" ) or ( gpg == "E" ) then
+            encrypt = "-E -- --batch -r ${recipient} --trust-model always"
+         end
+         if ( gpg == "b" ) or ( gpg == "b" ) then
+            encrypt = "-s -E -- --batch -r ${recipient} --trust-model always"
+         end
+      end
 
       if ( a == "e" ) or ( a == "E" ) then
          -- Re-edit.
@@ -1486,6 +1596,26 @@ Begin forwarded message.
          if ( #attachments > 0 ) then
             amsg = Message.new(tmp)
             amsg:add_attachments( attachments )
+         end
+
+         --
+         -- If the user has encryption options then do the necessary
+         --
+         if ( encrypt ~= "" ) then
+            local tmp2 = os.tmpname()
+
+            -- Build up the command
+            local cmd = "mimegpg " .. encrypt .. "< " .. tmp .. " > " .. tmp2
+
+            -- Replace the recipient, if present.
+            cmd = string.interp( cmd, { recipient  = to} )
+
+            -- Run the command.
+            os.execute( cmd)
+
+            -- Now replace the temporary file we're to use
+            File:copy( tmp2, tmp )
+            os.remove( tmp2 )
          end
 
          -- Send the mail.
