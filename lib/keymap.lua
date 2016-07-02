@@ -28,15 +28,15 @@ keymap['global']['^P']  = "change_mode( 'panel' )"
 --
 -- Next/Previous navigation for different modes
 --
-keymap['global']['KEY_UP']   = "prev(1)"
-keymap['global']['k']        = "prev(1)"
-keymap['global']['j']        = "next(1)"
-keymap['global']['KEY_DOWN'] = "next(1)"
+keymap['global']['KEY_UP']   = "prev(false)"
+keymap['global']['k']        = "prev(false)"
+keymap['global']['j']        = "next(false)"
+keymap['global']['KEY_DOWN'] = "next(false)"
 
-keymap['global']['K']         = "prev(10)"
-keymap['global']['KEY_PPAGE'] = "prev(10)"
-keymap['global']['J']         = "next(10)"
-keymap['global']['KEY_NPAGE'] = "next(10)"
+keymap['global']['K']         = "prev(true)"
+keymap['global']['KEY_PPAGE'] = "prev(true)"
+keymap['global']['J']         = "next(true)"
+keymap['global']['KEY_NPAGE'] = "next(true)"
 
 keymap['global']['<']        = "first()"
 keymap['global']['KEY_HOME'] = "first()"

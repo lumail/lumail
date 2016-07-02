@@ -3012,11 +3012,26 @@ end
 -- Scroll the current mode down - by manipulating the "current" offset
 -- for the current mode.
 --
-function next( offset )
+-- Page is a boolean which means:
+--
+--   false -> Move a single line
+--   true  -> Move a single page.
+--
+function next( page )
 
    local mode = Config:get("global.mode")
    local max  = Config:get(mode .. ".max" )
    local cur  = Config.get_with_default(mode .. ".current", 0)
+
+   local offset = 1
+
+   if ( page ) then
+      if (Panel:visible() ) then
+         offset = Screen:height() - Panel:height() - 1
+      else
+         offset = Screen:height() - 1
+      end
+   end
 
    if ( cur + offset < (max-1) ) then
       cur = cur + offset
@@ -3034,9 +3049,25 @@ end
 -- Scroll the current mode up - by manipulating the "current" offset
 -- for the current mode.
 --
-function prev( offset )
+--
+-- Page is a boolean which means:
+--
+--   false -> Move a single line
+--   true  -> Move a single page.
+--
+function prev( page )
    local mode = Config:get("global.mode")
    local cur  = Config.get_with_default(mode .. ".current", 0)
+
+   local offset = 1
+
+   if ( page ) then
+      if (Panel:visible() ) then
+         offset = Screen:height() - Panel:height() -1
+      else
+         offset = Screen:height() - 1
+      end
+   end
 
    if ( cur - offset > 0 ) then
       cur = cur - offset
