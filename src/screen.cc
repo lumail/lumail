@@ -178,7 +178,8 @@ void CScreen::run_main_loop()
             /*
              * Call our view-specific on-idle handler.
              */
-            view->on_idle();
+            if (view)
+                view->on_idle();
         }
         else
         {
@@ -208,7 +209,8 @@ void CScreen::run_main_loop()
         /*
          * Update the view.
          */
-        view->draw();
+        if (view)
+            view->draw();
 
         /*
          * Update our panel.
