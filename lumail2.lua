@@ -373,8 +373,15 @@ do
 
    -- Change to a new mode
    function change_mode( new_mode )
-      -- Record previous mode
-      mode_stack:push( Config:get( "global.mode" ) )
+
+      -- Get the current mode
+      local current = Config:get( "global.mode" )
+
+      -- No change?  Return
+      if ( current == new_mode ) then return end
+
+      -- Record the previous mode, and change.
+      mode_stack:push( current )
       Config:set( "global.mode", new_mode )
    end
 
