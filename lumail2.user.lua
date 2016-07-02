@@ -1,9 +1,34 @@
+--
+-- This is the per-user configuration file for lumail.
+--
+-- To make it active copy it to either:
+--
+--   ~/.lumail2/lumail2.lua
+--   ~/.luamil2/$(hostname --fqdn).lua
+--
+-- Changes here will override the defaults which are loaded by the
+-- global configuration file (/etc/lumail2/lumail2.lua).
+--
+-- It is *highly* recommended you follow this approach, because this
+-- will ensure that upgrades do not trash your edits.
+--
+-- If there are omissions where per-user configuration makes it impossible
+-- to configure things as you wish they are bugs, and should be reported
+-- as such.
+--
+--
+
 
 --
--- Configure the mail-client.
+-- NOTE: If you wish you may re-declare any global configuration functions
+-- in this file, or remap keybindings.
 --
--- This is the section that most users will need to change.
+-- For example I like to use `ctrl-w` to exit the client:
 --
+keymap['global']['^W'] = 'os.exit(1)'
+
+
+
 --
 -----------------------------------------------------------------------------
 
