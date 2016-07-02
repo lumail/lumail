@@ -3481,7 +3481,10 @@ keymap['message']['A']    = "change_mode('attachment')"
 keymap['attachment']['s']     = "save_mime_part()"
 keymap['attachment']['SPACE'] = "view_mime_part()"
 keymap['attachment']['ENTER'] = "view_mime_part()"
-keymap['attachment']['l']     = "view_mime_part( 'lynx -force_html %s' )"
+
+-- Useful for viewing HTML attachments, via w3m/lynx.
+keymap['attachment']['l'] = "view_mime_part( 'lynx -force_html %s' )"
+keymap['attachment']['w'] = "view_mime_part( 'w3m -T text/html %s' )"
 
 
 --
