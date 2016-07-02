@@ -3475,14 +3475,16 @@ keymap['global']['Q']    = "os.exit(0)"
 --
 keymap['message']['A']    = "change_mode('attachment')"
 
+
+--
+-- Attachment-mode
 --
 -- Save the current attachment
---
 keymap['attachment']['s']     = "save_mime_part()"
+-- View the current attachment.
 keymap['attachment']['SPACE'] = "view_mime_part()"
 keymap['attachment']['ENTER'] = "view_mime_part()"
-
--- Useful for viewing HTML attachments, via w3m/lynx.
+-- View the attachment with the given browser
 keymap['attachment']['l'] = "view_mime_part( 'lynx -force_html %s' )"
 keymap['attachment']['w'] = "view_mime_part( 'w3m -T text/html %s' )"
 
