@@ -120,7 +120,7 @@ If you prefer you can name your configuration file after the hostname of the loc
       $ mkdir ~/.lumail2/
       $ cp lumail2.user.lua ~/.lumail2/$(hostname --fqdn).lua
 
-The defaults in the per-user configuration file should be adequately
+The defaults in [the per-user configuration file](lumail2.user.lua) should be adequately
 documented, but in-brief you'll want to ensure you set at least the following:
 
      -- Set the location of your Maildir folders, and your sent-folder
