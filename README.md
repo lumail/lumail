@@ -103,7 +103,7 @@ If you wish to install manually copy:
 * The contents of `lib/` to `/etc/lumail2/lib`.
 * The contents of `perl.d` to `/etc/lumail2/perl.d`.
 
-NOTE: If you wish to use IMAP you'll need to install the two perl modules `JSON` and `Net::IMAP::Client`.  Upon a Debian GNU/Linux system this can be done
+**NOTE**: If you wish to use IMAP you'll need to install the two perl modules `JSON` and `Net::IMAP::Client`.  Upon a Debian GNU/Linux system this can be done
 via:
 
      apt-get install libnet-imap-client-perl libjson-perl
