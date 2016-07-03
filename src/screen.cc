@@ -1512,3 +1512,64 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
      */
     return (drawn);
 }
+
+/*
+ * Draw a single piece of text, allowing colours too.
+ */
+void CScreen::draw_text(int x, int y, std::string str)
+{
+    /*
+     * Default colour/attributes for this line.
+     */
+    int def_col = getattrs(stdscr);
+
+    /*
+     * Parse the string.  We don't need it in chunks,
+     * but we do need it in coloured fashion.
+     */
+    std::vector<COLOUR_STRING *> parts;
+    parts = CColourString::parse_coloured_string(str, 0);
+
+    /*
+     * Move to the starting offset.
+     */
+    wmove(stdscr, y, x);
+
+    /*
+     * Draw the part(s).
+     */
+    for (auto it = parts.begin(); it != parts.end() ; ++it)
+    {
+        /*
+         * Get the text/colour.
+         */
+        COLOUR_STRING *i = (*it);
+        std::string *colour = i->colour;
+        std::string *text   = i->string;
+
+        /*
+         * Set the colour + draw the component.
+         */
+        wattrset(stdscr, def_col);
+        wattron(stdscr, get_colour(*colour));
+        waddstr(stdscr, (char *)(*text).c_str());
+    }
+
+    /*
+     * Reset to our default colour.
+     */
+    wattrset(stdscr, get_colour("white|normal"));
+
+    /*
+     * Free the parts.
+     */
+    for (auto it = parts.begin(); it != parts.end() ; ++it)
+    {
+        COLOUR_STRING *i = (*it);
+        delete(i->string);
+        delete(i->colour);
+        free(i);
+    }
+
+
+}

@@ -214,6 +214,11 @@ public:
     int draw_single_line(int row, int col_offset, std::string text, WINDOW * screen, bool enable_scroll, bool enable_wrap);
 
 
+    /**
+     * Draw a single piece of text, allowing colours too.
+     */
+    void draw_text(int x, int y, std::string text);
+
 private:
 
     /**
