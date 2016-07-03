@@ -52,6 +52,7 @@ void run_all_tests()
     CuSuiteAddSuite(suite, input_queue_getsuite());
     CuSuiteAddSuite(suite, logfile_getsuite());
     CuSuiteAddSuite(suite, lua_getsuite());
+    CuSuiteAddSuite(suite, statuspanel_getsuite());
     CuSuiteAddSuite(suite, util_getsuite());
 
     CuSuiteRun(suite);

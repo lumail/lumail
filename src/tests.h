@@ -45,5 +45,8 @@ CuSuite *lua_getsuite();
 /* defined in logfile_test.cc */
 CuSuite *logfile_getsuite();
 
+/* defined in statuspanel_test.cc */
+CuSuite *statuspanel_getsuite();
+
 /* defined in util_test.cc */
 CuSuite *util_getsuite();
