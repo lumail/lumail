@@ -135,6 +135,14 @@ void TestFileCopy(CuTest * tc)
     CFile::delete_file(src);
     CFile::delete_file(dst);
 
+    /*
+     * Deleted files will return "-1" for size.
+     */
+    CuAssertTrue(tc, ! CFile::exists(src));
+    CuAssertTrue(tc, ! CFile::exists(dst));
+    CuAssertIntEquals(tc, -1, CFile::size(dst));
+    CuAssertIntEquals(tc, -1, CFile::size(src));
+
 }
 
 
@@ -164,15 +172,21 @@ void TestFileExists(CuTest * tc)
 
 
     /*
-     * Ensure it exists
+     * Ensure it exists, with the correct size.
      */
     CuAssertTrue(tc, CFile::exists(filename));
+    CuAssertIntEquals(tc, strlen("Gordon's alive!\n"), CFile::size(filename));
 
     /*
      * Finally remove it, and confirm it is gone.
      */
     CFile::delete_file(filename);
     CuAssertTrue(tc, ! CFile::exists(filename));
+
+    /*
+     * Deleted files will return "-1" for size.
+     */
+    CuAssertIntEquals(tc, -1, CFile::size(filename));
 }
 
 
@@ -226,6 +240,14 @@ void TestFileMove(CuTest * tc)
      */
     CFile::delete_file(src);
     CFile::delete_file(dst);
+
+    /*
+     * Deleted files will return "-1" for size.
+     */
+    CuAssertTrue(tc, ! CFile::exists(src));
+    CuAssertTrue(tc, ! CFile::exists(dst));
+    CuAssertIntEquals(tc, -1, CFile::size(dst));
+    CuAssertIntEquals(tc, -1, CFile::size(src));
 }
 
 
