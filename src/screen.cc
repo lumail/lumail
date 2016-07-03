@@ -44,7 +44,7 @@
 /*
  * Constructor.
  */
-CScreen::CScreen()
+CScreen::CScreen() : Observer(CConfig::instance())
 {
 }
 
@@ -72,6 +72,25 @@ void CScreen::register_view(std::string name, CViewMode *impl)
 
 
 /*
+ * This method is called when a configuration key changes,
+ * via our observer implementation.
+ */
+void CScreen::update(std::string key_name)
+{
+    /*
+     * If our timeout value has changed then update
+     * our loop.
+     */
+    if (key_name == "global.timeout")
+    {
+        CConfig *config = CConfig::instance();
+        int value       = config->get_integer("global.timeout", 200);
+        timeout(value);
+    }
+}
+
+
+/*
  * Run our event loop.
  */
 void CScreen::run_main_loop()
@@ -80,7 +99,7 @@ void CScreen::run_main_loop()
      * Get our timeout period, and set it.
      */
     CConfig *config = CConfig::instance();
-    int tout = config->get_integer("global.timeout", 750);
+    int tout = config->get_integer("global.timeout", 200);
 
     timeout(tout);
 
@@ -279,7 +298,7 @@ void CScreen::setup()
      * Get our timeout period, and set it.
      */
     CConfig *config = CConfig::instance();
-    int tout = config->get_integer("global.timeout", 750);
+    int tout = config->get_integer("global.timeout", 200);
 
     timeout(tout);
     use_default_colors();
@@ -496,7 +515,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
              * Get our timeout period, and set it.
              */
             CConfig *config = CConfig::instance();
-            int tout = config->get_integer("global.timeout", 750);
+            int tout = config->get_integer("global.timeout", 200);
 
             timeout(tout);
             return "";
@@ -534,7 +553,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
      * Get our timeout period, and set it.
      */
     CConfig *config = CConfig::instance();
-    int tout = config->get_integer("global.timeout", 750);
+    int tout = config->get_integer("global.timeout", 200);
 
     timeout(tout);
     return (choices.at(selected));

@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "singleton.h"
+#include "observer.h"
 
 
 
@@ -74,8 +75,11 @@ public:
  * The class is generally responsible for handling input, updating state,
  * and drawing the display.
  *
+ * This class also implements the observer-pattern, responding to
+ * changes in the `CConfig` class.
+ *
  */
-class CScreen : public Singleton<CScreen>
+class CScreen : public Singleton<CScreen>, public Observer
 {
 
 public:
@@ -96,6 +100,13 @@ public:
      * implementation will be a class derived from CViewMode.
      */
     void register_view(std::string name, CViewMode *impl);
+
+    /**
+     * This method is called when a configuration key changes,
+     * via our observer implementation.
+     */
+    void update(std::string key_name);
+
 
 public:
 

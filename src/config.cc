@@ -43,7 +43,7 @@ CConfig::CConfig()
 #ifdef LUMAIL_VERSION
     set("global.version", LUMAIL_VERSION, false);
 #endif
-    set("global.timeout", 750, false);
+    set("global.timeout", 200, false);
 }
 
 
