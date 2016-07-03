@@ -76,7 +76,10 @@ keymap['keybinding']['?'] = 'show_key_binding()'
 --
 -- Life
 --
-keymap['life']['r'] = 'kill_life()'
+keymap['life']['r'] = 'life:clear(); life:random()'
+keymap['life']['a'] = 'life:acorn()'
+keymap['life']['c'] = 'life:clear()'
+keymap['life']['g'] = 'life:gliders()'
 
 --
 -- Change the display-limits

@@ -2271,13 +2271,8 @@ end
 do
    -- If we don't have life enabled, then create some.
    if ( not life ) then
-      life = Life.new( Screen:height(), Screen:width() )
-   end
-
-   -- Kill all life, and create a new (random) set of gliders.
-   function kill_life()
-      life = nil
-      life = Life.new( Screen:height(), Screen:width() )
+      life = Life.new( Screen:width(),Screen:height() )
+      life:random()
    end
 
    -- Don't output anything for display.  The C++ code will then
