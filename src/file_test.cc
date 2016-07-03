@@ -103,6 +103,11 @@ void TestFileCopy(CuTest * tc)
     fs.close();
 
     /*
+     * Test the file has the correct size.
+     */
+    CuAssertIntEquals(tc, strlen("Gordon's alive!\n"), CFile::size(src));
+
+    /*
      * Ensure the source now exists, and the copied file doesn't.
      */
     CuAssertTrue(tc, CFile::exists(src));
@@ -120,8 +125,9 @@ void TestFileCopy(CuTest * tc)
     CuAssertTrue(tc, CFile::exists(dst));
 
     /*
-     * TODO: Test contents?  Or size?
+     * Test the two files have the same size.
      */
+    CuAssertIntEquals(tc, CFile::size(src), CFile::size(dst));
 
     /*
      * Finally cleanup.
