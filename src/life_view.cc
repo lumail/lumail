@@ -19,7 +19,7 @@
 
 #include "lua.h"
 #include "life_view.h"
-
+#include "statuspanel.h"
 
 
 /*
@@ -34,6 +34,7 @@ REGISTER_VIEW_MODE(life, CLifeView)
 CLifeView::CLifeView()
 {
     set_data("life", "life_view", true);
+
 }
 
 
@@ -50,6 +51,15 @@ CLifeView::~CLifeView()
  */
 void CLifeView::on_idle()
 {
+    static bool init = false;
+
+    if (init == false)
+    {
+        CStatusPanel *panl = CStatusPanel::instance();
+        panl->add_text("Life: (c)lear, (a)corn, (g)liders, or (r)andom setup");
+        init = true;
+    }
+
     CLua *lua = CLua::instance();
 
     lua->execute("life:print_matrix()");
