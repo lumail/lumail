@@ -37,47 +37,7 @@
 #include "message_view.h"
 #include "screen.h"
 
-
-
-/**
- * Data-structure associated with the status-bar.
- *
- * This is used to determine if it is visible or not, as well as the
- * lines of text that are displayed.
- */
-typedef struct _PANEL_DATA
-{
-    /**
-       * Is the panel hidden?
-       */
-    bool hidden;
-
-    /**
-       * The total height of the panel, in number of lines.
-       */
-    int height;
-
-    /**
-       * The title of the panel.
-       */
-    std::string title;
-
-    /**
-       * The text the panel contains.
-       */
-    std::vector < std::string > text;
-} PANEL_DATA;
-
-
-/*
- * The status-bar window, panel, & data.
- *
- * TODO: Move these away.
- */
-WINDOW *g_status_bar_window;
-PANEL *g_status_bar;
-PANEL_DATA g_status_bar_data;
-
+#include "statuspanel.h"
 
 
 
@@ -205,7 +165,6 @@ void CScreen::run_main_loop()
         if (new_mode != mode)
             view = m_views[new_mode];
 
-
         /*
          * Update the view.
          */
@@ -213,11 +172,19 @@ void CScreen::run_main_loop()
             view->draw();
 
         /*
+         * Update our panel
+         */
+        CStatusPanel *instance = CStatusPanel::instance();
+
+        if (! instance->hidden())
+            instance->draw();
+
+        /*
          * Update our panel.
          */
         update_panels();
         doupdate();
-
+        refresh();
     }
 }
 
@@ -343,8 +310,8 @@ void CScreen::setup()
     init_pair(8, COLOR_BLACK, COLOR_WHITE);
     m_colours[ "black" ] = 8;
 
-    /* Create the status-bar.  Show it */
-    status_panel_init();
+    CStatusPanel *panel = CStatusPanel::instance();
+    panel->init(6);
 }
 
 
@@ -356,8 +323,6 @@ void CScreen::teardown()
     /*
      * Remove old panel/window - in the correct order.
      */
-    del_panel(g_status_bar);
-    delwin(g_status_bar_window);
 
     endwin();
 }
@@ -371,8 +336,10 @@ void CScreen::clear(bool refresh_screen)
     int width = CScreen::width();
     int height = CScreen::height();
 
-    if (status_panel_visible())
-        height -= status_panel_height();
+    CStatusPanel *panel = CStatusPanel::instance();
+
+    if (panel->hidden() == false)
+        height -= panel->height();
 
     std::string blank = "";
 
@@ -420,133 +387,6 @@ int CScreen::width()
     struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
     return (w.ws_col);
-}
-
-
-
-/*
- *  Create the status-panel.
- */
-void CScreen::status_panel_init()
-{
-    int show = 1;
-    int x, y;
-
-    /*
-     * Size of panel
-     */
-    int rows = 6;
-    int cols = CScreen::width();
-
-    /*
-     * Create the window.
-     */
-    x = 0;
-    y = CScreen::height() - rows;
-    g_status_bar_window = newwin(rows, cols, y, x);
-
-    /*
-     * Set the content of the status-bar
-     */
-    g_status_bar_data.height = rows;
-    g_status_bar_data.title = std::string("Status Panel");
-    g_status_bar_data.text.push_back
-    ("Lumail v2 - Toggle panel via 'TAB'.  Exit via 'Q'.  Eval via ':'.");
-    g_status_bar_data.text.push_back("by Steve Kemp");
-
-    /*
-     * Refresh the panel display.
-     */
-    status_panel_draw();
-
-    /* Attach the panel to the window. */
-    g_status_bar = new_panel(g_status_bar_window);
-    set_panel_userptr(g_status_bar, &g_status_bar_data);
-
-
-    if (show)
-    {
-        show_panel(g_status_bar);
-        g_status_bar_data.hidden = false;
-    }
-    else
-    {
-        hide_panel(g_status_bar);
-        g_status_bar_data.hidden = true;
-    }
-
-}
-
-/*
- * Update the text in the status-bar.
- */
-void CScreen::status_panel_draw()
-{
-    int width = CScreen::width();
-
-    /*
-     * Show the title, and the last two lines of the text.
-     */
-    PANEL_DATA x = g_status_bar_data;
-
-    if (! x.title.empty())
-    {
-        int result __attribute__((unused));
-
-        /*
-         * Last two false variables are:
-         *
-         *  enable scroll: false
-         *  enable wrap: false
-         */
-        result = draw_single_line(1, 1, x.title, g_status_bar_window, false, false);
-    }
-
-
-    if (x.text.size() > 0)
-    {
-        int height = g_status_bar_data.height;
-
-        /*
-         * Reverse the lines of text, and draw until we've exceeded
-         * our height.
-         */
-        std::vector<std::string> tmp = x.text;
-        std::reverse(tmp.begin(), tmp.end());
-
-        int i = 0;
-
-        while (i < (height - 3 - 1))
-        {
-            std::string text;
-
-            if (i < (int)tmp.size())
-                text = tmp.at(i);
-            else
-                text = "";
-
-
-            /*
-             * Last two false variables are:
-             *
-             *  enable scroll: false
-             *  enable wrap: false
-             */
-            draw_single_line((height - 2 - i), 1, text, g_status_bar_window, false, false);
-            i++;
-        }
-    }
-
-    /*
-     * Select white, and draw a box.
-     */
-    wattron(g_status_bar_window, COLOR_PAIR(1));
-    box(g_status_bar_window, 0, 0);
-    mvwaddch(g_status_bar_window, 2, 0, ACS_LTEE);
-    mvwhline(g_status_bar_window, 2, 1, ACS_HLINE, width - 2);
-    mvwaddch(g_status_bar_window, 2, width - 1, ACS_RTEE);
-
-
 }
 
 
@@ -738,9 +578,11 @@ std::string CScreen::get_line(std::string prompt, std::string input)
     x = 0;
     y = height() - 1;
 
-    if (!g_status_bar_data.hidden)
+    CStatusPanel *panel = CStatusPanel::instance();
+
+    if (!panel->hidden())
     {
-        y -= g_status_bar_data.height;
+        y -= panel->height();
     }
 
     /*
@@ -781,8 +623,13 @@ std::string CScreen::get_line(std::string prompt, std::string input)
             view->on_idle();
 
         /*
-         * Refresh our panels.
+         * Update our panel
          */
+        CStatusPanel *instance = CStatusPanel::instance();
+
+        if (! instance->hidden())
+            instance->draw();
+
         update_panels();
         doupdate();
         refresh();
@@ -1026,11 +873,12 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
     x = 0;
     y = height() - 1;
 
-    if (!g_status_bar_data.hidden)
-    {
-        y -= g_status_bar_data.height;
-    }
+    CStatusPanel *panel = CStatusPanel::instance();
 
+    if (!panel->hidden())
+    {
+        y -= panel->height();
+    }
 
     /*
      * Get the mode so we can update the display mid-input.
@@ -1066,8 +914,13 @@ std::string CScreen::prompt_chars(std::string prompt, std::string valid)
             view->on_idle();
 
         /*
-         * Refresh our panels.
+         * Update our panel
          */
+        CStatusPanel *instance = CStatusPanel::instance();
+
+        if (! instance->hidden())
+            instance->draw();
+
         update_panels();
         doupdate();
         refresh();
@@ -1119,9 +972,11 @@ std::string CScreen::get_char(std::string prompt)
     x = 0;
     y = height() - 1;
 
-    if (!g_status_bar_data.hidden)
+    CStatusPanel *panel = CStatusPanel::instance();
+
+    if (!panel->hidden())
     {
-        y -= g_status_bar_data.height;
+        y -= panel->height();
     }
 
     /*
@@ -1156,8 +1011,13 @@ std::string CScreen::get_char(std::string prompt)
             view->on_idle();
 
         /*
-         * Refresh our panels.
+         * Update our panel
          */
+        CStatusPanel *instance = CStatusPanel::instance();
+
+        if (! instance->hidden())
+            instance->draw();
+
         update_panels();
         doupdate();
         refresh();
@@ -1170,7 +1030,7 @@ std::string CScreen::get_char(std::string prompt)
         CInputQueue *input = CInputQueue::instance();
         c = input->get_input();
 
-        if (c > 0)
+        if ((c > 0) && (c != KEY_RESIZE))
         {
             std::string out;
             out = lookup_key(c);
@@ -1179,89 +1039,6 @@ std::string CScreen::get_char(std::string prompt)
     }
 }
 
-void CScreen::status_panel_show()
-{
-    show_panel(g_status_bar);
-    g_status_bar_data.hidden = false;
-}
-
-void CScreen::status_panel_hide()
-{
-    hide_panel(g_status_bar);
-    g_status_bar_data.hidden = true;
-}
-
-int CScreen::status_panel_height()
-{
-    return (g_status_bar_data.height);
-}
-
-
-/*
- * Set the height of the status-panel - minimum size is six.
- */
-void CScreen::status_panel_height(int new_size)
-{
-    if (new_size >= 6)
-    {
-        g_status_bar_data.height = new_size;
-
-        int x = 0;
-        int y = CScreen::height() - new_size;
-        int cols = CScreen::width();
-
-        /*
-         * Remove old panel/window - in the correct order.
-         */
-        del_panel(g_status_bar);
-        delwin(g_status_bar_window);
-
-        /*
-         * Create new ones of the correct size.
-         */
-        g_status_bar_window = newwin(new_size, cols, y, x);
-        g_status_bar = new_panel(g_status_bar_window);
-        set_panel_userptr(g_status_bar, &g_status_bar_data);
-
-        status_panel_draw();
-    }
-}
-
-bool CScreen::status_panel_visible()
-{
-    return (!g_status_bar_data.hidden);
-}
-
-void CScreen::status_panel_title(std::string new_title)
-{
-    g_status_bar_data.title = new_title;
-    status_panel_draw();
-}
-
-std::string CScreen::status_panel_title()
-{
-    return (g_status_bar_data.title);
-}
-
-std::vector < std::string > CScreen::status_panel_text()
-{
-    return (g_status_bar_data.text);
-}
-
-void CScreen::status_panel_append(std::string display)
-{
-    g_status_bar_data.text.push_back(display);
-    status_panel_draw();
-}
-
-/*
- * Clear the status-panel text.
- */
-void CScreen::status_panel_clear()
-{
-    g_status_bar_data.text.clear();
-    status_panel_draw();
-}
 
 /*
  * Look up the binding for the named keystroke in our keymap(s).
@@ -1413,8 +1190,15 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
     /*
      * Take off the panel, if visible.
      */
-    if (screen->status_panel_visible())
-        height -= screen->status_panel_height();
+    CStatusPanel *panel = CStatusPanel::instance();
+
+    if (panel->hidden() == false)
+        height -= panel->height();
+
+    /*
+     * Add an extra line.
+     */
+    height += 1;
 
     /*
      * If we're in simple-mode we can just draw the lines directly
@@ -1435,7 +1219,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
 
         int off = 0;
 
-        for (int i = 0; i < height; i++)
+        for (int i = 0; i <= height; i++)
         {
             if ((off + selected) < size)
             {
@@ -1505,7 +1289,7 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
     }
 
 
-    for (int row = 0; row < height; row++)
+    for (int row = 0; row <= height; row++)
     {
         /*
          * The current object.

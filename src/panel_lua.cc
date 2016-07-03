@@ -24,7 +24,7 @@ extern "C"
 #include <lualib.h>
 }
 
-#include "screen.h"
+#include "statuspanel.h"
 
 
 
@@ -53,8 +53,8 @@ int l_CPanel_append(lua_State * l)
 
     if (str != NULL)
     {
-        CScreen *screen = CScreen::instance();
-        screen->status_panel_append(str);
+        CStatusPanel *panel = CStatusPanel::instance();
+        panel->add_text(str);
     }
 
     return 0;
@@ -67,8 +67,8 @@ int l_CPanel_append(lua_State * l)
 int l_CPanel_clear(lua_State * l)
 {
     (void)l;
-    CScreen *screen = CScreen::instance();
-    screen->status_panel_clear();
+    CStatusPanel *panel = CStatusPanel::instance();
+    panel->reset();
     return 0;
 }
 
@@ -80,18 +80,13 @@ int l_CPanel_height(lua_State * l)
 {
     int new_height = lua_tointeger(l, 2);
 
-    CScreen *screen = CScreen::instance();
+    CStatusPanel *panel = CStatusPanel::instance();
 
     if (new_height)
-    {
-        screen->status_panel_height(new_height);
-        return 0;
-    }
-    else
-    {
-        lua_pushinteger(l, screen->status_panel_height());
-        return 1;
-    }
+        panel->init(new_height);
+
+    lua_pushinteger(l, panel->height());
+    return 1;
 }
 
 
@@ -101,8 +96,10 @@ int l_CPanel_height(lua_State * l)
 int l_CPanel_hide(lua_State * l)
 {
     (void)l;
-    CScreen *screen = CScreen::instance();
-    screen->status_panel_hide();
+
+    CStatusPanel *panel = CStatusPanel::instance();
+    panel->hide();
+
     return 0;
 }
 
@@ -113,8 +110,10 @@ int l_CPanel_hide(lua_State * l)
 int l_CPanel_show(lua_State * l)
 {
     (void)l;
-    CScreen *screen = CScreen::instance();
-    screen->status_panel_show();
+
+    CStatusPanel *panel = CStatusPanel::instance();
+    panel->show();
+
     return 0;
 }
 
@@ -124,9 +123,15 @@ int l_CPanel_show(lua_State * l)
  */
 int l_CPanel_text(lua_State * l)
 {
-    CScreen *screen = CScreen::instance();
-    std::vector < std::string > cur = screen->status_panel_text();
+    /*
+     * Get the text.
+     */
+    CStatusPanel *panel = CStatusPanel::instance();
+    std::vector < std::string > cur = panel->get_text();
 
+    /*
+     * Store it in a table.
+     */
     lua_newtable(l);
     int i = 1;
 
@@ -150,21 +155,15 @@ int l_CPanel_text(lua_State * l)
  */
 int l_CPanel_title(lua_State * l)
 {
-    CScreen *screen = CScreen::instance();
-
+    CStatusPanel *panel = CStatusPanel::instance();
     const char *str = lua_tostring(l, 2);
 
     if (str != NULL)
-    {
-        screen->status_panel_title(str);
-        return 0;
-    }
-    else
-    {
-        std::string existing = screen->status_panel_title();
-        lua_pushstring(l, existing.c_str());
-        return 1;
-    }
+        panel->set_title(str);
+
+    std::string existing = panel->get_title();
+    lua_pushstring(l, existing.c_str());
+    return 1;
 }
 
 
@@ -174,12 +173,12 @@ int l_CPanel_title(lua_State * l)
 int l_CPanel_toggle(lua_State * l)
 {
     (void)l;
-    CScreen *screen = CScreen::instance();
+    CStatusPanel *panel = CStatusPanel::instance();
 
-    if (screen->status_panel_visible())
-        screen->status_panel_hide();
+    if (panel->hidden())
+        panel->show();
     else
-        screen->status_panel_show();
+        panel->hide();
 
     return 0;
 }
@@ -190,12 +189,12 @@ int l_CPanel_toggle(lua_State * l)
  */
 int l_CPanel_visible(lua_State * l)
 {
-    CScreen *screen = CScreen::instance();
+    CStatusPanel *panel = CStatusPanel::instance();
 
-    if (screen->status_panel_visible())
-        lua_pushboolean(l, 1);
-    else
+    if (panel->hidden())
         lua_pushboolean(l, 0);
+    else
+        lua_pushboolean(l, 1);
 
     return 1;
 }

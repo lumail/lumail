@@ -179,56 +179,6 @@ public:
     void execute(std::string program);
 
     /**
-     * Is the status-panel visible?
-     */
-    bool status_panel_visible();
-
-    /**
-     * Get the status-panel title.
-     */
-    std::string status_panel_title();
-
-    /**
-     * Get the text contained within the status-panel.
-     */
-    std::vector < std::string > status_panel_text();
-
-    /**
-     * Hide the status-panel.
-     */
-    void status_panel_hide();
-
-    /**
-     * Show the status-panel.
-     */
-    void status_panel_show();
-
-    /**
-     * Append to the status-panel text.
-     */
-    void status_panel_append(std::string display);
-
-    /**
-     * Clear the status-panel text.
-     */
-    void status_panel_clear();
-
-    /**
-     * Set the status-panel title.
-     */
-    void status_panel_title(std::string new_title);
-
-    /**
-     * Get the height of the status-panel, in lines.
-     */
-    int status_panel_height();
-
-    /**
-     * Set the height of the status-panel - minimum size is six.
-     */
-    void status_panel_height(int new_size);
-
-    /**
      * Execute a function from the global keymap.
      */
     bool on_keypress(const char *key);
@@ -259,16 +209,6 @@ private:
      * Get the colour-pair for the given name.
      */
     int get_colour(std::string name);
-
-    /**
-     * Redraw the status-panel.
-     */
-    void status_panel_draw();
-
-    /**
-     * Initialize the status-panel.
-     */
-    void status_panel_init();
 
     /**
      * Convert ^I -> TAB, etc.

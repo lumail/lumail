@@ -34,7 +34,7 @@
 #include "config.h"
 #include "file.h"
 #include "imap_proxy.h"
-#include "screen.h"
+#include "statuspanel.h"
 
 
 CIMAPProxy::CIMAPProxy()
@@ -76,11 +76,6 @@ void CIMAPProxy::launch()
     if (m_child == -1)
     {
         /*
-         * Screen handle.
-         */
-        CScreen *screen = CScreen::instance();
-
-        /*
          * Get the path to the proxy
          */
         CConfig *config = CConfig::instance();
@@ -96,7 +91,8 @@ void CIMAPProxy::launch()
          */
         if (CFile::exists(path))
         {
-            screen->status_panel_append("Launching IMAP proxy " + path);
+            CStatusPanel *panel = CStatusPanel::instance();
+            panel->add_text("Launching IMAP proxy " + path);
 
             m_child = fork();
 
@@ -109,7 +105,8 @@ void CIMAPProxy::launch()
         }
         else
         {
-            screen->status_panel_append("IMAP proxy not found at " + path);
+            CStatusPanel *panel = CStatusPanel::instance();
+            panel->add_text("IMAP proxy not found at " + path);
             return;
         }
     }
