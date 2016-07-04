@@ -109,7 +109,7 @@ Stack  = require( "stack" )
 
 --
 -- Load libraries which directly poke functions into the global
--- namespace (bad).
+-- namespace (bad but useful).
 --
 SU = require( "string_utilities" )
 TU = require( "table_utilities" )
@@ -366,7 +366,8 @@ end
 
 
 --
--- Change the global mode.
+-- Change the global mode, preserving the previous one
+-- on a stack, to allow undoing.
 --
 do
    local mode_stack = Stack.new()
@@ -395,6 +396,37 @@ do
    end
 end
 
+
+--
+-- Get the current message.  If the user is in message-mode then
+-- this is literally the currently selected message.
+--
+-- If the user is in index-mode then this is the message under the
+-- current selection
+--
+function Message.at_point()
+
+   local mode = Config:get("global.mode")
+
+   if ( mode == "message" ) then
+      return( Global:current_message() )
+   end
+   if ( mode == "index" ) then
+
+      -- Get the list of messages, and the current offset
+      -- that'll let us find the message.
+      local offset = Config.get_with_default( "index.current", 0 )
+      local msgs   = get_messages()
+
+      if ( not msgs ) then
+         Panel:append( "There are no messages!")
+         return(nil)
+      end
+      return(msgs[offset+1])
+   end
+
+   return( nil )
+end
 
 --
 -- Count the number of attachments a message has.
@@ -833,30 +865,11 @@ end
 
 
 --
--- Show the (global) unread-mail count
+-- Return a suitable signature to use for the outgoing mail.
 --
-function show_unread()
-   local count = 0
-
-   local all = Global:maildirs()
-   for i,m in pairs(all) do
-      count = count + m:unread_messages()
-   end
-   Panel:append("Unread messages: " .. count )
-end
-
-
+-- This is based on the domain of the senders' email-address.
 --
--- Get the current date - used to set the Date: header when
--- we reply, compose, or forward an email.
---
-function Message.generate_date()
-   return( os.date( "%a, %d %b %Y %H:%M:%S %z" ) )
-end
-
-
---
--- Return the signature to use for the outgoing mail.
+-- ~/.signature will be used if nothing else is found.
 --
 function Message.generate_signature()
    --
@@ -921,7 +934,7 @@ function Message.compose()
    --
    local from  = Config:get("global.sender" )
    local msgid = Message:generate_message_id()
-   local date  = Message.generate_date()
+   local date  = os.date( "%a, %d %b %Y %H:%M:%S %z" )
 
    -- Write out a header
    header = [[To: ${to}
@@ -1063,33 +1076,8 @@ end
 --
 function Message.reply()
 
-   --
-   -- If we're in message-mode then we can get the current-message
-   -- directly.
-   --
-   -- If instead we're in index-mode then we'll need to select the message
-   -- under the cursor to proceed.
-   --
-   msg = nil
-
-   local mode = Config:get("global.mode")
-
-   if ( mode == "message" ) then
-      msg = Global:current_message()
-   end
-   if ( mode == "index" ) then
-
-      -- Get the list of messages, and the current offset
-      -- that'll let us find the message.
-      local offset = Config.get_with_default( "index.current", 0 )
-      local msgs   = get_messages()
-
-      if ( not msgs ) then
-         Panel:append( "There are no messages!")
-         return
-      end
-      msg = msgs[offset+1]
-   end
+   -- The message we're going to work on.
+   local msg = Message.at_point()
 
    -- Failed to find a mesage?
    if ( not msg ) then
@@ -1150,7 +1138,7 @@ Date: ${date}
                                         from    = Config:get("global.sender" ),
                                         subject = subject,
                                         msgid   = Message:generate_message_id(),
-                                        date    = Message.generate_date()
+                                        date    = os.date( "%a, %d %b %Y %H:%M:%S %z" )
                                       } ) )
 
    --
@@ -1420,33 +1408,8 @@ end
 --
 function Message.forward()
 
-   --
-   -- If we're in message-mode then we can get the current-message
-   -- directly.
-   --
-   -- If instead we're in index-mode then we'll need to select the message
-   -- under the cursor to proceed.
-   --
-   msg = nil
-
-   local mode = Config:get("global.mode")
-
-   if ( mode == "message" ) then
-      msg = Global:current_message()
-   end
-   if ( mode == "index" ) then
-
-      -- Get the list of messages, and the current offset
-      -- that'll let us find the message.
-      local offset = Config.get_with_default( "index.current", 0 )
-      local msgs   = get_messages()
-      if ( not msgs ) then
-         Panel:append( "There are no messages!")
-         return
-      end
-
-      msg = msgs[offset+1]
-   end
+   -- The message we're going to work on.
+   local msg = Message.at_point()
 
    -- Failed to find a mesage?
    if ( not msg ) then
@@ -1488,7 +1451,7 @@ Begin forwarded message.
                                         to      = to,
                                         subject = subject,
                                         msgid   = Message:generate_message_id(),
-                                        date    = Message.generate_date()
+                                        date    = os.date( "%a, %d %b %Y %H:%M:%S %z" )
                                       } ) )
 
 
@@ -1620,32 +1583,8 @@ end
 --
 function Message.toggle()
 
-   --
-   -- If we're in message-mode then we can get the current-message
-   -- directly.
-   --
-   -- If instead we're in index-mode then we'll need to select the message
-   -- under the cursor to proceed.
-   --
-   local mode = Config:get("global.mode")
-   local msg = nil
-
-   if ( mode == "message" ) then
-      msg = Global:current_message()
-   end
-   if ( mode == "index" ) then
-
-      -- Get the list of messages, and the current offset
-      -- that'll let us find the message.
-      local offset = Config.get_with_default( "index.current", 0 )
-      local msgs   = get_messages()
-      if ( not msgs ) then
-         Panel:append( "There are no messages!")
-         return
-      end
-
-      msg = msgs[offset+1]
-   end
+   -- The message we're going to work on.
+   local msg = Message.at_point()
 
    if ( not msg ) then
       Panel:append( "Failed to find a message" )
@@ -1671,38 +1610,13 @@ end
 --
 function Message.save()
 
-   --
-   -- If we're in message-mode then we can get the current-message
-   -- directly.
-   --
-   -- If instead we're in index-mode then we'll need to select the message
-   -- under the cursor to proceed.
-   --
-   local mode = Config:get("global.mode")
-   local msg = nil
+   -- The message we're going to work on.
+   local msg = Message.at_point()
 
-   if ( mode == "message" ) then
-      msg = Global:current_message()
-   end
-   if ( mode == "index" ) then
-
-      -- Get the list of messages, and the current offset
-      -- that'll let us find the message.
-      local offset = Config.get_with_default( "index.current", 0 )
-      local msgs   = get_messages()
-      if ( not msgs ) then
-         Panel:append( "There are no messages!")
-         return
-      end
-
-      msg = msgs[offset+1]
-   end
-
-   if ( not msg ) then
+      if ( not msg ) then
       Panel:append( "Failed to find a message" )
       return
    end
-
 
    --
    -- Are we using IMAP?
@@ -1951,24 +1865,6 @@ end
 
 
 --
--- Define our views
---
------------------------------------------------------------------------------
-
---
--- This table contains colouring information, it is designed to allow
--- the user to override the colours used in the display easily.
---
-colour_table = {}
-colour_table['maildir'] = {}
-colour_table['index']   = {}
-colour_table['message'] = {}
-
-
-
-
-
---
 -- Remove a colour-prefix from the given string.
 --
 -- Our drawing code allows lines to be different coloured based upon
@@ -2020,6 +1916,7 @@ function add_colours( lines, mode )
    -- Get the table of colours for the mode
    -- if it doesn't exist then abort.
    --
+   local colour_table = _G['colour_table']
    if ( not colour_table ) then return lines end
    if ( not colour_table[mode] ) then return lines  end
 
@@ -2076,8 +1973,8 @@ function attachment_view()
       table.insert( result, tmp )
    end
 
+   result = add_colours(result, 'attachment')
    return( result )
-
 end
 
 
@@ -2261,6 +2158,7 @@ function keybinding_view()
       end
    end
 
+   output = add_colours(output, 'keybindings')
    return(output)
 end
 
@@ -2370,6 +2268,7 @@ end
 --
 function panel_view()
    local result = Panel:text()
+   result = add_colours(result, 'panel')
    return(result)
 end
 
@@ -2737,7 +2636,6 @@ function read_eval()
    local txt = Screen:get_line(":")
 
    if ( txt == nil or txt == "" ) then
-      Panel:append( "Evaluation aborted!" )
       return
    end
 
@@ -2753,7 +2651,6 @@ function read_execute()
    local cmd = Screen:get_line("!")
 
    if ( cmd == nil or cmd == "" ) then
-      Panel:append( "Execution aborted!" )
       return
    end
 
@@ -2762,7 +2659,7 @@ function read_execute()
 end
 
 
-
+--
 -- Allow navigation - Selection of a maildir, or message.
 --
 function select()
@@ -2858,15 +2755,20 @@ end
 --
 -- We handle that by scrolling until the last line is *visible*
 -- rather than selected.
+--
 function last()
    local mode = Config:get("global.mode")
    local max  = Config:get(mode .. ".max" )
 
    --
-   -- Jump to the end unless we're in message-mode
-   -- or lua-mode.
+   -- Some modes we special case such that jumping to the end
+   -- doesn't mean showing only the last line - but making the
+   -- last line visible.
    --
-   if ( mode ~= "message" and mode ~= "lua" ) then
+   if ( mode ~= "message"     and
+        mode ~= "lua"         and
+        mode ~= "panel"       and
+        mode ~= "keybinding" ) then
       Config:set( mode .. ".current", max-1 )
       return
    end
@@ -3348,7 +3250,7 @@ do
       -- This shows the way that we can append messages constantly
       -- to the panel.
       --
-      -- Panel:append("The date is " .. Message.generate_date())
+      -- Panel:append("The date is " .. os.date( "%a, %d %b %Y %H:%M:%S %z" ) )
       --
    end
 end

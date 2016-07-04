@@ -188,6 +188,17 @@ folder_from = {
 }
 
 
+
+--
+-- This table contains colouring information, it is designed to allow
+-- the user to override the colours used in the display easily.
+--
+colour_table = {}
+colour_table['maildir'] = {}
+colour_table['index']   = {}
+colour_table['message'] = {}
+
+
 --
 -- Setup our colours - for Maildir-mode
 --
