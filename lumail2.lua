@@ -1613,7 +1613,7 @@ function Message.save()
    -- The message we're going to work on.
    local msg = Message.at_point()
 
-      if ( not msg ) then
+   if ( not msg ) then
       Panel:append( "Failed to find a message" )
       return
    end
