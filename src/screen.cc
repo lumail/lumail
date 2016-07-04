@@ -1440,19 +1440,24 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
 int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW * screen, bool enable_scroll, bool enable_wrap)
 {
     /*
-     * Move to the correct location.
+     * Move the cursor to the correct location.
      */
     wmove(screen, row, col_offset);
+
+    /*
+     * Later we'll get the the position of the cursor to detect wrapping.
+     */
+    int x, y;
+
+    /*
+     * Count of characters we drew.
+     */
+    int count = 0;
 
     /*
      * Default colour/attributes for this line.
      */
     int def_col = getattrs(stdscr);
-
-    /*
-     * Get the width of the screen.
-     */
-    int swidth = CScreen::width();
 
     /*
      * Get the horizontal scroll offset.
@@ -1489,11 +1494,8 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
     std::vector<COLOUR_STRING *> parts = CColourString::parse_coloured_string(buf, horiz);
 
     /*
-     * Draw each piece - tracking the width of the text we've drawn
-     * such that we can later add padding to short-strings.
+     * Draw each piece of the string.
      */
-    int drawn = 0;
-
     for (auto it = parts.begin(); it != parts.end() ; ++it)
     {
         /*
@@ -1501,7 +1503,9 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
          * of the screen then we should stop - unless we've got
          * wrapping enabled.
          */
-        if ((drawn >= swidth) && ! enable_wrap)
+        getyx(screen, y, x);
+
+        if ((y != row) && ! enable_wrap)
             continue;
 
         /*
@@ -1518,20 +1522,28 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
         wattron(screen, get_colour(*colour));
         waddstr(screen, (char *)(*text).c_str());
 
-        drawn += 1;
+        count += 1;
     }
 
 
     /*
-     * Add spaces to the end of any short lines.
-     *
-     * Although this might seem pointless it is required to ensure that any
-     * highlighting/underlining/blinking persists to the end of the line.
+     * We now pad the text we've drawn to ensure that it fills a complete
+     * line.  We need to do this to ensure that any highlighting, underlining,
+     * or blinking persists to the end of the line.
      */
-    while (drawn < swidth)
+
+    getyx(screen, y, x);
+
+    while (y == row)
     {
+        /*
+         * Draw " " over and over again, until we wrap and the row
+         * changes to the next one.
+         */
         waddstr(screen, (char *)" ");
-        drawn += 1;
+        getyx(screen, y, x);
+
+        count += 1;
     }
 
 
@@ -1551,10 +1563,7 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
         free(i);
     }
 
-    /*
-     * Return the width of the line we drew.
-     */
-    return (drawn);
+    return (count);
 }
 
 /*
