@@ -221,6 +221,8 @@ The following API methods are available to help you with this:
 
 * `Global:maildirs()`
      * Retrieve the list of available maildirs.
+* `Global:modes()`
+     * Retrieve the list of all available modes.
 * `Global:current_maildir()`
      * Retrieve the currently-selected maildir.
 * `Global:select_maildir(mdir)`

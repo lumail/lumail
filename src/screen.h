@@ -102,6 +102,11 @@ public:
     void register_view(std::string name, CViewMode *impl);
 
     /**
+     * Return all registered view-modes.
+     */
+    std::vector<std::string> view_modes();
+
+    /**
      * This method is called when a configuration key changes,
      * via our observer implementation.
      */

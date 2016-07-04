@@ -71,6 +71,22 @@ void CScreen::register_view(std::string name, CViewMode *impl)
 }
 
 
+/**
+ * Return all registered view-modes.
+ */
+std::vector<std::string> CScreen::view_modes()
+{
+    std::vector<std::string> result;
+
+    for (auto it = m_views.begin(); it != m_views.end(); it++)
+    {
+        result.push_back(it->first);
+    }
+
+    std::sort(result.begin(), result.end());
+    return (result);
+}
+
 /*
  * This method is called when a configuration key changes,
  * via our observer implementation.

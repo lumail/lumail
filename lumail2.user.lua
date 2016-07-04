@@ -194,9 +194,13 @@ folder_from = {
 -- the user to override the colours used in the display easily.
 --
 colour_table = {}
-colour_table['maildir'] = {}
-colour_table['index']   = {}
-colour_table['message'] = {}
+
+--
+-- Create a per-mode map for each known mode.
+--
+for i,o in ipairs(Global:modes()) do
+   colour_table[o] = {}
+end
 
 
 --

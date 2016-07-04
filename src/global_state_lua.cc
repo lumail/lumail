@@ -31,6 +31,8 @@ extern "C"
 #include "maildir_lua.h"
 #include "message_lua.h"
 #include "lua.h"
+#include "screen.h"
+
 
 /**
  * @file global_state_lua.cc
@@ -143,6 +145,36 @@ int l_CGlobalState_current_messages(lua_State * l)
 }
 
 
+
+/**
+ * Return all the registered view-modes to the caller.
+ */
+int l_CGlobalState_modes(lua_State * l)
+{
+    CScreen *screen = CScreen::instance();
+    std::vector<std::string> modes = screen->view_modes();
+
+    lua_newtable(l);
+
+    int i = 1;
+
+    for (auto it = modes.begin(); it != modes.end(); ++it)
+    {
+        std::string value = (*it);
+
+        lua_pushinteger(l, i);
+        lua_pushstring(l, value.c_str());
+
+        lua_settable(l, -3);
+
+        i += 1;
+    }
+
+    return 1;
+}
+
+
+
 /**
  * Sort the given table of messages.  Not the ideal place for this code.
  */
@@ -219,6 +251,7 @@ void InitGlobalState(lua_State * l)
         {"current_message", l_CGlobalState_current_message},
         {"current_messages", l_CGlobalState_current_messages},
         {"maildirs", l_CGlobalState_maildirs},
+        {"modes", l_CGlobalState_modes},
         {"select_maildir", l_CGlobalState_select_maildir},
         {"select_message", l_CGlobalState_select_message},
         {"sort_messages", l_CGlobalState_sort_messages},
