@@ -103,6 +103,34 @@ void CScreen::update(std::string key_name)
         int value       = config->get_integer("global.timeout", 200);
         timeout(value);
     }
+
+    if (key_name == "global.mode")
+    {
+        /*
+         * The value the user set.
+         */
+        CConfig *config = CConfig::instance();
+        std::string nm  = config->get_string("global.mode");
+
+        /*
+         * Ensure the new-mode is valid.
+         */
+        bool found = false;
+        std::vector<std::string> modes = view_modes();
+
+        for (auto it = modes.begin(); it != modes.end(); ++it)
+        {
+            if (nm == (*it))
+                found = true;
+        }
+
+        if (found == false)
+        {
+            CStatusPanel *panel = CStatusPanel::instance();
+            panel->add_text("Prevented invalid mode change :" + nm);
+            config->set("global.mode", "maildir", false);
+        }
+    }
 }
 
 
