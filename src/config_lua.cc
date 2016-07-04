@@ -184,6 +184,16 @@ int l_Config_set(lua_State * l)
         const char *value = luaL_checkstring(l, 3);
         foo->set(name, value);
     }
+    else if (lua_isboolean(l, 3))
+    {
+        bool val = lua_toboolean(l, 3);
+
+        if (val)
+            foo->set(name, 1);
+        else
+            foo->set(name, 0);
+
+    }
     else
     {
         throw ("Invalid set-type");
