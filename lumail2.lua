@@ -476,7 +476,12 @@ function Message:to_ctime()
    -- Otherwise the get the Date-header and use that to
    -- get the message-age.
    --
-   local d = self:header("Date" )
+   -- Prefer to use "delivery-date" as a header, since that is
+   -- when the message was delivered (by exim), but if that wasn't
+   -- present then use the Date: header the user selected, accepting
+   -- that they might have bogus clocks.
+   --
+   local d = self:header( "Delivery-Date" ) or self:header("Date" )
    if ( d ) then
 
       -- Call the data function
