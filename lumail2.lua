@@ -101,11 +101,12 @@ end
 --
 -- Load libraries
 --
-keymap = require( "keymap" )
 Cache  = require( "cache" )
 Date   = require( "date" )
+Fun    = require 'functional'
 Life   = require( "life" )
 Stack  = require( "stack" )
+keymap = require( "keymap" )
 
 --
 -- Load libraries which directly poke functions into the global
@@ -3132,6 +3133,56 @@ function next_message()
 end
 
 
+
+
+--
+-- Define some utility functions for operating on all visible
+-- messages.
+--
+-- NOTE: These are not bound to any key by default.
+--
+-----------------------------------------------------------------------------
+
+
+
+--
+-- Mark all messages as having been read.
+--
+function mark_all_read()
+   local msgs = get_messages()
+   if ( msgs and #msgs > 0 ) then
+      Fun.object_map( 'mark_read', msgs )
+   else
+      Panel:append( "There are no messages" )
+   end
+end
+
+--
+-- Mark all messages as having NOT been read.
+--
+function mark_all_new()
+   local msgs = get_messages()
+   if ( msgs and #msgs > 0 ) then
+      Fun.object_map( 'mark_unread', msgs )
+   else
+      Panel:append( "There are no messages" )
+   end
+end
+
+--
+-- Delete all messages.
+--
+function delete_all()
+   local msgs = get_messages()
+   if ( msgs and #msgs > 0 ) then
+      Fun.map( Message.delete, msgs )
+   else
+      Panel:append( "There are no messages" )
+   end
+end
+
+
+
 --
 -- Define some call-backs which are implemented at various times.
 --
@@ -3301,6 +3352,8 @@ function show_key_binding()
 end
 
 
+--
+--
 --
 -- Load per-host configuration file, if it exists
 --
