@@ -481,7 +481,10 @@ function Message:to_ctime()
    -- present then use the Date: header the user selected, accepting
    -- that they might have bogus clocks.
    --
-   local d = self:header( "Delivery-Date" ) or self:header("Date" )
+   local d = self:header( "Delivery-Date" )
+   if ( ( not d ) or ( d == "" ) ) then
+      d = self:header("Date" )
+   end
    if ( d ) then
 
       -- Call the data function
