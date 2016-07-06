@@ -245,6 +245,9 @@ end
 -- we reset the screen neatly, etc.
 --
 function os.exit(code)
+   if ( type(on_exit) == "function" ) then
+      on_exit()
+   end
    Panel:append( "Saving cache .." )
    cache:save(Config:get( "message.cache" ) )
 
