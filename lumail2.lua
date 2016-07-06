@@ -247,6 +247,7 @@ end
 function os.exit(code)
    Panel:append( "Saving cache .." )
    cache:save(Config:get( "message.cache" ) )
+
    Screen:exit()
 end
 
@@ -2696,22 +2697,19 @@ function select()
       global_msgs = {}
 
       --
-      -- Now show the folder we selected and the number of messages.
+      -- Call the user-function, if it exists.
       --
-      local size = #get_messages()
-      if ( size == 1 ) then
-         Panel:append( "Selected " .. folder:path() .. " with 1 message." )
+      if ( type( on_folder_changed ) == "function" ) then
+         on_folder_changed( folder )
       else
-         Panel:append( "Selected " .. folder:path() .. " with " .. size .. " messages." )
-      end
-
-      --
-      -- The user might want to change email addresses
-      -- now
-      for pattern,email in pairs(folder_from) do
-         if ( string.find( folder:path(), pattern ) )then
-            Config:set("global.sender", email )
-            Panel:append("Changed outgoing email-address to " .. email )
+         --
+         -- Just show the folder we selected and the number of messages.
+         --
+         local size = #get_messages()
+         if ( size == 1 ) then
+            Panel:append( "Selected " .. folder:path() .. " with 1 message." )
+         else
+            Panel:append( "Selected " .. folder:path() .. " with " .. size .. " messages." )
          end
       end
 
@@ -2720,8 +2718,6 @@ function select()
       -- the folder.
       --
       change_mode("index")
-
-
       return
    end
 
@@ -2746,6 +2742,13 @@ function select()
       --
       Global:select_message( msg )
       change_mode("message")
+
+      --
+      -- Call the user-function, if it exists.
+      --
+      if ( type( on_message_changed ) == "function" ) then
+         on_message_changed( msg )
+      end
       return
    end
 end

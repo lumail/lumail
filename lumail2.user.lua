@@ -175,19 +175,6 @@ sorting_method( "file" )
 --
 
 
---
--- Some people like to change email addresses when they change
--- folders.
---
--- Here we allow that.
---
-folder_from = {
-   ['example.com'] = "steve@example.com",
-   ['example.net'] = "steve@example.net",
-   ['SPAM']        = "steve@spare.example.net"
-}
-
-
 
 --
 -- This table contains colouring information, it is designed to allow
