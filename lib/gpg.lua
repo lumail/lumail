@@ -65,7 +65,6 @@ _G['message_replace'] = function ( path )
    -- Do we have the binary we want?
    --
    if (string.path( "mimegpg" ) ~= "" ) then
-      Panel:append( "Reading " .. path )
       local out = os.tmpname();
       os.execute( "mimegpg -d -c -- --batch < " .. path .. " > " .. out )
       return( out )
