@@ -44,11 +44,17 @@ core in the style of a traditionally callback:
 * The various `_view()` functions.
      * There is a Lua function for each of our modes, for example `attachment_view()`, `index_view()`, etc.
 
-Previously we had many more callbacks, for example a function that could be
-invoked when you opened a message, or changed the folder-selection. These
-days a lot of that code is already implemented in Lua, so if you wish to
-add code to handle such changes you can add it directly.
+The default lua configuration file will also invoke call-backup functions
+when some actions take place:
 
+* `on_exit()`
+     * Called when the client is terminating.
+* `on_folder_changed( folder )`
+     * This is called when a new folder is opened.
+* `on_message_changed( msg )`
+     * This is called when a new message is opened.
+
+These functions may be defined by the user, and will be invoked if present.
 
 
 ### Config
