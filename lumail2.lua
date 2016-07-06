@@ -1368,8 +1368,15 @@ function Message.delete()
       local cur = Config.get_with_default("index.current", 0)
       local max = Config:get("index.max")
 
-      -- Delete the current message.
+      -- Get the message.
       local msg = Global:current_message()
+
+      if ( not msg ) then
+         Panel:append( "Failed to find a message" )
+         return
+      end
+
+      -- Delete the message.
       msg:unlink()
 
       -- Flush the cached message-list, and get the updated set.
