@@ -93,15 +93,12 @@ function Cache.load( self, file )
       end
    end
 
-   self:trim()
 end
 
 --
 -- Save our cache - trim it if it is too large first.
 --
 function Cache.save(self, file)
-
-   self:trim()
 
    if (file) then
       local hand = io.open(file,"w")
