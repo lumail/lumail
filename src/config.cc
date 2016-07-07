@@ -93,6 +93,8 @@ void CConfig::delete_key(std::string name)
     else
         throw "Unknown config-type!";
 
+    delete(tmp->name);
+
     free(tmp);
 
     m_entries[name] = NULL;
