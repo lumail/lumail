@@ -1117,15 +1117,19 @@ function Message.reply()
    end
 
    --
-   -- Build up the subject
+   -- Get the Subject from the message we're replying to.
    --
    local subject = msg:header( "Subject" )
+   if ( subject == nil ) or ( subject == "" ) then
+      subject = "No subject"
+   end
 
    --
-   -- Remove any (repeated) "Re:" from the start of string.
+   -- Remove any "Re:"-prefix(es) from the subject.
    --
    while( string.find(subject, "^[rR][eE]:" ) ) do
-      subject = string.gsub( subject, "^[rR][eE]:[ \t]+", "" )
+      subject = string.gsub( subject, "^[rR][eE]:", "" )
+      subject = string.trim(subject)
    end
 
    --
