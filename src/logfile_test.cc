@@ -30,6 +30,7 @@
  */
 void TestLogfile(CuTest * tc)
 {
+#ifdef DEBUG
     /*
      * Get the singleton
      */
@@ -102,6 +103,7 @@ void TestLogfile(CuTest * tc)
     CFile::delete_file(src);
     CuAssertTrue(tc, !CFile::exists(src));
     CuAssertIntEquals(tc, CFile::size(src), -1);
+#endif
 }
 
 

@@ -81,6 +81,7 @@ void TestHistory(CuTest * tc)
  */
 void TestHistoryPersistence(CuTest * tc)
 {
+#ifdef DEBUG
     /*
      * Get the singleton
      */
@@ -176,6 +177,7 @@ void TestHistoryPersistence(CuTest * tc)
     CFile::delete_file(src);
     CuAssertTrue(tc, !CFile::exists(src));
     CuAssertIntEquals(tc, CFile::size(src), -1);
+#endif
 }
 
 

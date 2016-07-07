@@ -79,6 +79,7 @@ void TestFileBasename(CuTest * tc)
  */
 void TestFileCopy(CuTest * tc)
 {
+#ifdef DEBUG
     /**
      * Generate a temporary filename.
      */
@@ -142,7 +143,7 @@ void TestFileCopy(CuTest * tc)
     CuAssertTrue(tc, ! CFile::exists(dst));
     CuAssertIntEquals(tc, -1, CFile::size(dst));
     CuAssertIntEquals(tc, -1, CFile::size(src));
-
+#endif
 }
 
 
@@ -151,6 +152,7 @@ void TestFileCopy(CuTest * tc)
  */
 void TestFileExists(CuTest * tc)
 {
+#ifdef DEBUG
     /**
      * Generate a temporary filename.
      */
@@ -187,6 +189,7 @@ void TestFileExists(CuTest * tc)
      * Deleted files will return "-1" for size.
      */
     CuAssertIntEquals(tc, -1, CFile::size(filename));
+#endif
 }
 
 
@@ -195,6 +198,7 @@ void TestFileExists(CuTest * tc)
  */
 void TestFileMove(CuTest * tc)
 {
+#ifdef DEBUG
     /**
      * Generate a temporary filename.
      */
@@ -248,6 +252,7 @@ void TestFileMove(CuTest * tc)
     CuAssertTrue(tc, ! CFile::exists(dst));
     CuAssertIntEquals(tc, -1, CFile::size(dst));
     CuAssertIntEquals(tc, -1, CFile::size(src));
+#endif
 }
 
 
@@ -256,6 +261,7 @@ void TestFileMove(CuTest * tc)
  */
 void TestFileDirectory(CuTest * tc)
 {
+#ifdef DEBUG
     /**
      * Generate a temporary filename.
      */
@@ -285,6 +291,7 @@ void TestFileDirectory(CuTest * tc)
     rmdir(filename);
     CuAssertTrue(tc, !CFile::exists(filename));
     CuAssertTrue(tc, !CFile::is_directory(filename));
+#endif
 }
 
 
@@ -293,6 +300,7 @@ void TestFileDirectory(CuTest * tc)
  */
 void TestFileMaildir(CuTest * tc)
 {
+#ifdef DEBUG
     /**
      * Generate a temporary filename.
      */
@@ -348,6 +356,7 @@ void TestFileMaildir(CuTest * tc)
         CuAssertTrue(tc, !CFile::is_maildir(filename));
     }
 
+#endif
 }
 
 

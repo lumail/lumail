@@ -69,6 +69,7 @@ void TestDirectoryEntries(CuTest * tc)
  */
 void TestDirectoryExists(CuTest * tc)
 {
+#ifdef DEBUG
     /**
      * Generate a temporary filename.
      */
@@ -92,6 +93,7 @@ void TestDirectoryExists(CuTest * tc)
      */
     rmdir(filename);
     CuAssertTrue(tc, ! CDirectory::exists(filename));
+#endif
 }
 
 
@@ -100,6 +102,7 @@ void TestDirectoryExists(CuTest * tc)
  */
 void TestDirectoryMkdir(CuTest * tc)
 {
+#ifdef DEBUG
     char *tmpl = strdup("blahXXXXXX");
     std::string prefix = tmpnam(tmpl);
 
@@ -155,6 +158,7 @@ void TestDirectoryMkdir(CuTest * tc)
 
     CuAssertTrue(tc, !CDirectory::exists(prefix + "/foo/bar/baz"));
     CuAssertTrue(tc, !CFile::is_directory(prefix + "/foo/bar/baz"));
+#endif
 }
 
 
