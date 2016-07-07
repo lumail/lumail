@@ -181,7 +181,7 @@ std::vector<COLOUR_STRING *> CColourString::parse_coloured_string(std::string in
     /*
      * Starting/Previous colour.
      */
-    std::string *prev_colour =  new std::string("white");
+    std::string prev_colour = "white";
 
     /*
      * Iterate over the entries.
@@ -200,7 +200,8 @@ std::vector<COLOUR_STRING *> CColourString::parse_coloured_string(std::string in
             *text = "$[" + colour->substr(1) + "]" + *text;
 
             /* avoid using the selected colour */
-            colour = prev_colour;
+            delete(colour);
+            colour = new std::string(prev_colour);
         }
         else
         {
@@ -208,7 +209,7 @@ std::vector<COLOUR_STRING *> CColourString::parse_coloured_string(std::string in
              * Record the previous colour, to handle the case of a future
              * string not updating itself because it is escaped.
              */
-            prev_colour = colour;
+            prev_colour = *colour;
         }
 
 
