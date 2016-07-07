@@ -14,6 +14,15 @@
 --    print( "Fetched from cache 'foo' -> " .. c:get( "foo" ) )
 --    c:save( "t.logg" )
 --
+-- As a special case cache-keys may be set with a file path, and
+-- when the cache is re-loaded from a file the key/value will only
+-- be re-read if/when the source file still exists.
+--
+-- This is handled by setting the cache-key to be:
+--     path'name
+--
+-- This allows a File:exists(path) test to be applied.
+--
 
 local Cache = {}
 Cache.__index = Cache
@@ -43,6 +52,14 @@ function Cache.set( self, name, value )
    self.store[name] = value
 end
 
+--
+-- Set a cache value, with a path and a key, not just a key.
+--
+function Cache.set_file( self, file, name, value )
+   local key = file .. "'" .. name
+   self:set( key, value )
+end
+
 
 --
 -- Get the size of our cache.
@@ -62,6 +79,17 @@ end
 function Cache.get( self, name )
    return( self.store[name] )
 end
+
+
+--
+-- Get a cached value, with a path and a key, not just a key, if it
+-- exists
+--
+function Cache.get_file( self, file, name, value )
+   local key = file .. "'" .. name
+   return(self:get( key, value ))
+end
+
 
 --
 -- Load our cache from disk.  If it is too large empty it
@@ -96,7 +124,7 @@ function Cache.load( self, file )
 end
 
 --
--- Save our cache - trim it if it is too large first.
+-- Save our cache.
 --
 function Cache.save(self, file)
 
@@ -108,7 +136,19 @@ function Cache.save(self, file)
 
       -- Now the key/values from our cache.
       for key,val in pairs(self.store) do
-         hand:write( key .. "=" .. val  .. "\n")
+
+         --
+         -- Don't write out values that refer to files which aren't present.
+         --
+         file, option = key:match( "^(.*)'(.*)$" )
+         if ( file and option )  then
+            -- OK this cache-key relates to a file.
+            if ( File:exists( file ) ) then
+               hand:write( key .. "=" .. val  .. "\n")
+            end
+         else
+            hand:write( key .. "=" .. val  .. "\n")
+         end
       end
       hand:close()
    end

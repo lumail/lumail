@@ -461,8 +461,8 @@ end
 function Message:to_ctime()
 
    local p = self:path()
-   if ( cache:get("ctime:" .. p) ) then
-      return(cache:get("ctime:" .. p) )
+   if ( cache:get_file(p,"ctime") ) then
+      return(cache:get_file(p,"ctime") )
    end
 
    --
@@ -473,7 +473,7 @@ function Message:to_ctime()
       Log:append( "WARNING: luarocks - date library missing" )
       local stat = File:stat( self:path() )
       local res  = stat['mtime']
-      cache:set("ctime:" .. p, res)
+      cache:set_file(p, "ctime", res)
       return(res)
    end
 
@@ -498,7 +498,7 @@ function Message:to_ctime()
       -- If it worked, get the age in seconds, and update the cahce
       if ( success == true ) then
          local seconds = Date.diff(output, Date.epoch()):spanseconds()
-         cache:set("ctime:" ..p, seconds)
+         cache:set_file(p,"ctime", seconds)
          return seconds
       end
    end
@@ -2008,8 +2008,8 @@ function Message:format()
    local time = self:mtime()
 
    -- Do we have this cached?  If so return it
-   if ( cache:get("message:" .. time .. path) ) then
-      return(cache:get("message:" .. time .. path))
+   if ( cache:get_file(path, "message:" .. time) ) then
+      return(cache:get_file(path, "message:" .. time))
    end
 
    local flags   = self:flags()
@@ -2053,7 +2053,7 @@ function Message:format()
    end
 
    -- Update the cache.
-   cache:set("message:" .. time .. path, output)
+   cache:set_file(path, "message:" .. time, output)
 
    return( output )
 end
@@ -2323,8 +2323,8 @@ function Maildir:format()
    end
 
    -- Do we have this cached?  If so return it
-   if ( cache:get("maildir:" .. trunc .. src .. time .. path) ) then
-      return(cache:get("maildir:" .. trunc .. src .. time .. path))
+   if ( cache:get_file(path,"maildir:" .. trunc .. src .. time) ) then
+      return(cache:get_file(path,"maildir:" .. trunc .. src .. time))
    end
 
    local total  = self:total_messages()
@@ -2377,7 +2377,7 @@ function Maildir:format()
    end
 
    -- update the cache
-   cache:set("maildir:" .. trunc .. src .. time .. path, output)
+   cache:set_file(path, "maildir:" .. trunc .. src .. time, output)
 
    return output
 end
