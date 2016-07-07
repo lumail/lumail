@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <assert.h>
+#include <malloc.h>
 #include <pcrecpp.h>
 
 #include "colour_string.h"

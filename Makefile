@@ -30,6 +30,20 @@ ifeq ($(UNAME),Darwin)
 endif
 
 #
+# To ensure make finds the ncursesw.h header file,
+# you may need to invoke it like this:
+#   PKG_CONFIG_PATH=/usr/local/Cellar/ncurses/6.0_1/lib/pkgconfig make
+# PKG_CONFIG_PATH should point to a directory containing a file
+# named ncursesw.pc)
+#
+ifeq ($(UNAME),Darwin)
+   C=clang
+   CC=clang++
+endif
+
+
+ #
+#
 # Then actually set the flags.
 #
 LUA_FLAGS ?= $(shell pkg-config --cflags ${LVER})

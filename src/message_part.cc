@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <stdlib.h>
 
 #include "message_part.h"
 
