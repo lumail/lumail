@@ -17,6 +17,7 @@
  */
 
 #include <algorithm>
+#include "stdlib.h"
 
 #include "config.h"
 
