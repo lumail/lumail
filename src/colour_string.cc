@@ -278,7 +278,7 @@ std::vector<COLOUR_STRING *> CColourString::parse_coloured_string(std::string in
         COLOUR_STRING *i = (*it);
         delete(i->string);
         delete(i->colour);
-        delete(i);
+        free(i);
     }
 
 
@@ -292,7 +292,7 @@ std::vector<COLOUR_STRING *> CColourString::parse_coloured_string(std::string in
         COLOUR_STRING *x = results.at(0);
         delete(x->string);
         delete(x->colour);
-        delete(x);
+        free(x);
         results.erase(results.begin(), results.begin() + 1);
     }
 
