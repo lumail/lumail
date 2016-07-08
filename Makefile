@@ -39,6 +39,7 @@ endif
 ifeq ($(UNAME),Darwin)
    C=clang
    CC=clang++
+   CPPFLAGS+=-I /usr/include/malloc
 endif
 
 
