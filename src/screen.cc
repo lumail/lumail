@@ -1284,30 +1284,34 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
 
         for (int i = 0; i <= height; i++)
         {
+            std::string buf = "";
+
+            /*
+             * If we're still in the array of lines to draw
+             * then pick the right one.
+             */
             if ((off + selected) < size)
+                buf = lines.at(off + selected);
+
+            /*
+             * Last two parameters are:
+             *
+             *  enable scroll: true
+             *  enable wrap: true
+             */
+            result = draw_single_line(i, 0, buf, stdscr, true, true);
+
+            /*
+             * Did we draw more than a single line?
+             */
+            if (result > width)
             {
-                std::string buf = lines.at(off + selected);
-
                 /*
-                 * Last two parameters are:
-                 *
-                 *  enable scroll: true
-                 *  enable wrap: true
+                 * If we've got wrapping enabled bump to the next
+                 * line.
                  */
-                result = draw_single_line(i, 0, buf, stdscr, true, true);
-
-                /*
-                 * Did we draw more than a single line?
-                 */
-                if (result > width)
-                {
-                    /*
-                     * If we've got wrapping enabled bump to the next
-                     * line.
-                     */
-                    if (wrap == 1)
-                        i += (result / width);
-                }
+                if (wrap == 1)
+                    i += (result / width);
             }
 
             off += 1;
@@ -1322,8 +1326,6 @@ void CScreen::draw_text_lines(std::vector<std::string> lines, int selected, int 
      *
      * We'll draw a highlighted bar, and that'll move "nicely".
      */
-
-
     int middle = (height) / 2;
     int rowToHighlight = 0;
     vectorPosition topBottomOrMiddle = NONE;
