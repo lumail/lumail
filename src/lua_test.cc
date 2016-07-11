@@ -115,7 +115,7 @@ void TestFunctionToTable(CuTest * tc)
     /*
      * Get the results
      */
-    std::vector<std::string> results = instance->function2table("get_table");
+    std::vector<std::string> results = instance->function2table("get_table", "");
 
     CuAssertTrue(tc, ! results.empty());
     CuAssertIntEquals(tc, 2, results.size());
@@ -126,6 +126,54 @@ void TestFunctionToTable(CuTest * tc)
     CuAssertStrEquals(tc, "bar", results.at(0).c_str());
     CuAssertStrEquals(tc, "baz", results.at(1).c_str());
 
+}
+
+
+/**
+ * Test a Lua function returning a table works.
+ */
+void TestFunctionToTableArgs(CuTest * tc)
+{
+    /*
+     * Get the singleton
+     */
+    CLua *instance = CLua::instance();
+    CuAssertPtrNotNull(tc, instance);
+
+    /*
+     * Define a function that returns a table.
+     */
+    instance->execute("function get_table(a) t ={} if ( a == 'foo' ) then t[1] = 'bar' t[2]= 'baz' else t[1] = 'ok, computer'  end return t end ");
+
+
+    /*
+     * Get the results: calling with "foo"
+     */
+    std::vector<std::string> results = instance->function2table("get_table", "foo");
+
+    CuAssertTrue(tc, ! results.empty());
+    CuAssertIntEquals(tc, 2, results.size());
+
+    /*
+     * Test we got the values we expected.
+     */
+    CuAssertStrEquals(tc, "bar", results.at(0).c_str());
+    CuAssertStrEquals(tc, "baz", results.at(1).c_str());
+
+
+
+    /*
+     * Get the results: Calling with "bogus"
+     */
+    results = instance->function2table("get_table", "bogus");
+
+    CuAssertTrue(tc, ! results.empty());
+    CuAssertIntEquals(tc, 1, results.size());
+
+    /*
+     * Test we got the values we expected.
+     */
+    CuAssertStrEquals(tc, "ok, computer", results.at(0).c_str());
 }
 
 
@@ -262,6 +310,7 @@ lua_getsuite()
     SUITE_ADD_TEST(suite, TestLua);
     SUITE_ADD_TEST(suite, TestErrorHandler);
     SUITE_ADD_TEST(suite, TestFunctionToTable);
+    SUITE_ADD_TEST(suite, TestFunctionToTableArgs);
     SUITE_ADD_TEST(suite, TestNestedTable);
     SUITE_ADD_TEST(suite, TestFunctionExists);
     SUITE_ADD_TEST(suite, TestStringFunction);

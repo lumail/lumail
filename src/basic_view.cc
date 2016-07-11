@@ -52,7 +52,7 @@ std::vector<std::string> CBasicView::get_text(std::string function)
      * Call the view-function.
      */
     CLua *lua = CLua::instance();
-    std::vector<std::string> result = lua->function2table(function);
+    std::vector<std::string> result = lua->function2table(function, "");
 
     /*
      * Store the number of lines we've retrieved.

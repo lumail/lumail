@@ -274,56 +274,6 @@ char * CLua::get_nested_table(std::string table, const char *key, const char *su
 
 
 /*
- * Call `on_complete` to complete a string.
- */
-std::vector<std::string> CLua::get_completions(std::string token)
-{
-    std::vector<std::string> result;
-
-    lua_getglobal(m_lua, "on_complete");
-    lua_pushstring(m_lua, token.c_str());
-
-    if (lua_pcall(m_lua, 1, 1, 0) != 0)
-    {
-        if (lua_isstring(m_lua, -1))
-        {
-            /*
-             * The error message will be on the stack..
-             */
-            char *err = strdup(lua_tostring(m_lua, -1));
-            lua_pop(m_lua, 1);
-
-            on_error(err);
-
-            /*
-             * Avoid a leak.
-             */
-            free(err);
-        }
-        else
-            lua_pop(m_lua, 1);
-
-        /*
-         * Now return the result.
-         */
-        return result;
-    }
-
-    lua_pushnil(m_lua);
-
-    while (lua_next(m_lua, -2))
-    {
-        const char *entry = lua_tostring(m_lua, -1);
-        result.push_back(entry);
-        lua_pop(m_lua, 1);
-
-    }
-
-    return (result);
-}
-
-
-/*
  * This method is called when a configuration key changes,
  * via our observer implementation.
  */
@@ -367,13 +317,16 @@ void CLua::update(std::string key_name)
 
 /*
  * Call a Lua function which will return a table of text.
+ *
+ * If the argument is not equal to "" then it will be given as the
+ * argument to the specified Lua function.
  */
-std::vector<std::string> CLua::function2table(std::string function)
+std::vector<std::string> CLua::function2table(std::string function, std::string argument)
 {
     std::vector<std::string> result;
 
     /*
-     * Get the fuction - if it doesn't exist we're done.
+     * Get the function - if it doesn't exist we're done.
      */
     lua_getglobal(m_lua, function.c_str());
 
@@ -382,9 +335,27 @@ std::vector<std::string> CLua::function2table(std::string function)
 
 
     /*
-     * Call the function - and handle any error.
+     * Are we passing an argument?
      */
-    if (lua_pcall(m_lua, 0, 1, 0) != 0)
+    bool has_arg = (argument == "") ? false : true ;
+
+    /*
+     * Call the function - either passing in the argument, or not.
+     */
+    int ret = 0;
+
+    if (has_arg)
+    {
+        lua_pushstring(m_lua, argument.c_str());
+        ret = lua_pcall(m_lua, 1, 1, 0);
+    }
+    else
+        ret = lua_pcall(m_lua, 0, 1, 0);
+
+    /*
+     * Handle any error that might have raised.
+     */
+    if (ret != 0)
     {
         if (lua_isstring(m_lua, -1))
         {

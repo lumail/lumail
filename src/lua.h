@@ -80,11 +80,6 @@ public:
     char *get_nested_table(std::string table, const char *key, const char *subkey);
 
     /**
-     * Call `on_complete` to complete a string.
-     */
-    std::vector<std::string> get_completions(std::string token);
-
-    /**
      * This method is called when a configuration key changes,
      * via our observer implementation.
      */
@@ -92,8 +87,11 @@ public:
 
     /**
      * Call a Lua function which will return a table of text.
+     *
+     * If the argument is not equal to "" then it will be given as the
+     * argument to the specified Lua function.
      */
-    std::vector<std::string> function2table(std::string function);
+    std::vector<std::string> function2table(std::string function, std::string argument);
 
     /**
      * Call the user "on_error" function with given error message.
