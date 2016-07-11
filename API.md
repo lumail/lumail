@@ -124,8 +124,6 @@ We have a number of variables which are special, the most important ones are:
     * This holds the name of the currently active display-mode
 * `global.sent-mail`
     * This is the Maildir to which outgoing messages are saved.
-* `global.over-draw`
-    * If this is set to `1` then an extra line will be drawn at the bottom of the screen to mask any misdraw-artifacts.
 
 For each mode that has a display there will be a `$mode.max` to store the
 count of the objects, as well as `$mode.current`.
