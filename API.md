@@ -40,7 +40,7 @@ core in the style of a traditionally callback:
      * It should return a table of matches, which are presented to the user.
 * `on_idle()`
      * This function is called regularly from the main loop.
-     * You can perform background action here.
+     * See the later note on timers for more details of what this does.
 * The various `_view()` functions.
      * There is a Lua function for each of our modes, for example `attachment_view()`, `index_view()`, etc.
 
@@ -148,31 +148,6 @@ displays things, these are:
     * Specifies whether additional MIME-parts should be appended/prepended to the display.
 * `maildir.truncate`
     * Alternate between showing the full/truncated Maildir path in maildir-mode.
-
-
-### Sorting Messages
-
-The sorting of messages is implemented in C++, but uses the Lua
-functionality to ensure the user can influence the behaviour.
-
-The sorting method is stored in the variable `index.sort`, which
-will select the appropriate Lua callback function to perform the sorting.
-
-For example:
-
-* If `index.sort` is set to `date`.
-    * Sorting calls `compare_by_date`.
-* If `index.sort` is set to `from`.
-    * Sorting calls `compare_by_from`.
-
-(i.e. "compare_by_XXX" is invoked when `index.sort` is `XXX`.)
-
-To define your local sorting solution you should:
-
-* Set `index.sort` to `local`.
-* Implement `function compare_by_local()`.
-
-
 
 
 
@@ -430,6 +405,32 @@ The Screen object is registered automatically and doesn't need to be constructed
 
 Sample code is available in `sample.lua/screen.lua`.
 
+
+
+### Sorting Messages
+
+The sorting of messages is implemented in C++, but uses the Lua
+functionality to ensure the user can influence the behaviour.
+
+The sorting method is stored in the variable `index.sort`, which
+will select the appropriate Lua callback function to perform the sorting.
+
+For example:
+
+* If `index.sort` is set to `date`.
+    * Sorting calls `compare_by_date`.
+* If `index.sort` is set to `from`.
+    * Sorting calls `compare_by_from`.
+
+(i.e. "compare_by_XXX" is invoked when `index.sort` is `XXX`.)
+
+To define your local sorting solution you should:
+
+* Set `index.sort` to `local`.
+* Implement `function compare_by_local()`.
+
+
+
 #### The Panel
 
 The screen has an associated status-panel, hereby referred to as the panel.
@@ -461,6 +462,29 @@ The Panel object has the following (static) methods:
      * Toggle the visibility of the panel.
 
 Sample code is available in `sample.lua/panel.lua`.
+
+
+#### Timers
+
+The core of the application invokes the lua function `on_idle()`
+once per second, when the system is idle.  The default implementation
+of this `on_idle` function will invoke any defined user timers, which are
+regular Lua functions which have a particular naming scheme.
+
+In your configuration file define an ordinary function with a name
+matching the pattern `on_XX` - where XX is an integer.
+
+For example:
+
+* `function on_1()  end`
+   * This will be invoked every second.
+* `function on_2() ... end`
+   * This will be invoked every two seconds.
+* `function on_10() ... end`
+   * This will be invoked every ten seconds.
+* ...
+* `function on_3600() ... end`
+   * This will be invoked once per hour.
 
 
 

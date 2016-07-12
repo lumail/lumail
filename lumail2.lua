@@ -3309,31 +3309,108 @@ end
 
 
 --
--- This function is called when the main-loop timesout, which is roughly
--- once per second.
+-- Handle timers
+--
+-----------------------------------------------------------------------------
+--
+-- In the past we'd expect users to override "on_idle()" to invoke
+-- the scheduling of "stuff", but this proved to be complex because
+-- it meant that all releases which touched this code would require
+-- rewriting.
+--
+-- We already had some magic for keeping state, so this was improved
+-- and now you can define arbitrary functions that will be invoked
+-- on regular schedule just via their name.
+--
+-- So, for example, define the function `on_XX()` in your personal
+-- configuration file, which is one of:
+--
+--    ~/.lumail2/$HOSTNAME.lua
+--    ~/.lumail2/lumail2.lua
+--
+-- Assuming XX is a number then the function will be invoked at that
+-- frequency.  So `on_1()` will be invoked every second, `on_2()` every
+-- two seconds, etc.
+--
+-- As a concrete example this runs every five minutes:
+--
+--   function on_300()
+--     Panel:append( "I'm called every five minutes" )
+--   end
+--
+-- The only caveat here is that you can only define one function
+-- for any given frequency.
+--
 --
 do
-   -- last sync time.
-   local ls = os.time()
+
+   --
+   -- Table to hold the idle-timers the user has defined.
+   --
+   --  Key: The number of seconds between invocations.
+   --
+   --  Val: A hash containing the function to invoke, and the last time
+   --       it was invoked.
+   --
+   local idle_timers = nil
+
 
    function on_idle()
 
-      -- get current time
-      ct = os.time()
+      --
+      -- Initialize our callback-table, if it is empty.
+      --
+      if ( idle_timers == nil ) then
 
-      -- If it is two minutes then save our cache to disk
-      if ( ( ct - ls ) >= ( 60 * 2 ) ) then
-         ls = ct
-         cache:save(Config:get( "message.cache" ) )
+         -- Ensure the timer-list is a table.
+         idle_timers = {}
+
+         -- Get the current time
+         local now = os.time()
+
+         -- Loop over all the things in the global scope.
+         for n,o in pairs(_G ) do
+
+            -- Is it a function?
+            if (type(o) == "function" ) then
+
+               -- Is the name of the function "on_NNN" ?
+               local period = string.match(n, "^on%_(%d+)$" )
+               if ( period ) then
+                  -- Save the result away.
+                  idle_timers[period]= { callback = o, last = now }
+               end
+            end
+         end
       end
 
       --
-      -- This shows the way that we can append messages constantly
-      -- to the panel.
+      -- Now we're in the routine that will run every second.
       --
-      -- Panel:append("The date is " .. os.date( "%a, %d %b %Y %H:%M:%S %z" ) )
-      --
+      ct = os.time()
+
+      -- Iterate over our timer-table
+      for i,o in pairs(idle_timers) do
+
+         -- Get the function to invoke.
+         local func = idle_timers[i]['callback']
+
+         -- Get the last time this function was last called.
+         local last = idle_timers[i]['last']
+
+         -- If the threshold has passed then..
+         if ( ( tonumber(ct) - tonumber(last) ) >= tonumber(i) ) then
+            -- Update the last-called time
+            idle_timers[i]['last'] = ct
+            -- Invoke the function.
+            func()
+         end
+      end
    end
+
+   --
+   -- End of closure.
+   --
 end
 
 
