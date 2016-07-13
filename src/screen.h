@@ -195,9 +195,14 @@ public:
     void execute(std::string program);
 
     /**
+     * Is the given character a multi-key prefix?
+     */
+    bool is_prefixed_key(const char *key);
+
+    /**
      * Execute a function from the global keymap.
      */
-    bool on_keypress(const char *key);
+    bool on_keypress(std::string key);
 
     /**
      * Draw an array of lines to the screen, highlighting the current line.

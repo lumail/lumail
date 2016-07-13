@@ -158,15 +158,24 @@ void CScreen::run_main_loop()
     CLua *lua = CLua::instance();
 
     /*
-     * Holder for keyboard input.
+     * Holder for the next character of keyboard input.
      */
     int ch;
+
+    /*
+     * Holder for compound input.
+     */
+    std::string total;
+
 
     /*
      * Input handler.
      */
     CInputQueue *input = CInputQueue::instance();
 
+    /*
+     * Get a single character.
+     */
     while ((m_running) && (ch = input->get_input()))
     {
 
@@ -213,7 +222,23 @@ void CScreen::run_main_loop()
             const char *key = lookup_key(ch);
 
             if (key != NULL)
-                on_keypress(key);
+            {
+                /*
+                 * Add the character to the (multi-key) input string.
+                 */
+                total += key;
+
+                /*
+                 * If we're NOT handling a prefix then we can execute
+                 * the keyboard result - otherwise we'll assume that the
+                 * next character will complete the thing.
+                 */
+                if (! is_prefixed_key(key))
+                {
+                    on_keypress(total);
+                    total = "";
+                }
+            }
         }
 
 
@@ -251,6 +276,67 @@ void CScreen::run_main_loop()
     }
 }
 
+
+/*
+ * Is the given character a multi-key prefix?
+ */
+bool CScreen::is_prefixed_key(const char *key)
+{
+    /*
+     * Get the current mode.
+     */
+    CConfig *config  = CConfig::instance();
+    std::string mode = config->get_string("global.mode", "maildir");
+
+    /*
+     * Get the lua-helper.
+     */
+    CLua *lua = CLua::instance();
+
+    /*
+     * First of all handle the bindings in the current mode.
+     */
+    std::vector<std::string> b = lua->bindings(mode);
+
+    for (std::vector<std::string>::iterator it = b.begin(); it != b.end() ; ++it)
+    {
+        std::string k = (*it);
+
+        /*
+         * Starts with the string, but NOT equal to the string.
+         */
+        if ((k.compare(0, strlen(key), key) == 0) &&
+                (strlen(key) != k.length()))
+        {
+            return true;
+        }
+    }
+
+    /*
+     * Now the bindings in the global-mode.
+     */
+    b = lua->bindings("global");
+
+    for (std::vector<std::string>::iterator it = b.begin(); it != b.end() ; ++it)
+    {
+        std::string k = (*it);
+
+        /*
+         * Starts with the string, but NOT equal to the string.
+         */
+        if ((k.compare(0, strlen(key), key) == 0) &&
+                (strlen(key) != k.length()))
+        {
+            return true;
+        }
+    }
+
+
+    /*
+     * Given up - not a multi-map
+     */
+    return false;
+}
 
 /*
  * Exit our main event-loop
@@ -1108,7 +1194,7 @@ std::string CScreen::get_char(std::string prompt)
  *
  * If the result is a string then execute it as a function.
  */
-bool CScreen::on_keypress(const char *key)
+bool CScreen::on_keypress(std::string key)
 {
     /*
      * The result of the lookup.
@@ -1125,7 +1211,7 @@ bool CScreen::on_keypress(const char *key)
      * Lookup the keypress in the current-mode-keymap.
      */
     CLua *lua = CLua::instance();
-    result = lua->get_nested_table("keymap", mode.c_str(), key);
+    result = lua->get_nested_table("keymap", mode.c_str(), key.c_str());
 
 
     /*
@@ -1134,7 +1220,7 @@ bool CScreen::on_keypress(const char *key)
      * This order ensures you can have a "global" keymap, overridden in just one mode.
      */
     if (result == NULL)
-        result = lua->get_nested_table("keymap", "global", key);
+        result = lua->get_nested_table("keymap", "global", key.c_str());
 
     /*
      * If one/other of these lookups resulted in success then we're golden.
