@@ -21,7 +21,6 @@ keymap['global']['TAB'] = "Panel:toggle()"
 keymap['global']['M']   = "change_mode( 'maildir' )"
 keymap['global']['I']   = "change_mode( 'index' )"
 keymap['global']['L']   = "change_mode( 'lua' )"
-keymap['global']['^L']  = "change_mode( 'life' )"
 keymap['global']['^P']  = "change_mode( 'panel' )"
 
 
@@ -175,5 +174,12 @@ keymap['global']['w'] = 'Config.toggle( "line.wrap" )'
 keymap['message']['G'] = 'Config.toggle( "message.headers" )'
 keymap['message']['T'] = 'Config.toggle( "message.all_parts" )'
 
+
+--
+-- Test that we could set limits via a prefix.
+--
+keymap['global']['.a'] = 'Panel:append( ".a != a - Hooray!" )'
+keymap['global']['.t'] = 'Panel:append( ".t != t - Hooray!" )'
+keymap['global']['.n'] = 'Panel:append( ".n != n - Hooray!" )'
 
 return keymap
