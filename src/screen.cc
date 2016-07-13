@@ -420,7 +420,7 @@ void CScreen::setup()
 
     /* Initialize curses */
     keypad(stdscr, TRUE);
-    crmode();
+    raw();
     noecho();
     curs_set(0);
 
