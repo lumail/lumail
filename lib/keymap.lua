@@ -179,8 +179,20 @@ keymap['message']['T'] = 'Config.toggle( "message.all_parts" )'
 --
 -- Test that we could set limits via a prefix.
 --
-keymap['global']['.a'] = 'Panel:append( ".a != a - Hooray!" )'
-keymap['global']['.t'] = 'Panel:append( ".t != t - Hooray!" )'
-keymap['global']['.n'] = 'Panel:append( ".n != n - Hooray!" )'
+keymap['maildir']['.a'] = 'Config:set( "maildir.limit", "all" )'
+keymap['maildir']['.n'] = 'Config:set( "maildir.limit", "new" )'
+keymap['maildir']['.t'] = 'Config:set( "maildir.limit", "today" )'
+
+keymap['index']['.a'] = 'Config:set( "index.limit", "all" )'
+keymap['index']['.n'] = 'Config:set( "index.limit", "new" )'
+keymap['index']['.t'] = 'Config:set( "index.limit", "today" )'
+
+
+
+keymap['global']['^A']     = 'Panel:append( "^A" )'
+keymap['global']['^A^B']   = 'Panel:append( "^A^B" )'
+keymap['global']['^A^B^C'] = 'Panel:append( "^A^B^C" )'
+
+
 
 return keymap

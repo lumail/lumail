@@ -195,15 +195,29 @@ void CScreen::run_main_loop()
         if (ch == ERR)
         {
             /*
-             * Call the Lua on_idle() function.
+             * Is this timeout DURING a multi-key press?
              */
-            lua->execute("on_idle()");
+            if (!total.empty())
+            {
+                /*
+                 * If so we assume that there will be a prefix-match.
+                 */
+                on_keypress(total);
+                total = "";
+            }
+            else
+            {
+                /*
+                 * Call the Lua on_idle() function.
+                 */
+                lua->execute("on_idle()");
 
-            /*
-             * Call our view-specific on-idle handler.
-             */
-            if (view)
-                view->on_idle();
+                /*
+                 * Call our view-specific on-idle handler.
+                 */
+                if (view)
+                    view->on_idle();
+            }
         }
         else
         {
@@ -225,7 +239,7 @@ void CScreen::run_main_loop()
                  * the keyboard result - otherwise we'll assume that the
                  * next character will complete the thing.
                  */
-                if (! is_prefixed_key(key))
+                if (! is_prefixed_key(total.c_str()))
                 {
                     on_keypress(total);
                     total = "";
