@@ -100,7 +100,7 @@ void CScreen::update(std::string key_name)
     if (key_name == "global.timeout")
     {
         CConfig *config = CConfig::instance();
-        int value       = config->get_integer("global.timeout", 200);
+        int value       = config->get_integer("global.timeout", 500);
         timeout(value);
     }
 
@@ -139,14 +139,6 @@ void CScreen::update(std::string key_name)
  */
 void CScreen::run_main_loop()
 {
-    /*
-     * Get our timeout period, and set it.
-     */
-    CConfig *config = CConfig::instance();
-    int tout = config->get_integer("global.timeout", 200);
-
-    timeout(tout);
-
     /*
      * Now we're in our loop.
      */
@@ -428,7 +420,7 @@ void CScreen::setup()
      * Get our timeout period, and set it.
      */
     CConfig *config = CConfig::instance();
-    int tout = config->get_integer("global.timeout", 200);
+    int tout = config->get_integer("global.timeout", 500);
 
     timeout(tout);
     use_default_colors();
@@ -593,8 +585,6 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
     bool done     = false;
     int col_width = width / cols;
 
-    timeout(0);
-
     while (!done)
     {
         refresh();
@@ -679,13 +669,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
 
     delwin(childwin);
     ::clear();
-    /*
-     * Get our timeout period, and set it.
-     */
-    CConfig *config = CConfig::instance();
-    int tout = config->get_integer("global.timeout", 200);
 
-    timeout(tout);
     return (choices.at(selected));
 }
 

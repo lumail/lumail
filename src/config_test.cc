@@ -43,7 +43,7 @@ void TestEmptyConfig(CuTest * tc)
     CuAssertPtrNotNull(tc, instance);
 
     std::vector<std::string> keys = instance->keys();
-    CuAssertIntEquals(tc, keys.size(), 8);
+    CuAssertIntEquals(tc, keys.size(), 7);
 }
 
 
