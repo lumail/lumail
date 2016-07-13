@@ -1,16 +1,17 @@
 --
--- Setup our KeyMaps
+-- The keymap table.
 --
-keymap = {}
-keymap['attachment'] = {}
-keymap['global']     = {}
-keymap['index']      = {}
-keymap['lua']        = {}
-keymap['life']       = {}
-keymap['keybinding'] = {}
-keymap['panel']      = {}
-keymap['maildir']    = {}
-keymap['message']    = {}
+-- There is a sub-table for each valid mode.
+--
+keymap           = {}
+keymap['global'] = {}
+
+--
+-- Setup a table for each registered mode
+--
+for i,o in ipairs(Global:modes()) do
+   keymap[o] = {}
+end
 
 --
 -- Global keybindings, which work in all modes.
