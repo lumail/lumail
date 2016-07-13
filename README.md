@@ -78,6 +78,7 @@ The core of the project relies upon a small number of libraries:
 * libgmime-2.6, the MIME-library.
 * libncursesw, the console input/graphics library.
 
+### Linux
 Upon a Debian GNU/Linux host, running the Jessie (stable) release, the following command is sufficient to install the required dependencies:
 
      apt-get install build-essential libgmime-2.6-dev liblua5.2-dev libmagic-dev libncursesw5-dev libpcre3-dev make pkg-config
@@ -91,6 +92,16 @@ The integrated test-suite can be executed by running:
 
     $ make test
 
+
+### OS X
+
+Make sure Xcode is installed and you probably want a package manager like [brew](http://brew.sh/) to install the required dependencies:
+
+     brew install lua gmime libmagic ncurses pkg-config
+
+The code can then be built as follows:
+
+    $ PKG_CONFIG_PATH=/usr/local/Cellar/ncurses/6.0_1/lib/pkgconfig make
 
 
 Installation and Configuration
