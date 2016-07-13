@@ -80,6 +80,13 @@ public:
     char *get_nested_table(std::string table, const char *key, const char *subkey);
 
     /**
+     * Get the known-bindings of the keymap in the given mode.
+     *
+     * This just returns the names of the keys, rather than their values.
+     */
+    std::vector<std::string> bindings(std::string mode);
+
+    /**
      * This method is called when a configuration key changes,
      * via our observer implementation.
      */

@@ -274,6 +274,49 @@ char * CLua::get_nested_table(std::string table, const char *key, const char *su
 
 
 /*
+ * Get the known-bindings of the keymap in the given mode.
+ *
+ * This just returns the names of the keys, rather than their values.
+ */
+std::vector<std::string> CLua::bindings(std::string mode)
+{
+    std::vector<std::string> result;
+
+    /*
+     * Ensure the table exists - if it doesn't return NULL.
+     */
+    lua_getglobal(m_lua, "keymap");
+
+    if (lua_isnil(m_lua, -1))
+        return (result);
+
+    /*
+     * Get the sub-table.
+     */
+    lua_pushstring(m_lua, mode.c_str());
+    lua_gettable(m_lua, -2);
+
+    if (!lua_istable(m_lua, -1))
+        return (result);
+
+
+    /*
+     * Now iterate over the keys.
+     */
+    lua_pushnil(m_lua);
+
+    while (lua_next(m_lua, -2))
+    {
+        const char *entry = lua_tostring(m_lua, -2);
+        result.push_back(entry);
+        lua_pop(m_lua, 1);
+    }
+
+    return (result);
+}
+
+
+/*
  * This method is called when a configuration key changes,
  * via our observer implementation.
  */
