@@ -23,7 +23,7 @@ keymap['global']['M']   = "change_mode( 'maildir' )"
 keymap['global']['I']   = "change_mode( 'index' )"
 keymap['global']['L']   = "change_mode( 'lua' )"
 keymap['global']['^P']  = "change_mode( 'panel' )"
-
+keymap['global']['^L']  = "change_mode( 'life' )"
 
 --
 -- Next/Previous navigation for different modes
@@ -193,6 +193,15 @@ keymap['global']['^A']     = 'Panel:append( "^A" )'
 keymap['global']['^A^B']   = 'Panel:append( "^A^B" )'
 keymap['global']['^A^B^C'] = 'Panel:append( "^A^B^C" )'
 
+
+--
+-- Jump to the given line, by number.
+--
+-- 1000 should be enough for everybody.
+--
+for i=1,999 do
+   keymap['global'][tostring(i)] = 'jump(' .. i .. ');'
+end
 
 
 return keymap
