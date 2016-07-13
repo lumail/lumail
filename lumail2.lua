@@ -3014,6 +3014,21 @@ end
 
 
 --
+-- Jump to the given offset, in a mode-agnostic fashion.
+--
+-- Although this only really makes sense in those modes where
+-- you have a highlight (i.e. non-simple modes).
+--
+function jump( offset )
+   local mode = Config:get("global.mode")
+   local max  = Config:get(mode .. ".max" )
+   if ( offset <= max ) then
+      Config:set( mode .. ".current", offset - 1)
+   end
+end
+
+
+--
 -- Scroll to the next maildir containing unread messages, or message
 -- which is unread.
 --
