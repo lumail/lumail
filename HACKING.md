@@ -48,7 +48,7 @@ The main objects are:
     * Derived classes implement the actual mode.
 
 The different view-modes are each derived from the `CViewMode` base-class,
-and are implemented in `*_view.cc`.   The view-modes are instantied in the
+and are implemented in `*_view.cc`.   The view-modes are instantiated in the
 `CScreen`-setup phase, and are selected by name.
 
 
@@ -81,13 +81,13 @@ The wrappers are very simple, and follow a template.
 Testing
 -------
 
-Regretably much of our code is not tested in a systematic fashion.
+Regrettably much of our code is not tested in a systematic fashion.
 
 However there is some test-code which is built into our main binary,
 to invoke it please run:
 
     $ lumail2 --test
 
-Testing is accomplished via the CuTest library, as somethign I picked
+Testing is accomplished via the CuTest library, as something I picked
 on a whim many years ago and stuck with.  The implementation of our
 tests is stored in files with a `_test.cc` suffix.
