@@ -251,17 +251,17 @@ The Maildir object has the following methods:
 * `path()`
     * Returns the path to the Maildir - what it was constructed with.
 * `messages()`
-	* Returns an array of Message-objects, one for each message in the maildir.
+    * Returns an array of Message-objects, one for each message in the maildir.
 * `mtime()`
     * Return the modified time of the given maildir, as seconds past the epoch.
 * `save_message(msg)`
     * Save the specified message to this maildir.
 * `total_messages()`
-	* Returns the count of messages in the maildir.
+    * Returns the count of messages in the maildir.
 * `unread_messages()`
-	* Returns the count of unread/new messages in the maildir.
+    * Returns the count of unread/new messages in the maildir.
 * `exists`
-	* Returns `true` if the Maildir exists.
+    * Returns `true` if the Maildir exists.
 
 
 
@@ -318,11 +318,11 @@ object contains the following methods:
 * `children()`
     * Returns any MessagePart children this part might have.
 * `content()`
-	* Returns the content of the part.
+    * Returns the content of the part.
 * `is_attachment()`
-	* Returns `true` if the part represents an attachment, false otherwise.
+    * Returns `true` if the part represents an attachment, false otherwise.
 * `filename()`
-	* Returns the name of the attachment, if `is_attachment` returned true.
+    * Returns the name of the attachment, if `is_attachment` returned true.
 * `parent()`
     * Returns the parent of the specified message-part, if any.
     * This returns `nil` if the part is not a child.
