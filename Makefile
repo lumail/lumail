@@ -151,7 +151,7 @@ docs:
 #
 # Serve our documentation via a local python HTTP-server.
 #
-.PHONE: serve_docs
+.PHONY: serve_docs
 serve_docs: docs
 	echo "Visit http://127.0.0.1:8000/"
 	cd docs/html && python -m SimpleHTTPServer
