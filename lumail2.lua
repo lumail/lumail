@@ -3488,6 +3488,7 @@ for index,arg in ipairs(ARGS) do
    --
    local folder = string.match(arg, "--folder=(.*)" )
    if ( folder ) then
+      Config:set( "maildir.limit", "all" )
       Maildir.select( folder )
    end
 
