@@ -71,7 +71,7 @@ void push_cmaildir(lua_State * l, std::shared_ptr<CMaildir> maildir)
     /*
      * Allocate a new object.
      */
-    void *ud = lua_newuserdata(l, sizeof(std::shared_ptr<CMaildir>*));
+    void *ud = lua_newuserdata(l, sizeof(std::shared_ptr<CMaildir>));
 
     if (!ud)
     {

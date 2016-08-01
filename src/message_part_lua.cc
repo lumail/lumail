@@ -55,7 +55,7 @@ void push_cmessagepart(lua_State * l, std::shared_ptr<CMessagePart> part)
     /*
      * Allocate a new object.
      */
-    void *ud = lua_newuserdata(l, sizeof(std::shared_ptr<CMessagePart>*));
+    void *ud = lua_newuserdata(l, sizeof(std::shared_ptr<CMessagePart>));
 
     if (!ud)
     {
