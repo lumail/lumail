@@ -1142,7 +1142,6 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
     if (m_parts.size() > 0)
         m_parts.clear();
 
-    fclose(f);
     close(fd);
     free(tmp_file);
 }
