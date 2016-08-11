@@ -187,7 +187,11 @@ GMimeMessage * CMessage::parse_message()
     }
 
     stream = g_mime_stream_fs_new(fd);
+    g_mime_stream_fs_set_owner((GMimeStreamFs*)stream, FALSE);
+
     parser = g_mime_parser_new_with_stream(stream);
+    g_mime_parser_set_persist_stream(parser, FALSE);
+
     g_object_unref(stream);
 
     message = g_mime_parser_construct_message(parser);
@@ -226,7 +230,11 @@ GMimeMessage * CMessage::parse_message()
          * to the open file, and we've consumed content from it already.
          */
         stream    = g_mime_stream_fs_new(fd);
+        g_mime_parser_set_persist_stream(parser, FALSE);
+
         parser    = g_mime_parser_new_with_stream(stream);
+        g_mime_stream_fs_set_owner((GMimeStreamFs*)stream, FALSE);
+
         g_object_unref(stream);
         message = g_mime_parser_construct_message(parser);
 
@@ -236,6 +244,11 @@ GMimeMessage * CMessage::parse_message()
         CFile::delete_file(file);
 
     g_object_unref(parser);
+
+    /*
+     * We close this here explicitly to avoid a leak.
+     */
+    close(fd);
     return (message);
 }
 
