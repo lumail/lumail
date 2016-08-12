@@ -295,48 +295,84 @@ bool CScreen::is_prefixed_key(const char *key)
     std::string mode = config->get_string("global.mode", "maildir");
 
     /*
+     * We allow the user to bind actions to multipl-key-presses,
+     * for example "Ctrl-x Ctrl-c" (which would be "^X^C" in the config).
+     *
+     * The way this works is to look for bindings which match the
+     * current key, but not complete it.  So in the example above
+     * we'd look for ANY keybinding starting with ^X, if that's what
+     * the user pressed.
+     *
+     * When we look for ^X we'd find ^X^C as a possible completion,
+     * so we'd return true here.  If we found zero bindings that started
+     * with a ^X prefix we'd decide that ^X was NOT a multi-key binding
+     * and it would be treated as a single keypress.
+     *
+     * The problem is that if the user presses "K" that would appear
+     * to be a prefix-match on the term "KEY_LEFT", so we need to
+     * special case a couple of actions here.
+     *
+     * This is a list of possible-matches which should be ignored.
+     *
+     */
+    std::vector<std::string> ignored;
+    ignored.push_back("SPACE");
+    ignored.push_back("ENTER");
+    ignored.push_back("KEY_");
+
+    /*
      * Get the lua-helper.
      */
     CLua *lua = CLua::instance();
 
     /*
-     * First of all handle the bindings in the current mode.
+     * Get the bindings in the current mode, and the global-mode.
      */
     std::vector<std::string> b = lua->bindings(mode);
+    std::vector<std::string> g = lua->bindings("global");
 
-    for (std::vector<std::string>::iterator it = b.begin(); it != b.end() ; ++it)
+    /*
+     * Join them.
+     */
+    for (auto it = g.begin(); it != g.end() ; ++it)
     {
-        std::string k = (*it);
-
-        /*
-         * Starts with the string, but NOT equal to the string.
-         */
-        if ((k.compare(0, strlen(key), key) == 0) &&
-                (strlen(key) != k.length()))
-        {
-            return true;
-        }
+        b.push_back((*it));
     }
 
     /*
-     * Now the bindings in the global-mode.
+     * Now test each entry
      */
-    b = lua->bindings("global");
-
-    for (std::vector<std::string>::iterator it = b.begin(); it != b.end() ; ++it)
+    for (auto it = b.begin(); it != b.end() ; ++it)
     {
         std::string k = (*it);
 
         /*
-         * Starts with the string, but NOT equal to the string.
+         * Make sure that we don't match an ignored term.
          */
-        if ((k.compare(0, strlen(key), key) == 0) &&
-                (strlen(key) != k.length()))
+        bool ignoring = false;
+
+        for (auto i = ignored.begin(); i != ignored.end() ; ++i)
         {
-            return true;
+            if (k.find((*i), 0) == 0)
+                ignoring = true;
+        }
+
+        /*
+         * Not a match on the ignored token?  Then proceed.
+         */
+        if (ignoring == false)
+        {
+
+            /*
+             * Starts with the string, but NOT equal to the string.
+             */
+            if ((k.compare(0, strlen(key), key) == 0) &&
+                    (strlen(key) != k.length()))
+            {
+                return true;
+            }
         }
     }
-
 
     /*
      * Given up - not a multi-map
