@@ -192,9 +192,9 @@ GMimeMessage * CMessage::parse_message()
     parser = g_mime_parser_new_with_stream(stream);
     g_mime_parser_set_persist_stream(parser, FALSE);
 
-    g_object_unref(stream);
-
     message = g_mime_parser_construct_message(parser);
+    g_object_unref(stream);
+    g_object_unref(parser);
 
     /*
      * Constructing the message failed.  So we're going to do a horrid
@@ -205,6 +205,7 @@ GMimeMessage * CMessage::parse_message()
         /*
          * Clear our current object.
          */
+        g_object_unref(stream);
         g_object_unref(parser);
 
         /*
@@ -230,20 +231,19 @@ GMimeMessage * CMessage::parse_message()
          * to the open file, and we've consumed content from it already.
          */
         stream    = g_mime_stream_fs_new(fd);
-        g_mime_parser_set_persist_stream(parser, FALSE);
 
         parser    = g_mime_parser_new_with_stream(stream);
         g_mime_stream_fs_set_owner((GMimeStreamFs*)stream, FALSE);
+        g_mime_parser_set_persist_stream(parser, FALSE);
 
-        g_object_unref(stream);
         message = g_mime_parser_construct_message(parser);
+        g_object_unref(stream);
+        g_object_unref(parser);
 
     }
 
     if (replaced == true)
         CFile::delete_file(file);
-
-    g_object_unref(parser);
 
     /*
      * We close this here explicitly to avoid a leak.
@@ -717,7 +717,6 @@ void CMessage::mark_read()
  */
 std::shared_ptr<CMessagePart> CMessage::part2obj(GMimeObject *part)
 {
-
     /*
      * This is used to enable/disable conversion of character
      * sets.
