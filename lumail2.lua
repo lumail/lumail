@@ -2215,9 +2215,21 @@ function lua_view()
    output = { }
 
    --
-   -- Test of the colour-mode.
+   -- Show the version of Lua/LuaJit.
    --
-   table.insert(output,"$[RED]This $[GREEN]is $[YELLOW|UNDERLINE|BOLD]Lumail2$[CYAN|NORMAL] version $[BLUE|BOLD]" .. Config:get("global.version" ))
+   local lver = ""
+   if jit then
+      lver = jit.version
+   else
+      lver = _VERSION
+   end
+   lver = "$[RED]<$[GREEN|BOLD]" .. lver .. "$[RED]>"
+
+
+   --
+   -- Show the version of lumail2 & lua.
+   --
+   table.insert(output,"$[RED]This $[GREEN]is $[YELLOW|UNDERLINE|BOLD]Lumail2$[CYAN|NORMAL] version $[BLUE|BOLD]" .. Config:get("global.version") .. " " .. lver)
    table.insert(output,"")
 
    table.insert(output,"$[RED]This RED - and not $[#GREEN]!" )
