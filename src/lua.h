@@ -75,11 +75,6 @@ public:
     bool function_exists(std::string function);
 
     /**
-     * Lookup a key in a nested table structure - used for keyboard lookups.
-     */
-    char *get_nested_table(std::string table, const char *key, const char *subkey);
-
-    /**
      * Get the known-bindings of the keymap in the given mode.
      *
      * This just returns the names of the keys, rather than their values.
@@ -127,6 +122,11 @@ public:
      */
     std::string function2string(std::string function, std::string input);
 
+
+    /**
+     * Lookup a key-binding.
+     */
+    std::string keybinding(std::string mode, std::string key);
 
 private:
 

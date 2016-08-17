@@ -229,51 +229,6 @@ bool CLua::function_exists(std::string function)
 
 
 /*
- * Lookup a value in a nested-table - used for keyboard lookups.
- */
-char * CLua::get_nested_table(std::string table, const char *key, const char *subkey)
-{
-    char *result = NULL;
-
-    /*
-     * Ensure the table exists - if it doesn't return NULL.
-     */
-    lua_getglobal(m_lua, table.c_str());
-
-    if (lua_isnil(m_lua, -1))
-    {
-        return NULL;
-    }
-
-    /*
-     * Get the sub-table.
-     */
-    lua_pushstring(m_lua, key);
-    lua_gettable(m_lua, -2);
-
-    if (!lua_istable(m_lua, -1))
-        return result;
-
-    /*
-     * Get the value.
-     */
-    lua_pushstring(m_lua, subkey);
-    lua_gettable(m_lua, -2);
-
-    if (lua_isnil(m_lua, -1))
-        return result;
-
-    /*
-     * If it worked, and is a string .. return it.
-     */
-    if (lua_isstring(m_lua, -1))
-        result = (char *) lua_tostring(m_lua, -1);
-
-    return result;
-}
-
-
-/*
  * Get the known-bindings of the keymap in the given mode.
  *
  * This just returns the names of the keys, rather than their values.
@@ -565,4 +520,49 @@ std::string CLua::function2string(std::string function, std::string input)
         return "";
     }
 
+}
+
+
+/**
+ * Lookup a key-binding.
+ */
+std::string CLua::keybinding(std::string mode, std::string key)
+{
+    /*
+     * Get the function.
+     */
+    lua_getglobal(m_lua, "lookup_key");
+    lua_pushstring(m_lua, mode.c_str());
+    lua_pushstring(m_lua, key.c_str());
+
+    /*
+     * Call
+     */
+    if (lua_pcall(m_lua, 2, 1, 0) != 0)
+    {
+        if (lua_isstring(m_lua, -1))
+        {
+            /*
+             * The error message will be on the stack..
+             */
+            char *err = strdup(lua_tostring(m_lua, -1));
+            lua_pop(m_lua, 1);
+            on_error(err);
+
+            /*
+             * Avoid a leak.
+             */
+            free(err);
+        }
+        else
+            lua_pop(m_lua, 1);
+    }
+
+    const char *res = lua_tostring(m_lua, -1);
+    std::string out = "";
+
+    if (res != NULL)
+        out = res ;
+
+    return (out);
 }

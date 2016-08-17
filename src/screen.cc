@@ -1233,7 +1233,7 @@ bool CScreen::on_keypress(std::string key)
     /*
      * The result of the lookup.
      */
-    char *result = NULL;
+    std::string result;
 
     /*
      * Get the current global-mode.
@@ -1245,7 +1245,7 @@ bool CScreen::on_keypress(std::string key)
      * Lookup the keypress in the current-mode-keymap.
      */
     CLua *lua = CLua::instance();
-    result = lua->get_nested_table("keymap", mode.c_str(), key.c_str());
+    result = lua->keybinding(mode, key);
 
 
     /*
@@ -1253,19 +1253,19 @@ bool CScreen::on_keypress(std::string key)
      *
      * This order ensures you can have a "global" keymap, overridden in just one mode.
      */
-    if (result == NULL)
-        result = lua->get_nested_table("keymap", "global", key.c_str());
+    if (result.empty())
+        result = lua->keybinding("global", key);
 
     /*
      * If one/other of these lookups resulted in success then we're golden.
      */
-    if (result != NULL)
-        lua->execute(result);
+    if (!result.empty())
+        lua->execute(result.c_str());
 
     /*
      * We succeeded if the result wasn't NULL.
      */
-    return (result != NULL);
+    return (! result.empty());
 }
 
 

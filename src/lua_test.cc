@@ -178,60 +178,6 @@ void TestFunctionToTableArgs(CuTest * tc)
 
 
 /**
- * Test a Lua function returning the value from a nested table works.
- */
-void TestNestedTable(CuTest * tc)
-{
-    /*
-     * Get the singleton
-     */
-    CLua *instance = CLua::instance();
-    CuAssertPtrNotNull(tc, instance);
-
-    /*
-     * Define a nested table.
-     */
-    instance->execute("parent = {}");
-
-    instance->execute("parent['child1'] = {}");
-    instance->execute("parent['child1']['steve'] = 'smith'");
-
-    instance->execute("parent['child2'] = {}");
-    instance->execute("parent['child2']['kirsi'] = 'kemp'");
-
-    /*
-     * Get the nested values.
-     */
-    char *p_c1_k = instance->get_nested_table("parent", "child1", "steve");
-    CuAssertPtrNotNull(tc, p_c1_k);
-    CuAssertStrEquals(tc, "smith", p_c1_k);
-
-    char *p_c2_k = instance->get_nested_table("parent", "child2", "kirsi");
-    CuAssertPtrNotNull(tc, p_c2_k);
-    CuAssertStrEquals(tc, "kemp", p_c2_k);
-
-    /*
-     * Missing value returns null.
-     */
-    char *p_c3_k = instance->get_nested_table("parent", "childX", "forename");
-    CuAssertTrue(tc, p_c3_k == NULL);
-
-    /*
-     * Defining the missing value does good though.
-     */
-    instance->execute("parent['childX'] = {}");
-    instance->execute("parent['childX']['forename'] = 'surname'");
-
-    p_c3_k = instance->get_nested_table("parent", "childX", "forename");
-    CuAssertPtrNotNull(tc, p_c3_k);
-    CuAssertStrEquals(tc, "surname", p_c3_k);
-
-}
-
-
-
-
-/**
  * Test function detection works.
  */
 void TestFunctionExists(CuTest * tc)
@@ -311,7 +257,6 @@ lua_getsuite()
     SUITE_ADD_TEST(suite, TestErrorHandler);
     SUITE_ADD_TEST(suite, TestFunctionToTable);
     SUITE_ADD_TEST(suite, TestFunctionToTableArgs);
-    SUITE_ADD_TEST(suite, TestNestedTable);
     SUITE_ADD_TEST(suite, TestFunctionExists);
     SUITE_ADD_TEST(suite, TestStringFunction);
     return suite;

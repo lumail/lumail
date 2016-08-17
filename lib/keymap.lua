@@ -204,4 +204,13 @@ for i=1,999 do
 end
 
 
+
+--
+-- Helper to lookup the binding of a given key, in the specified mode.
+--
+function lookup_key(mode, key)
+   return( keymap[mode][key] )
+end
+
+
 return keymap
