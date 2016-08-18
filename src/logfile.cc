@@ -45,17 +45,17 @@ void CLogfile::append(std::string entry)
         return;
 
 
-    tm localTime;
-    std::chrono::system_clock::time_point t = std::chrono::system_clock::now();
-    time_t now = std::chrono::system_clock::to_time_t(t);
-    localtime_r(&now, &localTime);
-
-    const std::chrono::duration<double> tse = t.time_since_epoch();
-    std::chrono::seconds::rep milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(tse).count() % 1000;
-
-
     if (! m_filename.empty())
     {
+
+        tm localTime;
+        std::chrono::system_clock::time_point t = std::chrono::system_clock::now();
+        time_t now = std::chrono::system_clock::to_time_t(t);
+        localtime_r(&now, &localTime);
+
+        const std::chrono::duration<double> tse = t.time_since_epoch();
+        std::chrono::seconds::rep milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(tse).count() % 1000;
+
         std::fstream fs;
         fs.open(m_filename,  std::fstream::out | std::fstream::app);
 
@@ -72,6 +72,11 @@ void CLogfile::append(std::string entry)
         fs << entry << "\n";
         fs.close();
     }
+    else
+    {
+//        fprintf(stderr, "%s\n", entry.c_str() );
+    }
+
 }
 
 /*
