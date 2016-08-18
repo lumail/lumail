@@ -17,16 +17,11 @@
  */
 
 
-extern "C"
-{
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-}
-
 #include <pcrecpp.h>
 #include <vector>
 #include <iostream>
+
+#include "lua.h"
 
 
 /**
@@ -59,6 +54,8 @@ extern "C"
  */
 int l_CRegexp_match(lua_State * l)
 {
+    CLuaLog( "l_CRegexp_match" );
+
     const char *pattern = lua_tostring(l, 2);
     const char *input   = lua_tostring(l, 3);
 

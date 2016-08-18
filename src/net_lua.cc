@@ -17,17 +17,13 @@
  */
 
 
-extern "C"
-{
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-}
-
 #include <netdb.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+#include "lua.h"
+
 
 /**
  * @file net_lua.cc
@@ -53,6 +49,8 @@ extern "C"
  */
 int l_CNet_hostname(lua_State * L)
 {
+    CLuaLog( "l_CNet_hostname" );
+
     /**
      * If the environmental varaible HOSTNAME
      * is set, use that, otherwise use the standard networking

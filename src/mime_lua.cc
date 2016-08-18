@@ -17,13 +17,7 @@
  */
 
 
-extern "C"
-{
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-}
-
+#include "lua.h"
 #include "mime.h"
 
 /**
@@ -50,6 +44,8 @@ extern "C"
  */
 int l_CMime_type(lua_State * L)
 {
+    CLuaLog( "l_CMime_type" );
+
     CMime *mime = CMime::instance();
 
     const char *file = lua_tostring(L, 1);

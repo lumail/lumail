@@ -17,13 +17,7 @@
  */
 
 
-extern "C"
-{
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-}
-
+#include "lua.h"
 #include "statuspanel.h"
 
 
@@ -49,6 +43,8 @@ extern "C"
  */
 int l_CPanel_append(lua_State * l)
 {
+    CLuaLog( "l_CPanel_append" );
+
     const char *str = lua_tostring(l, 2);
 
     if (str != NULL)
@@ -66,6 +62,8 @@ int l_CPanel_append(lua_State * l)
  */
 int l_CPanel_clear(lua_State * l)
 {
+    CLuaLog( "l_CPanel_clear" );
+
     (void)l;
     CStatusPanel *panel = CStatusPanel::instance();
     panel->reset();
@@ -78,6 +76,8 @@ int l_CPanel_clear(lua_State * l)
  */
 int l_CPanel_height(lua_State * l)
 {
+    CLuaLog( "l_CPanel_height" );
+
     int new_height = lua_tointeger(l, 2);
 
     CStatusPanel *panel = CStatusPanel::instance();
@@ -95,6 +95,8 @@ int l_CPanel_height(lua_State * l)
  */
 int l_CPanel_hide(lua_State * l)
 {
+    CLuaLog( "l_CPanel_hide" );
+
     (void)l;
 
     CStatusPanel *panel = CStatusPanel::instance();
@@ -109,6 +111,8 @@ int l_CPanel_hide(lua_State * l)
  */
 int l_CPanel_show(lua_State * l)
 {
+    CLuaLog( "l_CPanel_show" );
+
     (void)l;
 
     CStatusPanel *panel = CStatusPanel::instance();
@@ -123,6 +127,8 @@ int l_CPanel_show(lua_State * l)
  */
 int l_CPanel_text(lua_State * l)
 {
+    CLuaLog( "l_CPanel_text" );
+
     /*
      * Get the text.
      */
@@ -155,6 +161,8 @@ int l_CPanel_text(lua_State * l)
  */
 int l_CPanel_title(lua_State * l)
 {
+    CLuaLog( "l_CPanel_title" );
+
     CStatusPanel *panel = CStatusPanel::instance();
     const char *str = lua_tostring(l, 2);
 
@@ -172,6 +180,8 @@ int l_CPanel_title(lua_State * l)
  */
 int l_CPanel_toggle(lua_State * l)
 {
+    CLuaLog( "l_CPanel_toggle" );
+
     (void)l;
     CStatusPanel *panel = CStatusPanel::instance();
 
@@ -189,6 +199,8 @@ int l_CPanel_toggle(lua_State * l)
  */
 int l_CPanel_visible(lua_State * l)
 {
+    CLuaLog( "l_CPanel_visible" );
+
     CStatusPanel *panel = CStatusPanel::instance();
 
     if (panel->hidden())

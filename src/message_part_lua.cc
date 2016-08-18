@@ -17,13 +17,7 @@
  */
 
 
-extern "C"
-{
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-}
-
+#include "lua.h"
 #include "message_part.h"
 
 
@@ -52,6 +46,8 @@ extern "C"
  */
 void push_cmessagepart(lua_State * l, std::shared_ptr<CMessagePart> part)
 {
+    CLuaLog( "push_cmessagepart" );
+
     /*
      * Allocate a new object.
      */
@@ -88,6 +84,8 @@ void push_cmessagepart(lua_State * l, std::shared_ptr<CMessagePart> part)
  */
 std::shared_ptr<CMessagePart> l_CheckCMessagePart(lua_State * l, int n)
 {
+    CLuaLog( "l_CheckCMessagePart" );
+
     void *ud = luaL_checkudata(l, n, "luaL_CMessagePart");
 
     if (ud)
@@ -111,6 +109,8 @@ std::shared_ptr<CMessagePart> l_CheckCMessagePart(lua_State * l, int n)
  */
 int l_CMessagePart_children(lua_State * l)
 {
+    CLuaLog( "l_CMessagePart_children" );
+
     std::shared_ptr<CMessagePart> foo = l_CheckCMessagePart(l, 1);
 
     /*
@@ -138,6 +138,8 @@ int l_CMessagePart_children(lua_State * l)
  */
 int l_CMessagePart_content(lua_State * l)
 {
+    CLuaLog( "l_CMessagePart_content" );
+
     std::shared_ptr<CMessagePart> foo = l_CheckCMessagePart(l, 1);
 
     void *content = foo->content();
@@ -154,6 +156,8 @@ int l_CMessagePart_content(lua_State * l)
  */
 int l_CMessagePart_filename(lua_State * l)
 {
+    CLuaLog( "l_CMessagePart_filename" );
+
     std::shared_ptr<CMessagePart> foo = l_CheckCMessagePart(l, 1);
     lua_pushstring(l, foo->filename().c_str());
     return 1;
@@ -165,6 +169,8 @@ int l_CMessagePart_filename(lua_State * l)
  */
 int l_CMessagePart_is_attachment(lua_State * l)
 {
+    CLuaLog( "l_CMessagePart_is_attachment" );
+
     std::shared_ptr<CMessagePart> foo = l_CheckCMessagePart(l, 1);
 
     if (foo->is_attachment())
@@ -181,6 +187,8 @@ int l_CMessagePart_is_attachment(lua_State * l)
  */
 int l_CMessagePart_parent(lua_State * l)
 {
+    CLuaLog( "l_CMessagePart_parent" );
+
     std::shared_ptr<CMessagePart> foo    = l_CheckCMessagePart(l, 1);
     std::shared_ptr<CMessagePart> parent = foo->get_parent();
 
@@ -198,6 +206,8 @@ int l_CMessagePart_parent(lua_State * l)
  */
 int l_CMessagePart_size(lua_State * l)
 {
+    CLuaLog( "l_CMessagePart_size" );
+
     std::shared_ptr<CMessagePart> foo = l_CheckCMessagePart(l, 1);
 
     lua_pushinteger(l, foo->content_size());
@@ -210,6 +220,8 @@ int l_CMessagePart_size(lua_State * l)
  */
 int l_CMessagePart_type(lua_State * l)
 {
+    CLuaLog( "l_CMessagePart_type" );
+
     std::shared_ptr<CMessagePart> foo = l_CheckCMessagePart(l, 1);
     lua_pushstring(l, foo->type().c_str());
     return 1;
@@ -221,6 +233,8 @@ int l_CMessagePart_type(lua_State * l)
  */
 int l_CMessagePart_destructor(lua_State * l)
 {
+    CLuaLog( "l_CMessagePart_destructor" );
+
     void *ud = luaL_checkudata(l, 1, "luaL_CMessagePart");
 
     if (ud)
@@ -244,6 +258,8 @@ int l_CMessagePart_destructor(lua_State * l)
  */
 int l_CMessagePart_equality(lua_State * l)
 {
+    CLuaLog( "l_CMessagePart_equality" );
+
     std::shared_ptr<CMessagePart> one = l_CheckCMessagePart(l, 1);
     std::shared_ptr<CMessagePart> two = l_CheckCMessagePart(l, 2);
 

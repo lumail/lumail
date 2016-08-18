@@ -17,17 +17,9 @@
  */
 
 
-extern "C"
-{
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-}
-
-
-
 #include "global_state.h"
 #include "input_queue.h"
+#include "lua.h"
 #include "maildir_lua.h"
 #include "message_lua.h"
 #include "screen.h"
@@ -54,6 +46,8 @@ extern "C"
  */
 int l_CScreen_clear(lua_State * l)
 {
+    CLuaLog( "l_CScreen_clear" );
+
     (void)l;
 
     CScreen *foo = CScreen::instance();
@@ -67,6 +61,8 @@ int l_CScreen_clear(lua_State * l)
  */
 int l_CScreen_draw(lua_State * l)
 {
+    CLuaLog( "l_CScreen_draw" );
+
     int x = luaL_checkinteger(l, 2);
     int y = luaL_checkinteger(l, 3);
     const char *txt = luaL_checkstring(l, 4);
@@ -81,6 +77,8 @@ int l_CScreen_draw(lua_State * l)
  */
 int l_CScreen_execute(lua_State *l)
 {
+    CLuaLog( "l_CScreen_execute" );
+
     (void)l;
 
     const char *prog = luaL_checkstring(l, 2);
@@ -98,6 +96,8 @@ int l_CScreen_execute(lua_State *l)
  */
 int l_CScreen_exit(lua_State * l)
 {
+    CLuaLog( "l_CScreen_exit" );
+
     (void)l;
 
     CScreen *foo = CScreen::instance();
@@ -114,6 +114,8 @@ int l_CScreen_exit(lua_State * l)
  */
 int l_CScreen_get_line(lua_State * l)
 {
+    CLuaLog( "l_CScreen_get_line" );
+
     /*
      * Get the prompt?
      */
@@ -140,6 +142,8 @@ int l_CScreen_get_line(lua_State * l)
  */
 int l_CScreen_prompt_chars(lua_State * l)
 {
+    CLuaLog( "l_CScreen_prompt_chars" );
+
     const char *prompt = luaL_checkstring(l, 2);
     const char *chars  = luaL_checkstring(l, 3);
 
@@ -158,6 +162,8 @@ int l_CScreen_prompt_chars(lua_State * l)
  */
 int l_CScreen_get_char(lua_State * l)
 {
+    CLuaLog( "l_CScreen_get_char" );
+
     const char *prompt = luaL_checkstring(l, 2);
 
     CScreen *foo    = CScreen::instance();
@@ -173,6 +179,8 @@ int l_CScreen_get_char(lua_State * l)
  */
 int l_CScreen_height(lua_State * l)
 {
+    CLuaLog( "l_CScreen_get_height" );
+
     (void)l;
     CScreen *foo = CScreen::instance();
     lua_pushinteger(l, foo->height());
@@ -184,6 +192,8 @@ int l_CScreen_height(lua_State * l)
  */
 int l_CScreen_sleep(lua_State * l)
 {
+    CLuaLog( "l_CScreen_sleep" );
+
     const int delay = luaL_checkinteger(l, 2);
     CScreen *foo = CScreen::instance();
     foo->sleep(delay);
@@ -196,6 +206,8 @@ int l_CScreen_sleep(lua_State * l)
  */
 int l_CScreen_stuff(lua_State * l)
 {
+    CLuaLog( "l_CScreen_stuff" );
+
     const char *str = luaL_checkstring(l, 2);
     CInputQueue *input = CInputQueue::instance();
     input->add_input(str);
@@ -207,6 +219,8 @@ int l_CScreen_stuff(lua_State * l)
  */
 int l_CScreen_width(lua_State * l)
 {
+    CLuaLog( "l_CScreen_width" );
+
     (void)l;
     CScreen *foo = CScreen::instance();
     lua_pushinteger(l, foo->width());

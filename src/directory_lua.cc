@@ -17,17 +17,9 @@
  */
 
 
-extern "C"
-{
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-}
-
-
 #include "directory.h"
 #include "file.h"
-
+#include "lua.h"
 
 /**
  * @file directory_lua.cc
@@ -50,6 +42,8 @@ extern "C"
  */
 int l_CDirectory_exists(lua_State * l)
 {
+    CLuaLog( "l_CDirectory_exists" );
+
     const char *str = lua_tostring(l, 2);
 
     if (str == NULL)
@@ -72,6 +66,8 @@ int l_CDirectory_exists(lua_State * l)
  */
 int l_CDirectory_entries(lua_State * l)
 {
+    CLuaLog( "l_CDirectory_entries" );
+
     const char *str = lua_tostring(l, 2);
 
     lua_newtable(l);
@@ -103,6 +99,8 @@ int l_CDirectory_entries(lua_State * l)
  */
 int l_CDirectory_mkdir(lua_State * l)
 {
+    CLuaLog( "l_CDirectory_mkdir" );
+
     const char *str = lua_tostring(l, 2);
 
     if (str != NULL)
@@ -119,6 +117,8 @@ int l_CDirectory_mkdir(lua_State * l)
  */
 int l_CDirectory_is_maildir(lua_State * l)
 {
+    CLuaLog( "l_CDirectory_is_maildir" );
+
     const char *str = lua_tostring(l, 2);
 
     if (str == NULL)

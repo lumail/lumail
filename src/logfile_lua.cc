@@ -17,14 +17,8 @@
  */
 
 
-extern "C"
-{
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-}
-
 #include "logfile.h"
+#include "lua.h"
 
 
 /**
@@ -52,6 +46,8 @@ extern "C"
  */
 int l_CLog_append(lua_State * L)
 {
+    CLuaLog( "l_CLog_append" );
+
     const char *msg = lua_tostring(L, 2);
 
     if (msg == NULL)
