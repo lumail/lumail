@@ -202,7 +202,9 @@ std::vector<COLOUR_STRING *> CColourString::parse_coloured_string(std::string in
 
             /* avoid using the selected colour */
             delete(colour);
-            colour = new std::string(prev_colour);
+
+            (*it)->colour = new std::string(prev_colour);
+            colour        = (*it)->colour;
         }
         else
         {
