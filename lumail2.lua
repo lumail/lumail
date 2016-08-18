@@ -102,7 +102,6 @@ end
 -- Load libraries
 --
 Cache  = require( "cache" )
-Date   = require( "date" )
 Fun    = require 'functional'
 Life   = require( "life" )
 Stack  = require( "stack" )
@@ -458,53 +457,19 @@ end
 --
 -- Returns zero on failure.
 --
+local ctime_cache = {}
+
 function Message:to_ctime()
-
    local p = self:path()
-   if ( cache:get_file(p,"ctime") ) then
-      return(cache:get_file(p,"ctime") )
+
+   if ( ctime_cache[p] ) then
+      return( ctime_cache[p] )
    end
 
-   --
-   -- If luarocks library is not present then stat() the message
-   -- and handle the sorting that way.
-   --
-   if ( not Date ) then
-      Log:append( "WARNING: luarocks - date library missing" )
-      local stat = File:stat( self:path() )
-      local res  = stat['mtime']
-      cache:set_file(p, "ctime", res)
-      return(res)
-   end
+   local seconds  = self:ctime()
+   ctime_cache[p] = seconds
 
-   --
-   -- Otherwise the get the Date-header and use that to
-   -- get the message-age.
-   --
-   -- Prefer to use "delivery-date" as a header, since that is
-   -- when the message was delivered (by exim), but if that wasn't
-   -- present then use the Date: header the user selected, accepting
-   -- that they might have bogus clocks.
-   --
-   local d = self:header( "Delivery-Date" )
-   if ( ( not d ) or ( d == "" ) ) then
-      d = self:header("Date" )
-   end
-   if ( d ) then
-
-      -- Call the data function
-      local success,output = pcall( Date, d )
-
-      -- If it worked, get the age in seconds, and update the cahce
-      if ( success == true ) then
-         local seconds = Date.diff(output, Date.epoch()):spanseconds()
-         cache:set_file(p,"ctime", seconds)
-         return seconds
-      end
-   end
-
-   -- Failed to find out.  Return 0.
-   return 0
+   return seconds
 end
 
 
