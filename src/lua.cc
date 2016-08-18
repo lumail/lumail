@@ -44,12 +44,19 @@ extern void InitRegexp(lua_State * l);
 extern void InitScreen(lua_State * l);
 
 
+/*
+ * For debug-purposes the nesting starts at zero.
+ */
+int CLuaLog::m_nest = 0;
+
 
 /*
  * Populate "args"
  */
 void CLua::set_args(char *argv[], int argc)
 {
+    CLuaLog("set_args()");
+
     lua_newtable(m_lua);
 
     for (int i = 0; i < argc; i++)
@@ -69,6 +76,7 @@ void CLua::set_args(char *argv[], int argc)
  */
 CLua::CLua() : Observer(CConfig::instance())
 {
+
     /*
      * Create a new Lua object.
      */
@@ -119,6 +127,8 @@ CLua::~CLua()
  */
 void CLua::load_file(std::string filename)
 {
+    CLuaLog("load_file(" + filename + ")");
+
     int erred = luaL_dofile(m_lua, filename.c_str());
 
     if (erred)
@@ -146,6 +156,8 @@ void CLua::load_file(std::string filename)
 
 void CLua::on_error(std::string msg)
 {
+    CLuaLog("on_error(" + msg + ")");
+
     /*
      * Call the function - if it exists.
      */
@@ -172,6 +184,8 @@ void CLua::on_error(std::string msg)
  */
 bool CLua::execute(std::string lua)
 {
+    CLuaLog("execute(" + lua + ")");
+
     int result = luaL_loadstring(m_lua, lua.c_str());
 
     if (result != 0)
@@ -205,6 +219,8 @@ bool CLua::execute(std::string lua)
  */
 bool CLua::function_exists(std::string function)
 {
+    CLuaLog("function_exists(" + function + ")");
+
     /*
      * Get the function.
      */
@@ -235,6 +251,8 @@ bool CLua::function_exists(std::string function)
  */
 std::vector<std::string> CLua::bindings(std::string mode)
 {
+    CLuaLog("bindings(" + mode + ")");
+
     std::vector<std::string> result;
 
     /*
@@ -277,6 +295,8 @@ std::vector<std::string> CLua::bindings(std::string mode)
  */
 void CLua::update(std::string key_name)
 {
+    CLuaLog("update(" + key_name + ")");
+
     /*
      * If there is a Config:key_changed() function, then call it.
      */
@@ -321,6 +341,8 @@ void CLua::update(std::string key_name)
  */
 std::vector<std::string> CLua::function2table(std::string function, std::string argument)
 {
+    CLuaLog("function2table(" + function + "," + argument + ")");
+
     std::vector<std::string> result;
 
     /*
@@ -401,6 +423,8 @@ std::vector<std::string> CLua::function2table(std::string function, std::string 
  */
 std::string CLua::get_variable(std::string name)
 {
+    CLuaLog("get_variable(" + name + ")");
+
     lua_getglobal(m_lua, name.c_str());
 
     if (lua_isnil(m_lua, -1))
@@ -419,6 +443,8 @@ std::string CLua::get_variable(std::string name)
  */
 bool CLua::call_sort(std::string method, std::shared_ptr<CMessage> a, std::shared_ptr<CMessage> b)
 {
+    CLuaLog("call_sort(" + method + ")");
+
     method = "compare_by_" + method;
 
     /*
@@ -467,6 +493,8 @@ bool CLua::call_sort(std::string method, std::shared_ptr<CMessage> a, std::share
  */
 std::string CLua::function2string(std::string function, std::string input)
 {
+    CLuaLog("function2string(" + function + "," + input + ")");
+
     /*
      * Get the function - if it doesn't exist we're done.
      */
@@ -528,6 +556,8 @@ std::string CLua::function2string(std::string function, std::string input)
  */
 std::string CLua::keybinding(std::string mode, std::string key)
 {
+    CLuaLog("keybinding(" + mode + "," + key + ")");
+
     /*
      * Get the function.
      */

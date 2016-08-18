@@ -30,9 +30,10 @@ extern "C"
 #include <vector>
 #include <string>
 
+#include "logfile.h"
+#include "message_lua.h"
 #include "observer.h"
 #include "singleton.h"
-#include "message_lua.h"
 
 /**
  * A singleton class holding our Lua interpreter state.
@@ -43,6 +44,12 @@ extern "C"
  */
 class CLua : public Singleton<CLua>, public Observer
 {
+    /**
+     * Our debug-helper needs access to our Lua handle to
+     * determine the size of the Lua stack.
+     */
+    friend class CLuaLog;
+
 public:
     CLua();
     ~CLua();
@@ -135,4 +142,79 @@ private:
      */
     lua_State * m_lua;
 
+};
+
+
+/*
+ * This is a temporary(?) logging class designed to help me track
+ * down leaks in the Lua stack.
+ *
+ * The lua leaks are what stops displays from operating correctly
+ * when luajit is being used.
+ *
+ */
+class CLuaLog
+{
+public:
+    CLuaLog(std::string name)
+    {
+        m_name = name;
+
+        /*
+         * We're going to output padding to show nesting level.
+         */
+        std::string tmp = "";
+
+        for (int i = 0 ; i < m_nest ; i++)
+            tmp += " ";
+
+        tmp += "enter:" + m_name;
+        tmp += " ";
+        tmp += "stack-depth:" + std::to_string(depth());
+
+        CLogfile *x = CLogfile::instance();
+        x->append(tmp);
+
+        /*
+         * Bump nesting level.
+         */
+        m_nest += 1;
+    };
+
+    ~CLuaLog()
+    {
+        m_nest -= 1;
+
+        /*
+         * We're going to output padding to show nesting level.
+         */
+        std::string tmp = "";
+
+        for (int i = 0 ; i < m_nest ; i++)
+            tmp += " ";
+
+        tmp += "exit:" + m_name;
+        tmp += " ";
+        tmp += "stack-depth:" + std::to_string(depth());
+
+
+        CLogfile *x = CLogfile::instance();
+        x->append(tmp);
+
+        /*
+         * Ensure we don't go negative.
+         */
+        if (m_nest < 0)
+            m_nest = 0;
+    };
+
+    int depth()
+    {
+        CLua *lua = CLua::instance();
+        return (lua_gettop(lua->m_lua));
+    };
+
+public:
+    static int m_nest;
+    std::string m_name;
 };
