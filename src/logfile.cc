@@ -72,11 +72,6 @@ void CLogfile::append(std::string entry)
         fs << entry << "\n";
         fs.close();
     }
-    else
-    {
-//        fprintf(stderr, "%s\n", entry.c_str() );
-    }
-
 }
 
 /*
