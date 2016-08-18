@@ -457,17 +457,23 @@ end
 --
 -- Returns zero on failure.
 --
-local ctime_cache = {}
-
 function Message:to_ctime()
    local p = self:path()
 
-   if ( ctime_cache[p] ) then
-      return( ctime_cache[p] )
+   --
+   -- Lookup value in the cache since it requires
+   -- reading (two) message-headers it's a little slower
+   -- than I'd like to calculate the ctime.
+   --
+   if ( cache:get_file(p, "to_ctime") ) then
+      return(tonumber(cache:get_file(p, "to_ctime")))
    end
 
-   local seconds  = self:ctime()
-   ctime_cache[p] = seconds
+   -- Comes from the C++ code.
+   local seconds = self:ctime()
+
+   -- Set the value in the cache.
+   cache:set_file(p, "to_ctime", seconds)
 
    return seconds
 end
