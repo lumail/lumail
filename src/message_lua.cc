@@ -32,6 +32,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "approxidate.h"
 #include "file.h"
 #include "global_state.h"
 #include "lua.h"
@@ -348,6 +349,38 @@ int l_CMessage_add_attachments(lua_State * l)
 }
 
 
+/**
+ * Implementation of CMessage:ctime()
+ */
+int l_CMessage_ctime(lua_State * l)
+{
+    std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
+
+    /*
+     * Look for `Delivery-Date`, then `Date`.  If neither
+     * is present we're screwed.
+     */
+    std::string rd = foo->header("Delivery-Date");
+
+    if (rd.empty() )
+        rd = foo->header( "Date");
+    if ( rd.empty() )
+    {
+        lua_pushnumber(l,0);
+        return 1;
+    }
+
+    /*
+     * Convert the result to a date.
+     */
+    struct timeval t;
+    if ( 0 ==  approxidate( rd.c_str(), &t) )
+        lua_pushnumber(l,t.tv_sec);
+    else
+        lua_pushnumber(l,0);
+    return 1;
+}
+
 
 /**
  * Implementation of CMessage:flags
@@ -452,9 +485,10 @@ void InitMessage(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
     {
-        {"__gc", l_CMessage_destructor},
         {"__eq", l_CMessage_equality},
+        {"__gc", l_CMessage_destructor},
         {"add_attachments", l_CMessage_add_attachments},
+        {"ctime", l_CMessage_ctime},
         {"flags", l_CMessage_flags},
         {"generate_message_id", l_CMessage_generate_message_id},
         {"header", l_CMessage_header},
