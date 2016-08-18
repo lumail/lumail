@@ -42,7 +42,7 @@
  */
 int l_CDirectory_exists(lua_State * l)
 {
-    CLuaLog( "l_CDirectory_exists" );
+    CLuaLog("l_CDirectory_exists");
 
     const char *str = lua_tostring(l, 2);
 
@@ -66,7 +66,7 @@ int l_CDirectory_exists(lua_State * l)
  */
 int l_CDirectory_entries(lua_State * l)
 {
-    CLuaLog( "l_CDirectory_entries" );
+    CLuaLog("l_CDirectory_entries");
 
     const char *str = lua_tostring(l, 2);
 
@@ -99,7 +99,7 @@ int l_CDirectory_entries(lua_State * l)
  */
 int l_CDirectory_mkdir(lua_State * l)
 {
-    CLuaLog( "l_CDirectory_mkdir" );
+    CLuaLog("l_CDirectory_mkdir");
 
     const char *str = lua_tostring(l, 2);
 
@@ -117,7 +117,7 @@ int l_CDirectory_mkdir(lua_State * l)
  */
 int l_CDirectory_is_maildir(lua_State * l)
 {
-    CLuaLog( "l_CDirectory_is_maildir" );
+    CLuaLog("l_CDirectory_is_maildir");
 
     const char *str = lua_tostring(l, 2);
 

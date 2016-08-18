@@ -46,7 +46,7 @@
  */
 int l_CLog_append(lua_State * L)
 {
-    CLuaLog( "l_CLog_append" );
+    CLuaLog("l_CLog_append");
 
     const char *msg = lua_tostring(L, 2);
 

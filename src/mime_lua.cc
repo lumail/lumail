@@ -44,7 +44,7 @@
  */
 int l_CMime_type(lua_State * L)
 {
-    CLuaLog( "l_CMime_type" );
+    CLuaLog("l_CMime_type");
 
     CMime *mime = CMime::instance();
 

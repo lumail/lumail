@@ -46,7 +46,7 @@
  */
 int l_CGlobalState_maildirs(lua_State * L)
 {
-    CLuaLog( "l_CGlobalState_maildirs" );
+    CLuaLog("l_CGlobalState_maildirs");
 
     CGlobalState *global = CGlobalState::instance();
     std::vector<std::shared_ptr<CMaildir>> maildirs = global->get_maildirs();
@@ -73,7 +73,7 @@ int l_CGlobalState_maildirs(lua_State * L)
  */
 int l_CGlobalState_current_maildir(lua_State * L)
 {
-    CLuaLog( "l_CGlobalState_current_maildir" );
+    CLuaLog("l_CGlobalState_current_maildir");
 
     CGlobalState *global = CGlobalState::instance();
     std::shared_ptr<CMaildir> current = global->current_maildir();

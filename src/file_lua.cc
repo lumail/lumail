@@ -46,7 +46,7 @@
  */
 int l_CFile_basename(lua_State * l)
 {
-    CLuaLog( "l_CFile_basename" );
+    CLuaLog("l_CFile_basename");
 
     const char *str = lua_tostring(l, 2);
 
@@ -68,7 +68,7 @@ int l_CFile_basename(lua_State * l)
  */
 int l_CFile_copy(lua_State * l)
 {
-    CLuaLog( "l_CFile_copy" );
+    CLuaLog("l_CFile_copy");
 
     const char *src = lua_tostring(l, 2);
     const char *dst = lua_tostring(l, 3);
@@ -84,7 +84,7 @@ int l_CFile_copy(lua_State * l)
  */
 int l_CFile_exists(lua_State * l)
 {
-    CLuaLog( "l_CFile_exists" );
+    CLuaLog("l_CFile_exists");
 
     const char *str = lua_tostring(l, 2);
 
@@ -110,7 +110,7 @@ int l_CFile_exists(lua_State * l)
  */
 int l_CFile_stat(lua_State * l)
 {
-    CLuaLog( "l_CFile_stat" );
+    CLuaLog("l_CFile_stat");
 
     const char *str = lua_tostring(l, 2);
     struct stat sb;

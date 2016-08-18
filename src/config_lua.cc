@@ -40,7 +40,7 @@
  */
 int l_Config_get(lua_State * l)
 {
-    CLuaLog( "l_Config_get" );
+    CLuaLog("l_Config_get");
 
     /*
      * The key to get.
@@ -112,7 +112,7 @@ int l_Config_get(lua_State * l)
  */
 int l_Config_keys(lua_State * l)
 {
-    CLuaLog( "l_Config_keys" );
+    CLuaLog("l_Config_keys");
 
     /*
      * Get the keys.
@@ -145,7 +145,7 @@ int l_Config_keys(lua_State * l)
  */
 int l_Config_set(lua_State * l)
 {
-    CLuaLog( "l_Config_set" );
+    CLuaLog("l_Config_set");
 
     /*
      * Get the key to set, and the helper.

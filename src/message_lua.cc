@@ -64,7 +64,7 @@ int l_CNet_hostname(lua_State * L);
  */
 void push_cmessage(lua_State * l, std::shared_ptr<CMessage> message)
 {
-    CLuaLog( "push_cmessage" );
+    CLuaLog("push_cmessage");
 
     /*
      * Allocate a new object.
@@ -101,7 +101,7 @@ void push_cmessage(lua_State * l, std::shared_ptr<CMessage> message)
  */
 int l_CMessage_constructor(lua_State * l)
 {
-    CLuaLog( "l_CMessage_constructor" );
+    CLuaLog("l_CMessage_constructor");
 
     const char *name = luaL_checkstring(l, 1);
 
@@ -115,7 +115,7 @@ int l_CMessage_constructor(lua_State * l)
  */
 std::shared_ptr<CMessage> l_CheckCMessage(lua_State * l, int n)
 {
-    CLuaLog( "l_CheckCMessage" );
+    CLuaLog("l_CheckCMessage");
 
     void *ud = luaL_checkudata(l, n, "luaL_CMessage");
 
@@ -140,7 +140,7 @@ std::shared_ptr<CMessage> l_CheckCMessage(lua_State * l, int n)
  */
 int l_CMessage_path(lua_State * l)
 {
-    CLuaLog( "l_CMessage_path" );
+    CLuaLog("l_CMessage_path");
 
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
     lua_pushstring(l, foo->path().c_str());
@@ -153,7 +153,7 @@ int l_CMessage_path(lua_State * l)
  */
 int l_CMessage_generate_message_id(lua_State *L)
 {
-    CLuaLog( "l_CMessage_generate_message_id" );
+    CLuaLog("l_CMessage_generate_message_id");
 
     char *name = (char *)"example.org";
 
@@ -184,12 +184,13 @@ int l_CMessage_generate_message_id(lua_State *L)
  */
 int l_CMessage_header(lua_State * l)
 {
-    CLuaLog( "l_CMessage_header" );
+    CLuaLog("l_CMessage_header");
 
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
 
     /* Get the header. */
     const char *str = luaL_checkstring(l, 2);
+    CLuaLog("l_CMessage_header(" + std::string(str) + ")");
     std::string result = foo->header(str);
 
     /* set the retulr */
@@ -203,7 +204,7 @@ int l_CMessage_header(lua_State * l)
  */
 int l_CMessage_headers(lua_State * l)
 {
-    CLuaLog( "l_CMessage_headers" );
+    CLuaLog("l_CMessage_headers");
 
     /*
      * Get the headers.
@@ -241,7 +242,7 @@ int l_CMessage_headers(lua_State * l)
  */
 int l_CMessage_mark_read(lua_State *l)
 {
-    CLuaLog( "l_CMessage_mark_read" );
+    CLuaLog("l_CMessage_mark_read");
 
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
     foo->mark_read();
@@ -253,7 +254,7 @@ int l_CMessage_mark_read(lua_State *l)
  */
 int l_CMessage_mark_unread(lua_State *l)
 {
-    CLuaLog( "l_CMessage_mark_unread" );
+    CLuaLog("l_CMessage_mark_unread");
 
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
     foo->mark_unread();
@@ -266,7 +267,7 @@ int l_CMessage_mark_unread(lua_State *l)
  */
 int l_CMessage_mtime(lua_State *l)
 {
-    CLuaLog( "l_CMessage_mtime" );
+    CLuaLog("l_CMessage_mtime");
 
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
     int m_time = foo->get_mtime();
@@ -287,7 +288,7 @@ int l_CMessage_mtime(lua_State *l)
  */
 int l_CMessage_parts(lua_State * l)
 {
-    CLuaLog( "l_CMessage_parts" );
+    CLuaLog("l_CMessage_parts");
 
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
 
@@ -317,7 +318,7 @@ int l_CMessage_parts(lua_State * l)
  */
 int l_CMessage_add_attachments(lua_State * l)
 {
-    CLuaLog( "l_CMessage_add_attachments" );
+    CLuaLog("l_CMessage_add_attachments");
 
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
     std::vector<std::string> files;
@@ -353,7 +354,7 @@ int l_CMessage_add_attachments(lua_State * l)
  */
 int l_CMessage_flags(lua_State * l)
 {
-    CLuaLog( "l_CMessage_flags" );
+    CLuaLog("l_CMessage_flags");
 
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
 
@@ -378,7 +379,7 @@ int l_CMessage_flags(lua_State * l)
  */
 int l_CMessage_destructor(lua_State * l)
 {
-    CLuaLog( "l_CMessage_destructor" );
+    CLuaLog("l_CMessage_destructor");
 
     void *ud = luaL_checkudata(l, 1, "luaL_CMessage");
 
@@ -406,7 +407,7 @@ int l_CMessage_destructor(lua_State * l)
  */
 int l_CMessage_equality(lua_State * l)
 {
-    CLuaLog( "l_CMessage_equality" );
+    CLuaLog("l_CMessage_equality");
 
     std::shared_ptr<CMessage> one = l_CheckCMessage(l, 1);
     std::shared_ptr<CMessage> two = l_CheckCMessage(l, 2);
@@ -425,7 +426,7 @@ int l_CMessage_equality(lua_State * l)
  */
 int l_CMessage_unlink(lua_State * l)
 {
-    CLuaLog( "l_CMessage_unlink" );
+    CLuaLog("l_CMessage_unlink");
 
     std::shared_ptr<CMessage> foo = l_CheckCMessage(l, 1);
 

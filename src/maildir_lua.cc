@@ -63,7 +63,7 @@
  */
 void push_cmaildir(lua_State * l, std::shared_ptr<CMaildir> maildir)
 {
-    CLuaLog( "push_cmaildir" );
+    CLuaLog("push_cmaildir");
 
     /*
      * Allocate a new object.
@@ -101,7 +101,7 @@ void push_cmaildir(lua_State * l, std::shared_ptr<CMaildir> maildir)
  */
 int l_CMaildir_constructor(lua_State * l)
 {
-    CLuaLog( "l_CMaildir_constructor" );
+    CLuaLog("l_CMaildir_constructor");
 
     const char *path = luaL_checkstring(l, 1);
 
@@ -139,7 +139,7 @@ std::shared_ptr<CMaildir> l_CheckCMaildir(lua_State * l, int n)
  */
 int l_CMaildir_is_imap(lua_State * l)
 {
-    CLuaLog( "l_CMaildir_is_imap" );
+    CLuaLog("l_CMaildir_is_imap");
 
     std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
 
@@ -158,7 +158,7 @@ int l_CMaildir_is_imap(lua_State * l)
  */
 int l_CMaildir_is_maildir(lua_State * l)
 {
-    CLuaLog( "l_CMaildir_is_maildir" );
+    CLuaLog("l_CMaildir_is_maildir");
 
     std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
 
@@ -175,7 +175,7 @@ int l_CMaildir_is_maildir(lua_State * l)
  */
 int l_CMaildir_path(lua_State * l)
 {
-    CLuaLog( "l_CMaildir_path" );
+    CLuaLog("l_CMaildir_path");
 
     std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
     lua_pushstring(l, foo->path().c_str());
@@ -189,7 +189,7 @@ int l_CMaildir_path(lua_State * l)
  */
 int l_CMaildir_save_message(lua_State * l)
 {
-    CLuaLog( "l_CMaildir_save_message" );
+    CLuaLog("l_CMaildir_save_message");
 
     std::shared_ptr<CMaildir> maildir = l_CheckCMaildir(l, 1);
     std::shared_ptr<CMessage> message = l_CheckCMessage(l, 2);
@@ -209,7 +209,7 @@ int l_CMaildir_save_message(lua_State * l)
  */
 int l_CMaildir_total_messages(lua_State * l)
 {
-    CLuaLog( "l_CMaildir_total_messages" );
+    CLuaLog("l_CMaildir_total_messages");
 
     std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
     lua_pushinteger(l, foo->total_messages());
@@ -223,7 +223,7 @@ int l_CMaildir_total_messages(lua_State * l)
  */
 int l_CMaildir_unread_messages(lua_State * l)
 {
-    CLuaLog( "l_CMaildir_unread_messages" );
+    CLuaLog("l_CMaildir_unread_messages");
 
     std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
     lua_pushinteger(l, foo->unread_messages());
@@ -238,7 +238,7 @@ int l_CMaildir_unread_messages(lua_State * l)
  */
 int l_CMaildir_messages(lua_State * l)
 {
-    CLuaLog( "l_CMaildir_messages" );
+    CLuaLog("l_CMaildir_messages");
 
     std::shared_ptr<CMaildir> foo = l_CheckCMaildir(l, 1);
 
@@ -264,7 +264,7 @@ int l_CMaildir_messages(lua_State * l)
  */
 int l_CMaildir_mtime(lua_State *l)
 {
-    CLuaLog( "l_CMaildir_mtime" );
+    CLuaLog("l_CMaildir_mtime");
 
     /*
      * Get the path.
@@ -281,7 +281,7 @@ int l_CMaildir_mtime(lua_State *l)
  */
 int l_CMaildir_destructor(lua_State * l)
 {
-    CLuaLog( "l_CMaildir_destructor" );
+    CLuaLog("l_CMaildir_destructor");
 
     void *ud = luaL_checkudata(l, 1, "luaL_CMaildir");
 
@@ -309,7 +309,7 @@ int l_CMaildir_destructor(lua_State * l)
  */
 int l_CMaildir_equality(lua_State * l)
 {
-    CLuaLog( "l_CMaildir_equality" );
+    CLuaLog("l_CMaildir_equality");
 
     std::shared_ptr<CMaildir> one = l_CheckCMaildir(l, 1);
     std::shared_ptr<CMaildir> two = l_CheckCMaildir(l, 2);

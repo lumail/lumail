@@ -54,7 +54,7 @@
  */
 int l_CRegexp_match(lua_State * l)
 {
-    CLuaLog( "l_CRegexp_match" );
+    CLuaLog("l_CRegexp_match");
 
     const char *pattern = lua_tostring(l, 2);
     const char *input   = lua_tostring(l, 3);
