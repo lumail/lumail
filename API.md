@@ -287,6 +287,9 @@ Message methods:
    * This method allows attachments to be added to a _vanilla_ email.
    * **NOTE**: Adding attachments to a message already containing attachment-parts will result in corruption.  This is designed solely for use when composing outgoing messages.
    * Sample code is available in `sample.lua/add_attachment.lua`.
+* `ctime()`
+   * Return the creation time of the message, as seconds past the epoch.
+   * THis is based upon the `Delivery-Date` / `Date` header inside the message.
 * `flags()`
    * Get the flags for the message.
 * `flags(new_flags)`
