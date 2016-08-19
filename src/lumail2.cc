@@ -119,7 +119,8 @@ int main(int argc, char *argv[])
 
         static struct option long_options[] =
         {
-            {"no-curses", no_argument, 0, 'n'},
+            {"no-curses", no_argument, 0, 'c'},
+            {"no-defaults", no_argument, 0, 'd'},
             {"load-file", required_argument, 0, 'l'},
             {"test", no_argument, 0, 't'},
             {"version", no_argument, 0, 'v'},
@@ -129,7 +130,7 @@ int main(int argc, char *argv[])
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "l:nv", long_options, &option_index);
+        c = getopt_long(argc, argv, "l:cdtv", long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
@@ -137,13 +138,16 @@ int main(int argc, char *argv[])
 
         switch (c)
         {
-        case 'l':
-            load.push_back(optarg);
+        case 'c':
+            curses = false;
             break;
 
+        case 'd':
+            load.clear();
+            break;
 
-        case 'n':
-            curses = false;
+        case 'l':
+            load.push_back(optarg);
             break;
 
         case 't':
