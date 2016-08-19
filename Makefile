@@ -1,19 +1,30 @@
 #
+# This is the Makefile for compiling lumail2.
+#
+# It is tested to work upon Linux and Mac OS X, and may well work
+# upon other systems.
+#
+# The main configuration you'll need to look at here is the version
+# of Lua which you're compiling against.  We assume 5.2, but will support
+# 5.1 too.
+#
+# If you struggle to compile this on a "common" system please do report
+# a bug against the project:
+#
+#   https://github.com/lumail/lumail2
+#
+#
+# Steve
+# --
+#
+#
+
+
+#
 # The version of our code.
 #
 VERSION=$(shell git describe --abbrev=4 --dirty --always --long)
 
-
-#
-# Here we setup the path to our Lua include-files and libraries.
-#
-# This is specifically for testing against local versions of Lua.
-#
-# If these lines are commented-out then we'll discover them dynamically
-# via `pkg-config`.
-#
-# LUA_FLAGS=-I/home/steve/Downloads/lua-5.3.2/src
-# LUA_LIBS=-L/home/steve/Downloads/lua-5.3.2/install/lib -llua -ldl
 
 
 #
@@ -42,13 +53,36 @@ ifeq ($(UNAME),Darwin)
    CPPFLAGS+=-I /usr/include/malloc
 endif
 
-
- #
 #
-# Then actually set the flags.
+# Now we know the version of Lua we'll setup the flags here.
 #
 LUA_FLAGS ?= $(shell pkg-config --cflags ${LVER})
 LUA_LIBS  ?= $(shell pkg-config --libs ${LVER})
+
+
+#
+# If you prefer you can use a manual set of flags, explicitly.
+#
+# This is useful for testing against local versions of Lua.
+#
+# If these lines are commented-out then we'll discover them dynamically
+# via `pkg-config` setup above.
+#
+# LUA_FLAGS=-I/home/steve/Downloads/lua-5.3.2/src
+# LUA_LIBS=-L/home/steve/Downloads/lua-5.3.2/install/lib -llua -ldl
+#
+
+#
+# Finally if we prefer we can use luajit, via one of these options:
+#
+### Locally compiled version of luajit.
+#LUA_FLAGS=-I/tmp/luajit/include/luajit-2.1/
+#LUA_LIBS=-L/tmp/luajit/lib/ -lluajit-5.1
+#
+### Debian packaged-version of luajit.
+#LUA_FLAGS = $(shell pkg-config --cflags luajit)
+#LUA_LIBS  = $(shell pkg-config --libs luajit)
+
 
 
 #
@@ -71,7 +105,7 @@ LINKER=$(CC) -o
 # Compilation flags and libraries we use.
 #
 CPPFLAGS+=${LUA_FLAGS} -std=c++0x -Wall -Werror  $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) -DLUMAIL_VERSION="\"${VERSION}\""
-LDLIBS+=${LUA_LIBS} $(shell pkg-config --libs ncursesw) $(shell pkg-config --libs panelw) -lpcrecpp -lmagic -ldl -lstdc++
+LDLIBS+=${LUA_LIBS} $(shell pkg-config --libs ncursesw) $(shell pkg-config --libs panelw) -lpcrecpp -lmagic -ldl -lstdc++ -lm
 
 #
 #  GMime is used for MIME handling.
