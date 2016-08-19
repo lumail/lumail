@@ -362,11 +362,12 @@ int l_CMessage_ctime(lua_State * l)
      */
     std::string rd = foo->header("Delivery-Date");
 
-    if (rd.empty() )
-        rd = foo->header( "Date");
-    if ( rd.empty() )
+    if (rd.empty())
+        rd = foo->header("Date");
+
+    if (rd.empty())
     {
-        lua_pushnumber(l,0);
+        lua_pushnumber(l, 0);
         return 1;
     }
 
@@ -374,10 +375,12 @@ int l_CMessage_ctime(lua_State * l)
      * Convert the result to a date.
      */
     struct timeval t;
-    if ( 0 ==  approxidate( rd.c_str(), &t) )
-        lua_pushnumber(l,t.tv_sec);
+
+    if (0 ==  approxidate(rd.c_str(), &t))
+        lua_pushnumber(l, t.tv_sec);
     else
-        lua_pushnumber(l,0);
+        lua_pushnumber(l, 0);
+
     return 1;
 }
 
