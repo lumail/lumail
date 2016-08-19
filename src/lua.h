@@ -100,7 +100,15 @@ public:
      * If the argument is not equal to "" then it will be given as the
      * argument to the specified Lua function.
      */
-    std::vector<std::string> function2table(std::string function, std::string argument);
+    std::vector<std::string> function2table(std::string function);
+
+    /**
+     * Call a Lua function which will return a table of text.
+     *
+     * If the argument is not equal to "" then it will be given as the
+     * argument to the specified Lua function.
+     */
+    std::vector<std::string> functiona2table(std::string function, std::string arugment);
 
     /**
      * Call the user "on_error" function with given error message.

@@ -339,9 +339,9 @@ void CLua::update(std::string key_name)
  * If the argument is not equal to "" then it will be given as the
  * argument to the specified Lua function.
  */
-std::vector<std::string> CLua::function2table(std::string function, std::string argument)
+std::vector<std::string> CLua::function2table(std::string function)
 {
-    CLuaLog("function2table(" + function + "," + argument + ")");
+    CLuaLog("function2table(" + function + ")");
 
     std::vector<std::string> result;
 
@@ -351,34 +351,26 @@ std::vector<std::string> CLua::function2table(std::string function, std::string 
     lua_getglobal(m_lua, function.c_str());
 
     if (lua_isnil(m_lua, -1))
-        return (result);
-
-
-    /*
-     * Are we passing an argument?
-     */
-    bool has_arg = (argument == "") ? false : true ;
-
-    /*
-     * Call the function - either passing in the argument, or not.
-     */
-    int ret = 0;
-
-    if (has_arg)
     {
-        lua_pushstring(m_lua, argument.c_str());
-        ret = lua_pcall(m_lua, 1, 1, 0);
+        fprintf(stderr, "FAILED to find function %s\n", function.c_str());
+        return (result);
     }
-    else
-        ret = lua_pcall(m_lua, 0, 1, 0);
+
+    /*
+     * Call the function.
+     */
+    int ret = lua_pcall(m_lua, 0, 1, 0);
 
     /*
      * Handle any error that might have raised.
      */
     if (ret != 0)
     {
+        fprintf(stderr, "FAILED  - Error in %s\n", function.c_str());
+
         if (lua_isstring(m_lua, -1))
         {
+
             /*
              * The error message will be on the stack..
              */
@@ -392,8 +384,6 @@ std::vector<std::string> CLua::function2table(std::string function, std::string 
              */
             free(err);
         }
-        else
-            lua_pop(m_lua, 1);
 
         return (result);
     }
@@ -401,16 +391,86 @@ std::vector<std::string> CLua::function2table(std::string function, std::string 
     /*
      * Now get the table we expected.
      */
-    if (lua_istable(m_lua, 1))
-    {
-        lua_pushnil(m_lua);
+    lua_pushnil(m_lua);
 
-        while (lua_next(m_lua, -2))
+    while (lua_next(m_lua, -2))
+    {
+        const char *entry = lua_tostring(m_lua, -1);
+        result.push_back(entry);
+        lua_pop(m_lua, 1);
+    }
+
+    return (result);
+}
+
+
+/*
+ * Call a Lua function which will return a table of text.
+ *
+ * If the argument is not equal to "" then it will be given as the
+ * argument to the specified Lua function.
+ */
+std::vector<std::string> CLua::functiona2table(std::string function, std::string argument)
+{
+    CLuaLog("function2table(" + function + "," + argument + ")");
+
+    std::vector<std::string> result;
+
+    /*
+     * Get the function - if it doesn't exist we're done.
+     */
+    lua_getglobal(m_lua, function.c_str());
+
+    if (lua_isnil(m_lua, -1))
+    {
+        fprintf(stderr, "FAILED to find function %s\n", function.c_str());
+        return (result);
+    }
+
+    /*
+     * Call the function passing in the argument.
+     */
+    lua_pushstring(m_lua, argument.c_str());
+
+    int ret = lua_pcall(m_lua, 1, 1, 0);
+
+    /*
+     * Handle any error that might have raised.
+     */
+    if (ret != 0)
+    {
+        fprintf(stderr, "FAILED  - Error in %s\n", function.c_str());
+
+        if (lua_isstring(m_lua, -1))
         {
-            const char *entry = lua_tostring(m_lua, -1);
-            result.push_back(entry);
+
+            /*
+             * The error message will be on the stack..
+             */
+            char *err = strdup(lua_tostring(m_lua, -1));
             lua_pop(m_lua, 1);
+
+            on_error(err);
+
+            /*
+             * Avoid a leak.
+             */
+            free(err);
         }
+
+        return (result);
+    }
+
+    /*
+     * Now get the table we expected.
+     */
+    lua_pushnil(m_lua);
+
+    while (lua_next(m_lua, -2))
+    {
+        const char *entry = lua_tostring(m_lua, -1);
+        result.push_back(entry);
+        lua_pop(m_lua, 1);
     }
 
     return (result);
