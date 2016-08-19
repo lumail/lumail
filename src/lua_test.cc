@@ -115,7 +115,7 @@ void TestFunctionToTable(CuTest * tc)
     /*
      * Get the results
      */
-    std::vector<std::string> results = instance->function2table("get_table", "");
+    std::vector<std::string> results = instance->function2table("get_table");
 
     CuAssertTrue(tc, ! results.empty());
     CuAssertIntEquals(tc, 2, results.size());
@@ -149,9 +149,9 @@ void TestFunctionToTableArgs(CuTest * tc)
     /*
      * Get the results: calling with "foo"
      */
-    std::vector<std::string> results = instance->function2table("get_table", "foo");
+    std::vector<std::string> results = instance->functiona2table("get_table", "foo");
 
-    CuAssertTrue(tc, ! results.empty());
+    CuAssertTrue(tc, !results.empty());
     CuAssertIntEquals(tc, 2, results.size());
 
     /*
@@ -165,7 +165,7 @@ void TestFunctionToTableArgs(CuTest * tc)
     /*
      * Get the results: Calling with "bogus"
      */
-    results = instance->function2table("get_table", "bogus");
+    results = instance->functiona2table("get_table", "bogus");
 
     CuAssertTrue(tc, ! results.empty());
     CuAssertIntEquals(tc, 1, results.size());

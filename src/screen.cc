@@ -958,7 +958,7 @@ std::string CScreen::get_line(std::string prompt, std::string input)
              * Get the completions.
              */
             CLua *lua = CLua::instance();
-            std::vector<std::string> matches = lua->function2table("on_complete", token);
+            std::vector<std::string> matches = lua->functiona2table("on_complete", token);
 
             if (matches.size() == 0)
             {
