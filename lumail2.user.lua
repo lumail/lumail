@@ -118,7 +118,16 @@ Config:set( "colour.unread", "red" )
 --
 -- Save persistant history of our input in the named file.
 --
-Config:set( "global.history", HOME .. "/.lumail2.history" )
+-- Create ~/.lumail2/history/ if missing
+--
+if ( not Directory:exists( HOME .. "/.lumail2/history" ) ) then
+   Directory:mkdir(HOME .. "/.lumail2/history")
+end
+
+--
+-- Write our history to ~/.lumail2/history/$HOSTNAME
+--
+Config:set( "global.history", HOME .. "/.lumail2/history/" .. Net:hostname() )
 
 --
 -- Configure a cache-prefix, and populate it
