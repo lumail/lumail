@@ -1,4 +1,4 @@
---
+ --
 -- This is the per-user configuration file for lumail.
 --
 -- To make it active copy it to either:
@@ -121,10 +121,11 @@ Config:set( "colour.unread", "red" )
 Config:set( "global.history", HOME .. "/.lumail2.history" )
 
 --
--- Configure a cache-file, and populate it
+-- Configure a cache-prefix, and populate it
 --
-Config:set( "message.cache", HOME .. "/.lumail2.cache" )
-cache:load( Config:get( "message.cache") )
+Config:set( "cache.prefix", HOME .. "/.lumail2/cache" )
+cache:load()
+
 
 --
 -- Set the default sorting method.  Valid choices are:

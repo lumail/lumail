@@ -313,11 +313,20 @@ end
 function Config.key_changed( name )
 
    --
+   -- Obsolete setting?
+   --
+   if ( name == "message.cache" ) then
+      Panel:append( "$[RED]WARNING:$[WHITE]The configuration key 'message.cache' is obsolete!" )
+      return
+   end
+
+   --
    -- If index.limit changes then we must flush our message cache.
    --
    if ( name == "index.limit" ) then
       global_msgs = {}
       log_message( "index.limit changed - flushing message cache" )
+      return
    end
 
    --
@@ -328,6 +337,7 @@ function Config.key_changed( name )
       global_msgs = {}
       sort_cache:flush()
       Panel:append( "Sorting changed to '" .. Config:get( "index.sort" ) .. "' flushing message/sort cache" )
+      return
    end
 
 end

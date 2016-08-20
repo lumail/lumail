@@ -1,18 +1,30 @@
 --
--- A general "key = value" cache which persists.
+-- A general "key = value" cache which persists to disk.
 --
+-- The user may setup a prefix for the cache-file on disk, but the name
+-- of the file will always be the version of lumail2 which is running.
+--
+-- This allows us to run with both a release and a git-checkout, creating
+-- files such as:
+--
+--    ~/.lumail2/cache/release-2.7
+--    ~/.lumail2/cache/64fd-dirty
+--
+----
+-----
+----
 --
 -- This object can be used as follows:
 --
 --    Cache = require( "cache" )
 --
 --    local c = Cache.new()
---    c:load( "t.logg")
+--    c:load()
 --
 --    c:set( "foo", "bar" )
 --    c:set( "foo", "bart" )
 --    print( "Fetched from cache 'foo' -> " .. c:get( "foo" ) )
---    c:save( "t.logg" )
+--    c:save()
 --
 -- As a special case cache-keys may be set with a file path, and
 -- when the cache is re-loaded from a file the key/value will only
@@ -85,9 +97,9 @@ end
 -- Get a cached value, with a path and a key, not just a key, if it
 -- exists
 --
-function Cache.get_file( self, file, name, value )
+function Cache.get_file( self, file, name )
    local key = file .. "'" .. name
-   return(self:get( key, value ))
+   return(self:get( key ))
 end
 
 
@@ -95,44 +107,59 @@ end
 -- Load our cache from disk.  If it is too large empty it
 -- afterwards to avoid excessive size.
 --
-function Cache.load( self, file )
+function Cache.load( self )
+   --
+   -- The user must setup a cache prefix.
+   --
+   local dir  = Config:get( "cache.prefix" )
+   if ( not dir ) then
+      return
+   end
+
+   --
+   -- The cache file itself is the prefix plus the version
+   --
+   local file = dir .. "/" .. Config:get( "global.version" )
+
    if (file) and File:exists( file ) then
 
-      -- our version
-      local cur = "VERSION=" .. Config:get( "global.version" )
-      -- The version from the cache-file.
-      local ver = nil
-
       for line in io.lines(file) do
-
-         -- If we've not got a version then the first line we see will be it.
-         if ( not ver ) then
-            ver = line
-         else
-            -- Does the version match our current release?
-            if ( ver == cur ) then
-               -- greedy match on key-name.
-               key, val = line:match("^(.*)=([^=]+)$")
-               if ( key and val ) then
-                  self:set(key, val)
-               end
-            end
+         -- greedy match on key-name.
+         key, val = line:match("^(.*)=([^=]+)$")
+         if ( key and val ) then
+            self:set(key, val)
          end
       end
    end
-
 end
 
 --
 -- Save our cache.
 --
-function Cache.save(self, file)
+function Cache.save(self)
+
+   --
+   -- Get the cache-prefix
+   --
+   local dir = Config:get( "cache.prefix" )
+   if ( not dir ) then
+      return
+   end
+
+   --
+   -- Ensure the directory exists
+   --
+   if ( not Directory:exists( dir ) ) then
+      Directory:mkdir( dir )
+   end
+
+   --
+   -- Now write there
+   --
+   local file = dir .. "/" .. Config:get( "global.version" )
 
    if (file) then
       local hand = io.open(file,"w")
-
-      -- write out our version
-      hand:write( "VERSION=" .. Config:get( "global.version" ) .. "\n" )
 
       -- Now the key/values from our cache.
       for key,val in pairs(self.store) do
