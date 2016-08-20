@@ -56,11 +56,6 @@ public:
     ~CMessage();
 
     /**
-     * Comparison operator - used for sorting.
-     */
-    static bool compare(std::shared_ptr<CMessage> a, std::shared_ptr<CMessage> b);
-
-    /**
      * Is this message a local one?
      */
     bool is_maildir();

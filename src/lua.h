@@ -122,12 +122,6 @@ public:
     std::string get_variable(std::string name);
 
     /**
-     * Call the given sort method, with the specified
-     * result.
-     */
-    bool call_sort(std::string method, std::shared_ptr<CMessage> a, std::shared_ptr<CMessage> b);
-
-    /**
      * Call a Lua function with a string argument, and return
      * the single string it will return.
      *

@@ -489,15 +489,66 @@ end
 
 
 --
--- Compare two messages, based upon the modification of their
--- filenames.
+-- Sort the specified table of message-objects.
 --
--- We make sure we compare numbers, as these might have been
--- cached and saved as strings.
+-- We expect that users might wish to define their own sorting methods
+-- so this function is intentionally open:
+--
+--   Lookup the value of the sort-method (via `index.sort`).
+--
+--   Call the function compare_by_$METHOD to do the comparison.
+--
+-- If there is no `compare_by_foo` method then we return the table
+-- unsorted.
+--
+function sort_messages(input)
+   local method = Config:get( "index.sort" )
+   if ( method == "none" ) then
+      return input
+   end
+
+   --
+   -- If the method is `file` we'll invoke `compare_by_file`, etc.
+   --
+   local func = "compare_by_" .. method
+
+   --
+   -- Is the desired sort-method defined?
+   --
+   if ( _G[func] and ( type(_G[func]) == "function" ) ) then
+
+      --
+      -- If there is record the time, do the sort, and record the time again
+      --
+      local t_start = os.time()
+      table.sort( input, _G[func] )
+      local t_end = os.time()
+
+      -- Now show how long it took.
+      Panel:append( "Sort method $[WHITE|BOLD]" .. method .. "$[WHITE] took $[WHITE|BOLD]" .. ( t_end - t_start ) .. "$[WHITE] seconds with " .. "$[WHITE|BOLD]"  .. #input .. "$[WHITE] messages" )
+
+      -- Before returning the result.
+      return(input)
+   else
+      --
+      -- There is no defined `compare_by_$foo` function.
+      --
+      Panel:append( "$[RED]WARNING:$[WHITE] Unknown sorting method " .. method)
+      return( input )
+   end
+end
+
+
+--
+-- Compare two messages, based upon the create-time of their filenames.
+--
+-- We make sure we compare numbers, as these might have been cached and
+-- saved as strings.
 --
 -- Invoked when `index.sort` is set to `file`.
 --
 function compare_by_file(a,b)
+
    local a_path = a:path()
    local a_time = sort_cache:get(a_path)
 
@@ -522,8 +573,8 @@ end
 --
 -- Compare two messages, based upon their date-headers.
 --
--- We make sure we compare numbers, as these might have been
--- cached and saved as strings.
+-- We make sure we compare numbers, as these might have been cached and
+-- saved as strings.
 --
 -- Invoked when `index.sort` is set to `date`.
 --
@@ -552,7 +603,7 @@ function compare_by_date(a,b)
 end
 
 --
--- Compare two messages, based upon from-header.
+-- Compare two messages, based upon their From-headers.
 --
 -- Invoked when `index.sort` is set to `from`.
 --
@@ -775,12 +826,8 @@ function get_messages()
    --
    -- Sort.
    --
-   global_msgs = Global:sort_messages(global_msgs)
-
-   --
-   -- Return the limited messages.
-   --
-   return(global_msgs)
+   sorted = sort_messages(global_msgs)
+   return(sorted)
 end
 
 

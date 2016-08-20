@@ -174,65 +174,6 @@ int l_CGlobalState_modes(lua_State * l)
 
 
 /**
- * Sort the given table of messages.  Not the ideal place for this code.
- */
-int l_CGlobalState_sort_messages(lua_State * l)
-{
-    /**
-     * If the index.sort method is `none` then we do nothing.
-     */
-    CConfig *config = CConfig::instance();
-    std::string method = config->get_string("index.sort", "none");
-
-
-    /**
-     * Build up the list of messages we were given.
-     */
-    if (!lua_istable(l, 2))
-    {
-        lua_pushnil(l);
-        return 1;
-    }
-
-    std::vector<std::shared_ptr<CMessage> > *tmp = new CMessageList;
-
-    lua_pushnil(l);
-
-    while (lua_next(l, -2))
-    {
-        std::shared_ptr<CMessage> entry = l_CheckCMessage(l, -1);
-        tmp->push_back(entry);
-        lua_pop(l, 1);
-    }
-
-    /*
-     * Now sort this vector.
-     */
-    if ( method != "none" )
-        std::sort(tmp->begin(), tmp->end(), CMessage::compare);
-
-
-    /*
-     * Return to the caller.
-     */
-    lua_createtable(l, tmp->size(), 0);
-    int i = 0;
-
-    for (std::vector <std::shared_ptr<CMessage>>::iterator it = tmp->begin();
-            it != tmp->end(); ++it)
-    {
-        std::shared_ptr<CMessage> m = (*it);
-        push_cmessage(l, m);
-        lua_rawseti(l, -2, i + 1);
-        i++;
-    }
-
-    return 1;
-}
-
-
-
-/**
  * Implementation of `Global:select_messages`.
  */
 int l_CGlobalState_select_message(lua_State * l)
@@ -260,7 +201,6 @@ void InitGlobalState(lua_State * l)
         {"modes", l_CGlobalState_modes},
         {"select_maildir", l_CGlobalState_select_maildir},
         {"select_message", l_CGlobalState_select_message},
-        {"sort_messages", l_CGlobalState_sort_messages},
         {NULL, NULL}
     };
     luaL_newmetatable(l, "luaL_CGlobalState");

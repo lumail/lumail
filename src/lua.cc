@@ -498,54 +498,6 @@ std::string CLua::get_variable(std::string name)
 
 
 /*
- * Call the given sort method, with the specified
- * result.
- */
-bool CLua::call_sort(std::string method, std::shared_ptr<CMessage> a, std::shared_ptr<CMessage> b)
-{
-    CLuaLog("call_sort(" + method + ")");
-
-    method = "compare_by_" + method;
-
-    /*
-     * Call the function - if it exists.
-     */
-    lua_getglobal(m_lua, method.c_str());
-
-    if (lua_isnil(m_lua, -1))
-    {
-        on_error("The function isn't defined: " + method);
-        return false;
-    }
-
-    /**
-     * OK we've pushed the method.  Now push the args.
-     */
-    push_cmessage(m_lua, a);
-    push_cmessage(m_lua, b);
-
-    if (lua_pcall(m_lua, 2, 1, 0) != 0)
-    {
-        if (lua_isstring(m_lua, -1))
-        {
-            /*
-             * The error message will be on the stack..
-             */
-            char *err = strdup(lua_tostring(m_lua, -1));
-            lua_pop(m_lua, 1);
-            on_error(err);
-
-            return false;
-        }
-    }
-
-    bool ret = lua_toboolean(m_lua, -1);
-    lua_pop(m_lua,1);
-    return (ret);
-}
-
-
-/*
  * Call a Lua function with a string argument, and return
  * the single string it will return.
  *
