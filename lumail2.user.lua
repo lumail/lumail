@@ -65,7 +65,11 @@ local HOME = os.getenv("HOME")
 --
 -- The default Maildir location is ~/Maildir
 --
-Config:set( "maildir.prefix", HOME .. "/Maildir" );
+if (Directory:exists(HOME .. "/Maildir") ) then
+   Config:set( "maildir.prefix", HOME .. "/Maildir" );
+else
+   Panel:append( "$[RED]WARNING$[WHITE]: No $[WHITE|BOLD]Maildir$[WHITE] prefix found!" )
+end
 
 --
 -- NOTE: You could also set an array of prefixes, which will be
@@ -85,7 +89,7 @@ local def_save = HOME .. "/Maildir/sent-mail"
 if (Directory:is_maildir(def_save) ) then
    Config:set( "global.sent-mail", def_save)
 else
-   Panel:append( "WARNING: No sent-mail folder defined!" )
+   Panel:append( "$[RED]WARNING$[WHITE]: No sent-mail folder defined!" )
 end
 
 
@@ -97,7 +101,7 @@ if ( File:exists( "/usr/lib/sendmail" ) ) then
 elseif ( File:exists( "/usr/sbin/sendmail" ) ) then
    Config:set( "global.mailer", "/usr/sbin/sendmail -t" )
 else
-   Panel:append( "WARNING: No sendmail binary found!" )
+   Panel:append( "$[RED]WARNING$[WHITE]: No sendmail binary found!" )
 end
 
 --

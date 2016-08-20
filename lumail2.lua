@@ -91,7 +91,7 @@ if ( File:exists( "./lumail2" ) and File:exists( ".git" ) ) then
 end
 
 if ( is_source ) then
-   Panel:append( "Running from git checkout - load path is only ./lib" )
+   Panel:append( "Running from $[WHITE|BOLD]git$[WHITE] checkout - load path is only $[WHITE|BOLD]./lib" )
    package.path = package.path .. ';./lib/?.lua'
 else
    package.path = package.path .. ';/etc/lumail2/lib/?.lua'
@@ -336,7 +336,6 @@ function Config.key_changed( name )
    if ( name == "index.sort" ) then
       global_msgs = {}
       sort_cache:flush()
-      Panel:append( "Sorting changed to '" .. Config:get( "index.sort" ) .. "' flushing message/sort cache" )
       return
    end
 
@@ -3463,9 +3462,9 @@ local host = Net:hostname()
 local file = os.getenv( "HOME" ) .. "/.lumail2/" .. host .. ".lua"
 if ( File:exists( file ) ) then
    dofile( file )
-   Panel:append( "Loaded per-host configuration-file - " .. file )
+   Panel:append( "$[RED]Loaded $[WHITE]" .. file )
 else
-   Panel:append( "Skipped per-host configuration-file - " .. file )
+   Panel:append( "$[RED]Skipped $[WHITE]" .. file )
 end
 
 
