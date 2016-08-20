@@ -540,6 +540,7 @@ bool CLua::call_sort(std::string method, std::shared_ptr<CMessage> a, std::share
     }
 
     bool ret = lua_toboolean(m_lua, -1);
+    lua_pop(m_lua,1);
     return (ret);
 }
 
