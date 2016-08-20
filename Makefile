@@ -25,7 +25,13 @@
 #
 VERSION=$(shell git describe --abbrev=4 --dirty --always --long)
 
-
+#
+# Install locations
+#
+DESTDIR?=
+PREFIX?=/usr
+SYSCONFDIR?=/etc
+LUMAIL_HOME?=$(DESTDIR)$(SYSCONFDIR)/lumail2
 
 #
 # Load the flags if they're not already set - first look at the version
@@ -202,22 +208,23 @@ test: lumail2
 #  Install the binary, and our luarocks.d directory
 #
 install: lumail2
-	cp lumail2 /usr/bin/
+	mkdir -p $(DESTDIR)$(PREFIX)/bin || true
+	install -m755 lumail2 $(DESTDIR)$(PREFIX)/bin/
 
     # make target-directories
-	mkdir -p /etc/lumail2/lib/  || true
-	mkdir -p /etc/lumail2/perl.d/  || true
+	mkdir -p $(LUMAIL_HOME)/lib/  || true
+	mkdir -p $(LUMAIL_HOME)/perl.d/  || true
 
     # copy our helpers
-	cp lib/*.lua /etc/lumail2/lib/
-	cp perl.d/* /etc/lumail2/perl.d/
+	cp lib/*.lua $(LUMAIL_HOME)/lib/
+	cp perl.d/* $(LUMAIL_HOME)/perl.d/
 
     # cleanup old installs
-	rm /etc/lumail2/perl.d/delete-message || true
-	rm /etc/lumail2/perl.d/get-folders || true
-	rm /etc/lumail2/perl.d/get-messages || true
-	rm /etc/lumail2/perl.d/save-message || true
-	rm /etc/lumail2/perl.d/set-flags || true
+	rm $(LUMAIL_HOME)/perl.d/delete-message || true
+	rm $(LUMAIL_HOME)/perl.d/get-folders || true
+	rm $(LUMAIL_HOME)/perl.d/get-messages || true
+	rm $(LUMAIL_HOME)/perl.d/save-message || true
+	rm $(LUMAIL_HOME)/perl.d/set-flags || true
 
     # if there is no config in-place, add the default
-	if [ ! -e /etc/lumail2/lumail2.lua ] ; then cp ./lumail2.lua /etc/lumail2/lumail2.lua ; fi
+	if [ ! -e $(LUMAIL_HOME)/lumail2.lua ] ; then cp ./lumail2.lua $(LUMAIL_HOME)/lumail2.lua ; fi
