@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <iostream>
 
+#include "config.h"
 #include "global_state.h"
 #include "maildir_lua.h"
 #include "message_lua.h"
@@ -178,6 +179,13 @@ int l_CGlobalState_modes(lua_State * l)
 int l_CGlobalState_sort_messages(lua_State * l)
 {
     /**
+     * If the index.sort method is `none` then we do nothing.
+     */
+    CConfig *config = CConfig::instance();
+    std::string method = config->get_string("index.sort", "none");
+
+
+    /**
      * Build up the list of messages we were given.
      */
     if (!lua_istable(l, 2))
@@ -200,7 +208,8 @@ int l_CGlobalState_sort_messages(lua_State * l)
     /*
      * Now sort this vector.
      */
-    std::sort(tmp->begin(), tmp->end(), CMessage::compare);
+    if ( method != "none" )
+        std::sort(tmp->begin(), tmp->end(), CMessage::compare);
 
 
     /*
