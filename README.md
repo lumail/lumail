@@ -40,7 +40,11 @@ email you should **NOT USE THIS PROJECT**.
 User-Interface
 --------------
 
-The user-interface will be familiar to users of previous `lumail` project.
+The user-interface will be familiar to users of previous `lumail` project,
+if you're new to the project the following screencast shows what it looks
+like and gives a hint of how it can be used:
+
+* https://asciinema.org/a/chdqz6tb4vt9p3ifp32g4musa
 
 The only obvious change, in terms of visual appearance, is the addition of
 the status-panel which can display persistent output, under the control of
