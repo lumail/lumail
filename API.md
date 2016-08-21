@@ -398,6 +398,8 @@ The Screen object is registered automatically and doesn't need to be constructed
     * Return the height of the screen.
 * `Screen:prompt("Text", "chars" )`
     * Accept input from a small list of characters, used for showing menus, etc.
+* `Screen:redraw()`
+    * Redraw the screen, via the currently-active mode.
 * `Screen:sleep(N)`
     * Sleep for N-seconds.
 * `Screen:stuff(txt)`

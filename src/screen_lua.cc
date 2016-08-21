@@ -156,6 +156,16 @@ int l_CScreen_prompt_chars(lua_State * l)
 }
 
 
+/**
+ * Implementation of Screen:redraw()
+ */
+int l_CScreen_redraw(lua_State * l)
+{
+    (void)l;
+    CScreen *foo = CScreen::instance();
+    foo->redraw();
+    return 0;
+}
 
 /**
  * Implementation of Screen:get_char().
@@ -243,6 +253,7 @@ void InitScreen(lua_State * l)
         {"get_line", l_CScreen_get_line},
         {"height", l_CScreen_height},
         {"prompt", l_CScreen_prompt_chars},
+        {"redraw", l_CScreen_redraw},
         {"sleep", l_CScreen_sleep},
         {"stuff", l_CScreen_stuff},
         {"width", l_CScreen_width},

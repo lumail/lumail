@@ -156,6 +156,11 @@ public:
     void clear(bool refresh_screen = true);
 
     /**
+     * Redraw the screen, via the currently active mode.
+     */
+    void redraw();
+
+    /**
      * Delay for the given period.
      */
     void sleep(int seconds);

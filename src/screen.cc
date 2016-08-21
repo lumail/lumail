@@ -552,6 +552,48 @@ void CScreen::clear(bool refresh_screen)
 
 
 /*
+ * Redraw the screen, via the currently active mode.
+ */
+void CScreen::redraw()
+{
+    /*
+     * Clear the screen.
+     */
+    clear(false);
+
+
+    /*
+     * Get the current global mode.
+     */
+    CConfig *config  = CConfig::instance();
+    std::string mode = config->get_string("global.mode", "maildir");
+
+
+    /*
+     * Get the virtual view class, and if set draw with it.
+     */
+    CViewMode *view = m_views[mode];
+
+    if (view)
+        view->draw();
+
+    /*
+     * Update our panel
+     */
+    CStatusPanel *instance = CStatusPanel::instance();
+
+    if (! instance->hidden())
+        instance->draw();
+
+    /*
+     * Refresh, via curses.
+     */
+    update_panels();
+    doupdate();
+    refresh();
+}
+
+/*
  * Return the height of the screen.
  */
 int CScreen::height()
