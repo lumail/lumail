@@ -26,15 +26,6 @@
 --    print( "Fetched from cache 'foo' -> " .. c:get( "foo" ) )
 --    c:save()
 --
--- As a special case cache-keys may be set with a file path, and
--- when the cache is re-loaded from a file the key/value will only
--- be re-read if/when the source file still exists.
---
--- This is handled by setting the cache-key to be:
---     path'name
---
--- This allows a File:exists(path) test to be applied.
---
 
 local Cache = {}
 Cache.__index = Cache
@@ -104,8 +95,7 @@ end
 
 
 --
--- Load our cache from disk.  If it is too large empty it
--- afterwards to avoid excessive size.
+-- Load our cache from disk.
 --
 function Cache.load( self )
    --
@@ -163,19 +153,7 @@ function Cache.save(self)
 
       -- Now the key/values from our cache.
       for key,val in pairs(self.store) do
-
-         --
-         -- Don't write out values that refer to files which aren't present.
-         --
-         file, option = key:match( "^(.*)'(.*)$" )
-         if ( file and option )  then
-            -- OK this cache-key relates to a file.
-            if ( File:exists( file ) ) then
-               hand:write( key .. "=" .. val  .. "\n")
-            end
-         else
-            hand:write( key .. "=" .. val  .. "\n")
-         end
+         hand:write( key .. "=" .. val  .. "\n")
       end
       hand:close()
    end
