@@ -339,6 +339,33 @@ void CGlobalState::update_messages()
     logger->append("Updating list of messages.");
 
     /*
+     * Get the currently selected maildir.
+     */
+    std::shared_ptr<CMaildir> current = current_maildir();
+
+    /*
+     * If we already have messages open, and the
+     * ctime of the directory has not changed, then
+     * we can avoid updating our messages twice.
+     */
+    static time_t old_val = -1;
+    static std::string old_path = "";
+
+    if (current)
+    {
+        if ((old_path == current->path()) &&
+                (old_val == current->last_modified()))
+        {
+            return;
+        }
+        else
+        {
+            old_val  = current->last_modified();
+            old_path = current->path();
+        }
+    }
+
+    /*
      * If we have items already then free each of them.
      */
     if (m_messages != NULL)
@@ -349,11 +376,6 @@ void CGlobalState::update_messages()
      * create a new store.
      */
     m_messages = new CMessageList;
-
-    /*
-     * Get the currently selected maildir.
-     */
-    std::shared_ptr<CMaildir> current = current_maildir();
 
     /*
      *
