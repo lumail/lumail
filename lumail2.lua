@@ -50,19 +50,6 @@
 --
 
 
---
--- Define a method for logging information which is disabled
--- by default.
---
---  To enable this uncomment the following line which sets up a path
--- to write the message to:
---
---      Config:set( "global.logfile", "lumail2.log" )
---
-function log_message( txt )
-   Log:append( txt )
-end
-
 
 --
 --  Setup a sane Lua load-path
@@ -170,7 +157,6 @@ local global_msgs = {}
 --
 function on_error( msg )
    Panel:append( "An error was caught " .. msg )
-   log_message("An error was caught: " .. msg )
 end
 
 
@@ -326,7 +312,6 @@ function Config.key_changed( name )
    --
    if ( name == "index.limit" ) then
       global_msgs = {}
-      log_message( "index.limit changed - flushing message cache" )
       return
    end
 
@@ -359,7 +344,6 @@ function Config.toggle( name )
    end
 
    Config:set( name, current )
-   log_message("Variable toggled: " .. name .. " new value is " .. current )
 end
 
 
@@ -2719,7 +2703,6 @@ function read_eval()
       return
    end
 
-   log_message( "Evaluating lua: " .. txt )
    loadstring( txt )()
 end
 
@@ -2734,7 +2717,6 @@ function read_execute()
       return
    end
 
-   log_message( "Executing shell command: " .. cmd )
    os.execute(cmd)
 end
 

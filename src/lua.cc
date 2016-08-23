@@ -24,7 +24,7 @@
 #include "config.h"
 #include "lua.h"
 #include "screen.h"
-#include "logfile.h"
+
 
 /*
  * External functions implemented in *_lua.cc
