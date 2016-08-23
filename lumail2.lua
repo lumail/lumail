@@ -791,6 +791,17 @@ function get_messages()
          end
       end
 
+   elseif ( limit == "attach" ) then
+
+      --
+      -- Messages with attachments.
+      --
+      for i,o in ipairs(msgs) do
+         if ( Message.count_attachments(o) > 0) then
+            table.insert(global_msgs, o)
+         end
+      end
+
    elseif ( limit == "today" ) then
       --
       -- "Today"
