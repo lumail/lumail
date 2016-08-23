@@ -38,7 +38,6 @@
  */
 extern int opterr;
 
-
 void run_all_tests()
 {
     CuString *output = CuStringNew();
@@ -162,9 +161,10 @@ int main(int argc, char *argv[])
     }
 
     /*
-     * Ensure that Lua has access to our command-line flags.
+     * Ensure that Lua has access to our Lua libraries and the command-line flags.
      */
     CLua  *instance = CLua::instance();
+    instance->append_to_package_path(LUMAIL_LUAPATH);
     instance->set_args(argv, argc);
 
     CScreen *screen = CScreen::instance();
