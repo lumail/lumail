@@ -132,6 +132,7 @@ end
 -- This is primarily used to cache formatted objects, etc.
 --
 cache = Cache.new()
+cache:load()
 
 --
 -- A second cache which is used solely for sorting purposes.
@@ -248,7 +249,7 @@ function os.exit(code)
       on_exit()
    end
    Panel:append( "Saving cache .." )
-   cache:save(Config:get( "message.cache" ) )
+   cache:save()
 
    Screen:exit()
 end
