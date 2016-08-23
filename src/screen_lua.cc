@@ -66,9 +66,10 @@ int l_CScreen_draw(lua_State * l)
     int x = luaL_checkinteger(l, 2);
     int y = luaL_checkinteger(l, 3);
     const char *txt = luaL_checkstring(l, 4);
+    int r = lua_tointeger(l,5);
 
     CScreen *s = CScreen::instance();
-    s->draw_text(x, y, txt);
+    s->draw_text(x, y, txt, ( r != 0 ) );
     return 0;
 }
 

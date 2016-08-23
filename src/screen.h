@@ -232,7 +232,7 @@ public:
     /**
      * Draw a single piece of text, allowing colours too.
      */
-    void draw_text(int x, int y, std::string text);
+    void draw_text(int x, int y, std::string text, bool update = false);
 
 private:
 
