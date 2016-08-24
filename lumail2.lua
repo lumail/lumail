@@ -139,7 +139,7 @@ sort_cache = Cache.new()
 -- updated.
 --
 
-local global_msgs = {}
+local global_msgs = nil
 
 
 
@@ -311,16 +311,16 @@ function Config.key_changed( name )
    -- If index.limit changes then we must flush our message cache.
    --
    if ( name == "index.limit" ) then
-      global_msgs = {}
+      global_msgs = nil
       return
    end
 
    --
-   -- If the sort method has changed we need to do the same, and also
-   -- flush our sorting-cache.
+   -- If the sort method has changed we need to flush our messages
+   -- also, such that they'll be a) re-freshed and b) re-sorted.
    --
    if ( name == "index.sort" ) then
-      global_msgs = {}
+      global_msgs = nil
       sort_cache:flush()
       return
    end
@@ -533,6 +533,8 @@ end
 -- Invoked when `index.sort` is set to `file`.
 --
 function compare_by_file(a,b)
+   step("Sorting messages")
+
 
    local a_path = a:path()
    local a_time = sort_cache:get(a_path)
@@ -564,6 +566,8 @@ end
 -- Invoked when `index.sort` is set to `date`.
 --
 function compare_by_date(a,b)
+   step("Sorting messages")
+
 
    local a_path = a:path()
    local a_date = sort_cache:get(a_path)
@@ -593,6 +597,8 @@ end
 -- Invoked when `index.sort` is set to `from`.
 --
 function compare_by_from(a,b)
+   step("Sorting messages")
+
    local a_path = a:path()
    local a_from = sort_cache:get(a_path)
 
@@ -617,6 +623,8 @@ end
 -- Invoked when `index.sort` is set to `subject`.
 --
 function compare_by_subject(a,b)
+   step("Sorting messages")
+
    local a_path = a:path()
    local a_sub  = sort_cache:get(a_path)
 
@@ -642,8 +650,6 @@ end
 function sorting_method( value )
    if ( value ) then
       Config:set( "index.sort", value )
-      global_msgs = {}
-      sort_cache:flush()
    end
    return( Config:get( "index.sort" ) )
 end
@@ -737,9 +743,11 @@ function get_messages()
    --
    -- If we have a cached selection then we'll return it
    --
-   if ( #global_msgs > 0 ) then
+   if ( global_msgs ) then
       return global_msgs
    end
+
+   global_msgs = {}
 
    --
    -- Otherwise fetch all the current messages.
@@ -763,6 +771,7 @@ function get_messages()
       -- "All"
       --
       for i,o in ipairs(msgs) do
+         step_percent(i, #msgs)
          table.insert(global_msgs, o)
       end
    elseif ( limit == "new" ) then
@@ -770,6 +779,7 @@ function get_messages()
       -- "New"
       --
       for i,o in ipairs(msgs) do
+         step_percent(i, #msgs)
          if ( o:is_new() ) then
             table.insert(global_msgs, o)
          end
@@ -781,6 +791,7 @@ function get_messages()
       -- Messages with attachments.
       --
       for i,o in ipairs(msgs) do
+         step_percent(i, #msgs)
          if ( Message.count_attachments(o) > 0) then
             table.insert(global_msgs, o)
          end
@@ -794,6 +805,7 @@ function get_messages()
       local today = time - ( 60 * 60 * 24 )
 
       for i,o in ipairs(msgs) do
+         step_percent(i, #msgs)
          -- get current date of the message
          local ctime = o:to_ctime()
 
@@ -812,6 +824,7 @@ function get_messages()
       -- "Pattern"
       --
       for i,o in ipairs(msgs) do
+         step_percent(i, #msgs)
          local fmt = o:format()
          if ( string.find(fmt, limit) ) then
             table.insert(global_msgs, o)
@@ -820,10 +833,10 @@ function get_messages()
    end
 
    --
-   -- Sort.
+   -- Sort and return the set
    --
-   sorted = sort_messages(global_msgs)
-   return(sorted)
+   global_msgs = sort_messages(global_msgs)
+   return(global_msgs)
 end
 
 
@@ -1407,7 +1420,7 @@ function Message.delete()
       msg:unlink()
 
       -- Flush the cached message-list, and get the updated set.
-      global_msgs = {}
+      global_msgs = nil
       local msgs = get_messages()
 
       if ( cur <= ( #msgs - 1 ) ) then
@@ -1445,7 +1458,7 @@ function Message.delete()
       end
 
       -- Flush the cached message-list
-      global_msgs = {}
+      global_msgs = nil
    end
 end
 
@@ -1778,7 +1791,7 @@ function Maildir.select( desired )
          change_mode("index")
 
          -- Flush the cached message-list
-         global_msgs = {}
+         global_msgs = nil
 
          -- And update the current selection for when
          -- we return to Maildir-mode.
@@ -2741,7 +2754,7 @@ function select()
       -- Select the folder and flush the message-cache.
       --
       Global:select_maildir( folder )
-      global_msgs = {}
+      global_msgs = nil
 
       --
       -- Call the user-function, if it exists.
@@ -3353,6 +3366,81 @@ function on_complete( token )
    table.sort(ret)
    return(ret)
 
+end
+
+
+
+--
+-- Show progress
+--
+do
+
+   --
+   -- We're going to assume UTF-8-aware console.
+   --
+   local step_chars = { "←", "↖", "↑", "↗", "→", "↘", "↓", "↙" }
+   local step_off   = 1
+   local step_count = 0
+
+   --
+   -- Animate a progress bar
+   --
+   function step_percent( cur, max )
+      --
+      -- Empty string
+      --
+      local padding = ""
+      while( #padding < Screen:width() ) do
+         padding = padding .. " "
+      end
+
+      if ( cur >= max ) then
+         Screen:draw(0,0, padding, 1 )
+         return
+      end
+      --
+      -- Percentage of completion?
+      --
+      local t = math.floor(max / Screen:width())
+      local s = ""
+      for i=1,Screen:width() do
+         if ( cur >= ( t * i) ) then
+            s  = s .. ">"
+         else
+            s = s .. " "
+         end
+      end
+      Screen:draw(0,0, s, 1 )
+   end
+
+   --
+   -- A simple "spinner" animation which updates every few hundred
+   -- iterations.
+   --
+   function step( str )
+      local padding = ""
+      while( #padding < Screen:width() ) do
+         padding = padding .. " "
+      end
+
+      if ( str == nil ) then
+         Screen:draw(0,0,padding)
+         return
+      end
+
+      step_count = step_count + 1
+      Screen:draw(0,0, step_chars[step_off] .. " " .. str .. padding, 1 )
+
+      -- Don't update every time.
+      -- Number chosen at random
+      if ( step_count >= 250 ) then
+         step_off = step_off + 1;
+         if ( step_off > #step_chars )then
+            step_off = 1
+         end
+         step_count = 0
+      end
+   end
 end
 
 
