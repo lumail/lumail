@@ -110,7 +110,7 @@ LINKER=$(CC) -o
 #
 # Compilation flags and libraries we use.
 #
-CPPFLAGS+=${LUA_FLAGS} -std=c++0x -Wall -Werror  $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) -DLUMAIL_VERSION="\"${VERSION}\"" -DLUMAIL_LUAPATH="\"${LUMAIL_LIBS}/?.lua\""
+CPPFLAGS+=${LUA_FLAGS} -std=c++0x -Wall -Werror  $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) -DLUMAIL_VERSION="\"${VERSION}\"" -DLUMAIL_LUAPATH="\"${LUMAIL_LIBS}\""
 LDLIBS+=${LUA_LIBS} $(shell pkg-config --libs ncursesw) $(shell pkg-config --libs panelw) -lpcrecpp -lmagic -ldl -lstdc++ -lm
 
 #
