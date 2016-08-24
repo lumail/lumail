@@ -340,7 +340,7 @@ void CGlobalState::update_maildirs()
 /*
  * Update the cached list of messages.
  */
-void CGlobalState::update_messages()
+void CGlobalState::update_messages(bool force)
 {
     CLogger *logger = CLogger::instance();
     logger->log("CGlobalState", "Updating list of messages.");
@@ -358,10 +358,17 @@ void CGlobalState::update_messages()
     static time_t old_val = -1;
     static std::string old_path = "";
 
+    /*
+     * If we're forcing an update then nuke the old cached
+     * values.
+     */
+    if ( force == true )
+        old_val = -2;
+
     if (current)
     {
         if ((old_path == current->path()) &&
-                (old_val == current->last_modified()))
+            (old_val == current->last_modified()))
         {
             return;
         }

@@ -944,7 +944,7 @@ bool CMessage::unlink()
     bool ret = CFile::delete_file(path());
 
     CGlobalState *global = CGlobalState::instance();
-    global->update_messages();
+    global->update_messages(true);
     return ret;
 }
 
