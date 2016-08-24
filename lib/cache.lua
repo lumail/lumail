@@ -111,9 +111,15 @@ function Cache.load( self )
    --
    local file = dir .. "/" .. Config:get( "global.version" )
 
+   --
+   -- Spinner
+   --
+   local p = require( "progress_bar" )
+
    if (file) and File:exists( file ) then
 
       for line in io.lines(file) do
+         p:step( "Loading cache ..")
          -- greedy match on key-name.
          key, val = line:match("^(.*)=([^=]+)$")
          if ( key and val ) then
@@ -151,8 +157,12 @@ function Cache.save(self)
    if (file) then
       local hand = io.open(file,"w")
 
+      local p = require( "progress_bar" )
+
       -- Now the key/values from our cache.
       for key,val in pairs(self.store) do
+         p:step( "Saving cache ..")
+
          hand:write( key .. "=" .. val  .. "\n")
       end
       hand:close()
