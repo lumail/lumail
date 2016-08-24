@@ -88,11 +88,12 @@ end
 --
 -- Load libraries
 --
-Cache  = require( "cache" )
-Fun    = require 'functional'
-Life   = require( "life" )
-Stack  = require( "stack" )
-keymap = require( "keymap" )
+Cache    = require( "cache" )
+Fun      = require( "functional" )
+Life     = require( "life" )
+Stack    = require( "stack" )
+keymap   = require( "keymap" )
+Progress = require( "progress_bar" )
 
 --
 -- Load libraries which directly poke functions into the global
@@ -533,7 +534,7 @@ end
 -- Invoked when `index.sort` is set to `file`.
 --
 function compare_by_file(a,b)
-   step("Sorting messages")
+   Progress:step("Sorting messages")
 
 
    local a_path = a:path()
@@ -566,7 +567,7 @@ end
 -- Invoked when `index.sort` is set to `date`.
 --
 function compare_by_date(a,b)
-   step("Sorting messages")
+   Progress:step("Sorting messages")
 
 
    local a_path = a:path()
@@ -597,7 +598,7 @@ end
 -- Invoked when `index.sort` is set to `from`.
 --
 function compare_by_from(a,b)
-   step("Sorting messages")
+   Progress:step("Sorting messages")
 
    local a_path = a:path()
    local a_from = sort_cache:get(a_path)
@@ -623,7 +624,7 @@ end
 -- Invoked when `index.sort` is set to `subject`.
 --
 function compare_by_subject(a,b)
-   step("Sorting messages")
+   Progress:step("Sorting messages")
 
    local a_path = a:path()
    local a_sub  = sort_cache:get(a_path)
@@ -771,7 +772,9 @@ function get_messages()
       -- "All"
       --
       for i,o in ipairs(msgs) do
-         step_percent(i, #msgs)
+         -- Bump our progress-bar
+         Progress:show_percent(i, #msgs)
+
          table.insert(global_msgs, o)
       end
    elseif ( limit == "new" ) then
@@ -779,7 +782,9 @@ function get_messages()
       -- "New"
       --
       for i,o in ipairs(msgs) do
-         step_percent(i, #msgs)
+         -- Bump our progress-bar
+         Progress:show_percent(i, #msgs)
+
          if ( o:is_new() ) then
             table.insert(global_msgs, o)
          end
@@ -791,7 +796,9 @@ function get_messages()
       -- Messages with attachments.
       --
       for i,o in ipairs(msgs) do
-         step_percent(i, #msgs)
+         -- Bump our progress-bar
+         Progress:show_percent(i, #msgs)
+
          if ( Message.count_attachments(o) > 0) then
             table.insert(global_msgs, o)
          end
@@ -805,7 +812,9 @@ function get_messages()
       local today = time - ( 60 * 60 * 24 )
 
       for i,o in ipairs(msgs) do
-         step_percent(i, #msgs)
+         -- Bump our progress-bar
+         Progress:show_percent(i, #msgs)
+
          -- get current date of the message
          local ctime = o:to_ctime()
 
@@ -824,7 +833,9 @@ function get_messages()
       -- "Pattern"
       --
       for i,o in ipairs(msgs) do
-         step_percent(i, #msgs)
+         -- Bump our progress-bar
+         Progress:show_percent(i, #msgs)
+
          local fmt = o:format()
          if ( string.find(fmt, limit) ) then
             table.insert(global_msgs, o)
@@ -3370,78 +3381,6 @@ end
 
 
 
---
--- Show progress
---
-do
-
-   --
-   -- We're going to assume UTF-8-aware console.
-   --
-   local step_chars = { "←", "↖", "↑", "↗", "→", "↘", "↓", "↙" }
-   local step_off   = 1
-   local step_count = 0
-
-   --
-   -- Animate a progress bar
-   --
-   function step_percent( cur, max )
-      --
-      -- Empty string
-      --
-      local padding = ""
-      while( #padding < Screen:width() ) do
-         padding = padding .. " "
-      end
-
-      if ( cur >= max ) then
-         Screen:draw(0,0, padding, 1 )
-         return
-      end
-      --
-      -- Percentage of completion?
-      --
-      local t = math.floor(max / Screen:width())
-      local s = ""
-      for i=1,Screen:width() do
-         if ( cur >= ( t * i) ) then
-            s  = s .. ">"
-         else
-            s = s .. " "
-         end
-      end
-      Screen:draw(0,0, s, 1 )
-   end
-
-   --
-   -- A simple "spinner" animation which updates every few hundred
-   -- iterations.
-   --
-   function step( str )
-      local padding = ""
-      while( #padding < Screen:width() ) do
-         padding = padding .. " "
-      end
-
-      if ( str == nil ) then
-         Screen:draw(0,0,padding)
-         return
-      end
-
-      step_count = step_count + 1
-      Screen:draw(0,0, step_chars[step_off] .. " " .. str .. padding, 1 )
-
-      -- Don't update every time.
-      -- Number chosen at random
-      if ( step_count >= 250 ) then
-         step_off = step_off + 1;
-         if ( step_off > #step_chars )then
-            step_off = 1
-         end
-         step_count = 0
-      end
-   end
-end
 
 
 --
