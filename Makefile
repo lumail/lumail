@@ -32,7 +32,7 @@ DESTDIR?=
 PREFIX?=/usr
 SYSCONFDIR?=/etc
 LUMAIL_HOME?=$(DESTDIR)$(SYSCONFDIR)/lumail2
-
+LUMAIL_LIBS?=${LUMAIL_HOME}/lib
 #
 # Load the flags if they're not already set - first look at the version
 #
@@ -110,7 +110,7 @@ LINKER=$(CC) -o
 #
 # Compilation flags and libraries we use.
 #
-CPPFLAGS+=${LUA_FLAGS} -std=c++0x -Wall -Werror  $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) -DLUMAIL_VERSION="\"${VERSION}\""
+CPPFLAGS+=${LUA_FLAGS} -std=c++0x -Wall -Werror  $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) -DLUMAIL_VERSION="\"${VERSION}\"" -DLUMAIL_LUAPATH="\"${LUMAIL_LIBS}/?.lua\""
 LDLIBS+=${LUA_LIBS} $(shell pkg-config --libs ncursesw) $(shell pkg-config --libs panelw) -lpcrecpp -lmagic -ldl -lstdc++ -lm
 
 #

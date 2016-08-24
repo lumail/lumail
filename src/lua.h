@@ -137,6 +137,11 @@ public:
      */
     std::string keybinding(std::string mode, std::string key);
 
+   /**
+    * Append to package.path
+    */
+   void append_to_package_path(std::string);
+
 private:
 
     /**
