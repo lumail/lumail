@@ -96,7 +96,7 @@ public:
      * Update our cache of messages, that cached list is returned
      * via `get_messages`.
      */
-    void update_messages();
+    void update_messages(bool force = false);
 
     /**
      * This method is called when a configuration key changes,
