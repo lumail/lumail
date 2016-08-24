@@ -362,13 +362,13 @@ void CGlobalState::update_messages(bool force)
      * If we're forcing an update then nuke the old cached
      * values.
      */
-    if ( force == true )
+    if (force == true)
         old_val = -2;
 
     if (current)
     {
         if ((old_path == current->path()) &&
-            (old_val == current->last_modified()))
+                (old_val == current->last_modified()))
         {
             return;
         }

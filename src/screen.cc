@@ -1728,7 +1728,7 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
 /*
  * Draw a single piece of text, allowing colours too.
  */
-void CScreen::draw_text(int x, int y, std::string str, bool update )
+void CScreen::draw_text(int x, int y, std::string str, bool update)
 {
     /*
      * Default colour/attributes for this line.
@@ -1783,7 +1783,7 @@ void CScreen::draw_text(int x, int y, std::string str, bool update )
         free(i);
     }
 
-    if ( update )
+    if (update)
     {
         update_panels();
         doupdate();
