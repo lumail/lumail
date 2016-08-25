@@ -27,7 +27,8 @@ do
       -- Empty string
       --
       local padding = ""
-      while( #padding < Screen:width() ) do
+      local w       = Screen:width()
+      while( #padding < w ) do
          padding = padding .. " "
       end
 
@@ -38,9 +39,9 @@ do
       --
       -- Percentage of completion?
       --
-      local t = math.floor(max / Screen:width())
+      local t = math.floor(max / w)
       local s = ""
-      for i=1,Screen:width() do
+      for i=1,w do
          if ( cur >= ( t * i) ) then
             s  = s .. ">"
          else
@@ -56,7 +57,8 @@ do
    --
    function Progress.step( self, str )
       local padding = ""
-      while( #padding < Screen:width() ) do
+      local w       = Screen:width()
+      while( #padding < w ) do
          padding = padding .. " "
       end
 
