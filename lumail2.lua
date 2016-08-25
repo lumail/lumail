@@ -722,6 +722,11 @@ function get_messages()
    local msgs = Global:current_messages()
 
    --
+   -- How many steps do we expect to update for our progress-bar?
+   --
+   local steps = math.floor( #msgs / Screen:width() )
+
+   --
    -- Now apply any limit which should be present.
    --
    -- Valid limits are:
@@ -739,7 +744,9 @@ function get_messages()
       --
       for i,o in ipairs(msgs) do
          -- Bump our progress-bar
-         Progress:show_percent(i, #msgs)
+         if ( math.fmod(i,steps) ) then
+            Progress:show_percent(i, #msgs)
+         end
 
          table.insert(global_msgs, o)
       end
@@ -749,7 +756,9 @@ function get_messages()
       --
       for i,o in ipairs(msgs) do
          -- Bump our progress-bar
-         Progress:show_percent(i, #msgs)
+         if ( math.fmod(i,steps) ) then
+            Progress:show_percent(i, #msgs)
+         end
 
          if ( o:is_new() ) then
             table.insert(global_msgs, o)
@@ -763,7 +772,9 @@ function get_messages()
       --
       for i,o in ipairs(msgs) do
          -- Bump our progress-bar
-         Progress:show_percent(i, #msgs)
+         if ( math.fmod(i,steps) ) then
+            Progress:show_percent(i, #msgs)
+         end
 
          if ( Message.count_attachments(o) > 0) then
             table.insert(global_msgs, o)
@@ -779,7 +790,9 @@ function get_messages()
 
       for i,o in ipairs(msgs) do
          -- Bump our progress-bar
-         Progress:show_percent(i, #msgs)
+         if ( math.fmod(i,steps) ) then
+            Progress:show_percent(i, #msgs)
+         end
 
          -- get current date of the message
          local ctime = o:to_ctime()
@@ -793,6 +806,7 @@ function get_messages()
          if ( ctime > today ) then
             table.insert(global_msgs, o)
          end
+
       end
    else
       --
@@ -800,7 +814,9 @@ function get_messages()
       --
       for i,o in ipairs(msgs) do
          -- Bump our progress-bar
-         Progress:show_percent(i, #msgs)
+         if ( math.fmod(i,steps) ) then
+            Progress:show_percent(i, #msgs)
+         end
 
          local fmt = o:format()
          if ( string.find(fmt, limit) ) then
