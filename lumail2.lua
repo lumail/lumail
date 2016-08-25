@@ -422,29 +422,31 @@ function Message:to_ctime()
    local p = self:path()
 
    --
-   -- Look for the ctime in the message filename.
-   --
-   local f = File:basename(p)
-   local num = string.match(f, "^([0-9]+)%." )
-   if ( num ) then
-      return( num )
-   end
-
-   --
-   -- Lookup value in the cache since it requires
-   -- reading (two) message-headers it's a little slower
-   -- than I'd like to calculate the ctime.
+   -- Lookup value in the cache, if we can.
    --
    if ( cache:get_file(p, "to_ctime") ) then
       return(tonumber(cache:get_file(p, "to_ctime")))
    end
 
-   -- Comes from the C++ code.
-   local seconds = self:ctime()
 
-   -- Set the value in the cache.
+   --
+   -- Look for the ctime in the message filename.
+   --
+   local f = File:basename(p)
+   local num = string.match(f, "^([0-9]+)%." )
+   if ( num ) then
+      -- Set the value in the cache, and return it.
+      cache:set_file(p, "to_ctime", num)
+      return( tonumber(num))
+   end
+
+   --
+   -- Otherwise parse the Received-Date + Date headers.
+   --
+   local seconds = tonumber(self:ctime())
+
+   -- Set the value in the cache, and return it.
    cache:set_file(p, "to_ctime", seconds)
-
    return seconds
 end
 
@@ -751,6 +753,9 @@ function get_messages()
       --
       -- "All"
       --
+      --  This could be simplified to the following:
+      --     global_msgs = msgs
+      --
       for i,o in ipairs(msgs) do
          -- Bump our progress-bar
          if ( math.fmod(i,steps) ) then
@@ -769,6 +774,7 @@ function get_messages()
             Progress:show_percent(i, #msgs)
          end
 
+         -- If the message is new add it.
          if ( o:is_new() ) then
             table.insert(global_msgs, o)
          end
@@ -785,6 +791,7 @@ function get_messages()
             Progress:show_percent(i, #msgs)
          end
 
+         -- If there are attachments add the message.
          if ( Message.count_attachments(o) > 0) then
             table.insert(global_msgs, o)
          end
@@ -806,16 +813,10 @@ function get_messages()
          -- get the creation-date of the message
          local ctime = o:to_ctime()
 
-         -- ensure we compare times/numbers
-         if ( type( ctime ) == "string" ) then
-            ctime = tonumber(ctime)
-         end
-
          -- if it was within the past 24 hours then add it
          if ( ctime > today ) then
             table.insert(global_msgs, o)
          end
-
       end
    else
       --
