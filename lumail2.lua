@@ -412,14 +412,23 @@ end
 
 
 --
--- Get the date of the message in terms of seconds past the epoch.
+-- Get the creation-date of the message, in seconds past the epoch.
 --
--- This is handled by reading the Date: header.
---
--- Returns zero on failure.
+-- We can cheat here by looking at the filename.  If that fails then
+-- we parse the message by looking for the `Delivery-Date` and `Date`
+-- headers.
 --
 function Message:to_ctime()
    local p = self:path()
+
+   --
+   -- Look for the ctime in the message filename.
+   --
+   local f = File:basename(p)
+   local num = string.match(f, "^([0-9]+)%." )
+   if ( num ) then
+      return( num )
+   end
 
    --
    -- Lookup value in the cache since it requires
@@ -794,7 +803,7 @@ function get_messages()
             Progress:show_percent(i, #msgs)
          end
 
-         -- get current date of the message
+         -- get the creation-date of the message
          local ctime = o:to_ctime()
 
          -- ensure we compare times/numbers
