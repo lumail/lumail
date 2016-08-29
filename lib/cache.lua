@@ -103,7 +103,7 @@ function Cache.load( self )
    --
    local dir  = Config:get( "cache.prefix" )
    if ( not dir ) then
-      Panel:append( "WARNING: cache.prefix is not set" )
+      Panel:append( "$[RED]WARNING:$[WHITE] cache.prefix is not set" )
       return
    end
 
@@ -113,13 +113,12 @@ function Cache.load( self )
    local file = dir .. "/" .. Config:get( "global.version" )
 
    if (file) and File:exists( file ) then
-      Panel:append( "Cache loading:" .. file )
       local s = os.time()
       dofile( file )
       local e = os.time()
-      Panel:append( "Cache load took " .. ( e - s ) .. " seconds" )
+      Panel:append( "$[RED]INFO:$[WHITE] Cache load took " .. ( e - s ) .. " seconds" )
    else
-      Panel:append( "WARNING: No cache present" )
+      Panel:append( "$[RED]WARNING:$[WHITE] No cache present" )
    end
 end
 
