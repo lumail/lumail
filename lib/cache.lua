@@ -103,6 +103,7 @@ function Cache.load( self )
    --
    local dir  = Config:get( "cache.prefix" )
    if ( not dir ) then
+      Panel:append( "WARNING: cache.prefix is not set" )
       return
    end
 
@@ -111,21 +112,14 @@ function Cache.load( self )
    --
    local file = dir .. "/" .. Config:get( "global.version" )
 
-   --
-   -- Spinner
-   --
-   local p = require( "progress_bar" )
-
    if (file) and File:exists( file ) then
-
-      for line in io.lines(file) do
-         p:step( "Loading cache ..")
-         -- greedy match on key-name.
-         key, val = line:match("^(.*)=([^=]+)$")
-         if ( key and val ) then
-            self:set(key, val)
-         end
-      end
+      Panel:append( "Cache loading:" .. file )
+      local s = os.time()
+      dofile( file )
+      local e = os.time()
+      Panel:append( "Cache load took " .. ( e - s ) .. " seconds" )
+   else
+      Panel:append( "WARNING: No cache present" )
    end
 end
 
@@ -157,13 +151,13 @@ function Cache.save(self)
    if (file) then
       local hand = io.open(file,"w")
 
-      local p = require( "progress_bar" )
-
       -- Now the key/values from our cache.
       for key,val in pairs(self.store) do
-         p:step( "Saving cache ..")
 
-         hand:write( key .. "=" .. val  .. "\n")
+         key = key:gsub( "\"", "\\\"" )
+         val = val:gsub( "\"", "\\\"" )
+
+         hand:write( "CacheEntry{ key = \"" .. key .. "\", val=\"" .. val .. "\"}\n" );
       end
       hand:close()
    end

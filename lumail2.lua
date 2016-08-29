@@ -80,10 +80,21 @@ end
 
 
 
+
 --
 -- Setup a cache for objects.
 --
--- This is primarily used to cache formatted objects, etc.
+
+--
+-- This function is called to load a cached entry, via a table.
+--
+function CacheEntry( t )
+   cache:set(t.key, t.val)
+end
+
+--
+-- Create the cache & load it.  This will call the `CacheEntry` function
+-- defined above to perform the loading.
 --
 cache = Cache.new()
 cache:load()
