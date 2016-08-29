@@ -134,7 +134,7 @@ local global_msgs = nil
 -- This function is called when errors occur.
 --
 function on_error( msg )
-   Panel:append( "An error was caught " .. msg )
+   Panel:append( "$[RED]ERROR:$[WHITE] " .. msg )
 end
 
 
@@ -212,7 +212,7 @@ function os.exit(code)
    if ( type(on_exit) == "function" ) then
       on_exit()
    end
-   Panel:append( "Saving cache .." )
+   Panel:append( "$[RED]INFO: $[WHITE]Saving cache .." )
    cache:save()
 
    Screen:exit()
@@ -1046,7 +1046,7 @@ ${sig}
 
          -- Is GPG enabled?
          if ( GPG == nil ) then
-            Panel:append( "GPG support disabled!" )
+            Panel:append( "$[RED]WARNING: $[WHITE]GPG support disabled!" )
          else
             local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
             if ( gpg == "c" ) or ( gpg == "C" ) then
@@ -1099,7 +1099,7 @@ ${sig}
 
          -- Send the mail.
          os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
-         Panel:append("Message sent to " .. to )
+         Panel:append("$[RED]INFO: $[WHITE]Message sent to " .. to )
 
          --
          -- Now we need to save a copy of the outgoing message.
@@ -1111,7 +1111,7 @@ ${sig}
 
       if ( a == 'n' ) or ( a == 'N' ) then
          -- Abort
-         Panel:append("Sending aborted!" )
+         Panel:append("$[RED]WARNING: $[WHITE]Sending aborted!" )
          run = false
       end
 
@@ -1144,7 +1144,7 @@ function Message.reply()
 
    -- Failed to find a mesage?
    if ( not msg ) then
-      Panel:append("Failed to find message!")
+      Panel:append("$[RED]ERROR: $[WHITE]Failed to find message!")
       return
    end
 
@@ -1286,7 +1286,7 @@ Date: ${date}
 
          -- Is GPG enabled?
          if ( GPG == nil ) then
-            Panel:append( "GPG support disabled!" )
+            Panel:append( "$[RED]WARNING: $[WHITE]GPG support disabled!" )
          else
             local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
             if ( gpg == "c" ) or ( gpg == "C" ) then
@@ -1565,7 +1565,7 @@ Begin forwarded message.
 
          -- Is GPG enabled?
          if ( GPG == nil ) then
-            Panel:append( "GPG support disabled!" )
+            Panel:append( "$[RED]WARNING: $[WHITE]GPG support disabled!" )
          else
             local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
             if ( gpg == "c" ) or ( gpg == "C" ) then
@@ -3533,9 +3533,9 @@ local host = Net:hostname()
 local file = os.getenv( "HOME" ) .. "/.lumail2/" .. host .. ".lua"
 if ( File:exists( file ) ) then
    dofile( file )
-   Panel:append( "$[RED]Loaded $[WHITE]" .. file )
+   Panel:append( "$[RED]INFO:$[WHITE] Loaded" .. file )
 else
-   Panel:append( "$[RED]Skipped $[WHITE]" .. file )
+   Panel:append( "$[RED]WARNING: $[WHITE]" .. file .. " not present" )
 end
 
 
