@@ -454,7 +454,7 @@ function Message:to_ctime()
    --
    -- Otherwise parse the Received-Date + Date headers.
    --
-   local seconds = tonumber(self:ctime())
+   local seconds = self:ctime()
 
    -- Set the value in the cache, and return it.
    cache:set_file(p, "to_ctime", seconds)
