@@ -111,6 +111,7 @@ int l_CCache_constructor(lua_State * l)
     return 1;
 }
 
+
 /**
  * Implementation of Cache:get()
  */
@@ -134,6 +135,36 @@ int l_CCache_get(lua_State * l)
     }
 
     return 1;
+}
+
+
+/**
+ * Implementation of Cache:load()
+ */
+int l_CCache_load(lua_State * l)
+{
+    CLuaLog("l_CCache_load");
+
+    std::shared_ptr<CCache> foo = l_CheckCCache(l, 1);
+
+    const char *path = luaL_checkstring(l, 2);
+    foo->load(path);
+    return 0;
+}
+
+
+/**
+ * Implementation of Cache:save()
+ */
+int l_CCache_save(lua_State * l)
+{
+    CLuaLog("l_CCache_save");
+
+    std::shared_ptr<CCache> foo = l_CheckCCache(l, 1);
+
+    const char *path = luaL_checkstring(l, 2);
+    foo->save(path);
+    return 0;
 }
 
 
@@ -187,7 +218,9 @@ void InitCache(lua_State * l)
     luaL_Reg sFooRegs[] =
     {
         {"get", l_CCache_get},
+        {"load", l_CCache_load},
         {"new", l_CCache_constructor},
+        {"save", l_CCache_save},
         {"set", l_CCache_set},
         {"__gc", l_CCache_destructor},
         {NULL, NULL}

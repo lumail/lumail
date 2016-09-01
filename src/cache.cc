@@ -17,6 +17,8 @@
  */
 
 
+#include <fstream>
+
 #include "cache.h"
 
 
@@ -42,10 +44,68 @@ std::string CCache::get(std::string key)
     return (m_cache[key]);
 }
 
+
 /*
  * Store a value in the cache.
  */
 void CCache::set(std::string key, std::string value)
 {
     m_cache[ key ] = value;
+}
+
+
+/*
+ * Load the map from disk.
+ */
+void CCache::load( std::string path )
+{
+    /*
+     * Empty any existing members.
+     */
+    m_cache.clear();
+
+    /*
+     * Open the file.
+     */
+    std::fstream fs;
+    fs.open(path,  std::fstream::in);
+
+    /*
+     * Process each line.
+     */
+    for(std::string line; getline(fs, line); )
+    {
+        size_t offset = line.find(" ");
+
+        if ( offset != std::string::npos )
+        {
+            std::string key = line.substr(0, offset );
+            std::string val = line.substr(offset+1);
+
+            m_cache[key] = val;
+        }
+    }
+    fs.close();
+}
+
+
+/*
+ * Save the map to disk.
+ */
+void CCache::save( std::string path )
+{
+    std::fstream fs;
+    fs.open(path,  std::fstream::out);
+
+    for ( auto it = m_cache.begin(); it != m_cache.end(); ++it )
+    {
+        std::string key = it->first;
+        std::string val = it->second;
+
+        if ( (!key.empty()) && ( !val.empty() ) )
+        {
+            fs << key << " " << val << std::endl;
+        }
+    }
+    fs.close();
 }

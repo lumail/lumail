@@ -54,6 +54,16 @@ public:
     std::string get(std::string key);
 
     /**
+     * Load the map from disk.
+     */
+    void load(std::string path);
+
+    /**
+     * Save the map to disk.
+     */
+    void save(std::string path);
+
+    /**
      * Store a value in the cache.
      */
     void set(std::string key, std::string value);
