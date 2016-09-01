@@ -36,6 +36,16 @@ CCache::~CCache()
 {
 }
 
+
+/*
+ * Empty the cache, removing all keys/values
+ */
+void CCache::empty()
+{
+    m_cache.clear();
+}
+
+
 /*
  * Get the value of a cache-key.
  */
@@ -57,12 +67,12 @@ void CCache::set(std::string key, std::string value)
 /*
  * Load the map from disk.
  */
-void CCache::load( std::string path )
+void CCache::load(std::string path)
 {
     /*
      * Empty any existing members.
      */
-    m_cache.clear();
+    empty();
 
     /*
      * Open the file.
@@ -73,18 +83,19 @@ void CCache::load( std::string path )
     /*
      * Process each line.
      */
-    for(std::string line; getline(fs, line); )
+    for (std::string line; getline(fs, line);)
     {
         size_t offset = line.find(" ");
 
-        if ( offset != std::string::npos )
+        if (offset != std::string::npos)
         {
-            std::string key = line.substr(0, offset );
-            std::string val = line.substr(offset+1);
+            std::string key = line.substr(0, offset);
+            std::string val = line.substr(offset + 1);
 
             m_cache[key] = val;
         }
     }
+
     fs.close();
 }
 
@@ -92,20 +103,21 @@ void CCache::load( std::string path )
 /*
  * Save the map to disk.
  */
-void CCache::save( std::string path )
+void CCache::save(std::string path)
 {
     std::fstream fs;
     fs.open(path,  std::fstream::out);
 
-    for ( auto it = m_cache.begin(); it != m_cache.end(); ++it )
+    for (auto it = m_cache.begin(); it != m_cache.end(); ++it)
     {
         std::string key = it->first;
         std::string val = it->second;
 
-        if ( (!key.empty()) && ( !val.empty() ) )
+        if ((!key.empty()) && (!val.empty()))
         {
             fs << key << " " << val << std::endl;
         }
     }
+
     fs.close();
 }

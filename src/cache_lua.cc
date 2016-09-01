@@ -112,6 +112,21 @@ int l_CCache_constructor(lua_State * l)
 }
 
 
+
+/**
+ * Implementation of Cache:empty()
+ */
+int l_CCache_empty(lua_State * l)
+{
+    CLuaLog("l_CCache_empty");
+
+    std::shared_ptr<CCache> foo = l_CheckCCache(l, 1);
+    foo->empty();
+
+    return 0;
+}
+
+
 /**
  * Implementation of Cache:get()
  */
@@ -217,6 +232,7 @@ void InitCache(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
     {
+        {"empty", l_CCache_empty},
         {"get", l_CCache_get},
         {"load", l_CCache_load},
         {"new", l_CCache_constructor},

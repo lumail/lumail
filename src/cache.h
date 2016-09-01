@@ -49,6 +49,11 @@ public:
 public:
 
     /**
+     * Empty the cache, removing all keys/values
+     */
+    void empty();
+
+    /**
      * Get the value of a cache-key.
      */
     std::string get(std::string key);
