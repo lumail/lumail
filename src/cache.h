@@ -24,6 +24,18 @@
 #include <unordered_map>
 
 
+/**
+ * A cached entry.
+ *
+ * This structure contains a cache-value, along with the time that
+ * it was inserted into the cache.
+ */
+class CacheEntry
+{
+public:
+    std::string value;
+    time_t      created;
+};
 
 /**
  *
@@ -78,6 +90,6 @@ private:
     /**
      * The actual map which stores our cached data.
      */
-    std::unordered_map <std::string, std::string >m_cache;
+    std::unordered_map <std::string, CacheEntry * >m_cache;
 
 };

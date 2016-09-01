@@ -42,6 +42,14 @@ CCache::~CCache()
  */
 void CCache::empty()
 {
+    for (auto it = m_cache.begin(); it != m_cache.end(); ++it)
+    {
+        CacheEntry *val = it->second;
+
+        if (val != NULL)
+            delete(val);
+    }
+
     m_cache.clear();
 }
 
@@ -51,7 +59,12 @@ void CCache::empty()
  */
 std::string CCache::get(std::string key)
 {
-    return (m_cache[key]);
+    CacheEntry *e = m_cache[key];
+
+    if (e != NULL)
+        return (e->value);
+    else
+        return "";
 }
 
 
@@ -60,7 +73,15 @@ std::string CCache::get(std::string key)
  */
 void CCache::set(std::string key, std::string value)
 {
-    m_cache[ key ] = value;
+    CacheEntry *e = m_cache[key];
+
+    if (e != NULL)
+        delete(e);
+
+    e = new CacheEntry();
+    e->value   = value;
+    e->created = time(NULL);
+    m_cache[ key ] = e;
 }
 
 
@@ -85,14 +106,23 @@ void CCache::load(std::string path)
      */
     for (std::string line; getline(fs, line);)
     {
-        size_t offset = line.find(" ");
+        size_t ctime = line.find(" ");
 
-        if (offset != std::string::npos)
+        if (ctime != std::string::npos)
         {
-            std::string key = line.substr(0, offset);
-            std::string val = line.substr(offset + 1);
+            size_t kname = line.find(" ", ctime + 1);
 
-            m_cache[key] = val;
+            if (kname != std::string::npos)
+            {
+                std::string c_time  = line.substr(0, ctime);
+                std::string k_name  = line.substr(ctime + 1, kname - ctime - 1);
+                std::string k_value = line.substr(kname + 1);
+
+                CacheEntry *e = new CacheEntry();
+                e->value   = k_value;
+                e->created = std::stoi(c_time);
+                m_cache[ k_name ] = e;
+            }
         }
     }
 
@@ -102,21 +132,34 @@ void CCache::load(std::string path)
 
 /*
  * Save the map to disk.
+ *
+ * NOTE: We drop entries that are more than five days old.
  */
 void CCache::save(std::string path)
 {
     std::fstream fs;
     fs.open(path,  std::fstream::out);
 
+    /*
+     * Get the current time, and work out five days ago.
+     */
+    time_t now = time(NULL);
+    now -= (60 * 60 * 24 * 5);
+
+    /*
+     * Iterate over our cache-map.
+     */
     for (auto it = m_cache.begin(); it != m_cache.end(); ++it)
     {
         std::string key = it->first;
-        std::string val = it->second;
+        CacheEntry *val = it->second;
 
-        if ((!key.empty()) && (!val.empty()))
-        {
-            fs << key << " " << val << std::endl;
-        }
+        /*
+         * If the key and value are non-empty AND the cache-key was
+         * set then the past week then persist it.
+         */
+        if (!key.empty() && (val != NULL) && (val->created > now))
+            fs << val->created << " " << key << " " << val->value << std::endl;
     }
 
     fs.close();
