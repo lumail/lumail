@@ -87,16 +87,6 @@ cache = Cache.new()
 
 
 --
--- A second cache which is used solely for sorting purposes.
---
--- NOTE: This uses the same library as the cache above, code-reuse
--- is good.  The main difference is this cache is flushed explicitly
--- and never persisted to disk.
---
-sort_cache = Cache.new()
-
-
---
 -- This contains the messages which are currently visible.
 --
 -- When the user selects a Maildir, or changes the active selection
@@ -320,7 +310,6 @@ function Config.key_changed( name )
    --
    if ( name == "index.sort" ) then
       global_msgs = nil
-      sort_cache:empty()
       return
    end
 
@@ -547,20 +536,20 @@ function compare_by_file(a,b)
 
 
    local a_path = a:path()
-   local a_time = sort_cache:get(a_path)
+   local a_time = cache:get( "compare_by_file" .. a_path)
 
    if ( a_time == nil ) then
       a_time = File:stat(a_path)['ctime']
-      sort_cache:set(a_path, a_time)
+      cache:set("compare_by_file" .. a_path, a_time)
    end
 
 
    local b_path = b:path()
-   local b_time = sort_cache:get(b_path)
+   local b_time = cache:get("compare_by_file" .. b_path)
 
    if ( b_time == nil ) then
       b_time = File:stat(b_path)['ctime']
-      sort_cache:set(b_path, b_time)
+      cache:set("compare_by_file" .. b_path, b_time)
    end
 
    return tonumber(a_time) < tonumber(b_time)
@@ -580,19 +569,19 @@ function compare_by_date(a,b)
 
 
    local a_path = a:path()
-   local a_date = sort_cache:get(a_path)
+   local a_date = cache:get("compare_by_date" .. a_path)
 
    if ( a_date == nil ) then
       a_date = a:to_ctime();
-      sort_cache:set(a_path, a_date)
+      cache:set("compare_by_date" .. a_path, a_date)
    end
 
    local b_path = b:path()
-   local b_date = sort_cache:get(b_path)
+   local b_date = cache:get("compare_by_date" .. b_path)
 
    if ( b_date == nil ) then
       b_date = b:to_ctime();
-      sort_cache:set(b_path, b_date)
+      cache:set("compare_by_date" .. b_path, b_date)
    end
 
    --
@@ -610,19 +599,19 @@ function compare_by_from(a,b)
    Progress:step("Sorting messages")
 
    local a_path = a:path()
-   local a_from = sort_cache:get(a_path)
+   local a_from = cache:get("compare_by_from" .. a_path)
 
    if ( a_from == nil ) then
       a_from = a:header("From"):lower()
-      sort_cache:set(a_path, a_from)
+      cache:set("compare_by_from" .. a_path, a_from)
    end
 
    local b_path = b:path()
-   local b_from = sort_cache:get(b_path)
+   local b_from = cache:get("compare_by_from" .. b_path)
 
    if ( b_from == nil ) then
       b_from = b:header("From"):lower()
-      sort_cache:set(b_path, b_from)
+      cache:set("compare_by_from" .. b_path, b_from)
    end
    return( a_from < b_from )
 end
@@ -636,19 +625,19 @@ function compare_by_subject(a,b)
    Progress:step("Sorting messages")
 
    local a_path = a:path()
-   local a_sub  = sort_cache:get(a_path)
+   local a_sub  = cache:get("compare_by_subject" .. a_path)
 
    if ( a_sub == nil ) then
       a_sub = a:header("Subject"):lower()
-      sort_cache:set(a_path, a_sub)
+      cache:set("compare_by_subject" .. a_path, a_sub)
    end
 
    local b_path = b:path()
-   local b_sub  = sort_cache:get(b_path)
+   local b_sub  = cache:get("compare_by_subject" .. b_path)
 
    if ( b_sub == nil ) then
       b_sub = b:header("Subject"):lower()
-      sort_cache:set(b_path, b_sub)
+      cache:set("compare_by_subject" .. b_path, b_sub)
    end
    return( a_sub < b_sub )
 end
