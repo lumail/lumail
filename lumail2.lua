@@ -54,7 +54,6 @@
 --
 -- Load libraries
 --
-Cache    = require( "cache" )
 Fun      = require( "functional" )
 Life     = require( "life" )
 Stack    = require( "stack" )
@@ -84,20 +83,8 @@ end
 --
 -- Setup a cache for objects.
 --
-
---
--- This function is called to load a cached entry, via a table.
---
-function CacheEntry( t )
-   cache:set(t.key, t.val)
-end
-
---
--- Create the cache & load it.  This will call the `CacheEntry` function
--- defined above to perform the loading.
---
 cache = Cache.new()
-cache:load()
+
 
 --
 -- A second cache which is used solely for sorting purposes.
@@ -212,9 +199,30 @@ function os.exit(code)
    if ( type(on_exit) == "function" ) then
       on_exit()
    end
-   Panel:append( "$[RED]INFO: $[WHITE]Saving cache .." )
-   cache:save()
 
+
+   --
+   -- Get the cache-prefix
+   --
+   local dir = Config:get( "cache.prefix" )
+   if ( dir ) then
+      --
+      -- Ensure the directory exists.
+      --
+      if ( not Directory:exists( dir ) ) then
+         Directory:mkdir( dir )
+      end
+
+      --
+      -- Now write the cache beneath it.
+      --
+      local file = dir .. "/" .. Config:get( "global.version" )
+      cache:save( file )
+   end
+
+   --
+   -- Finally exit.
+   --
    Screen:exit()
 end
 
@@ -286,6 +294,19 @@ function Config.key_changed( name )
    end
 
    --
+   -- If the cache-prefix has changed load the cache
+   --
+   if ( name == "cache.prefix" ) then
+      local cache_prefix = Config:get( "cache.prefix" )
+      local file = cache_prefix .. "/" .. Config:get( "global.version" )
+      if (file) and File:exists( file ) then
+         Panel:append( "$[RED]INFO:$[WHITE] Loading cache " .. file )
+         cache:load( file )
+      end
+      return
+   end
+
+   --
    -- If index.limit changes then we must flush our message cache.
    --
    if ( name == "index.limit" ) then
@@ -299,7 +320,7 @@ function Config.key_changed( name )
    --
    if ( name == "index.sort" ) then
       global_msgs = nil
-      sort_cache:flush()
+      sort_cache:empty()
       return
    end
 
@@ -435,8 +456,8 @@ function Message:to_ctime()
    --
    -- Lookup value in the cache, if we can.
    --
-   if ( cache:get_file(p, "to_ctime") ) then
-      return(tonumber(cache:get_file(p, "to_ctime")))
+   if ( cache:get(p .. "to_ctime") ) then
+      return(tonumber(cache:get(p .. "to_ctime")))
    end
 
 
@@ -447,7 +468,7 @@ function Message:to_ctime()
    local num = string.match(f, "^([0-9]+)%." )
    if ( num ) then
       -- Set the value in the cache, and return it.
-      cache:set_file(p, "to_ctime", num)
+      cache:set(p .. "to_ctime", num)
       return( tonumber(num))
    end
 
@@ -457,7 +478,7 @@ function Message:to_ctime()
    local seconds = self:ctime()
 
    -- Set the value in the cache, and return it.
-   cache:set_file(p, "to_ctime", seconds)
+   cache:set(p .. "to_ctime", seconds)
    return seconds
 end
 
@@ -2062,8 +2083,8 @@ function Message:format()
    local time = self:mtime()
 
    -- Do we have this cached?  If so return it
-   if ( cache:get_file(path, "message:" .. time) ) then
-      return(cache:get_file(path, "message:" .. time))
+   if ( cache:get(path .. "message:" .. time) ) then
+      return(cache:get(path .. "message:" .. time))
    end
 
    local flags   = self:flags()
@@ -2107,7 +2128,7 @@ function Message:format()
    end
 
    -- Update the cache.
-   cache:set_file(path, "message:" .. time, output)
+   cache:set(path .. "message:" .. time, output)
 
    return( output )
 end
@@ -2389,8 +2410,8 @@ function Maildir:format()
    end
 
    -- Do we have this cached?  If so return it
-   if ( cache:get_file(path,"maildir:" .. trunc .. src .. time) ) then
-      return(cache:get_file(path,"maildir:" .. trunc .. src .. time))
+   if ( cache:get(path .. "maildir:" .. trunc .. src .. time) ) then
+      return(cache:get(path .. "maildir:" .. trunc .. src .. time))
    end
 
    local total  = self:total_messages()
@@ -2443,7 +2464,7 @@ function Maildir:format()
    end
 
    -- update the cache
-   cache:set_file(path, "maildir:" .. trunc .. src .. time, output)
+   cache:set(path .. "maildir:" .. trunc .. src .. time, output)
 
    return output
 end
