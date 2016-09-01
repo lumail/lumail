@@ -153,7 +153,14 @@ function Cache.save(self)
       -- Now the key/values from our cache.
       for key,val in pairs(self.store) do
 
+         if ( type(key) ~= "string" ) then
+            key = tostring(key)
+         end
          key = key:gsub( "\"", "\\\"" )
+
+         if ( type(val) ~= "string" ) then
+            val = tostring(val)
+         end
          val = val:gsub( "\"", "\\\"" )
 
          hand:write( "CacheEntry{ key = \"" .. key .. "\", val=\"" .. val .. "\"}\n" );
