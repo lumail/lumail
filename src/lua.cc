@@ -29,6 +29,7 @@
 /*
  * External functions implemented in *_lua.cc
  */
+extern void InitCache(lua_State * l);
 extern void InitConfig(lua_State * l);
 extern void InitDirectory(lua_State * l);
 extern void InitFile(lua_State * l);
@@ -93,6 +94,7 @@ CLua::CLua() : Observer(CConfig::instance())
     /*
      * Load our bindings.
      */
+    InitCache(m_lua);
     InitConfig(m_lua);
     InitDirectory(m_lua);
     InitFile(m_lua);
