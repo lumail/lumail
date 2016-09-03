@@ -256,7 +256,8 @@ std::vector<COLOUR_STRING *> CColourString::parse_coloured_string(std::string in
                  */
                 for (int j = 0; j < size; j++)
                 {
-                    chr += text->at(i + j);
+                    if ( i+j < max )
+                        chr += text->at(i + j);
                 }
 
                 /*
