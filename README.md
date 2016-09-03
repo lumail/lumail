@@ -153,6 +153,22 @@ documented, but in-brief you'll want to ensure you set at least the following:
 Other options are possible, and you'll find if you wish to [use IMAP](IMAP.md) you need some more options.  If you wish to use encryption you should also read the [GPG notes](GPG.md).
 
 
+
+Running from `git`-checkout
+---------------------------
+
+If you wish to run directly from a git-checkout you'll need to add some
+command-line flags to change the behaviour:
+
+* Change the location from which Lua libraries are fetched.
+* Disable the loading of the global configuration-files.
+
+This can be achieved like so:
+
+     $ ./lumail2 --load-path=$(pwd)/lib/ --no-default --load-file ./lumail2.lua
+
+
+
 Using Lumail2
 -------------
 

@@ -133,11 +133,11 @@ end
 --
 Config:set( "global.history", HOME .. "/.lumail2/history/" .. Net:hostname() )
 
+
 --
 -- Configure a cache-prefix, and populate it
 --
 Config:set( "cache.prefix", HOME .. "/.lumail2/cache" )
-cache:load()
 
 
 --

@@ -50,62 +50,15 @@
 --
 
 
---
--- Define a method for logging information which is disabled
--- by default.
---
---  To enable this uncomment the following line which sets up a path
--- to write the message to:
---
---      Config:set( "global.logfile", "lumail2.log" )
---
-function log_message( txt )
-   Log:append( txt )
-end
-
-
---
---  Setup a sane Lua load-path
---
-----------------------------------------------------------------------------
------------------------------------------------------------------------------
-
---
--- We have bundled at least one LuaRocks library, and so we need to
--- make sure that is loadable.
---
--- We'll configure the load-path to search the following two directories:
---
---    /etc/lumail2/lib/
---    ~/.lumail2/lib/
---
--- If running from a source-checkout we'll instead only load "./lib", because
--- we'll want to ensure we're running the libraries from that git checkout
--- and not any globally-installed version.
---
---
-
-local is_source = false
-if ( File:exists( "./lumail2" ) and File:exists( ".git" ) ) then
-   is_source = true
-end
-
-if ( is_source ) then
-   Panel:append( "Running from $[WHITE|BOLD]git$[WHITE] checkout - load path is only $[WHITE|BOLD]./lib" )
-   package.path = package.path .. ';./lib/?.lua'
-else
-   package.path = package.path .. ';/etc/lumail2/lib/?.lua'
-   package.path = package.path .. ';/' .. os.getenv("HOME") .. '/.lumail2/lib/?.lua'
-end
 
 --
 -- Load libraries
 --
-Cache  = require( "cache" )
-Fun    = require 'functional'
-Life   = require( "life" )
-Stack  = require( "stack" )
-keymap = require( "keymap" )
+Fun      = require( "functional" )
+Life     = require( "life" )
+Stack    = require( "stack" )
+keymap   = require( "keymap" )
+Progress = require( "progress_bar" )
 
 --
 -- Load libraries which directly poke functions into the global
@@ -126,21 +79,11 @@ end
 
 
 
+
 --
 -- Setup a cache for objects.
 --
--- This is primarily used to cache formatted objects, etc.
---
 cache = Cache.new()
-
---
--- A second cache which is used solely for sorting purposes.
---
--- NOTE: This uses the same library as the cache above, code-reuse
--- is good.  The main difference is this cache is flushed explicitly
--- and never persisted to disk.
---
-sort_cache = Cache.new()
 
 
 --
@@ -151,7 +94,7 @@ sort_cache = Cache.new()
 -- updated.
 --
 
-local global_msgs = {}
+local global_msgs = nil
 
 
 
@@ -168,8 +111,7 @@ local global_msgs = {}
 -- This function is called when errors occur.
 --
 function on_error( msg )
-   Panel:append( "An error was caught " .. msg )
-   log_message("An error was caught: " .. msg )
+   Panel:append( "$[RED]ERROR:$[WHITE] " .. msg )
 end
 
 
@@ -247,9 +189,30 @@ function os.exit(code)
    if ( type(on_exit) == "function" ) then
       on_exit()
    end
-   Panel:append( "Saving cache .." )
-   cache:save(Config:get( "message.cache" ) )
 
+
+   --
+   -- Get the cache-prefix
+   --
+   local dir = Config:get( "cache.prefix" )
+   if ( dir ) then
+      --
+      -- Ensure the directory exists.
+      --
+      if ( not Directory:exists( dir ) ) then
+         Directory:mkdir( dir )
+      end
+
+      --
+      -- Now write the cache beneath it.
+      --
+      local file = dir .. "/" .. Config:get( "global.version" )
+      cache:save( file )
+   end
+
+   --
+   -- Finally exit.
+   --
    Screen:exit()
 end
 
@@ -321,21 +284,32 @@ function Config.key_changed( name )
    end
 
    --
-   -- If index.limit changes then we must flush our message cache.
+   -- If the cache-prefix has changed load the cache
    --
-   if ( name == "index.limit" ) then
-      global_msgs = {}
-      log_message( "index.limit changed - flushing message cache" )
+   if ( name == "cache.prefix" ) then
+      local cache_prefix = Config:get( "cache.prefix" )
+      local file = cache_prefix .. "/" .. Config:get( "global.version" )
+      if (file) and File:exists( file ) then
+         Panel:append( "$[RED]INFO:$[WHITE] Loading cache " .. file )
+         cache:load( file )
+      end
       return
    end
 
    --
-   -- If the sort method has changed we need to do the same, and also
-   -- flush our sorting-cache.
+   -- If index.limit changes then we must flush our message cache.
+   --
+   if ( name == "index.limit" ) then
+      global_msgs = nil
+      return
+   end
+
+   --
+   -- If the sort method has changed we need to flush our messages
+   -- also, such that they'll be a) re-freshed and b) re-sorted.
    --
    if ( name == "index.sort" ) then
-      global_msgs = {}
-      sort_cache:flush()
+      global_msgs = nil
       return
    end
 
@@ -358,7 +332,6 @@ function Config.toggle( name )
    end
 
    Config:set( name, current )
-   log_message("Variable toggled: " .. name .. " new value is " .. current )
 end
 
 
@@ -460,30 +433,41 @@ end
 
 
 --
--- Get the date of the message in terms of seconds past the epoch.
+-- Get the creation-date of the message, in seconds past the epoch.
 --
--- This is handled by reading the Date: header.
---
--- Returns zero on failure.
+-- We can cheat here by looking at the filename.  If that fails then
+-- we parse the message by looking for the `Delivery-Date` and `Date`
+-- headers.
 --
 function Message:to_ctime()
    local p = self:path()
 
    --
-   -- Lookup value in the cache since it requires
-   -- reading (two) message-headers it's a little slower
-   -- than I'd like to calculate the ctime.
+   -- Lookup value in the cache, if we can.
    --
-   if ( cache:get_file(p, "to_ctime") ) then
-      return(tonumber(cache:get_file(p, "to_ctime")))
+   if ( cache:get(p .. "to_ctime") ) then
+      return(tonumber(cache:get(p .. "to_ctime")))
    end
 
-   -- Comes from the C++ code.
+
+   --
+   -- Look for the ctime in the message filename.
+   --
+   local f = File:basename(p)
+   local num = string.match(f, "^([0-9]+)%." )
+   if ( num ) then
+      -- Set the value in the cache, and return it.
+      cache:set(p .. "to_ctime", num)
+      return( tonumber(num))
+   end
+
+   --
+   -- Otherwise parse the Received-Date + Date headers.
+   --
    local seconds = self:ctime()
 
-   -- Set the value in the cache.
-   cache:set_file(p, "to_ctime", seconds)
-
+   -- Set the value in the cache, and return it.
+   cache:set(p .. "to_ctime", seconds)
    return seconds
 end
 
@@ -548,22 +532,24 @@ end
 -- Invoked when `index.sort` is set to `file`.
 --
 function compare_by_file(a,b)
+   Progress:step("Sorting messages")
+
 
    local a_path = a:path()
-   local a_time = sort_cache:get(a_path)
+   local a_time = cache:get( "compare_by_file" .. a_path)
 
    if ( a_time == nil ) then
       a_time = File:stat(a_path)['ctime']
-      sort_cache:set(a_path, a_time)
+      cache:set("compare_by_file" .. a_path, a_time)
    end
 
 
    local b_path = b:path()
-   local b_time = sort_cache:get(b_path)
+   local b_time = cache:get("compare_by_file" .. b_path)
 
    if ( b_time == nil ) then
       b_time = File:stat(b_path)['ctime']
-      sort_cache:set(b_path, b_time)
+      cache:set("compare_by_file" .. b_path, b_time)
    end
 
    return tonumber(a_time) < tonumber(b_time)
@@ -579,21 +565,23 @@ end
 -- Invoked when `index.sort` is set to `date`.
 --
 function compare_by_date(a,b)
+   Progress:step("Sorting messages")
+
 
    local a_path = a:path()
-   local a_date = sort_cache:get(a_path)
+   local a_date = cache:get("compare_by_date" .. a_path)
 
    if ( a_date == nil ) then
       a_date = a:to_ctime();
-      sort_cache:set(a_path, a_date)
+      cache:set("compare_by_date" .. a_path, a_date)
    end
 
    local b_path = b:path()
-   local b_date = sort_cache:get(b_path)
+   local b_date = cache:get("compare_by_date" .. b_path)
 
    if ( b_date == nil ) then
       b_date = b:to_ctime();
-      sort_cache:set(b_path, b_date)
+      cache:set("compare_by_date" .. b_path, b_date)
    end
 
    --
@@ -608,20 +596,22 @@ end
 -- Invoked when `index.sort` is set to `from`.
 --
 function compare_by_from(a,b)
+   Progress:step("Sorting messages")
+
    local a_path = a:path()
-   local a_from = sort_cache:get(a_path)
+   local a_from = cache:get("compare_by_from" .. a_path)
 
    if ( a_from == nil ) then
       a_from = a:header("From"):lower()
-      sort_cache:set(a_path, a_from)
+      cache:set("compare_by_from" .. a_path, a_from)
    end
 
    local b_path = b:path()
-   local b_from = sort_cache:get(b_path)
+   local b_from = cache:get("compare_by_from" .. b_path)
 
    if ( b_from == nil ) then
       b_from = b:header("From"):lower()
-      sort_cache:set(b_path, b_from)
+      cache:set("compare_by_from" .. b_path, b_from)
    end
    return( a_from < b_from )
 end
@@ -632,20 +622,22 @@ end
 -- Invoked when `index.sort` is set to `subject`.
 --
 function compare_by_subject(a,b)
+   Progress:step("Sorting messages")
+
    local a_path = a:path()
-   local a_sub  = sort_cache:get(a_path)
+   local a_sub  = cache:get("compare_by_subject" .. a_path)
 
    if ( a_sub == nil ) then
       a_sub = a:header("Subject"):lower()
-      sort_cache:set(a_path, a_sub)
+      cache:set("compare_by_subject" .. a_path, a_sub)
    end
 
    local b_path = b:path()
-   local b_sub  = sort_cache:get(b_path)
+   local b_sub  = cache:get("compare_by_subject" .. b_path)
 
    if ( b_sub == nil ) then
       b_sub = b:header("Subject"):lower()
-      sort_cache:set(b_path, b_sub)
+      cache:set("compare_by_subject" .. b_path, b_sub)
    end
    return( a_sub < b_sub )
 end
@@ -657,8 +649,6 @@ end
 function sorting_method( value )
    if ( value ) then
       Config:set( "index.sort", value )
-      global_msgs = {}
-      sort_cache:flush()
    end
    return( Config:get( "index.sort" ) )
 end
@@ -752,14 +742,21 @@ function get_messages()
    --
    -- If we have a cached selection then we'll return it
    --
-   if ( #global_msgs > 0 ) then
+   if ( global_msgs ) then
       return global_msgs
    end
+
+   global_msgs = {}
 
    --
    -- Otherwise fetch all the current messages.
    --
    local msgs = Global:current_messages()
+
+   --
+   -- How many steps do we expect to update for our progress-bar?
+   --
+   local steps = math.floor( #msgs / Screen:width() )
 
    --
    -- Now apply any limit which should be present.
@@ -777,7 +774,15 @@ function get_messages()
       --
       -- "All"
       --
+      --  This could be simplified to the following:
+      --     global_msgs = msgs
+      --
       for i,o in ipairs(msgs) do
+         -- Bump our progress-bar
+         if ( math.fmod(i,steps) ) then
+            Progress:show_percent(i, #msgs)
+         end
+
          table.insert(global_msgs, o)
       end
    elseif ( limit == "new" ) then
@@ -785,7 +790,30 @@ function get_messages()
       -- "New"
       --
       for i,o in ipairs(msgs) do
+         -- Bump our progress-bar
+         if ( math.fmod(i,steps) ) then
+            Progress:show_percent(i, #msgs)
+         end
+
+         -- If the message is new add it.
          if ( o:is_new() ) then
+            table.insert(global_msgs, o)
+         end
+      end
+
+   elseif ( limit == "attach" ) then
+
+      --
+      -- Messages with attachments.
+      --
+      for i,o in ipairs(msgs) do
+         -- Bump our progress-bar
+         if ( math.fmod(i,steps) ) then
+            Progress:show_percent(i, #msgs)
+         end
+
+         -- If there are attachments add the message.
+         if ( Message.count_attachments(o) > 0) then
             table.insert(global_msgs, o)
          end
       end
@@ -798,13 +826,13 @@ function get_messages()
       local today = time - ( 60 * 60 * 24 )
 
       for i,o in ipairs(msgs) do
-         -- get current date of the message
-         local ctime = o:to_ctime()
-
-         -- ensure we compare times/numbers
-         if ( type( ctime ) == "string" ) then
-            ctime = tonumber(ctime)
+         -- Bump our progress-bar
+         if ( math.fmod(i,steps) ) then
+            Progress:show_percent(i, #msgs)
          end
+
+         -- get the creation-date of the message
+         local ctime = o:to_ctime()
 
          -- if it was within the past 24 hours then add it
          if ( ctime > today ) then
@@ -816,6 +844,11 @@ function get_messages()
       -- "Pattern"
       --
       for i,o in ipairs(msgs) do
+         -- Bump our progress-bar
+         if ( math.fmod(i,steps) ) then
+            Progress:show_percent(i, #msgs)
+         end
+
          local fmt = o:format()
          if ( string.find(fmt, limit) ) then
             table.insert(global_msgs, o)
@@ -824,10 +857,10 @@ function get_messages()
    end
 
    --
-   -- Sort.
+   -- Sort and return the set
    --
-   sorted = sort_messages(global_msgs)
-   return(sorted)
+   global_msgs = sort_messages(global_msgs)
+   return(global_msgs)
 end
 
 
@@ -1023,7 +1056,7 @@ ${sig}
 
          -- Is GPG enabled?
          if ( GPG == nil ) then
-            Panel:append( "GPG support disabled!" )
+            Panel:append( "$[RED]WARNING: $[WHITE]GPG support disabled!" )
          else
             local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
             if ( gpg == "c" ) or ( gpg == "C" ) then
@@ -1076,7 +1109,7 @@ ${sig}
 
          -- Send the mail.
          os.execute( Config:get( "global.mailer" ) .. " < " .. tmp )
-         Panel:append("Message sent to " .. to )
+         Panel:append("$[RED]INFO: $[WHITE]Message sent to " .. to )
 
          --
          -- Now we need to save a copy of the outgoing message.
@@ -1088,7 +1121,7 @@ ${sig}
 
       if ( a == 'n' ) or ( a == 'N' ) then
          -- Abort
-         Panel:append("Sending aborted!" )
+         Panel:append("$[RED]WARNING: $[WHITE]Sending aborted!" )
          run = false
       end
 
@@ -1121,7 +1154,7 @@ function Message.reply()
 
    -- Failed to find a mesage?
    if ( not msg ) then
-      Panel:append("Failed to find message!")
+      Panel:append("$[RED]ERROR: $[WHITE]Failed to find message!")
       return
    end
 
@@ -1263,7 +1296,7 @@ Date: ${date}
 
          -- Is GPG enabled?
          if ( GPG == nil ) then
-            Panel:append( "GPG support disabled!" )
+            Panel:append( "$[RED]WARNING: $[WHITE]GPG support disabled!" )
          else
             local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
             if ( gpg == "c" ) or ( gpg == "C" ) then
@@ -1411,7 +1444,7 @@ function Message.delete()
       msg:unlink()
 
       -- Flush the cached message-list, and get the updated set.
-      global_msgs = {}
+      global_msgs = nil
       local msgs = get_messages()
 
       if ( cur <= ( #msgs - 1 ) ) then
@@ -1449,7 +1482,7 @@ function Message.delete()
       end
 
       -- Flush the cached message-list
-      global_msgs = {}
+      global_msgs = nil
    end
 end
 
@@ -1542,7 +1575,7 @@ Begin forwarded message.
 
          -- Is GPG enabled?
          if ( GPG == nil ) then
-            Panel:append( "GPG support disabled!" )
+            Panel:append( "$[RED]WARNING: $[WHITE]GPG support disabled!" )
          else
             local gpg = Screen:prompt( "(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB" )
             if ( gpg == "c" ) or ( gpg == "C" ) then
@@ -1782,7 +1815,7 @@ function Maildir.select( desired )
          change_mode("index")
 
          -- Flush the cached message-list
-         global_msgs = {}
+         global_msgs = nil
 
          -- And update the current selection for when
          -- we return to Maildir-mode.
@@ -2039,8 +2072,8 @@ function Message:format()
    local time = self:mtime()
 
    -- Do we have this cached?  If so return it
-   if ( cache:get_file(path, "message:" .. time) ) then
-      return(cache:get_file(path, "message:" .. time))
+   if ( cache:get(path .. "message:" .. time) ) then
+      return(cache:get(path .. "message:" .. time))
    end
 
    local flags   = self:flags()
@@ -2084,7 +2117,7 @@ function Message:format()
    end
 
    -- Update the cache.
-   cache:set_file(path, "message:" .. time, output)
+   cache:set(path .. "message:" .. time, output)
 
    return( output )
 end
@@ -2366,8 +2399,8 @@ function Maildir:format()
    end
 
    -- Do we have this cached?  If so return it
-   if ( cache:get_file(path,"maildir:" .. trunc .. src .. time) ) then
-      return(cache:get_file(path,"maildir:" .. trunc .. src .. time))
+   if ( cache:get(path .. "maildir:" .. trunc .. src .. time) ) then
+      return(cache:get(path .. "maildir:" .. trunc .. src .. time))
    end
 
    local total  = self:total_messages()
@@ -2420,7 +2453,7 @@ function Maildir:format()
    end
 
    -- update the cache
-   cache:set_file(path, "maildir:" .. trunc .. src .. time, output)
+   cache:set(path .. "maildir:" .. trunc .. src .. time, output)
 
    return output
 end
@@ -2707,7 +2740,6 @@ function read_eval()
       return
    end
 
-   log_message( "Evaluating lua: " .. txt )
    loadstring( txt )()
 end
 
@@ -2722,7 +2754,6 @@ function read_execute()
       return
    end
 
-   log_message( "Executing shell command: " .. cmd )
    os.execute(cmd)
 end
 
@@ -2747,7 +2778,7 @@ function select()
       -- Select the folder and flush the message-cache.
       --
       Global:select_maildir( folder )
-      global_msgs = {}
+      global_msgs = nil
 
       --
       -- Call the user-function, if it exists.
@@ -3362,6 +3393,9 @@ function on_complete( token )
 end
 
 
+
+
+
 --
 -- Handle timers
 --
@@ -3509,9 +3543,9 @@ local host = Net:hostname()
 local file = os.getenv( "HOME" ) .. "/.lumail2/" .. host .. ".lua"
 if ( File:exists( file ) ) then
    dofile( file )
-   Panel:append( "$[RED]Loaded $[WHITE]" .. file )
+   Panel:append( "$[RED]INFO:$[WHITE] Loaded" .. file )
 else
-   Panel:append( "$[RED]Skipped $[WHITE]" .. file )
+   Panel:append( "$[RED]WARNING: $[WHITE]" .. file .. " not present" )
 end
 
 

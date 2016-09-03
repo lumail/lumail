@@ -38,7 +38,6 @@
  */
 extern int opterr;
 
-
 void run_all_tests()
 {
     CuString *output = CuStringNew();
@@ -50,7 +49,6 @@ void run_all_tests()
     CuSuiteAddSuite(suite, file_getsuite());
     CuSuiteAddSuite(suite, history_getsuite());
     CuSuiteAddSuite(suite, input_queue_getsuite());
-    CuSuiteAddSuite(suite, logfile_getsuite());
     CuSuiteAddSuite(suite, lua_getsuite());
     CuSuiteAddSuite(suite, statuspanel_getsuite());
     CuSuiteAddSuite(suite, util_getsuite());
@@ -82,6 +80,11 @@ int main(int argc, char *argv[])
     std::vector < std::string > load;
     bool curses = true;
 
+
+    /*
+     * The load-path we'll setup for Lua
+     */
+    std::string load_path = LUMAIL_LUAPATH;
 
     /*
      * Default to loading some configuration files, if they
@@ -122,6 +125,7 @@ int main(int argc, char *argv[])
             {"no-curses", no_argument, 0, 'c'},
             {"no-defaults", no_argument, 0, 'd'},
             {"load-file", required_argument, 0, 'l'},
+            {"load-path", required_argument, 0, 'p'},
             {"test", no_argument, 0, 't'},
             {"version", no_argument, 0, 'v'},
             {0, 0, 0, 0}
@@ -130,7 +134,7 @@ int main(int argc, char *argv[])
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "l:cdtv", long_options, &option_index);
+        c = getopt_long(argc, argv, "l:p:cdtv", long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
@@ -150,6 +154,10 @@ int main(int argc, char *argv[])
             load.push_back(optarg);
             break;
 
+        case 'p':
+            load_path = optarg;
+            break;
+
         case 't':
             run_all_tests();
             return 0;
@@ -163,9 +171,15 @@ int main(int argc, char *argv[])
     }
 
     /*
-     * Ensure that Lua has access to our command-line flags.
+     * Our load-apth will end with `/?.lua`.
+     */
+    load_path += "/?.lua";
+
+    /*
+     * Ensure that Lua has access to our Lua libraries and the command-line flags.
      */
     CLua  *instance = CLua::instance();
+    instance->append_to_package_path(load_path);
     instance->set_args(argv, argc);
 
     CScreen *screen = CScreen::instance();

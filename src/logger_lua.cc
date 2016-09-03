@@ -17,7 +17,7 @@
  */
 
 
-#include "logfile.h"
+#include "logger.h"
 #include "lua.h"
 
 
@@ -44,17 +44,18 @@
  *
  * **NOTE**: If a logfile hasn't been set then this is a NOP.
  */
-int l_CLog_append(lua_State * L)
+int l_CLog_log(lua_State * L)
 {
-    CLuaLog("l_CLog_append");
+    CLuaLog("l_CLog_log");
 
-    const char *msg = lua_tostring(L, 2);
+    const char *level = lua_tostring(L, 2);
+    const char *msg   = lua_tostring(L, 3);
 
     if (msg == NULL)
         return 0;
 
-    CLogfile *log = CLogfile::instance();
-    log->append(msg);
+    CLogger *log = CLogger::instance();
+    log->log(level, msg);
     return 0;
 }
 
@@ -67,7 +68,7 @@ void InitLogfile(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
     {
-        {"append",  l_CLog_append},
+        {"log",  l_CLog_log},
         {NULL,      NULL}
     };
     luaL_newmetatable(l, "luaL_CLog");

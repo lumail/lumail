@@ -184,6 +184,7 @@ keymap['maildir']['.n'] = 'Config:set( "maildir.limit", "new" )'
 keymap['maildir']['.t'] = 'Config:set( "maildir.limit", "today" )'
 
 keymap['index']['.a'] = 'Config:set( "index.limit", "all" )'
+keymap['index']['.A'] = 'Config:set( "index.limit", "attach" )'
 keymap['index']['.n'] = 'Config:set( "index.limit", "new" )'
 keymap['index']['.t'] = 'Config:set( "index.limit", "today" )'
 

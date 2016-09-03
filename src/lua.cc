@@ -24,11 +24,12 @@
 #include "config.h"
 #include "lua.h"
 #include "screen.h"
-#include "logfile.h"
+
 
 /*
  * External functions implemented in *_lua.cc
  */
+extern void InitCache(lua_State * l);
 extern void InitConfig(lua_State * l);
 extern void InitDirectory(lua_State * l);
 extern void InitFile(lua_State * l);
@@ -93,6 +94,7 @@ CLua::CLua() : Observer(CConfig::instance())
     /*
      * Load our bindings.
      */
+    InitCache(m_lua);
     InitConfig(m_lua);
     InitDirectory(m_lua);
     InitFile(m_lua);
@@ -608,4 +610,22 @@ std::string CLua::keybinding(std::string mode, std::string key)
         out = res ;
 
     return (out);
+}
+
+void CLua::append_to_package_path(std::string added)
+{
+    // get package.path
+    lua_getglobal(m_lua, "package");
+    lua_getfield(m_lua, -1, "path");
+
+    // append our new path and push it back
+    std::string current_path = lua_tostring(m_lua, -1);
+    current_path.append(";");
+    current_path.append(added);
+    lua_pop(m_lua, 1);
+    lua_pushstring(m_lua, current_path.c_str());
+    lua_setfield(m_lua, -2, "path");
+
+    // clean up (remove package table from stack)
+    lua_pop(m_lua, -1);
 }

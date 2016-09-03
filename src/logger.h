@@ -1,5 +1,5 @@
 /*
- * logfile.h - Simple singleton for logging output messages.
+ * logger.h - Simple singleton for logging messages.
  *
  * This file is part of lumail: http://lumail.org/
  *
@@ -30,33 +30,42 @@
  *
  * It can be used by the C++ code, or via the Lua wrapper.
  */
-class CLogfile : public Singleton<CLogfile>
+class CLogger : public Singleton<CLogger>
 {
 
 public:
 
     /**
-     * Append a new string to the logfile.
+     * Log a message.
      */
-    void append(std::string entry);
+    void log(const char *level , const char *fmt,  ...);
 
     /**
-     * Set the file to log to.
+     * Change the log-level.
      */
-    void set_file(std::string path);
+    void set_level(std::string level);
+
+    /**
+     * Change the log-file.
+     */
+    void set_path(std::string path);
 
 public:
 
     /**
      * Constructor.
      */
-    CLogfile();
+    CLogger();
 
 private:
 
     /**
-     * The file to write to, may be unset.
+     * The current log-level.
      */
-    std::string m_filename;
+    std::string m_level;
 
+    /**
+     * The log-file
+     */
+    std::string m_path;
 };

@@ -79,8 +79,18 @@ void CStatusPanel::init(int rows)
 
     if (m_text.empty())
     {
-        m_text.push_back("Lumail v2 - Toggle panel via 'TAB'.  Exit via 'Q'.  Eval via ':'.");
-        m_text.push_back("by Steve Kemp");
+        /*
+         * Hack - released versions have a fully qualified version
+         */
+        std::string name = LUMAIL_VERSION;
+
+        if (name.substr(0, 6) != "lumail")
+        {
+            name = "lumail2 [" + name + "]";
+        }
+
+        m_text.push_back("$[WHITE|BOLD]" + name + "$[WHITE] by Steve Kemp");
+        m_text.push_back("Toggle panel via 'TAB'.  Exit via 'Q'.  Eval via ':'.");
     }
 
     /* Attach the panel to the window. */

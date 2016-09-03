@@ -27,7 +27,7 @@
 #include "history.h"
 #include "imap_proxy.h"
 #include "json/json.h"
-#include "logfile.h"
+#include "logger.h"
 #include "lua.h"
 #include "maildir.h"
 #include "message.h"
@@ -87,8 +87,8 @@ void CGlobalState::set_message(std::shared_ptr<CMessage> update)
  */
 void CGlobalState::update(std::string key_name)
 {
-    CLogfile *logger = CLogfile::instance();
-    logger->append("CConfig variable changed " + key_name);
+    CLogger *logger = CLogger::instance();
+    logger->log("CGlobalState", "CConfig variable changed: %s ", key_name.c_str());
 
     CConfig *config = CConfig::instance();
 
@@ -130,18 +130,25 @@ void CGlobalState::update(std::string key_name)
         CHistory *history = CHistory::instance();
         history->set_file(path);
     }
-    else if (key_name == "global.logfile")
+    else if (key_name == "log.level")
     {
         /*
-         * The name of the logfile file.
+         * The new level.
          */
-        std::string path = config->get_string("global.logfile");
+        std::string log = config->get_string("log.level");
 
-        if (path.empty())
-            return;
+        CLogger *logger = CLogger::instance();
+        logger->set_level(log);
+    }
+    else if (key_name == "log.path")
+    {
+        /*
+         * The new file
+         */
+        std::string path = config->get_string("log.path");
 
-        CLogfile *log = CLogfile::instance();
-        log->set_file(path);
+        CLogger *logger = CLogger::instance();
+        logger->set_path(path);
     }
     else  if (key_name == "maildir.prefix")
     {
@@ -333,10 +340,10 @@ void CGlobalState::update_maildirs()
 /*
  * Update the cached list of messages.
  */
-void CGlobalState::update_messages()
+void CGlobalState::update_messages(bool force)
 {
-    CLogfile *logger = CLogfile::instance();
-    logger->append("Updating list of messages.");
+    CLogger *logger = CLogger::instance();
+    logger->log("CGlobalState", "Updating list of messages.");
 
     /*
      * Get the currently selected maildir.
@@ -350,6 +357,13 @@ void CGlobalState::update_messages()
      */
     static time_t old_val = -1;
     static std::string old_path = "";
+
+    /*
+     * If we're forcing an update then nuke the old cached
+     * values.
+     */
+    if (force == true)
+        old_val = -2;
 
     if (current)
     {
@@ -389,7 +403,7 @@ void CGlobalState::update_messages()
             (config->get_string("imap.password", "") != "") &&
             (config->get_string("imap.server", "") != ""))
     {
-        logger->append("\tIMAP is in use.");
+        logger->log("imap", "IMAP is in use.");
 
         /*
          * If we don't have a currently-selected folder then return.
@@ -535,7 +549,7 @@ void CGlobalState::update_messages()
      */
     if (current)
     {
-        logger->append("\tFetching messages.");
+        logger->log("maildir", "%s", "Fetching messages.");
         CMessageList contents = current->getMessages();
 
         for (std::shared_ptr<CMessage> content : contents)
@@ -544,7 +558,7 @@ void CGlobalState::update_messages()
         }
     }
 
-    logger->append("\tFound " + std::to_string(m_messages->size()) + " message(s).");
+    logger->log("maildir", "Found %d message(s).", m_messages->size());
 
     config->set("index.max", m_messages->size());
 }

@@ -225,12 +225,17 @@ can be useful for debugging.
 By default log-entries are not written, to enable them you must set
 a filename like so:
 
-     Config:set( "global.logfile" , "/path/to/log" )
+     Config:set( "log.path" , "/path/to/log" )
+     Config:set( "log.level" , "lua|startup|debug" )
+
+To log all messages, which will be noisy:
+
+     Config:set( "log.level", "all");
 
 Once a filename has been set logs may be added via:
 
-     Log:append( os.date() .. " Hello!" )
-     Log:append( os.date() .. " Goodbye!" )
+     Log:log( "debug", "This is a debug message" )
+     Log:log( "lua",  "This is a lua message" )
 
 
 ### Maildir

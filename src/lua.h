@@ -30,7 +30,7 @@ extern "C"
 #include <vector>
 #include <string>
 
-#include "logfile.h"
+#include "logger.h"
 #include "message_lua.h"
 #include "observer.h"
 #include "singleton.h"
@@ -137,6 +137,11 @@ public:
      */
     std::string keybinding(std::string mode, std::string key);
 
+    /**
+     * Append to package.path
+     */
+    void append_to_package_path(std::string);
+
 private:
 
     /**
@@ -174,8 +179,8 @@ public:
         tmp += " ";
         tmp += "stack-depth:" + std::to_string(depth());
 
-        CLogfile *x = CLogfile::instance();
-        x->append(tmp);
+        CLogger *x = CLogger::instance();
+        x->log("lua", "%s", tmp.c_str());
 
         /*
          * Bump nesting level.
@@ -200,8 +205,8 @@ public:
         tmp += "stack-depth:" + std::to_string(depth());
 
 
-        CLogfile *x = CLogfile::instance();
-        x->append(tmp);
+        CLogger *x = CLogger::instance();
+        x->log("lua", "%s", tmp.c_str());
 
         /*
          * Ensure we don't go negative.
