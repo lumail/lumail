@@ -305,11 +305,14 @@ function Config.key_changed( name )
    end
 
    --
-   -- If the sort method has changed we need to flush our messages
-   -- also, such that they'll be a) re-freshed and b) re-sorted.
+   -- If the sorting method has changed we need to resort our messages.
+   --
+   -- NOTE: We explicitly avoid re-reading the maildir, so we're
+   -- just changing the order of the existing messages not refreshing
+   -- them 100%.
    --
    if ( name == "index.sort" ) then
-      global_msgs = nil
+      global_msgs = sort_messages(global_msgs)
       return
    end
 
