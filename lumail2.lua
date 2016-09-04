@@ -492,6 +492,13 @@ function sort_messages(input)
    end
 
    --
+   -- Sorting a non-table?  That's a failure
+   --
+   if ( type(input) ~= "table" ) then
+      return input
+   end
+
+   --
    -- If the method is `file` we'll invoke `compare_by_file`, etc.
    --
    local func = "compare_by_" .. method
