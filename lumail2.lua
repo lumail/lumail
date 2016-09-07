@@ -3166,13 +3166,13 @@ function next_unread()
       if ( mode == "maildir" ) then
          -- A maildir is unread if it contains non-read messages.
          local folder = objs[cur]
-         if ( folder:unread_messages() > 0 ) then
+         if ( folder and folder:unread_messages() > 0 ) then
             unread = true
          end
       elseif ( mode == "index" ) then
          -- A message is unread if .. it is unread!
          local msg = objs[cur]
-         if ( msg:is_new() ) then
+         if ( msg and msg:is_new() ) then
             unread = true
          end
       end
@@ -3186,6 +3186,8 @@ function next_unread()
 
       count = count + 1
    end
+
+   Panel:append( "There are no new items to select" )
 end
 
 
