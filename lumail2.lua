@@ -3009,16 +3009,18 @@ do
 
          -- Get the current entry
          local line = out[cur]
-         line = line:lower()
 
-         -- Does it match?
-         if ( string.match( line, pattern ) ) then
-            Config:set(mode .. ".current", (cur - 1))
-            return
+         if ( line ) then
+            line = line:lower()
+            if ( string.match( line, pattern ) ) then
+               Config:set(mode .. ".current", (cur - 1))
+               return
+            end
          end
-
          count = count + 1
       end
+
+      Panel:append( "No match found for $[WHITE|BOLD]" .. pattern )
    end
 end
 
