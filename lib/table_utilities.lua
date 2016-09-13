@@ -22,3 +22,19 @@ _G['table']['sorted_keys'] = function (tbl)
     end)
   return keys
 end
+
+--
+-- Utility for deleting entry in numeric part of a table
+--
+_G['table']['delete'] = function( table, obj )
+    local found = false
+    for i,v in ipairs( table ) do
+        if ( v == obj ) then
+            found = true
+        end
+
+        if ( found ) then
+            table[i] = table[i+1]
+        end
+    end
+end
