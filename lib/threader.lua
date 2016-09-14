@@ -169,27 +169,35 @@ end
 -- See: 4. Prune empty containers
 --
 function Container.prune_empty (self)
-  for i, v in ipairs(self.children) do
-    v:prune_empty()
-  end
-  if not self.message then
-    -- empty container without children -> delete it
-    if #self.children == 0 then
-      self.parent:remove_child(self)
-      -- not root container with children
-      --  -> delete after transferring the children to parent
-    elseif self.parent then
-      self:transfer_children(self.parent)
-      self.parent:remove_child(self)
-      -- root container with one child -> replace empty container with child
-    else
-      -- return the child with is now a root.
-      -- the calling function has to insert it into the root set.
-      local child = self.children[1]
-      self:remove_child(child)
-      return child
+    -- Reverse walk children because we change the table during iteration.
+    -- After prune_empty on children[i] only fields >= i could be changed.
+    local i = #self.children
+    while i > 0 do
+        self.children[i]:prune_empty()
+        i = i - 1
     end
-  end
+    if not self.message then
+        -- non root
+        if self.parent then
+            -- empty container without children -> delete it
+            if #self.children == 0 then
+                self.parent:remove_child(self)
+                -- not root container with children
+                --  -> delete after transferring the children to parent
+            else
+                self:transfer_children(self.parent)
+                self.parent:remove_child(self)
+            end
+            -- root container with one child -> replace empty container with child
+        elseif #self.children == 1 then
+            -- return the child with is now a root.
+            -- the calling function has to insert it into the root set.
+            local child = self.children[1]
+            self:remove_child(child)
+            child:transfer_children(self)
+            self.message = child.message
+        end
+    end
 end
 
 --
@@ -317,21 +325,9 @@ function Threader.thread (messages)
   id_table = nil
 
   -- 4: Prune empty containers
-  local new_roots = {}
   for i, v in ipairs(roots) do
-    -- handle new roots; see: Container.prune_empty().
-    local nroot = v:prune_empty()
-    if nroot then
-      table.insert(new_roots, nroot)
-    end
+    v:prune_empty()
   end
-  -- add non-empty roots to new roots
-  for i, v in ipairs(roots) do
-    if v.message or #v.children > 0 then
-      table.insert(new_roots, v)
-    end
-  end
-  roots = new_roots
 
   -- 5: Group root set by subject
   -- 5.A:
