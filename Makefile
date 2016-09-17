@@ -186,7 +186,7 @@ indent:
 #
 .PHONY: indent-lua
 indent-lua:
-	./lunadry.lua --in-place $$(find . -name '*.lua' -type f)
+	lunadry.lua --in-place $$(find . -name '*.lua' -type f)
 
 #
 # Rebuild our (code) documentation.
