@@ -34,9 +34,6 @@ If you wish to contribute code to the project then that is wonderful!  More
 contributors are always welcomed, and if you report an issue with your intended
 change, or questions about the approach to take, it will be responded to promptly.
 
-To ensure consistency we wish all code to be formatted in an identical fashion,
-this can be achieved by running `make indent` within the source tree.
-
 There is a brief overview of the code structure, layout, and standards in
 [the HACKING file](HACKING.md).
 

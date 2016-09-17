@@ -83,6 +83,7 @@ The core of the project relies upon a small number of libraries:
 * libgmime-2.6, the MIME-library.
 * libncursesw, the console input/graphics library.
 
+
 ### Linux
 Upon a Debian GNU/Linux host, running the Jessie (stable) release, the following command is sufficient to install the required dependencies:
 
@@ -136,8 +137,7 @@ If you prefer you can name your configuration file after the hostname of the loc
       $ mkdir ~/.lumail2/
       $ cp lumail2.user.lua ~/.lumail2/$(hostname --fqdn).lua
 
-The defaults in [the per-user configuration file](lumail2.user.lua) should be adequately
-documented, but in-brief you'll want to ensure you set at least the following:
+The defaults in [the per-user configuration file](lumail2.user.lua) should be adequately documented, but in-brief you'll want to ensure you set at least the following:
 
      -- Set the location of your Maildir folders, and your sent-folder
      Config:set( "maildir.prefix", os.getenv( "HOME" ) .. "/Maildir/" );
