@@ -182,6 +182,13 @@ indent:
 
 
 #
+# Indent our Lua code in a consistent-style.
+#
+.PHONY: indent-lua
+indent-lua:
+	./lunadry.lua --in-place $$(find . -name '*.lua' -type f)
+
+#
 # Rebuild our (code) documentation.
 #
 .PHONY: docs
