@@ -11,6 +11,7 @@ Life = {}
 local mt = {
   __index = Life,
 
+
 }
 
 
@@ -128,6 +129,7 @@ function Life.new (m, n)
       m = m,
       n = n,
 
+
     }, mt)
 end
 
@@ -176,6 +178,7 @@ do
       "▪",
       "□",
 
+
     }
     local colours = {
       "$[GREEN]",
@@ -185,6 +188,7 @@ do
       "$[MAGENTA]",
       "$[CYAN]",
       "$[RED]",
+
 
     }
 

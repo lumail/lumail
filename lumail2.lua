@@ -903,6 +903,7 @@ function mimeparts2table (msg)
         size = o:size(),
         type = o:type():lower(),
 
+
       }
 
       -- Insert the entry.
@@ -1033,6 +1034,7 @@ ${sig}
         date = date,
         sig = Message.generate_signature(),
 
+
       }))
 
   file:close()
@@ -1107,6 +1109,7 @@ ${sig}
         -- Replace the recipient, if present.
         cmd = string.interp(cmd, {
             recipient = to,
+
 
           })
 
@@ -1228,6 +1231,7 @@ Date: ${date}
         subject = subject,
         msgid = Message:generate_message_id(),
         date = os.date "%a, %d %b %Y %H:%M:%S %z",
+
 
       }))
 
@@ -1356,6 +1360,7 @@ Date: ${date}
         -- Replace the recipient, if present.
         cmd = string.interp(cmd, {
             recipient = to,
+
 
           })
 
@@ -1557,6 +1562,7 @@ Begin forwarded message.
         msgid = Message:generate_message_id(),
         date = os.date "%a, %d %b %Y %H:%M:%S %z",
 
+
       }))
 
 
@@ -1639,6 +1645,7 @@ Begin forwarded message.
         -- Replace the recipient, if present.
         cmd = string.interp(cmd, {
             recipient = to,
+
 
           })
 
@@ -2067,6 +2074,7 @@ function attachment_view ()
   if not msg then
     return {
       "No message selected!",
+
 
     }
   end
@@ -2562,6 +2570,7 @@ function message_view (msg)
     return {
       "No message selected!",
 
+
     }
   end
 
@@ -2593,6 +2602,7 @@ function message_view (msg)
     "Cc",
     "Subject",
     "Date",
+
 
   }
 
@@ -3503,6 +3513,7 @@ do
             idle_timers[period] = {
               callback = o,
               last = now,
+
 
             }
           end

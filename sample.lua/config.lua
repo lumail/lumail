@@ -33,6 +33,7 @@ function test_table ()
     "daisy",
     "tulip",
 
+
   }
 
   print "Our table contains:"

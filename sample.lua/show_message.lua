@@ -27,6 +27,7 @@ function show_message (file)
     "Subject",
     "Date",
 
+
   }
 
   --

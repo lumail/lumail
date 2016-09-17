@@ -47,6 +47,7 @@ local files = {
   "/etc/motd",
   "/bin/ls",
 
+
 }
 msg:add_attachments(files)
 

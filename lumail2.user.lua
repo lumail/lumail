@@ -199,12 +199,14 @@ colour_table['maildir'] = {
   ['Automated'] = 'yellow|underline',
   ['lists'] = 'green|bold',
 
+
 }
 
 -- Setup our colours - for index-mode
 colour_table['index'] = {
   ['Steve'] = 'blue',
   ['Ian'] = 'blue',
+
 
 }
 
@@ -222,5 +224,6 @@ colour_table['message'] = {
   ['^>%s*>%s*'] = 'green',
   ['^>%s*[^>%s]'] = 'blue',
   ['^>%s$'] = 'blue',
+
 
 }
