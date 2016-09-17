@@ -1,4 +1,4 @@
- --
+--
 -- This is the per-user configuration file for lumail.
 --
 -- To make it active copy it to either:
@@ -28,7 +28,6 @@
 keymap['global']['^W'] = 'os.exit(1)'
 
 
-
 --
 -----------------------------------------------------------------------------
 
@@ -42,7 +41,7 @@ keymap['global']['^W'] = 'os.exit(1)'
 -- unreadable emails, or similar problems with displaying message-bodies
 -- comment it out as a first step in isolating the problem.
 --
-Config:set( "global.iconv", 1 )
+Config:set("global.iconv", 1)
 
 
 --
@@ -55,20 +54,20 @@ Config:set( "global.iconv", 1 )
 -- The downside is that searching through messages "/" and `?`,
 -- will break, as items off-screen won't be formatted.
 --
-Config:set( "index.fast", 1 )
+Config:set("index.fast", 1)
 
 --
 -- Get our home-directory, as this is often used.
 --
-local HOME = os.getenv("HOME")
+local HOME = os.getenv "HOME"
 
 --
 -- The default Maildir location is ~/Maildir
 --
-if (Directory:exists(HOME .. "/Maildir") ) then
-   Config:set( "maildir.prefix", HOME .. "/Maildir" );
+if Directory:exists(HOME .. "/Maildir") then
+  Config:set("maildir.prefix", HOME .. "/Maildir")
 else
-   Panel:append( "$[RED]WARNING$[WHITE]: No $[WHITE|BOLD]Maildir$[WHITE] prefix found!" )
+  Panel:append "$[RED]WARNING$[WHITE]: No $[WHITE|BOLD]Maildir$[WHITE] prefix found!"
 end
 
 --
@@ -86,58 +85,58 @@ end
 -- Here we configure the location of that sent-folder.
 --
 local def_save = HOME .. "/Maildir/sent-mail"
-if (Directory:is_maildir(def_save) ) then
-   Config:set( "global.sent-mail", def_save)
+if Directory:is_maildir(def_save) then
+  Config:set("global.sent-mail", def_save)
 else
-   Panel:append( "$[RED]WARNING$[WHITE]: No sent-mail folder defined!" )
+  Panel:append "$[RED]WARNING$[WHITE]: No sent-mail folder defined!"
 end
 
 
 --
 -- Setup our MTA, the command which actually sends the mail.
 --
-if ( File:exists( "/usr/lib/sendmail" ) ) then
-   Config:set( "global.mailer", "/usr/lib/sendmail -t" )
-elseif ( File:exists( "/usr/sbin/sendmail" ) ) then
-   Config:set( "global.mailer", "/usr/sbin/sendmail -t" )
+if File:exists "/usr/lib/sendmail" then
+  Config:set("global.mailer", "/usr/lib/sendmail -t")
+elseif File:exists "/usr/sbin/sendmail" then
+  Config:set("global.mailer", "/usr/sbin/sendmail -t")
 else
-   Panel:append( "$[RED]WARNING$[WHITE]: No sendmail binary found!" )
+  Panel:append "$[RED]WARNING$[WHITE]: No sendmail binary found!"
 end
 
 --
 -- Setup our default editor, for compose/reply/forward operations.
 --
-Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )
+Config:set("global.editor", "vim  +/^$ ++1 '+set tw=72'")
 
 --
 -- Setup our default From: address.
 --
-Config:set( "global.sender", "Some User <steve@example.com>" )
+Config:set("global.sender", "Some User <steve@example.com>")
 
 --
 -- Unread messages/maildirs are drawn in red.
 --
-Config:set( "colour.unread", "red" )
+Config:set("colour.unread", "red")
 
 --
 -- Save persistant history of our input in the named file.
 --
 -- Create ~/.lumail2/history/ if missing
 --
-if ( not Directory:exists( HOME .. "/.lumail2/history" ) ) then
-   Directory:mkdir(HOME .. "/.lumail2/history")
+if not Directory:exists(HOME .. "/.lumail2/history") then
+  Directory:mkdir(HOME .. "/.lumail2/history")
 end
 
 --
 -- Write our history to ~/.lumail2/history/$HOSTNAME
 --
-Config:set( "global.history", HOME .. "/.lumail2/history/" .. Net:hostname() )
+Config:set("global.history", HOME .. "/.lumail2/history/" .. Net:hostname())
 
 
 --
 -- Configure a cache-prefix, and populate it
 --
-Config:set( "cache.prefix", HOME .. "/.lumail2/cache" )
+Config:set("cache.prefix", HOME .. "/.lumail2/cache")
 
 
 --
@@ -149,7 +148,7 @@ Config:set( "cache.prefix", HOME .. "/.lumail2/cache" )
 --  `subject` - Sort by subject.
 --  `from`    - Sort by sender.
 --
-sorting_method( "file" )
+sorting_method "file"
 
 --
 --  IMAP setup
@@ -179,7 +178,6 @@ sorting_method( "file" )
 --
 
 
-
 --
 -- This table contains colouring information, it is designed to allow
 -- the user to override the colours used in the display easily.
@@ -189,8 +187,8 @@ colour_table = {}
 --
 -- Create a per-mode map for each known mode.
 --
-for i,o in ipairs(Global:modes()) do
-   colour_table[o] = {}
+for i, o in ipairs(Global:modes()) do
+  colour_table[o] = {}
 end
 
 
@@ -198,28 +196,31 @@ end
 -- Setup our colours - for Maildir-mode
 --
 colour_table['maildir'] = {
-   ['Automated'] = 'yellow|underline',
-   ['lists']     = 'green|bold',
+  ['Automated'] = 'yellow|underline',
+  ['lists'] = 'green|bold',
+
 }
 
 -- Setup our colours - for index-mode
 colour_table['index'] = {
-   ['Steve'] = 'blue',
-   ['Ian']   = 'blue',
+  ['Steve'] = 'blue',
+  ['Ian'] = 'blue',
+
 }
 
 -- Setup our colours - for a message
 colour_table['message'] = {
-   -- headers
-   ['^Subject:'] = 'yellow',
-   ['^Date:']    = 'yellow',
-   ['^From:']    = 'yellow',
-   ['^To:']      = 'yellow',
-   ['^Cc:']      = 'yellow',
-   ['^Sent:']    = 'yellow',
+  -- headers
+  ['^Subject:'] = 'yellow',
+  ['^Date:'] = 'yellow',
+  ['^From:'] = 'yellow',
+  ['^To:'] = 'yellow',
+  ['^Cc:'] = 'yellow',
+  ['^Sent:'] = 'yellow',
 
-   -- quoting, and nested quoting.
-   ['^>%s*>%s*']   = 'green',
-   ['^>%s*[^>%s]'] = 'blue',
-   ['^>%s$']       = 'blue',
+  -- quoting, and nested quoting.
+  ['^>%s*>%s*'] = 'green',
+  ['^>%s*[^>%s]'] = 'blue',
+  ['^>%s$'] = 'blue',
+
 }

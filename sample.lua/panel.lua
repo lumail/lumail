@@ -10,26 +10,26 @@
 --
 
 
-function show_command_output( title, cmd )
-   Panel:title("Output of running '" .. cmd .. "'")
+function show_command_output (title, cmd)
+  Panel:title("Output of running '" .. cmd .. "'")
 
-   local handle = io.popen(cmd)
-   local result = handle:read("*a")
-   handle:close()
+  local handle = io.popen(cmd)
+  local result = handle:read "*a"
+  handle:close()
 
-   Panel:append(title)
-   Panel:append("\t" .. result)
+  Panel:append(title)
+  Panel:append("\t" .. result)
 
-   if ( Panel:visible() == false ) then
-      Panel:show()
-   end
+  if Panel:visible() == false then
+    Panel:show()
+  end
 end
 
 
-function date()
-   show_command_output( "The date is:", "date" );
+function date ()
+  show_command_output("The date is:", "date")
 end
 
-function hostname()
-   show_command_output( "This host has hostname:", "hostname" );
+function hostname ()
+  show_command_output("This host has hostname:", "hostname")
 end

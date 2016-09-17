@@ -7,15 +7,15 @@
 
 
 Screen:clear()
-print( "Screen is has dimensions:" .. Screen:width() .. "x" .. Screen:height() )
+print("Screen is has dimensions:" .. Screen:width() .. "x" .. Screen:height())
 
 Screen:sleep(2)
 
-print( "Screen still has dimensions:" .. Screen:width() .. "x" .. Screen:height() )
-print( "Screen still has dimensions:" .. Screen:width() .. "x" .. Screen:height() )
-print( "Screen still has dimensions:" .. Screen:width() .. "x" .. Screen:height() )
+print("Screen still has dimensions:" .. Screen:width() .. "x" .. Screen:height())
+print("Screen still has dimensions:" .. Screen:width() .. "x" .. Screen:height())
+print("Screen still has dimensions:" .. Screen:width() .. "x" .. Screen:height())
 
 
-print( Screen:get_line() );
+print(Screen:get_line())
 
 Screen:sleep(3)

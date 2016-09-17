@@ -3,46 +3,46 @@
 --
 -- There is a sub-table for each valid mode.
 --
-keymap           = {}
+keymap = {}
 keymap['global'] = {}
 
 --
 -- Setup a table for each registered mode
 --
-for i,o in ipairs(Global:modes()) do
-   keymap[o] = {}
+for i, o in ipairs(Global:modes()) do
+  keymap[o] = {}
 end
 
 --
 -- Global keybindings, which work in all modes.
 --
-keymap['global'][':']   = "read_eval()"
-keymap['global']['!']   = "read_execute()"
+keymap['global'][':'] = "read_eval()"
+keymap['global']['!'] = "read_execute()"
 keymap['global']['TAB'] = "Panel:toggle()"
-keymap['global']['M']   = "change_mode( 'maildir' )"
-keymap['global']['I']   = "change_mode( 'index' )"
-keymap['global']['L']   = "change_mode( 'lua' )"
-keymap['global']['^P']  = "change_mode( 'panel' )"
-keymap['global']['^L']  = "change_mode( 'life' )"
+keymap['global']['M'] = "change_mode( 'maildir' )"
+keymap['global']['I'] = "change_mode( 'index' )"
+keymap['global']['L'] = "change_mode( 'lua' )"
+keymap['global']['^P'] = "change_mode( 'panel' )"
+keymap['global']['^L'] = "change_mode( 'life' )"
 
 --
 -- Next/Previous navigation for different modes
 --
-keymap['global']['KEY_UP']   = "prev(false)"
-keymap['global']['k']        = "prev(false)"
-keymap['global']['j']        = "next(false)"
+keymap['global']['KEY_UP'] = "prev(false)"
+keymap['global']['k'] = "prev(false)"
+keymap['global']['j'] = "next(false)"
 keymap['global']['KEY_DOWN'] = "next(false)"
 
-keymap['global']['K']         = "prev(true)"
+keymap['global']['K'] = "prev(true)"
 keymap['global']['KEY_PPAGE'] = "prev(true)"
-keymap['global']['J']         = "next(true)"
+keymap['global']['J'] = "next(true)"
 keymap['global']['KEY_NPAGE'] = "next(true)"
 
-keymap['global']['<']        = "first()"
+keymap['global']['<'] = "first()"
 keymap['global']['KEY_HOME'] = "first()"
-keymap['global']['*']        = "last()"
-keymap['global']['>']        = "last()"
-keymap['global']['KEY_END']  = "last()"
+keymap['global']['*'] = "last()"
+keymap['global']['>'] = "last()"
+keymap['global']['KEY_END'] = "last()"
 
 keymap['global']['ENTER'] = "select()"
 keymap['global']['SPACE'] = "select()"
@@ -56,9 +56,9 @@ keymap['message']['K'] = 'prev_message()'
 --
 -- Left/Right scrolling.  (Global)
 --
-keymap['global']['h']         = "left()"
-keymap['global']['KEY_LEFT']  = "left()"
-keymap['global']['l']         = "right()"
+keymap['global']['h'] = "left()"
+keymap['global']['KEY_LEFT'] = "left()"
+keymap['global']['l'] = "right()"
 keymap['global']['KEY_RIGHT'] = "right()"
 
 --
@@ -70,7 +70,7 @@ keymap['global']['?'] = 'find(-1)'
 --
 -- Show keybindings: first of all global, then for a given key.
 --
-keymap['global']['H']     = "change_mode('keybinding')"
+keymap['global']['H'] = "change_mode('keybinding')"
 keymap['keybinding']['?'] = 'show_key_binding()'
 
 --
@@ -92,7 +92,7 @@ keymap['maildir']['t'] = 'Config:set( "maildir.limit", "today" )'
 -- Move to the next unread thing.
 --
 keymap['maildir']['N'] = 'next_unread()'
-keymap['index']['N']   = 'next_unread()'
+keymap['index']['N'] = 'next_unread()'
 
 
 --
@@ -142,15 +142,15 @@ keymap['attachment']['w'] = "view_mime_part( 'w3m -T text/html %s' )"
 --
 -- Actions relating to messages.
 --
-keymap['global']['c']  = 'Message.compose()'
+keymap['global']['c'] = 'Message.compose()'
 keymap['message']['r'] = 'Message.reply()'
-keymap['index']['r']   = 'Message.reply()'
+keymap['index']['r'] = 'Message.reply()'
 keymap['message']['f'] = 'Message.forward()'
-keymap['index']['f']   = 'Message.forward()'
+keymap['index']['f'] = 'Message.forward()'
 keymap['message']['d'] = 'Message.delete()'
-keymap['index']['d']   = 'Message:delete()'
+keymap['index']['d'] = 'Message:delete()'
 keymap['message']['s'] = 'Message.save()'
-keymap['index']['s']   = 'Message.save()'
+keymap['index']['s'] = 'Message.save()'
 
 keymap['message']['SPACE'] = 'next(10)'
 
@@ -189,9 +189,8 @@ keymap['index']['.n'] = 'Config:set( "index.limit", "new" )'
 keymap['index']['.t'] = 'Config:set( "index.limit", "today" )'
 
 
-
-keymap['global']['^A']     = 'Panel:append( "^A" )'
-keymap['global']['^A^B']   = 'Panel:append( "^A^B" )'
+keymap['global']['^A'] = 'Panel:append( "^A" )'
+keymap['global']['^A^B'] = 'Panel:append( "^A^B" )'
 keymap['global']['^A^B^C'] = 'Panel:append( "^A^B^C" )'
 
 
@@ -200,17 +199,16 @@ keymap['global']['^A^B^C'] = 'Panel:append( "^A^B^C" )'
 --
 -- 1000 should be enough for everybody.
 --
-for i=1,999 do
-   keymap['global'][tostring(i)] = 'jump(' .. i .. ');'
+for i = 1, 999 do
+  keymap['global'][tostring(i)] = 'jump(' .. i .. ');'
 end
-
 
 
 --
 -- Helper to lookup the binding of a given key, in the specified mode.
 --
-function lookup_key(mode, key)
-   return( keymap[mode][key] )
+function lookup_key (mode, key)
+  return keymap[mode][key]
 end
 
 

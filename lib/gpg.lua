@@ -36,39 +36,37 @@
 --   end
 --
 --
-_G['message_replace'] = function ( path )
+_G['message_replace'] = function (path)
 
-   --
-   --  If the file doesn't reference GPG then we're OK to return
-   -- early.
-   --
-   local found = false
+  --
+  --  If the file doesn't reference GPG then we're OK to return
+  -- early.
+  --
+  local found = false
 
-   --
-   -- We're going to invoke `mimegpg` and that will EITHER decrypt
-   -- OR verify.
-   --
-   -- So we need to accept both kinds of messages here.
-   --
-   for line in io.lines(path) do
-      if ( ( line == "-----BEGIN PGP SIGNATURE-----" ) or
-           ( line == "-----BEGIN PGP MESSAGE-----" )  )
-      then
-         found = true
-      end
-   end
+  --
+  -- We're going to invoke `mimegpg` and that will EITHER decrypt
+  -- OR verify.
+  --
+  -- So we need to accept both kinds of messages here.
+  --
+  for line in io.lines(path) do
+    if (line == "-----BEGIN PGP SIGNATURE-----") or (line == "-----BEGIN PGP MESSAGE-----") then
+      found = true
+    end
+  end
 
-   if ( found == false ) then
-      return ""
-   end
-   --
-   -- Do we have the binary we want?
-   --
-   if (string.path( "mimegpg" ) ~= "" ) then
-      local out = os.tmpname();
-      os.execute( "mimegpg -d -c -- --batch < " .. path .. " > " .. out )
-      return( out )
-   else
-      return ""
-   end
+  if found == false then
+    return ""
+  end
+  --
+  -- Do we have the binary we want?
+  --
+  if string.path "mimegpg" ~= "" then
+    local out = os.tmpname()
+    os.execute("mimegpg -d -c -- --batch < " .. path .. " > " .. out)
+    return out
+  else
+    return ""
+  end
 end

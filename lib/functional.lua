@@ -8,9 +8,9 @@ local Functional = {}
 --
 --  Call the given function on all members of the table.
 --
-function Functional.map(func, array)
+function Functional.map (func, array)
   local new_array = {}
-  for i,v in ipairs(array) do
+  for i, v in ipairs(array) do
     new_array[i] = func(v)
   end
   return new_array
@@ -28,10 +28,10 @@ end
 --
 --      m['mark_read](m)
 --
-function Functional.object_map(func, array)
+function Functional.object_map (func, array)
   local new_array = {}
-  for i,v in ipairs(array) do
-     new_array[i] = v[func](v)
+  for i, v in ipairs(array) do
+    new_array[i] = v[func](v)
   end
   return new_array
 end
@@ -40,10 +40,12 @@ end
 -- Return an array of the given elements, except for those
 -- who return true from the given function.
 --
-function Functional.filter(func, arr)
+function Functional.filter (func, arr)
   local new_array = {}
-  for i,v in ipairs(arr) do
-    if not func(v) then table.insert(new_array, v) end
+  for i, v in ipairs(arr) do
+    if not func(v) then
+      table.insert(new_array, v)
+    end
   end
   return new_array
 end
