@@ -528,12 +528,15 @@ end
 
 
 --
--- Compare two messages, based upon the create-time of their filenames.
+-- Compare two messages, based upon the modification-time of their filenames.
 --
 -- We make sure we compare numbers, as these might have been cached and
 -- saved as strings.
 --
 -- Invoked when `index.sort` is set to `file`.
+--
+-- NOTE: We use mtime here, rather than ctime, as the former won't change
+-- when a file is renamed. See #251 for details.
 --
 function compare_by_file (a, b)
   Progress:step "Sorting messages"
@@ -543,7 +546,7 @@ function compare_by_file (a, b)
   local a_time = cache:get("compare_by_file" .. a_path)
 
   if a_time == nil then
-    a_time = File:stat(a_path)['ctime']
+    a_time = File:stat(a_path)['mtime']
     cache:set("compare_by_file" .. a_path, a_time)
   end
 
@@ -552,7 +555,7 @@ function compare_by_file (a, b)
   local b_time = cache:get("compare_by_file" .. b_path)
 
   if b_time == nil then
-    b_time = File:stat(b_path)['ctime']
+    b_time = File:stat(b_path)['mtime']
     cache:set("compare_by_file" .. b_path, b_time)
   end
 
@@ -2569,8 +2572,6 @@ function message_view (msg)
   if not msg then
     return {
       "No message selected!",
-
-
     }
   end
 
