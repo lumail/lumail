@@ -22,6 +22,7 @@
 #include <iostream>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include "directory.h"
 #include "file.h"
@@ -296,6 +297,63 @@ void TestFileDirectory(CuTest * tc)
 
 
 /**
+ * Test renaming a file preserves the mtime.
+ */
+void TestFileRenameMtime(CuTest * tc)
+{
+#ifdef DEBUG
+    /**
+     * Generate a temporary filename.
+     */
+    char *t_src = strdup("srcXXXXXX");
+    char *src   = tmpnam(t_src);
+
+    /*
+     * Create the source file.
+     */
+    std::fstream fs;
+    fs.open(src,  std::fstream::out | std::fstream::app);
+    fs << "Gordon's alive!" << "\n";
+    fs.close();
+
+    CuAssertTrue(tc, CFile::exists(src));
+
+    /*
+     * Get the time of the file.
+     */
+    struct stat sb_orig;
+    stat(src, &sb_orig);
+
+    ::sleep(1);
+
+    /*
+     * Rename the file
+     */
+    std::string dst(src);
+    dst += ".new";
+    CFile::move(src, dst.c_str());
+
+    /*
+     * Get the time of the file.
+     */
+    struct stat sb_new;
+    stat(dst.c_str(), &sb_new);
+
+    /*
+     * Ensure the mtime/atime doesn't change in our copy.
+     */
+    CuAssertIntEquals(tc, sb_orig.st_mtime, sb_new.st_mtime);
+    CuAssertIntEquals(tc, sb_orig.st_atime, sb_new.st_atime);
+
+    /*
+     * Finally cleanup.
+     */
+    CFile::delete_file(dst);
+#endif
+}
+
+
+/**
  * Test CFile::is_maildir()
  */
 void TestFileMaildir(CuTest * tc)
@@ -371,5 +429,6 @@ file_getsuite()
     SUITE_ADD_TEST(suite, TestFileExists);
     SUITE_ADD_TEST(suite, TestFileMaildir);
     SUITE_ADD_TEST(suite, TestFileMove);
+    SUITE_ADD_TEST(suite, TestFileRenameMtime);
     return suite;
 }
