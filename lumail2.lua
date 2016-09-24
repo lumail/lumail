@@ -1890,7 +1890,6 @@ function save_mime_part ()
     if path == nil or path == "" then
       path = "attachment"
     end
-    path = "attachment"
 
     -- Prompt for local-path
     local output = Screen:get_line("Save to:", path)
