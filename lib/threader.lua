@@ -451,7 +451,7 @@ function Threader.sort (roots, cmp_func, promote_unread)
     local i = #roots
     while i > 0 do
       if roots[i]:has_unread() then
-        table.insert(roots, table.remove(i))
+        table.insert(roots, table.remove(roots, i))
       end
       i = i - 1
     end
