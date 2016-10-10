@@ -221,6 +221,31 @@ function Container.sort (self, cmp_func)
   table.sort(self.children, Container.cmp_wrapper(cmp_func))
 end
 
+
+--
+-- Recursivly get the minimum or maximum of a thread.
+--
+-- option must be "min" or "max".
+--
+function Container.get_min_or_max (self, cmp_func, option)
+  local c_cmp_func = Container.cmp_wrapper(cmp_func)
+  local res = self
+  if not self.message then
+    res = self.children[1]
+  end
+
+  for _,child in ipairs(self.children) do
+    local min_max = child:get_min_or_max(cmp_func, option)
+
+    if option == "min" then
+      res = c_cmp_func(res, min_max) and res or min_max
+    else
+      res = not c_cmp_func(res, min_max) and res or min_max
+    end
+  end
+  return res
+end
+
 --
 -- Get the references of a message.
 --
@@ -425,9 +450,12 @@ end
 -- If promote_unread is true threads with unread message
 -- will be placed below threads without unread messages.
 --
--- TODO Add option for root sort criteria: first, min, max
+-- Roots_order controlls the way the threads are sorted.
+-- "first": the value of the first not empty node is used
+-- "min":   the minimum value in a thread is used
+-- "max"    the maximum value in a thread is used
 --
-function Threader.sort (roots, cmp_func, promote_unread)
+function Threader.sort (roots, cmp_func, roots_order, promote_unread)
   for i, v in ipairs(roots) do
     v:sort(cmp_func)
   end
@@ -444,7 +472,24 @@ function Threader.sort (roots, cmp_func, promote_unread)
   end
 
   -- sort roots
-  table.sort(roots, root_cmp_wrapper)
+  if roots_order == "first" then
+    table.sort(roots, root_cmp_wrapper)
+  elseif roots_order == "min" or roots_order == "max" then
+    local look_up_table = {}
+
+    for _,r in ipairs(roots) do
+      local min_max = r:get_min_or_max(cmp_func, roots_order)
+      look_up_table[min_max] = r
+      table.insert(look_up_table, min_max)
+    end
+
+    table.sort(look_up_table, Container.cmp_wrapper(cmp_func))
+
+    roots = {}
+    for _,m in ipairs(look_up_table) do
+      table.insert(roots, look_up_table[m])
+    end
+  end
 
   -- promote threads with unread messages
   if promote_unread then

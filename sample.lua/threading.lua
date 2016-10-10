@@ -39,7 +39,7 @@ Global:select_maildir(maildir)
 local msgs = Global:current_messages()
 
 local roots = Threader.thread ( msgs )
-local roots = Threader.sort( roots, _G["compare_by_date"], false )
+local roots = Threader.sort( roots, _G["compare_by_date"], "max", false )
 
 -- Print threads and collect all threaded messages.
 for k,v in pairs(roots) do
