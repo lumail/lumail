@@ -58,6 +58,7 @@ Life = require "life"
 Stack = require "stack"
 keymap = require "keymap"
 Progress = require "progress_bar"
+Threader = require "threader"
 
 --
 -- Load libraries which directly poke functions into the global
@@ -520,34 +521,86 @@ function sort_messages (input)
   end
 
   --
-  -- If the method is `file` we'll invoke `compare_by_file`, etc.
+  -- Handle thread sorting and indentation
   --
-  local func = "compare_by_" .. method
-
-  --
-  -- Is the desired sort-method defined?
-  --
-  if _G[func] and (type(_G[func]) == "function") then
+  if method == "threads" then
+    local threads = Threader.thread(input)
 
     --
-    -- If there is record the time, do the sort, and record the time again
+    -- Signs used to indent threads
     --
-    local t_start = os.time()
-    table.sort(input, _G[func])
-    local t_end = os.time()
+    local threads_output_signs = Config.get_with_default("threads.output", " ;`;-> ")
+    threads_output_signs = threads_output_signs:gmatch("([^;]+)")
+    local threads_output_indent = threads_output_signs()
+    local threads_output_root = threads_output_signs()
+    local threads_output_sign = threads_output_signs()
 
-    -- Now show how long it took.
-    Panel:append("Sort method $[WHITE|BOLD]" .. method .. "$[WHITE] took $[WHITE|BOLD]" .. (t_end - t_start) .. "$[WHITE] seconds with " .. "$[WHITE|BOLD]" .. #input .. "$[WHITE] messages")
+    --
+    -- Sort threads
+    --
+    local sort_method = Config:get "threads.sort"
+    if sort_method and type(_G["compare_by_" .. sort_method]) == "function" then
+      threads = Threader.sort(threads, _G["compare_by_" .. sort_method], "max", true)
+    end
 
-    -- Before returning the result.
-    return input
+    --
+    -- helper to recursivly traverse the tree
+    --
+    local function thread_walk (c, col, i, i_col)
+      if c.message then
+        table.insert(col, c.message)
+        i_col[c.message] = i
+        if i == "" then
+          i = threads_output_root .. threads_output_sign
+        end
+        i = threads_output_indent .. i
+      else
+        i = threads_output_sign
+      end
+      for _, child in ipairs(c.children) do
+        thread_walk(child, col, i, i_col)
+      end
+    end
+
+    -- flat list of containers
+    local res = {}
+    -- this global list is used in index_view to indent each message
+    threads_indentation = {}
+
+    for _, c in ipairs(threads) do
+      thread_walk(c, res, "", threads_indentation)
+    end
+
+    return res
   else
     --
-    -- There is no defined `compare_by_$foo` function.
+    -- If the method is `file` we'll invoke `compare_by_file`, etc.
     --
-    error_msg("Unknown sorting method " .. method)
-    return input
+    local func = "compare_by_" .. method
+
+    --
+    -- Is the desired sort-method defined?
+    --
+    if _G[func] and (type(_G[func]) == "function") then
+
+      --
+      -- If there is record the time, do the sort, and record the time again
+      --
+      local t_start = os.time()
+      table.sort(input, _G[func])
+      local t_end = os.time()
+
+      -- Now show how long it took.
+      Panel:append("Sort method $[WHITE|BOLD]" .. method .. "$[WHITE] took $[WHITE|BOLD]" .. (t_end - t_start) .. "$[WHITE] seconds with " .. "$[WHITE|BOLD]" .. #input .. "$[WHITE] messages")
+
+    else
+      --
+      -- There is no defined `compare_by_$foo` function.
+      --
+      error_msg("Unknown sorting method " .. method)
+    end
   end
+  return input
 end
 
 
@@ -2097,7 +2150,7 @@ end
 -- This function formats a single message for display in index-mode,
 -- it is called by the `index_view()` function defined next.
 --
-function Message:format ()
+function Message:format (thread_indent)
   local path = self:path()
   local time = self:mtime()
 
@@ -2106,6 +2159,9 @@ function Message:format ()
     return (cache:get(path .. "message:" .. time))
   end
 
+  if not thread_indent then
+    thread_indent = ""
+  end
   local flags = self:flags()
   local subject = self:header "Subject"
   local sender = self:header "From"
@@ -2136,7 +2192,7 @@ function Message:format ()
   --
   -- Format this message for display
   --
-  local output = string.format("[%4s] %2s - %s - %s", flags, m_flags, sender, subject)
+  local output = string.format("[%4s] %2s - %-20s - %s%s", flags, m_flags, sender, thread_indent, subject)
 
   --
   -- If the message is unread then show it in the "unread" colour
@@ -2216,7 +2272,7 @@ function index_view ()
       end
     else
       -- Else format all entries
-      str = object:format()
+      str = object:format(threads_indentation[object])
     end
 
     table.insert(result, str)
