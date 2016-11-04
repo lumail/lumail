@@ -970,7 +970,7 @@ function Message.generate_signature ()
 
   -- strip anything except the address, by looking between: <>
   -- i.e. "Steve Kemp" <steve@example.com> becomes steve@example.com
-  sender = string.match(sender, "<(.*)>") or addr
+  sender = string.match(sender, "<(.*)>") or sender
 
   -- get the domain, lowercase it.
   domain = string.sub(sender, string.find(sender, "@") + 1)
