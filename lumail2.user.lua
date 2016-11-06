@@ -147,6 +147,27 @@ Config:set("cache.prefix", HOME .. "/.lumail2/cache")
 --             above method, but works on IMAP too.
 --  `subject` - Sort by subject.
 --  `from`    - Sort by sender.
+--  `threads` - Sort in threads.
+--
+--  If the sort method is set to `threads` two extra configuration values are used:
+--
+--    * `threads.output`: It specify the signs used to visually group a thread.
+--                        It must be in the format <indent>;<root-sign>;<sign>'.
+--
+--                        For example:
+--                        Config:set("threads.output", " ;`;-> "), which is the
+--                        default results in output like this:
+--
+--                        Message A
+--                        `-> Child A.A
+--                         `-> Child A.A.A
+--                        `-> Child A.B
+--                        Message B
+--                        -> Child C.A without available parent C
+--
+--    * `threads.sort`: It specified how the threads are ordered. All sorting
+--                      methods are valid except `threads`.
+--
 --
 sorting_method "file"
 
