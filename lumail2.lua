@@ -1377,7 +1377,7 @@ Date: ${date}
 
       -- Send the mail.
       os.execute(Config:get "global.mailer" .. " < " .. tmp)
-      Panel:append "Message sent"
+      Panel:append("$[RED]INFO: $[WHITE]Reply sent to " .. to)
 
       --
       -- Since we've sent the message we need to add the "(R)eplied"
