@@ -540,7 +540,7 @@ function sort_messages (input)
     --
     local sort_method = Config:get "threads.sort"
     if sort_method and type(_G["compare_by_" .. sort_method]) == "function" then
-      threads = Threader.sort(threads, _G["compare_by_" .. sort_method], "max", true)
+      threads = Threader.sort(threads, _G["compare_by_" .. sort_method], "max")
     end
 
     --

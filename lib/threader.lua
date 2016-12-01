@@ -447,15 +447,12 @@ end
 --
 -- Sort the threads with the given compare function.
 --
--- If promote_unread is true threads with unread message
--- will be placed below threads without unread messages.
---
 -- Roots_order controlls the way the threads are sorted.
 -- "first": the value of the first not empty node is used
 -- "min":   the minimum value in a thread is used
 -- "max"    the maximum value in a thread is used
 --
-function Threader.sort (roots, cmp_func, roots_order, promote_unread)
+function Threader.sort (roots, cmp_func, roots_order)
   for i, v in ipairs(roots) do
     v:sort(cmp_func)
   end
@@ -491,16 +488,6 @@ function Threader.sort (roots, cmp_func, roots_order, promote_unread)
     end
   end
 
-  -- promote threads with unread messages
-  if promote_unread then
-    local i = #roots
-    while i > 0 do
-      if roots[i]:has_unread() then
-        table.insert(roots, table.remove(roots, i))
-      end
-      i = i - 1
-    end
-  end
   return roots
 end
 
