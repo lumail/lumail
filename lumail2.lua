@@ -101,10 +101,34 @@ local global_msgs = nil
 
 
 --
--- This function is called when errors occur.
+--- Append an error message to the panel.
 --
-function on_error (msg)
-  Panel:append("$[RED]ERROR:$[WHITE] " .. msg)
+-- An error indicates that an operation wasn't completed correctly.
+--
+function error_msg (msg)
+  Panel:append("$[RED|BOLD]ERROR:$[WHITE] " .. msg)
+end
+
+--
+--- Append an warning message to the panel.
+--
+-- A warning indicates that an operation was completed correctly but not
+-- in the intended way. E.g. The deletion of all messages succeeded but
+-- there weren't any messages.
+--
+function warning_msg (msg)
+  Panel:append("$[RED]WARNING:$[WHITE] " .. msg)
+end
+
+--
+--- Append an info message to the panel.
+--
+-- An info is printed if information should be presented to the user, which
+-- he hasn't requested or as feedback on a operation he provoked.
+-- E.g. The time mail sorting took. That the user aborted the sending of a message.
+--
+function info_msg (msg)
+  Panel:append("$[YELLOW]INFO:$[WHITE] " .. msg)
 end
 
 
@@ -270,7 +294,7 @@ function Config.key_changed (name)
   -- Obsolete setting?
   --
   if name == "message.cache" then
-    Panel:append "$[RED]WARNING:$[WHITE]The configuration key 'message.cache' is obsolete!"
+    warning_msg "The configuration key 'message.cache' is obsolete!"
     return
   end
 
@@ -281,7 +305,7 @@ function Config.key_changed (name)
     local cache_prefix = Config:get "cache.prefix"
     local file = cache_prefix .. "/" .. Config:get "global.version"
     if file and File:exists(file) then
-      Panel:append("$[RED]INFO:$[WHITE] Loading cache " .. file)
+      info_msg ("Loading cache " .. file)
       cache:load(file)
     end
     return
@@ -402,7 +426,7 @@ function Message.at_point ()
     local msgs = get_messages()
 
     if not msgs then
-      Panel:append "There are no messages!"
+      error_msg "There are no messages!"
       return nil
     end
     return msgs[offset + 1]
@@ -521,7 +545,7 @@ function sort_messages (input)
     --
     -- There is no defined `compare_by_$foo` function.
     --
-    Panel:append("$[RED]WARNING:$[WHITE] Unknown sorting method " .. method)
+    error_msg("Unknown sorting method " .. method)
     return input
   end
 end
@@ -1069,7 +1093,7 @@ ${sig}
 
       -- Is GPG enabled?
       if GPG == nil then
-        Panel:append "$[RED]WARNING: $[WHITE]GPG support disabled!"
+        warning_msg "GPG support disabled!"
       else
         local gpg = Screen:prompt("(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB")
         if (gpg == "c") or (gpg == "C") then
@@ -1126,7 +1150,7 @@ ${sig}
 
       -- Send the mail.
       os.execute(Config:get "global.mailer" .. " < " .. tmp)
-      Panel:append("$[RED]INFO: $[WHITE]Message sent to " .. to)
+      info_msg ("Message sent to " .. to)
 
       --
       -- Now we need to save a copy of the outgoing message.
@@ -1138,7 +1162,7 @@ ${sig}
 
     if (a == 'n') or (a == 'N') then
       -- Abort
-      Panel:append "$[RED]WARNING: $[WHITE]Sending aborted!"
+      info_msg "Sending aborted!"
       run = false
     end
 
@@ -1171,7 +1195,7 @@ function Message.reply ()
 
   -- Failed to find a mesage?
   if not msg then
-    Panel:append "$[RED]ERROR: $[WHITE]Failed to find message!"
+    error_msg "Failed to find message!"
     return
   end
 
@@ -1320,7 +1344,7 @@ Date: ${date}
 
       -- Is GPG enabled?
       if GPG == nil then
-        Panel:append "$[RED]WARNING: $[WHITE]GPG support disabled!"
+        warning_msg "GPG support disabled!"
       else
         local gpg = Screen:prompt("(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB")
         if (gpg == "c") or (gpg == "C") then
@@ -1377,7 +1401,7 @@ Date: ${date}
 
       -- Send the mail.
       os.execute(Config:get "global.mailer" .. " < " .. tmp)
-      Panel:append("$[RED]INFO: $[WHITE]Reply sent to " .. to)
+      info_msg("Reply sent to " .. to)
 
       --
       -- Since we've sent the message we need to add the "(R)eplied"
@@ -1399,7 +1423,7 @@ Date: ${date}
 
     if (a == "n") or (a == "N") then
       -- Abort
-      Panel:append "Reply aborted!"
+      info_msg "Reply aborted!"
       run = false
     end
 
@@ -1463,7 +1487,7 @@ function Message.delete ()
     local msg = Global:current_message()
 
     if not msg then
-      Panel:append "Failed to find a message"
+      error_msg "Failed to find a message"
       return
     end
 
@@ -1488,14 +1512,14 @@ function Message.delete ()
     local offset = Config.get_with_default("index.current", 0)
     local msgs = get_messages()
     if not msgs then
-      Panel:append "There are no messages!"
+      warning_msg "There are no messages!"
       return
     end
 
     msg = msgs[offset + 1]
 
     if not msg then
-      Panel:append "Failed to find a message"
+      error_msg "Failed to find a message"
       return
     end
 
@@ -1524,7 +1548,7 @@ function Message.forward ()
 
   -- Failed to find a mesage?
   if not msg then
-    Panel:append "Failed to find message!"
+    error_msg "Failed to find message!"
     return
   end
 
@@ -1605,7 +1629,7 @@ Begin forwarded message.
 
       -- Is GPG enabled?
       if GPG == nil then
-        Panel:append "$[RED]WARNING: $[WHITE]GPG support disabled!"
+        warning_msg "GPG support disabled!"
       else
         local gpg = Screen:prompt("(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB")
         if (gpg == "c") or (gpg == "C") then
@@ -1662,7 +1686,7 @@ Begin forwarded message.
 
       -- Send the mail.
       os.execute(Config:get "global.mailer" .. " < " .. tmp)
-      Panel:append "Message sent"
+      info_msg "Message forwarded"
 
       --
       -- Now we need to save a copy of the outgoing message.
@@ -1674,7 +1698,7 @@ Begin forwarded message.
 
     if (a == "n") or (a == "N") then
       -- Abort
-      Panel:append "Forwarding aborted!"
+      info_msg "Forwarding aborted!"
       run = false
     end
 
@@ -1705,7 +1729,7 @@ function Message.toggle ()
   local msg = Message.at_point()
 
   if not msg then
-    Panel:append "Failed to find a message"
+    error_msg "Failed to find a message"
     return
   end
 
@@ -1729,7 +1753,7 @@ function Message.save ()
   local msg = Message.at_point()
 
   if not msg then
-    Panel:append "Failed to find a message"
+    error_msg "Failed to find a message"
     return
   end
 
@@ -1798,7 +1822,7 @@ function Message.save ()
   -- Nothing entered?  Abort.
   --
   if dest == nil or dest == "" then
-    Panel:append "Copy aborted"
+    info_msg "Copy aborted"
     return
   end
 
@@ -1812,9 +1836,9 @@ function Message.save ()
   local ret = dest_f:save_message(msg)
 
   if ret then
-    Panel:append("Message copied to " .. dest)
+    info_msg ("Message copied to " .. dest)
   else
-    Panel:append "Message save failed."
+    error_msg "Message save failed."
   end
 end
 
@@ -1895,7 +1919,7 @@ function save_mime_part ()
     local output = Screen:get_line("Save to:", path)
 
     if output == nil or output == "" then
-      Panel:append "Attachment saving aborted!"
+      info_msg "Attachment saving aborted!"
       return
     end
 
@@ -1907,7 +1931,7 @@ function save_mime_part ()
 
     f:close()
 
-    Panel:append("Wrote attachment to " .. output)
+    info_msg ("Wrote attachment to " .. output)
 
     return
   end
@@ -1942,7 +1966,7 @@ function view_mime_part (cmd)
   if found then
 
     if found['size'] == 0 then
-      Panel:append "This MIME-part is empty!"
+      error_msg "This MIME-part is empty!"
       return
     end
 
@@ -1972,7 +1996,7 @@ function view_mime_part (cmd)
     os.remove(tmp)
     return
   else
-    Panel:append "Failed to find MIME-part!"
+    error_msg "Failed to find MIME-part!"
   end
 end
 
@@ -2607,7 +2631,7 @@ function message_view (msg)
   }
 
   if full_headers ~= 0 then
-    Panel:append "Showing all headers"
+    info_msg "Showing all headers"
     --
     -- Show all headers
     --
@@ -2806,7 +2830,7 @@ function select ()
     local folder = folders[cur + 1]
 
     if folder == nil then
-      Panel:append "There is nothing to select!"
+      error_msg "There is nothing to select!"
       return
     end
 
@@ -2827,9 +2851,9 @@ function select ()
       --
       local size = #get_messages()
       if size == 1 then
-        Panel:append("Selected " .. folder:path() .. " with 1 message.")
+        info_msg ("Selected " .. folder:path() .. " with 1 message.")
       else
-        Panel:append("Selected " .. folder:path() .. " with " .. size .. " messages.")
+        info_msg ("Selected " .. folder:path() .. " with " .. size .. " messages.")
       end
     end
 
@@ -2853,7 +2877,7 @@ function select ()
     local msg = msgs[cur + 1]
 
     if msg == nil then
-      Panel:append "There is nothing to select!"
+      info_msg  "There is nothing to select!"
       return
     end
 
@@ -3050,7 +3074,7 @@ do
       count = count + 1
     end
 
-    Panel:append("No match found for $[WHITE|BOLD]" .. pattern)
+    warning_msg("No match found for $[WHITE|BOLD]" .. pattern)
   end
 end
 
@@ -3223,7 +3247,7 @@ function next_unread ()
     count = count + 1
   end
 
-  Panel:append "There are no new items to select"
+  warning_msg "There are no new items to select"
 end
 
 
@@ -3302,7 +3326,7 @@ function mark_all_read ()
   if msgs and #msgs > 0 then
     Fun.object_map('mark_read', msgs)
   else
-    Panel:append "There are no messages"
+    warning_msg "There are no messages"
   end
 end
 
@@ -3314,7 +3338,7 @@ function mark_all_new ()
   if msgs and #msgs > 0 then
     Fun.object_map('mark_unread', msgs)
   else
-    Panel:append "There are no messages"
+    warning_msg "There are no messages"
   end
 end
 
@@ -3326,7 +3350,7 @@ function delete_all ()
   if msgs and #msgs > 0 then
     Fun.map(Message.delete, msgs)
   else
-    Panel:append "There are no messages"
+    warning_msg "There are no messages"
   end
 end
 
@@ -3592,9 +3616,9 @@ local host = Net:hostname()
 local file = os.getenv "HOME" .. "/.lumail2/" .. host .. ".lua"
 if File:exists(file) then
   dofile(file)
-  Panel:append("$[RED]INFO:$[WHITE] Loaded" .. file)
+  info_msg("Loaded" .. file)
 else
-  Panel:append("$[RED]WARNING: $[WHITE]" .. file .. " not present")
+  warning_msg(file .. " not present")
 end
 
 
