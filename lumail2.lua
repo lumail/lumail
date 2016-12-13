@@ -522,11 +522,12 @@ function sort_messages (input)
 
   -- this global list is used in index_view to indent each message
   threads_indentation = {}
-  
+
   --
   -- Handle thread sorting and indentation
   --
   if method == "threads" then
+    local t_start = os.time()
     local threads = Threader.thread(input)
 
     --
@@ -571,6 +572,9 @@ function sort_messages (input)
     for _, c in ipairs(threads) do
       thread_walk(c, res, "", threads_indentation)
     end
+
+    local t_end = os.time()
+    Panel:append("Sort method $[WHITE|BOLD]" .. method .. "$[WHITE] took $[WHITE|BOLD]" .. (t_end - t_start) .. "$[WHITE] seconds with " .. "$[WHITE|BOLD]" .. #input .. "$[WHITE] messages")
 
     return res
   else
