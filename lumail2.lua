@@ -520,6 +520,9 @@ function sort_messages (input)
     return input
   end
 
+  -- this global list is used in index_view to indent each message
+  threads_indentation = {}
+  
   --
   -- Handle thread sorting and indentation
   --
@@ -564,8 +567,6 @@ function sort_messages (input)
 
     -- flat list of containers
     local res = {}
-    -- this global list is used in index_view to indent each message
-    threads_indentation = {}
 
     for _, c in ipairs(threads) do
       thread_walk(c, res, "", threads_indentation)
