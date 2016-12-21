@@ -1494,12 +1494,11 @@ function Message.delete ()
     -- Delete the message.
     msg:unlink()
 
-    -- Flush the cached message-list, and get the updated set.
-    global_msgs = nil
-    local msgs = get_messages()
+    -- Delete the message from the cache.
+    table.remove(global_msgs, cur + 1)
 
-    if cur <= (#msgs - 1) then
-      Global:select_message(msgs[cur + 1])
+    if cur <= (#global_msgs - 1) then
+      Global:select_message(global_msgs[cur + 1])
       Config:set("index.current", cur)
     end
     return
@@ -1526,14 +1525,15 @@ function Message.delete ()
     -- delete it
     msg:unlink()
 
+    -- delete message from cache
+    table.remove(global_msgs, offset + 1)
+
     -- if deleting the last message move the selection down.
     if offset >= (#msgs - 1) then
       offset = offset - 1
       Config:set("index.current", offset)
     end
 
-    -- Flush the cached message-list
-    global_msgs = nil
   end
 end
 
