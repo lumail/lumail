@@ -1468,72 +1468,45 @@ end
 --
 function Message.delete ()
 
-  --
-  -- If we're in message-mode then we can get the current-message
-  -- directly.
-  --
-  -- If instead we're in index-mode then we'll need to select the message
-  -- under the cursor to proceed.
-  --
-  local mode = Config:get "global.mode"
+  -- The Message we want to delete.
+  local msg = Message.at_point()
 
-  if mode == "message" then
-
-    -- Get the current offset and the number of messages.
-    local cur = Config.get_with_default("index.current", 0)
-    local max = Config:get "index.max"
-
-    -- Get the message.
-    local msg = Global:current_message()
-
-    if not msg then
-      error_msg "Failed to find a message"
-      return
-    end
-
-    -- Delete the message.
-    msg:unlink()
-
-    -- Flush the cached message-list, and get the updated set.
-    global_msgs = nil
-    local msgs = get_messages()
-
-    if cur <= (#msgs - 1) then
-      Global:select_message(msgs[cur + 1])
-      Config:set("index.current", cur)
-    end
+  -- If there is no message we have nothing to do.
+  if not msg then
+    error_msg "Failed to find message!"
     return
   end
 
-  if mode == "index" then
+  --
+  -- WARNING: index.current is 0 based!
+  --
+  local msg_index = Config.get_with_default("index.current", 0) + 1
 
-    -- Get the list of messages, and the current offset
-    -- that'll let us find the message.
-    local offset = Config.get_with_default("index.current", 0)
-    local msgs = get_messages()
-    if not msgs then
-      warning_msg "There are no messages!"
-      return
+  -- Move message to trash.
+  local trash = Config:get "global.trash-mail"
+  if trash and trash ~= Global:current_maildir():path() then
+    Message.save(trash)
+  end
+
+  -- Delete the message.
+  msg:unlink()
+
+  -- Delete the message from the cache.
+  table.remove(global_msgs, msg_index)
+
+  local mode = Config:get "global.mode"
+
+  if mode == "message" then
+    -- select next message
+    if msg_index < (#global_msgs) then
+      Global:select_message(global_msgs[msg_index + 1])
     end
 
-    msg = msgs[offset + 1]
-
-    if not msg then
-      error_msg "Failed to find a message"
-      return
-    end
-
-    -- delete it
-    msg:unlink()
-
+  elseif mode == "index" then
     -- if deleting the last message move the selection down.
-    if offset >= (#msgs - 1) then
-      offset = offset - 1
-      Config:set("index.current", offset)
+    if msg_index >= (#global_msgs - 1) then
+      Config:set("index.current", msg_index - 2)
     end
-
-    -- Flush the cached message-list
-    global_msgs = nil
   end
 end
 
@@ -1747,7 +1720,7 @@ end
 --
 -- Save a copy of the current message elsehwere.
 --
-function Message.save ()
+function Message.save (dest)
 
   -- The message we're going to work on.
   local msg = Message.at_point()
@@ -1776,56 +1749,58 @@ function Message.save ()
     imap = false
   end
 
-
   --
-  -- This will be the destination the user entered.
+  -- Is there a parameter ?
   --
-  local dest = nil
-
-
-  --
-  -- Prompt differently based on which storage is in-use.
-  --
-  if imap then
+  if not dest then
+    --
+    -- This will be the destination the user entered.
+    --
+    local dest = nil
 
     --
-    -- Prompt for the IMAP folder.
+    -- Prompt differently based on which storage is in-use.
     --
-    dest = Screen:get_line "Copy to IMAP folder:"
+    if imap then
 
-  else
-
-    -- Get the default destination
-    --
-    local prefix = Config:get "maildir.prefix"
-    local location = os.getenv "HOME"
-
-    --
-    -- If we have a prefix which is a string then use it.
-    --
-    if type(prefix) == "string" then
-      location = prefix
-    elseif type(prefix) == "table" then
       --
-      -- If we have multiple values set then use the first.
+      -- Prompt for the IMAP folder.
       --
-      location = prefix[1]
+      dest = Screen:get_line "Copy to IMAP folder:"
+
+    else
+
+      -- Get the default destination
+      --
+      local prefix = Config:get "maildir.prefix"
+      local location = os.getenv "HOME"
+
+      --
+      -- If we have a prefix which is a string then use it.
+      --
+      if type(prefix) == "string" then
+        location = prefix
+      elseif type(prefix) == "table" then
+        --
+        -- If we have multiple values set then use the first.
+        --
+        location = prefix[1]
+      end
+
+      --
+      -- Prompt for destination
+      --
+      dest = Screen:get_line("Copy to local maildir:", location)
     end
 
     --
-    -- Prompt for destination
+    -- Nothing entered?  Abort.
     --
-    dest = Screen:get_line("Copy to local maildir:", location)
+    if dest == nil or dest == "" then
+      info_msg "Copy aborted"
+      return
+    end
   end
-
-  --
-  -- Nothing entered?  Abort.
-  --
-  if dest == nil or dest == "" then
-    info_msg "Copy aborted"
-    return
-  end
-
   --
   -- Create a new helper for the destination
   --
