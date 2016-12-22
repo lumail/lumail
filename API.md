@@ -124,6 +124,8 @@ We have a number of variables which are special, the most important ones are:
     * This holds the name of the currently active display-mode
 * `global.sent-mail`
     * This is the Maildir to which outgoing messages are saved.
+* `global.trash-mail`
+    * This is the Maildir to which deleted messages are saved.
 
 For each mode that has a display there will be a `$mode.max` to store the
 count of the objects, as well as `$mode.current`.

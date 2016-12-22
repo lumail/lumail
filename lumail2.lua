@@ -1541,7 +1541,7 @@ function Message.delete ()
   local msg_index = Config.get_with_default("index.current", 0) + 1
 
   -- Move message to trash.
-  local trash = Config:get "global.trash-mail"
+  local trash = Config.get_with_default("global.trash-mail",nil)
   if trash and trash ~= Global:current_maildir():path() then
     Message.save(trash)
   end
@@ -1552,7 +1552,7 @@ function Message.delete ()
   -- Delete the message from the cache.
   table.remove(global_msgs, msg_index)
 
-  local mode = Config:get "global.mode"
+  local mode = Config:get("global.mode")
 
   if mode == "message" then
     -- select next message
