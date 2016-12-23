@@ -1556,14 +1556,14 @@ function Message.delete ()
 
   if mode == "message" then
     -- select next message
-    if msg_index < (#global_msgs) then
-      Global:select_message(global_msgs[msg_index + 1])
+    if msg_index <= (#global_msgs) then
+      Global:select_message(global_msgs[msg_index])
     end
 
   elseif mode == "index" then
     -- if deleting the last message move the selection down.
-    if msg_index >= (#global_msgs - 1) then
-      Config:set("index.current", msg_index - 2)
+    if msg_index >= (#global_msgs) then
+      Config:set("index.current", #global_msgs - 1)
     end
   end
 end
