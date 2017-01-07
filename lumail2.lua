@@ -1305,19 +1305,29 @@ Cc: ${cc}
 From: ${from}
 Subject: ${subject}
 Message-ID: ${msgid}
+In-Reply-To: ${source_id}
 Date: ${date}
 
 ]]
+
+  --
+  -- Get the Message-ID of the message we're replying to.
+  --
+  -- This should be <bla.blah.blah> but I've seen some horrors.
+  --
+  local src_id = msg:header( "Message-ID" )
+  if ( src_id ) then
+     src_id = string.match(src_id, "(<.*>)") or src_id
+  end
 
   file:write(string.interp(header, {
         to = to,
         cc = cc,
         from = Config:get "global.sender",
         subject = subject,
+        source_id = src_id,
         msgid = Message:generate_message_id(),
         date = os.date "%a, %d %b %Y %H:%M:%S %z",
-
-
       }))
 
   --
