@@ -1304,9 +1304,10 @@ function Message.reply ()
 Cc: ${cc}
 From: ${from}
 Subject: ${subject}
+Date: ${date}
 Message-ID: ${msgid}
 In-Reply-To: ${source_id}
-Date: ${date}
+References: ${references}
 
 ]]
 
@@ -1315,10 +1316,21 @@ Date: ${date}
   --
   -- This should be <bla.blah.blah> but I've seen some horrors.
   --
-  local src_id = msg:header( "Message-ID" )
+  local src_id     = msg:header( "Message-ID" )
+  local references = msg:header( "References" ) or ""
   if ( src_id ) then
      src_id = string.match(src_id, "(<.*>)") or src_id
+
+     -- Only referencing the single message
+     if ( references == "" ) then
+        references = src_id
+     else
+        -- Append the source to the existing references.
+        references = references .. " " .. src_id
+     end
   end
+
+
 
   file:write(string.interp(header, {
         to = to,
@@ -1326,6 +1338,7 @@ Date: ${date}
         from = Config:get "global.sender",
         subject = subject,
         source_id = src_id,
+        references = references,
         msgid = Message:generate_message_id(),
         date = os.date "%a, %d %b %Y %H:%M:%S %z",
       }))
