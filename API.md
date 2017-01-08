@@ -105,7 +105,6 @@ We have a number of variables which are special, the most important ones are:
 * `maildir.format`
     * Controls how maildirs are drawn on the screen.  This defaults to showing the unread & total message-counts, along with the path:
         * `"[${05|unread}/${05|total}] - ${path}"`
-    * Maildirs are (recursively) found from here.
 * `index.fast`
     * If this is set to 1 we'll only format messages which are _visible_ when opening folders.
     * This is a speed optimization for large Maildirs, or when using IMAP.
