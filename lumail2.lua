@@ -2319,7 +2319,7 @@ function index_view ()
       -- Only show the message if it will fit on the screen
       --
       if (offset >= min) and (offset < max) then
-        str = object:format()
+        str = object:format(threads_indentation[object])
       else
         str = "INVISIBLE - Outside the viewport!"
       end
