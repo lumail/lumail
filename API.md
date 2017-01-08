@@ -102,9 +102,16 @@ We have a number of variables which are special, the most important ones are:
 * `maildir.prefix`
     * This holds the prefix to the maildir hierarchy.
     * Maildirs are (recursively) found from here.
+* `maildir.format`
+    * Controls how maildirs are drawn on the screen.  This defaults to showing the unread & total message-counts, along with the path:
+        * `"[${05|unread}/${05|total}] - ${path}"`
+    * Maildirs are (recursively) found from here.
 * `index.fast`
     * If this is set to 1 we'll only format messages which are _visible_ when opening folders.
     * This is a speed optimization for large Maildirs, or when using IMAP.
+* `index.format`
+    * This controls how messages are listed in the index-view, and defaults to including the message flags, sender details, and subject:
+       * "`[${4|flags}] ${2|message_flags} - ${20|sender} - ${indent}${subject}`"
 * `index.sort`
     * The method to sort messages by: `date`, `file`, `from`, `none`, `subject` or `threads` at this time.
     * Sorting is documented below.
