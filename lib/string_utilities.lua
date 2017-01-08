@@ -44,10 +44,17 @@ _G['string']['interp'] = function (s, tab)
 
                      -- If so
                      if ( len and name ) then
-                        -- Get the value.
-                        local val = tab[name] or name
 
-                        -- Ensure our size is a number.
+                        -- Get the value - as a string.
+                        local val = tostring(tab[name] or name)
+
+                        -- Are we zero-padding, or space-padding?
+                        zero = false
+                        if ( len:sub(0,1) == "0" ) then
+                           zero = 1
+                        end
+
+                        -- The length of the field.
                         len = tonumber(len)
 
                         -- If the value is too long, truncate.
@@ -56,7 +63,11 @@ _G['string']['interp'] = function (s, tab)
                         else
                            -- Otherwise pad.
                            while( val:len() < len ) do
-                              val = " " .. val
+                              if ( zero ) then
+                                 val = "0" .. val
+                              else
+                                 val = " " .. val
+                              end
                            end
                         end
                         return val

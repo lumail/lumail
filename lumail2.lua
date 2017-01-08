@@ -2231,7 +2231,6 @@ function Message:format (thread_indent)
   --
   -- The format-string we use for display.
   --
-  --
   local format = Config.get_with_default( "index.format",
                                           "[${4|flags}] ${2|message_flags} - ${20|sender} - ${indent}${subject}" )
 
@@ -2583,7 +2582,19 @@ function Maildir:format ()
     end
   end
 
-  local output = string.format("[%05d / %05d] - %s", unread, total, path)
+  --
+  -- The format-string we use for display.
+  --
+  local format = Config.get_with_default( "maildir.format",
+                                          "[${05|unread}/${05|total}] - ${path}" )
+
+  --
+  -- Format this maildir for display
+  --
+  local output = (string.interp(format, {
+                                   total  = total,
+                                   unread = unread,
+                                   path   = path } ) )
 
   --
   -- If there are unread messages then show it in the unread-colour.
