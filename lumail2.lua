@@ -2190,9 +2190,20 @@ function Message:format (thread_indent)
   if not thread_indent then
     thread_indent = ""
   end
-  local flags = self:flags()
+
+  --
+  -- Basics from the message
+  --
+  local flags   = self:flags()
   local subject = self:header "Subject"
-  local sender = self:header "From"
+  local sender  = self:header "From"
+
+  --
+  -- Try to parse out sender into "email" + "name".
+  --
+  local email   = string.match(sender, "<(.*)>") or sender
+  local name    = string.gsub(sender,"<(.*)>", "")
+  if ( name:len() < 1 ) then name = sender end
 
   --
   -- Get the message-flags - these flags are informational, and
@@ -2218,9 +2229,24 @@ function Message:format (thread_indent)
 
 
   --
+  -- The format-string we use for display.
+  --
+  --
+  local format = Config.get_with_default( "index.format",
+                                          "[${4|flags}] ${2|message_flags} - ${20|sender} - ${indent}${subject}" )
+
+  --
   -- Format this message for display
   --
-  local output = string.format("[%4s] %2s - %-20s - %s%s", flags, m_flags, sender, thread_indent, subject)
+  local output = (string.interp(format, {
+                                   flags         = flags,
+                                   message_flags = m_flags,
+                                   sender        = sender,
+                                   email         = email,
+                                   name          = name,
+                                   indent        = thread_indent,
+                                   subject       = subject
+                                        }))
 
   --
   -- If the message is unread then show it in the "unread" colour
