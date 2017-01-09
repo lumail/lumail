@@ -2235,6 +2235,17 @@ function Message:format (thread_indent,index)
   if ( name:len() < 1 ) then name = sender end
 
   --
+  -- The user might have a filter-function to cleanup
+  -- the name of the sender.
+  --
+  -- (This is mostly to handle transforming a string
+  -- such as "Steve Kemp (via Twitter)" into "Steve Kemp")
+  --
+  if type(on_cleanup_name) == "function" then
+     name = on_cleanup_name(name)
+  end
+
+  --
   -- Get the message-flags - these flags are informational, and
   -- unrelated to the flags a message might have.
   --
