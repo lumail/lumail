@@ -2161,12 +2161,28 @@ function attachment_view ()
     }
   end
 
+  --
+  -- Parse the mime-types to a table
+  --
   local out = mimeparts2table(msg)
+
+  --
+  -- Fetch the format-string
+  --
+  local format = Config.get_with_default( "attachment.format",
+                                          "[${4|number}] ${6|size} - ${25|type} - ${filename}" )
+
 
   for i, o in ipairs(out) do
 
-    local tmp = string.format("%3d| %6d - %25s [%30s]", o["count"] + 1, o["size"] or "", o["type"], o["filename"] or "")
-    table.insert(result, tmp)
+     local output = (string.interp(format, {
+                                      number = o["count"] + 1,
+                                      size   = o["size"] or "",
+                                      type   = o["type"] or "",
+                                      filename = o["filename"] or ""
+                                           }
+                                  ))
+     table.insert(result, output)
   end
 
   result = add_colours(result, 'attachment')
