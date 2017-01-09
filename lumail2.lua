@@ -2198,9 +2198,20 @@ function Message:format (thread_indent,index)
   local path = self:path()
   local time = self:mtime()
 
+  --
+  -- Cache key is conditional on the sort-method,
+  -- the index-format, and the path of the message.
+  --
+  -- That means changing any of them will flush the cached value.
+  --
+  local ckey = path .. "message:" ..
+     Config.get_with_default( "index.sort", "index.sort" ) ..
+     Config.get_with_default( "index.format" , "index.format") ..
+     time
+
   -- Do we have this cached?  If so return it
-  if cache:get(path .. "message:" .. time) then
-    return (cache:get(path .. "message:" .. time))
+  if cache:get(ckey) then
+     return (cache:get(ckey))
   end
 
   if not thread_indent then
@@ -2276,7 +2287,7 @@ function Message:format (thread_indent,index)
   end
 
   -- Update the cache.
-  cache:set(path .. "message:" .. time, output)
+  cache:set(ckey, output)
 
   return output
 end
@@ -2368,7 +2379,6 @@ function keybinding_view ()
   -- The output we'll display.
   --
   output = {}
-
 
   --
   -- If we have globals
@@ -2558,9 +2568,22 @@ function Maildir:format (index)
     src = src .. Config.get_with_default("imap.username", "username")
   end
 
+  --
+  -- The cache-key is based upon
+  --
+  --   1.   The type of folder (maildir vs. IMAP)
+  --   1.5. The value of `maildir.truncate`.
+  --   2.   The path to the folder.
+  --   3.   The format-string.
+  --   4.   The mtime of the directory.
+  --
+  -- This means if any of them change we flush the cache
+  --
+  local ckey = path .. "maildir:" .. trunc .. src .. time .. Config.get_with_default( "maildir.format", "maildir.format" )
+
   -- Do we have this cached?  If so return it
-  if cache:get(path .. "maildir:" .. trunc .. src .. time) then
-    return (cache:get(path .. "maildir:" .. trunc .. src .. time))
+  if cache:get(ckey) then
+    return (cache:get(ckey))
   end
 
   local total = self:total_messages()
@@ -2626,7 +2649,7 @@ function Maildir:format (index)
   end
 
   -- update the cache
-  cache:set(path .. "maildir:" .. trunc .. src .. time, output)
+  cache:set(ckey, output)
 
   return output
 end
