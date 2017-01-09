@@ -128,7 +128,7 @@ if not Directory:exists(HOME .. "/.lumail2/history") then
 end
 
 --
--- Write our history to ~/.lumail2/history/$HOSTNAME
+-- Write our history to ~/.lumail2/history/$HOSTNAME.
 --
 Config:set("global.history", HOME .. "/.lumail2/history/" .. Net:hostname())
 
@@ -219,16 +219,12 @@ end
 colour_table['maildir'] = {
   ['Automated'] = 'yellow|underline',
   ['lists'] = 'green|bold',
-
-
 }
 
 -- Setup our colours - for index-mode
 colour_table['index'] = {
   ['Steve'] = 'blue',
   ['Ian'] = 'blue',
-
-
 }
 
 -- Setup our colours - for a message
@@ -245,6 +241,61 @@ colour_table['message'] = {
   ['^>%s*>%s*'] = 'green',
   ['^>%s*[^>%s]'] = 'blue',
   ['^>%s$'] = 'blue',
-
-
 }
+
+
+--
+-- Finally we might want to tweak the way that mail-folders, message-lists
+-- and attachment-views are displayed.
+--
+-- Each of these views uses a simple template which is expanded for each
+-- entry.  The defaults are set in the main `lumail2.lua` configuration file
+-- and are as follows.
+--
+--
+-- Attachment mode - shows attachments for messages:
+--
+--  Config:set( "attachment.format",
+--              "[${4|number}] ${6|size} - ${25|type} - ${filename}" )
+--
+--  Options include:
+--
+--   number      -> The attachment number.
+--   size        -> The attachment size, in bytes.
+--   type        -> The MIME-type of the attachment.
+--   filename    -> The attachment filename.
+--
+--
+-- Index mode - which shows the list of messages:
+--
+--  Config:set( "index.format",
+--             "[${4|flags}] ${2|message_flags} - ${20|sender} - ${indent}${subject}" )
+--
+--  Options include:
+--
+--   date          -> The message date.
+--   flags         -> The local flags.
+--   id            -> Message-ID.
+--   indent        -> Nesting character(s) for the display of threads.
+--   message_flags -> The message-content flags (has attachment? is signed?).
+--   number        -> The message number.
+--   sender        -> The sender of the message: "Bob Smith <bob@example.com>"
+--     email         -> bob@example.com
+--     name          -> Bob Smith
+--   subject       -> The message subject.
+--
+--
+--  Maildir mode - the list of folders.
+--
+--   Config:set( "maildir.format",
+--               "${number} [${05|unread}/${05|total}] - ${path}" )
+--
+--
+--  Options include:
+--
+--     number  -> The folder number
+--     path    -> The path the folder represents.
+--     total   -> The total number of messages in the folder.
+--     unread  -> The number of unread messages in the folder.
+--
+--
