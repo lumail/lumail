@@ -51,6 +51,9 @@ when some actions take place:
      * Called when the client is terminating.
 * `on_folder_changed( folder )`
      * This is called when a new folder is opened.
+* `on_cleanup_name(name)`
+     * If the `index.format` variable is used to display the name of a messages' sender, rather than the contents of the `From:` header, then this function can cleanup that name.
+     * For example to remove `(via Twitter)` or similar strings from that name.
 * `on_message_changed( msg )`
      * This is called when a new message is opened.
 
