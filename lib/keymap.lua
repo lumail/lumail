@@ -157,7 +157,7 @@ keymap['index']['r'] = 'Message.reply()'
 keymap['message']['f'] = 'Message.forward()'
 keymap['index']['f'] = 'Message.forward()'
 keymap['message']['d'] = 'Message.delete()'
-keymap['index']['d'] = 'Message:delete()'
+keymap['index']['d'] = 'Message.delete()'
 keymap['message']['s'] = 'Message.save()'
 keymap['index']['s'] = 'Message.save()'
 
