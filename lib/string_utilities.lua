@@ -3,7 +3,7 @@
 -- Does the specified string end with the given string?
 --
 _G['string']['ends'] = function (String, End)
-   return End == '' or string.sub(String, -string.len(End)) == End
+  return End == '' or string.sub(String, -string.len(End)) == End
 end
 
 
@@ -35,60 +35,75 @@ end
 --
 --
 _G['string']['interp'] = function (s, tab)
-   return (s:gsub('($%b{})', function (key)
-                     -- Get the name of the table-key we'll lookup
-                     key = key:sub(3,-2)
+  if not s then
+    error "Format string must be non-nil"
+  end
 
-                     -- Does this key have a length restriction?
-                     local len,name = string.match(key , '^([0-9]+)|(.*)$' )
+  local left_pad = true
+  local char_pad = " "
 
-                     -- If so
-                     if ( len and name ) then
+  return (s:gsub('($%b{})', function (key)
+      local orig = key
 
-                        -- Get the value - as a string.
-                        local val = tostring(tab[name] or name)
+      -- Get the name of the table-key we'll lookup
+      key = key:sub(3, -2)
 
-                        -- Are we zero-padding, or space-padding?
-                        zero = false
-                        if ( len:sub(0,1) == "0" ) then
-                           zero = 1
-                        end
+      -- Does this key have a length/padding restriction?
+      local len, name = string.match(key, '^([0-9]+)|(.*)$')
+      local name2, len2 = string.match(key, '^(.*)|([0-9]+)$')
 
-                        -- The length of the field.
-                        len = tonumber(len)
+      if len2 and name2 then
+        len = len2
+        name = name2
+        left_pad = false
+      end
 
-                        -- If the value is too long, truncate.
-                        if ( val:len() > len ) then
-                           val = val:sub(0,len)
-                        else
-                           -- Otherwise pad.
-                           while( val:len() < len ) do
-                              if ( zero ) then
-                                 val = "0" .. val
-                              else
-                                 val = " " .. val
-                              end
-                           end
-                        end
-                        return val
-                     else
-                        return tab[key] or key
-                     end
-                             end))
+      -- If so
+      if len and name then
+
+        -- Get the value - as a string.
+        local val = tostring(tab[name] or orig)
+
+        -- Are we zero-padding instead of space-padding?
+        if len:sub(0, 1) == "0" then
+          char_pad = "0"
+        end
+
+        -- The length of the field.
+        len = tonumber(len)
+
+        -- If the value is too long, truncate.
+        if val:len() > len then
+          val = val:sub(0, len)
+        else
+          -- Otherwise pad.
+          while val:len() < len do
+            if left_pad then
+              val = char_pad .. val
+            else
+              val = val .. char_pad
+            end
+          end
+        end
+        return val
+      else
+        return tab[key] or orig
+      end
+    end))
 end
 
 --
 -- Find the given binary on the $PATH, and return the full filename.
 --
 _G['string']['path'] = function (file)
-   local path = os.getenv "PATH"
-   local paths = string.split(path, ":;")
-   for i, o in pairs(paths) do
-      if File:exists(o .. "/" .. file) then
-         return (o .. "/" .. file)
-      end
-   end
-   return ""
+  local path = os.getenv "PATH"
+  local paths = string.split(path, ":;")
+  for i, o in pairs(paths) do
+    if File:exists(o .. "/" .. file) then
+      return (o .. "/" .. file)
+    end
+  end
+  return ""
 end
 
 
@@ -96,7 +111,10 @@ end
 -- Strip leading/trailing whitespace from the given string.
 --
 _G['string']['trim'] = function (s)
-   return string.match(s, '^()%s*$') and '' or string.match(s, '^%s*(.*%S)')
+  if not s then
+    error "The supplied argument must be non-nil"
+  end
+  return string.match(s, '^()%s*$') and '' or string.match(s, '^%s*(.*%S)')
 end
 
 
@@ -106,13 +124,18 @@ end
 -- This is used in some drawing modes.
 --
 _G['string']['to_table'] = function (str)
-   local t = {}
-   local function helper (line)
-      table.insert(t, line)
-      return ""
-   end
-   helper((str:gsub("(.-)\r?\n", helper)))
-   return t
+
+  if not str then
+    error "The supplied argument must be non-nil"
+  end
+
+  local t = {}
+  local function helper (line)
+    table.insert(t, line)
+    return ""
+  end
+  helper((str:gsub("(.-)\r?\n", helper)))
+  return t
 end
 
 
@@ -121,10 +144,14 @@ end
 -- table.
 --
 _G['string']['split'] = function (str, sep)
-   local result = {}
-   local regex = ("([^%s]+)"):format(sep)
-   for each in str:gmatch(regex) do
-      table.insert(result, each)
-   end
-   return result
+  if (not str) or (not sep) then
+    error "The supplied arguments must be non-nil"
+  end
+
+  local result = {}
+  local regex = ("([^%s]+)"):format(sep)
+  for each in str:gmatch(regex) do
+    table.insert(result, each)
+  end
+  return result
 end
