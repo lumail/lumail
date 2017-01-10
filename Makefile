@@ -210,6 +210,12 @@ serve_docs: docs
 test: lumail2
 	./lumail2 --test
 
+#
+# Run our lua test-cases
+#
+test-lua:
+	for i in t/test*.lua; do ${LVER} $$i -v ; done
+
 
 #
 #  Install the binary, and our luarocks.d directory
