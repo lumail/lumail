@@ -93,11 +93,17 @@ Testing
 
 Regrettably much of our code is not tested in a systematic fashion.
 
-However there is some test-code which is built into our main binary,
-to invoke it please run:
+However there are some test-cases built into our main binary, to invoke
+them please run:
 
-    $ lumail2 --test
+    $ make test
 
 Testing is accomplished via the CuTest library, as something I picked
 on a whim many years ago and stuck with.  The implementation of our
 tests is stored in files with a `_test.cc` suffix.
+
+There are also some (minimal) test-cases of our Lua code, which are
+driven by the [luaunit](https://github.com/bluebird75/luaunit)-framework,
+to execute these test-cases please run:
+
+    $ make test-lua
