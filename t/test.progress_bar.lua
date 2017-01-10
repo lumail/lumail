@@ -27,7 +27,6 @@ end
 local line = ""
 function Screen:draw( x, y, txt, refresh )
    line = txt
---   print("DREW: " .. line)
    return true
 end
 
@@ -120,6 +119,59 @@ function TestProgressBar:test_show_percent ()
    luaunit.assertEquals( arrow, Screen:width() / 2 )
 
 end
+
+--
+-- Screen:draw just updates a buffer with the contents of
+-- the text we're supposed to have drawn.  Here we test that
+-- we can retrieve what we drew, in the tick-case
+--
+function TestProgressBar:test_step ()
+
+   -- If no string is given the ticker just draws a blank line.
+   Progress:step()
+
+   --
+   -- Test that the output was 80 spaces
+   --
+   local s80 = ""
+   while( #s80 < Screen:width() ) do
+      s80 = s80 .. " "
+   end
+   luaunit.assertEquals(line, s80)
+
+   --
+   -- Now we need to ensure that we receive some updates
+   -- if we draw more than 500 times.
+   --
+   local start        = line
+   local cur          = ""
+   local update_count = 0
+
+   local i = 0
+   while( i < 1000 )do
+      Progress:step( "Progress .." )
+      if ( line ~= cur ) then
+         update_count = update_count + 1
+         cur = line
+      end
+      i = i + 1
+   end
+
+   --
+   -- At this point we should have "stepped" more than
+   -- once, so the current buffer will be different to the
+   -- starting buffer
+   --
+   luaunit.assertNotEquals(line, start)
+
+   --
+   -- We know the ticker updates every 250 updates,
+   -- so after 1000 steps we'll have seen four updates.
+   --
+   luaunit.assertTrue(update_count ==4)
+
+end
+
 
 --
 -- Run the tests
