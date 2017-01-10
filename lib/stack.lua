@@ -16,6 +16,10 @@ function Stack.push (self, value)
   local size = #self.stack
   self.stack[size + 1] = value
 end
+function Stack.size (self)
+  local size = #self.stack
+  return size
+end
 function Stack.pop (self)
   local size = #self.stack
   if size <= 0 then
