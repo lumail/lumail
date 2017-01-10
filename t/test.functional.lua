@@ -38,6 +38,8 @@ TestMap = {}
 function TestMap:test_basics ()
   luaunit.assertIsFunction(FUN.map)
 
+  luaunit.assertErrorMsgContains("must be a function", FUN.map, nil)
+
   -- Our starting table.
   local input = {1,2,3,4,5}
 
@@ -62,6 +64,7 @@ TestObjectMap = {}
 
 function TestObjectMap:test_length ()
    luaunit.assertIsFunction(FUN.object_map)
+   luaunit.assertErrorMsgContains("must be a string", FUN.object_map, nil)
 
    local input = {"one", "two", "three", "four", "five" }
    local output = FUN.object_map( "len", input )
@@ -105,6 +108,7 @@ TestFilter = {}
 
 function TestFilter:test_prime ()
    luaunit.assertIsFunction(FUN.filter)
+   luaunit.assertErrorMsgContains("must be a function", FUN.filter, nil)
 
    local input = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}
    local output = FUN.filter( is_prime, input )

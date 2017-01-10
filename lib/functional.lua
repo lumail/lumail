@@ -9,6 +9,9 @@ local Functional = {}
 --  Call the given function on all members of the table.
 --
 function Functional.map (func, array)
+  if ( type(func) ~= "function" ) then
+     error("The first argument must be a function" )
+  end
   local new_array = {}
   for i, v in ipairs(array) do
     new_array[i] = func(v)
@@ -29,6 +32,9 @@ end
 --      m['mark_read](m)
 --
 function Functional.object_map (func, array)
+   if ( type(func) ~= "string" ) then
+      error("Function must be a string" )
+   end
   local new_array = {}
   for i, v in ipairs(array) do
     new_array[i] = v[func](v)
@@ -41,6 +47,9 @@ end
 -- who return true from the given function.
 --
 function Functional.filter (func, arr)
+  if ( type(func) ~= "function" ) then
+     error("The first argument must be a function" )
+  end
   local new_array = {}
   for i, v in ipairs(arr) do
     if not func(v) then
