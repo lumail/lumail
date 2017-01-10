@@ -14,7 +14,7 @@ function Functional.map (func, array)
   end
   local new_array = {}
   local i = #array
-  while i >= 0 do
+  while i > 0 do
     new_array[i] = func(array[i])
     i = i - 1
   end
@@ -31,7 +31,7 @@ end
 -- Example
 --   If `m` is a Message object we can call `mark_read()` by invoking
 --
---      m['mark_read](m)
+--      m['mark_read'](m)
 --
 function Functional.object_map (func, array)
    if ( type(func) ~= "string" ) then
@@ -39,7 +39,7 @@ function Functional.object_map (func, array)
    end
   local new_array = {}
   local i = #array
-  while i >= 0 do
+  while i > 0 do
     local v = array[i]
     new_array[i] = v[func](v)
     i = i - 1
