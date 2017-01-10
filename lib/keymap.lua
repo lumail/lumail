@@ -99,19 +99,28 @@ keymap['index']['N'] = 'next_unread()'
 -- Limit the display of messages appropriately
 --
 keymap['index']['a'] = 'Config:set( "index.limit", "all" )'
+keymap['index']['A'] = 'Config:set( "index.limit", "attach" )'
 keymap['index']['n'] = 'Config:set( "index.limit", "new" )'
 keymap['index']['t'] = 'Config:set( "index.limit", "today" )'
 
 --
 -- Change the sorting method.
 --
-keymap['index']['A'] = 'sorting_method( "file")'
-keymap['index']['S'] = 'sorting_method( "subject")'
-keymap['index']['D'] = 'sorting_method( "date")'
-keymap['index']['F'] = 'sorting_method( "from")'
+-- Commented these out by default for two reasons:
+--
+--  1. Using `A` for `index.limit` is nice and memorable.
+--
+--  2. I don't believe users change their sorting methods on the fly.
+--
+--keymap['index']['A'] = 'sorting_method( "file")'
+--keymap['index']['S'] = 'sorting_method( "subject")'
+--keymap['index']['D'] = 'sorting_method( "date")'
+--keymap['index']['F'] = 'sorting_method( "from")'
+--
 
 --
 -- Toggle a message from new to old, or back.
+--
 keymap['index']['T'] = 'Message.toggle()'
 
 --
