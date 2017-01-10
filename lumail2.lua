@@ -1547,10 +1547,10 @@ end
 --
 -- Delete the current message.
 --
-function Message.delete ()
+function Message.delete (self)
 
   -- The Message we want to delete.
-  local msg = Message.at_point()
+  local msg = self or Message.at_point()
 
   -- If there is no message we have nothing to do.
   if not msg then
@@ -3500,7 +3500,7 @@ end
 function delete_all ()
   local msgs = get_messages()
   if msgs and #msgs > 0 then
-    Fun.map(Message.delete, msgs)
+    Fun.object_map("delete", msgs)
   else
     warning_msg "There are no messages"
   end

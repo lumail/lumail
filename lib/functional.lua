@@ -13,8 +13,10 @@ function Functional.map (func, array)
      error("The first argument must be a function" )
   end
   local new_array = {}
-  for i, v in ipairs(array) do
-    new_array[i] = func(v)
+  local i = #array
+  while i >= 0 do
+    new_array[i] = func(array[i])
+    i = i - 1
   end
   return new_array
 end
@@ -36,8 +38,11 @@ function Functional.object_map (func, array)
       error("Function must be a string" )
    end
   local new_array = {}
-  for i, v in ipairs(array) do
+  local i = #array
+  while i >= 0 do
+    local v = array[i]
     new_array[i] = v[func](v)
+    i = i - 1
   end
   return new_array
 end
