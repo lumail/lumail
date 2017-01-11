@@ -9,8 +9,8 @@ local Functional = {}
 --  Call the given function on all members of the table.
 --
 function Functional.map (func, array)
-  if ( type(func) ~= "function" ) then
-     error("The first argument must be a function" )
+  if type(func) ~= "function" then
+    error "The first argument must be a function"
   end
   local new_array = {}
   local i = #array
@@ -34,9 +34,9 @@ end
 --      m['mark_read'](m)
 --
 function Functional.object_map (func, array)
-   if ( type(func) ~= "string" ) then
-      error("Function must be a string" )
-   end
+  if type(func) ~= "string" then
+    error "Function must be a string"
+  end
   local new_array = {}
   local i = #array
   while i > 0 do
@@ -52,8 +52,8 @@ end
 -- who return true from the given function.
 --
 function Functional.filter (func, arr)
-  if ( type(func) ~= "function" ) then
-     error("The first argument must be a function" )
+  if type(func) ~= "function" then
+    error "The first argument must be a function"
   end
   local new_array = {}
   for i, v in ipairs(arr) do

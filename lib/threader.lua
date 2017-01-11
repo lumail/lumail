@@ -46,6 +46,7 @@ function Container.new (msg)
     parent = nil,
     message = msg,
     children = {},
+
   }
   return setmetatable(self, Container)
 end
@@ -169,35 +170,35 @@ end
 -- See: 4. Prune empty containers
 --
 function Container.prune_empty (self)
-    -- Reverse walk children because we change the table during iteration.
-    -- After prune_empty on children[i] only fields >= i could be changed.
-    local i = #self.children
-    while i > 0 do
-        self.children[i]:prune_empty()
-        i = i - 1
+  -- Reverse walk children because we change the table during iteration.
+  -- After prune_empty on children[i] only fields >= i could be changed.
+  local i = #self.children
+  while i > 0 do
+    self.children[i]:prune_empty()
+    i = i - 1
+  end
+  if not self.message then
+    -- non root
+    if self.parent then
+      -- empty container without children -> delete it
+      if #self.children == 0 then
+        self.parent:remove_child(self)
+        -- not root container with children
+        --  -> delete after transferring the children to parent
+      else
+        self:transfer_children(self.parent)
+        self.parent:remove_child(self)
+      end
+      -- root container with one child -> replace empty container with child
+    elseif #self.children == 1 then
+      -- return the child with is now a root.
+      -- the calling function has to insert it into the root set.
+      local child = self.children[1]
+      self:remove_child(child)
+      child:transfer_children(self)
+      self.message = child.message
     end
-    if not self.message then
-        -- non root
-        if self.parent then
-            -- empty container without children -> delete it
-            if #self.children == 0 then
-                self.parent:remove_child(self)
-                -- not root container with children
-                --  -> delete after transferring the children to parent
-            else
-                self:transfer_children(self.parent)
-                self.parent:remove_child(self)
-            end
-            -- root container with one child -> replace empty container with child
-        elseif #self.children == 1 then
-            -- return the child with is now a root.
-            -- the calling function has to insert it into the root set.
-            local child = self.children[1]
-            self:remove_child(child)
-            child:transfer_children(self)
-            self.message = child.message
-        end
-    end
+  end
 end
 
 --
@@ -234,7 +235,7 @@ function Container.get_min_or_max (self, cmp_func, option)
     res = self.children[1]
   end
 
-  for _,child in ipairs(self.children) do
+  for _, child in ipairs(self.children) do
     local min_max = child:get_min_or_max(cmp_func, option)
 
     if option == "min" then
@@ -474,7 +475,7 @@ function Threader.sort (roots, cmp_func, roots_order)
   elseif roots_order == "min" or roots_order == "max" then
     local look_up_table = {}
 
-    for _,r in ipairs(roots) do
+    for _, r in ipairs(roots) do
       local min_max = r:get_min_or_max(cmp_func, roots_order)
       look_up_table[min_max] = r
       table.insert(look_up_table, min_max)
@@ -483,7 +484,7 @@ function Threader.sort (roots, cmp_func, roots_order)
     table.sort(look_up_table, Container.cmp_wrapper(cmp_func))
 
     roots = {}
-    for _,m in ipairs(look_up_table) do
+    for _, m in ipairs(look_up_table) do
       table.insert(roots, look_up_table[m])
     end
   end
