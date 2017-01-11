@@ -306,7 +306,7 @@ function Config.key_changed (name)
     local cache_prefix = Config:get "cache.prefix"
     local file = cache_prefix .. "/" .. Config:get "global.version"
     if file and File:exists(file) then
-      info_msg ("Loading cache " .. file)
+      info_msg("Loading cache " .. file)
       cache:load(file)
     end
     return
@@ -534,7 +534,7 @@ function sort_messages (input)
     -- Signs used to indent threads
     --
     local threads_output_signs = Config.get_with_default("threads.output", " ;`;-> ")
-    threads_output_signs = threads_output_signs:gmatch("([^;]+)")
+    threads_output_signs = threads_output_signs:gmatch "([^;]+)"
     local threads_output_indent = threads_output_signs()
     local threads_output_root = threads_output_signs()
     local threads_output_sign = threads_output_signs()
@@ -988,7 +988,6 @@ function mimeparts2table (msg)
         size = o:size(),
         type = o:type():lower(),
 
-
       }
 
       -- Insert the entry.
@@ -1119,7 +1118,6 @@ ${sig}
         date = date,
         sig = Message.generate_signature(),
 
-
       }))
 
   file:close()
@@ -1195,7 +1193,6 @@ ${sig}
         cmd = string.interp(cmd, {
             recipient = to,
 
-
           })
 
         -- Run the command.
@@ -1208,7 +1205,7 @@ ${sig}
 
       -- Send the mail.
       os.execute(Config:get "global.mailer" .. " < " .. tmp)
-      info_msg ("Message sent to " .. to)
+      info_msg("Message sent to " .. to)
 
       --
       -- Now we need to save a copy of the outgoing message.
@@ -1316,20 +1313,19 @@ References: ${references}
   --
   -- This should be <bla.blah.blah> but I've seen some horrors.
   --
-  local src_id     = msg:header( "Message-ID" )
-  local references = msg:header( "References" ) or ""
-  if ( src_id ) then
-     src_id = string.match(src_id, "(<.*>)") or src_id
+  local src_id = msg:header "Message-ID"
+  local references = msg:header "References" or ""
+  if src_id then
+    src_id = string.match(src_id, "(<.*>)") or src_id
 
-     -- Only referencing the single message
-     if ( references == "" ) then
-        references = src_id
-     else
-        -- Append the source to the existing references.
-        references = references .. " " .. src_id
-     end
+    -- Only referencing the single message
+    if references == "" then
+      references = src_id
+    else
+      -- Append the source to the existing references.
+      references = references .. " " .. src_id
+    end
   end
-
 
 
   file:write(string.interp(header, {
@@ -1341,6 +1337,7 @@ References: ${references}
         references = references,
         msgid = Message:generate_message_id(),
         date = os.date "%a, %d %b %Y %H:%M:%S %z",
+
       }))
 
   --
@@ -1469,7 +1466,6 @@ References: ${references}
         cmd = string.interp(cmd, {
             recipient = to,
 
-
           })
 
         -- Run the command.
@@ -1564,7 +1560,7 @@ function Message.delete (self)
   local msg_index = Config.get_with_default("index.current", 0) + 1
 
   -- Move message to trash.
-  local trash = Config.get_with_default("global.trash-mail",nil)
+  local trash = Config.get_with_default("global.trash-mail", nil)
   if trash and trash ~= Global:current_maildir():path() then
     Message.save(trash)
   end
@@ -1575,7 +1571,7 @@ function Message.delete (self)
   -- Delete the message from the cache.
   table.remove(global_msgs, msg_index)
 
-  local mode = Config:get("global.mode")
+  local mode = Config:get "global.mode"
 
   if mode == "message" then
     -- select next message
@@ -1642,7 +1638,6 @@ Begin forwarded message.
         subject = subject,
         msgid = Message:generate_message_id(),
         date = os.date "%a, %d %b %Y %H:%M:%S %z",
-
 
       }))
 
@@ -1726,7 +1721,6 @@ Begin forwarded message.
         -- Replace the recipient, if present.
         cmd = string.interp(cmd, {
             recipient = to,
-
 
           })
 
@@ -1892,7 +1886,7 @@ function Message.save (dest)
   local ret = dest_f:save_message(msg)
 
   if ret then
-    info_msg ("Message copied to " .. dest)
+    info_msg("Message copied to " .. dest)
   else
     error_msg "Message save failed."
   end
@@ -1987,7 +1981,7 @@ function save_mime_part ()
 
     f:close()
 
-    info_msg ("Wrote attachment to " .. output)
+    info_msg("Wrote attachment to " .. output)
 
     return
   end
@@ -2158,6 +2152,7 @@ function attachment_view ()
       "No message selected!",
 
 
+
     }
   end
 
@@ -2169,20 +2164,19 @@ function attachment_view ()
   --
   -- Fetch the format-string
   --
-  local format = Config.get_with_default( "attachment.format",
-                                          "[${4|number}] ${6|size} - ${25|type} - ${filename}" )
+  local format = Config.get_with_default("attachment.format", "[${4|number}] ${6|size} - ${25|type} - ${filename}")
 
 
   for i, o in ipairs(out) do
 
-     local output = (string.interp(format, {
-                                      number = o["count"] + 1,
-                                      size   = o["size"] or "",
-                                      type   = o["type"] or "",
-                                      filename = o["filename"] or ""
-                                           }
-                                  ))
-     table.insert(result, output)
+    local output = (string.interp(format, {
+        number = o["count"] + 1,
+        size = o["size"] or "",
+        type = o["type"] or "",
+        filename = o["filename"] or "",
+
+      }))
+    table.insert(result, output)
   end
 
   result = add_colours(result, 'attachment')
@@ -2194,7 +2188,7 @@ end
 -- This function formats a single message for display in index-mode,
 -- it is called by the `index_view()` function defined next.
 --
-function Message:format (thread_indent,index)
+function Message:format (thread_indent, index)
   local path = self:path()
   local time = self:mtime()
 
@@ -2204,14 +2198,11 @@ function Message:format (thread_indent,index)
   --
   -- That means changing any of them will flush the cached value.
   --
-  local ckey = path .. "message:" ..
-     Config.get_with_default( "index.sort", "index.sort" ) ..
-     Config.get_with_default( "index.format" , "index.format") ..
-     time
+  local ckey = path .. "message:" .. Config.get_with_default("index.sort", "index.sort") .. Config.get_with_default("index.format", "index.format") .. time
 
   -- Do we have this cached?  If so return it
   if cache:get(ckey) then
-     return (cache:get(ckey))
+    return (cache:get(ckey))
   end
 
   if not thread_indent then
@@ -2221,18 +2212,20 @@ function Message:format (thread_indent,index)
   --
   -- Basics from the message
   --
-  local flags   = self:flags()
+  local flags = self:flags()
   local subject = self:header "Subject"
-  local sender  = self:header "From"
-  local date    = self:header "Date"
-  local id      = self:header "Message-ID"
+  local sender = self:header "From"
+  local date = self:header "Date"
+  local id = self:header "Message-ID"
 
   --
   -- Try to parse out sender into "email" + "name".
   --
-  local email   = string.match(sender, "<(.*)>") or sender
-  local name    = string.gsub(sender,"<(.*)>", "")
-  if ( name:len() < 1 ) then name = sender end
+  local email = string.match(sender, "<(.*)>") or sender
+  local name = string.gsub(sender, "<(.*)>", "")
+  if name:len() < 1 then
+    name = sender
+  end
 
   --
   -- The user might have a filter-function to cleanup
@@ -2242,7 +2235,7 @@ function Message:format (thread_indent,index)
   -- such as "Steve Kemp (via Twitter)" into "Steve Kemp")
   --
   if type(on_cleanup_name) == "function" then
-     name = on_cleanup_name(name)
+    name = on_cleanup_name(name)
   end
 
   --
@@ -2271,24 +2264,24 @@ function Message:format (thread_indent,index)
   --
   -- The format-string we use for display.
   --
-  local format = Config.get_with_default( "index.format",
-                                          "[${4|flags}] ${2|message_flags} - ${20|sender} - ${indent}${subject}" )
+  local format = Config.get_with_default("index.format", "[${4|flags}] ${2|message_flags} - ${20|sender} - ${indent}${subject}")
 
   --
   -- Format this message for display
   --
   local output = (string.interp(format, {
-                                   flags         = flags,
-                                   message_flags = m_flags,
-                                   sender        = sender,
-                                   email         = email,
-                                   name          = name,
-                                   indent        = thread_indent,
-                                   subject       = subject,
-                                   number        = index,
-                                   date          = date,
-                                   id            = id,
-                                        }))
+      flags = flags,
+      message_flags = m_flags,
+      sender = sender,
+      email = email,
+      name = name,
+      indent = thread_indent,
+      subject = subject,
+      number = index,
+      date = date,
+      id = id,
+
+    }))
 
   --
   -- If the message is unread then show it in the "unread" colour
@@ -2590,7 +2583,7 @@ function Maildir:format (index)
   --
   -- This means if any of them change we flush the cache
   --
-  local ckey = path .. "maildir:" .. trunc .. src .. time .. Config.get_with_default( "maildir.format", "maildir.format" )
+  local ckey = path .. "maildir:" .. trunc .. src .. time .. Config.get_with_default("maildir.format", "maildir.format")
 
   -- Do we have this cached?  If so return it
   if cache:get(ckey) then
@@ -2640,17 +2633,18 @@ function Maildir:format (index)
   --
   -- The format-string we use for display.
   --
-  local format = Config.get_with_default( "maildir.format",
-                                          "[${05|unread}/${05|total}] - ${path}" )
+  local format = Config.get_with_default("maildir.format", "[${05|unread}/${05|total}] - ${path}")
 
   --
   -- Format this maildir for display
   --
   local output = (string.interp(format, {
-                                   total  = total,
-                                   unread = unread,
-                                   number = index,
-                                   path   = path } ) )
+      total = total,
+      unread = unread,
+      number = index,
+      path = path,
+
+    }))
 
   --
   -- If there are unread messages then show it in the unread-colour.
@@ -2747,6 +2741,8 @@ function message_view (msg)
   if not msg then
     return {
       "No message selected!",
+
+
     }
   end
 
@@ -2778,6 +2774,7 @@ function message_view (msg)
     "Cc",
     "Subject",
     "Date",
+
 
 
   }
@@ -3003,9 +3000,9 @@ function select ()
       --
       local size = #get_messages()
       if size == 1 then
-        info_msg ("Selected " .. folder:path() .. " with 1 message.")
+        info_msg("Selected " .. folder:path() .. " with 1 message.")
       else
-        info_msg ("Selected " .. folder:path() .. " with " .. size .. " messages.")
+        info_msg("Selected " .. folder:path() .. " with " .. size .. " messages.")
       end
     end
 
@@ -3029,7 +3026,7 @@ function select ()
     local msg = msgs[cur + 1]
 
     if msg == nil then
-      info_msg  "There is nothing to select!"
+      info_msg "There is nothing to select!"
       return
     end
 
@@ -3689,6 +3686,7 @@ do
             idle_timers[period] = {
               callback = o,
               last = now,
+
 
 
             }
