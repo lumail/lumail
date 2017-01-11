@@ -43,6 +43,7 @@ There is a brief overview of the code structure, layout, and standards in
 The following people have contributed code to the project:
 
 * Chris Emerson
+* Florian Fischer
 * Raphaël Rigo
 
 # Special Thanks
