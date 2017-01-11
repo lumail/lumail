@@ -79,15 +79,15 @@ function testStack ()
   --
 
   -- function
-  s:push( math.min )
+  s:push(math.min)
   luaunit.assertIsFunction(s:pop())
 
   -- string
-  s:push( "Steve" )
+  s:push "Steve"
   luaunit.assertIsString(s:pop())
 
   -- number
-  s:push( math.pi )
+  s:push(math.pi)
   luaunit.assertIsNumber(s:pop())
 
   -- bool
@@ -95,9 +95,8 @@ function testStack ()
   luaunit.assertIsBoolean(s:pop())
 
   -- no truncation?
-  s:push( math.pi )
+  s:push(math.pi)
   luaunit.assertEquals(s:pop(), math.pi)
-
 end
 
 
