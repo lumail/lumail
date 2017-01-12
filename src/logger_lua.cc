@@ -61,6 +61,29 @@ int l_CLog_log(lua_State * L)
 
 
 /**
+ * Get/Set the log-level.
+ *
+ * **NOTE**: If a level hasn't been set then logging is a NOP.
+ */
+int l_CLog_level(lua_State * L)
+{
+    CLuaLog("l_CLog_level");
+
+    CLogger *log = CLogger::instance();
+
+    const char *level = lua_tostring(L, 2);
+    if (level != NULL)
+        log->set_level( level );
+
+    /*
+     * Return.
+     */
+    lua_pushstring(L, log->get_level().c_str());
+    return 1;
+}
+
+
+/**
  * Register the global `Log` object to the Lua environment,
  * and setup our public methods upon which the user may operate.
  */
@@ -69,6 +92,7 @@ void InitLogfile(lua_State * l)
     luaL_Reg sFooRegs[] =
     {
         {"log",  l_CLog_log},
+        {"level",  l_CLog_level},
         {NULL,      NULL}
     };
     luaL_newmetatable(l, "luaL_CLog");

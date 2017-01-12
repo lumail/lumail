@@ -41,6 +41,11 @@ public:
     void log(const char *level , const char *fmt,  ...);
 
     /**
+     * Get the current log-level
+     */
+    std::string get_level();
+
+    /**
      * Change the log-level.
      */
     void set_level(std::string level);

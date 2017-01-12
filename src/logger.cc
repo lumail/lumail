@@ -110,6 +110,14 @@ void CLogger::log(const char *level, const char *fmt,  ...)
 }
 
 /*
+ * Get the log-level
+ */
+std::string CLogger::get_level()
+{
+    return(m_level);
+}
+
+/*
  * Change the log-level
  */
 void CLogger::set_level(std::string level)
