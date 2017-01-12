@@ -9,6 +9,7 @@ addons:
     - libncursesw5-dev
     - libncursesw5-dev
     - liblua5.1-0-dev
+    - lua5.1
     - pkg-config
     - libpcre3-dev
     - libgmime-2.6-dev
