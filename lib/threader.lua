@@ -288,55 +288,54 @@ function Threader.thread (messages)
 
   -- 1:
   for _, msg in ipairs(messages) do
-    -- 1.A: create/get container of the current message
+
+     -- 1.A: create/get container of the current message
     local msgid = msg:header "Message-ID"
     msgid = string.match(msgid, "<([^>]+)>")
 
-    -- if the message has no message-id add it to the root set, because
-    -- we can not thread it.
-    if not msgid then
-      table.insert(roots, Container.new(msg))
-      -- skip the rest of the loop
-      goto missing_msgid
-    end
+    -- if we have a message ID then we're OK.
+    if msgid then
 
-    local par = id_table[msgid]
-    if not par then
-      par = Container.new(msg)
-      id_table[msgid] = par
+       local par = id_table[msgid]
+       if not par then
+          par = Container.new(msg)
+          id_table[msgid] = par
+       else
+          -- TODO don't simple override message.
+          -- We lose messages with the same id.
+
+          if par.message then
+             Threader.overridden[par.message] = 1
+          end
+          par.message = msg
+       end
+
+       -- 1.B: find and link the containers like
+       --      they appear in the "References" header.
+       local prev = nil
+       for _, ref in ipairs(par:get_references()) do
+          local cur = id_table[ref]
+          if not cur then
+             cur = Container.new(nil)
+             id_table[ref] = cur
+          end
+          -- Don't link if they are already linked or we would introduce a
+          -- loop.
+          if prev and not cur.parent and not cur:has_descandent(prev) then
+             prev:add_child(cur)
+          end
+          prev = cur
+       end
+       -- 1.C: Link the current message. Ignore if it is already linked.
+       if prev and not par:has_descandent(prev) then
+          prev:add_child(par)
+       end
+
     else
-      -- TODO don't simple override message.
-      -- We lose messages with the same id.
-
-      if par.message then
-        Threader.overridden[par.message] = 1
-      end
-      par.message = msg
+       -- the message has no message-id add it to the root set, because
+       -- we can not thread it.
+       table.insert(roots, Container.new(msg))
     end
-
-    -- 1.B: find and link the containers like
-    --      they appear in the "References" header.
-    local prev = nil
-    for _, ref in ipairs(par:get_references()) do
-      local cur = id_table[ref]
-      if not cur then
-        cur = Container.new(nil)
-        id_table[ref] = cur
-      end
-      -- Don't link if they are already linked or we would introduce a
-      -- loop.
-      if prev and not cur.parent and not cur:has_descandent(prev) then
-        prev:add_child(cur)
-      end
-      prev = cur
-    end
-    -- 1.C: Link the current message. Ignore if it is already linked.
-    if prev and not par:has_descandent(prev) then
-      prev:add_child(par)
-    end
-
-    -- goto point for messages without message-id
-    ::missing_msgid::
   end
 
   -- 2: find root set
