@@ -18,7 +18,10 @@ env:
 language: cpp
 compiler:
   - g++
-script: make
+script:
+  - make
+  - make test
+  - make test-lua
 
 before_install:
  - sudo apt-get update -qq
