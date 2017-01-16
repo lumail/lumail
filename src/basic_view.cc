@@ -43,8 +43,7 @@ CBasicView::~CBasicView()
 
 
 /*
- * Get the display text by calling our lua-function.
- * Get the display text by calling the specified lua-function.
+ * Get the text to display by calling the specified lua-function.
  */
 std::vector<std::string> CBasicView::get_text(std::string function)
 {
