@@ -77,6 +77,54 @@ end
 
 
 --
+-- Emptying a cache should work.
+--
+function TestCache:test_cache_empty ()
+
+  --
+  -- Create a temporary file-name
+  --
+  local tmp = os.tmpname()
+  os.remove(tmp)
+  luaunit.assertEquals(File:exists(tmp), false)
+
+  --
+  -- Create a cache object, populate it, and save it.
+  --
+  local c = Cache.new()
+  c:set("foo", "bar")
+  c:set("moi", "kiss")
+  c:set("steve", "kemp")
+  c:save(tmp)
+
+  --
+  --  Now the file should exist, and be non-zero in size
+  --
+  local stat = File:stat( tmp )
+  luaunit.assertTrue( stat['size'] > 0 )
+  luaunit.assertEquals(File:exists(tmp), true)
+
+
+  --
+  -- Empty the cache and resave
+  --
+  c:empty()
+  c:save(tmp)
+
+  --
+  -- The file should still exist, but it should be empty
+  --
+  stat = File:stat( tmp )
+  luaunit.assertTrue( stat['size'] == 0 )
+  luaunit.assertEquals(File:exists(tmp), true)
+
+  --
+  -- All done
+  --
+  os.remove(tmp)
+end
+
+--
 -- Run the tests
 --
 os.exit(luaunit.LuaUnit.run())
