@@ -28,7 +28,7 @@
  * implemented in C++, to Lua.  Lua-usage looks something like this:
  *
  *<code>
- *   -- Create a message object and get the MIME-parts <br/>
+ *   -- Create a cache object and use it. <br/>
  *   local c = Cache.new( "/path/to/cache" ) <br/>
  *   c:set( "foo", "bar") <br/>
  *   print( c:get( "foo" ) ) <br/>
@@ -225,7 +225,7 @@ int l_CCache_destructor(lua_State * l)
 
 
 /**
- * Register the global `MessagePart` object to the Lua environment, and
+ * Register the global `Cache` object to the Lua environment, and
  * setup our public methods upon which the user may operate.
  */
 void InitCache(lua_State * l)
