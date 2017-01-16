@@ -193,6 +193,44 @@ Two pretty student girls ready to make you smile.
 end
 
 
+--
+-- Test removal
+--
+function TestMessage:test_unlink ()
+   local msg_txt = [[To: steve@example.net
+From: steve@example.com
+Subject: This is my subject
+Date: Mon Jan 16 09:56:15 EET 2017
+
+This is a message, from email, honest.
+
+Steve
+--
+              ]]
+
+
+   --
+   -- Get a new message object
+   --
+   local msg = txt2msg(msg_txt)
+
+   --
+   -- Test it exists - implied
+   --
+   luaunit.assertEquals(File:exists(msg:path()), true)
+
+   --
+   -- Remove
+   --
+   msg:unlink()
+
+   --
+   -- Confirm it is gone
+   --
+   luaunit.assertEquals(File:exists(msg:path()), false)
+
+end
+
 
 --
 -- Run the tests
