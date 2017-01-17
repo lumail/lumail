@@ -50,7 +50,7 @@ TestMessage = {}
 --
 function TestMessage:test_functions ()
   --
-  -- The stack functions should exist.
+  -- The functions we're using should exist.
   --
   luaunit.assertIsFunction(Message.ctime)
   luaunit.assertIsFunction(Message.headers)
