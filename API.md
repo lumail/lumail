@@ -56,6 +56,12 @@ when some actions take place:
      * For example to remove `(via Twitter)` or similar strings from that name.
 * `on_message_changed( msg )`
      * This is called when a new message is opened.
+* `on_message_send(path)`
+     * This is called __immediately__ before an outgoing message is sent, via the compose, reply, or forward operations.  It receives the path to the message to be sent as its sole argument.
+     * Useful if you're using the `msmtp` binary for sending your mail.
+* `on_message_sent(path)`
+     * This is called __immediately__ after an outgoing message is sent, via the compose, reply, or forward operations.  It receives the path to the message which was sent as its sole argument.
+
 
 These functions may be defined by the user, and will be invoked if present.
 
