@@ -1203,9 +1203,20 @@ ${sig}
         os.remove(tmp2)
       end
 
+
+      -- Allow transformations to occur before sending the message.
+      if type(on_message_send) == "function" then
+         on_message_send(tmp)
+      end
+
       -- Send the mail.
       os.execute(Config:get "global.mailer" .. " < " .. tmp)
       info_msg("Message sent to " .. to)
+
+      -- Allow transformations to occur after sending the message.
+      if type(on_message_sent) == "function" then
+         on_message_sent(tmp)
+      end
 
       --
       -- Now we need to save a copy of the outgoing message.
@@ -1476,10 +1487,19 @@ References: ${references}
         os.remove(tmp2)
       end
 
+      -- Allow transformations to occur before sending the message.
+      if type(on_message_send) == "function" then
+         on_message_send(tmp)
+      end
+
       -- Send the mail.
       os.execute(Config:get "global.mailer" .. " < " .. tmp)
       info_msg("Reply sent to " .. to)
 
+      -- Allow transformations to occur after sending the message.
+      if type(on_message_sent) == "function" then
+         on_message_sent(tmp)
+      end
       --
       -- Since we've sent the message we need to add the "(R)eplied"
       -- flag on the source message.
@@ -1732,9 +1752,19 @@ Begin forwarded message.
         os.remove(tmp2)
       end
 
+      -- Allow transformations to occur before sending the message.
+      if type(on_message_send) == "function" then
+         on_message_send(tmp)
+      end
+
       -- Send the mail.
       os.execute(Config:get "global.mailer" .. " < " .. tmp)
       info_msg "Message forwarded"
+
+      -- Allow transformations to occur after sending the message.
+      if type(on_message_sent) == "function" then
+         on_message_sent(tmp)
+      end
 
       --
       -- Now we need to save a copy of the outgoing message.
@@ -3723,6 +3753,31 @@ do
   -- End of closure.
   --
 end
+
+
+--
+-- This function is invoked before a message is sent.
+--
+-- function on_message_send(path)
+--
+--   -- Read the recipient of the message
+--   local m  = Message.new(path)
+--   local to = m:header("To")
+--   to       = string.match(to, "<(.*)>") or to
+--
+--   -- Here we could update our outgoing mail-agent to use msmtp
+--   local mta = "/usr/bin/msmtp -a blah " .. to
+--   Config:set( "global.mailer", mta )
+--   Panel:append( "Mailer set to " .. mta )
+-- end
+
+
+--
+-- This function, if it is defined, is invoked just after a message
+-- is sent.
+--
+-- function on_message_sent(path)
+-- end
 
 
 --
