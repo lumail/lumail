@@ -72,8 +72,9 @@ int l_CLog_level(lua_State * L)
     CLogger *log = CLogger::instance();
 
     const char *level = lua_tostring(L, 2);
+
     if (level != NULL)
-        log->set_level( level );
+        log->set_level(level);
 
     /*
      * Return.

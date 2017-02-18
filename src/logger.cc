@@ -114,7 +114,7 @@ void CLogger::log(const char *level, const char *fmt,  ...)
  */
 std::string CLogger::get_level()
 {
-    return(m_level);
+    return (m_level);
 }
 
 /*
