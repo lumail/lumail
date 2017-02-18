@@ -25,6 +25,7 @@ function TestFile:test_basename ()
     ["/etc/////motd"] = "motd",
     ["/foo"] = "foo",
 
+
   }
 
   -- Run all the tests

@@ -43,6 +43,7 @@ function Global:modes ()
     "life",
     "attachment",
 
+
   }
 end
 function Net:hostname ()

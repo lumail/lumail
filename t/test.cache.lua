@@ -67,7 +67,7 @@ function TestCache:test_save_load ()
   -- Post-Load we should have the value
   --
   n:load(tmp)
-  luaunit.assertEquals(n:get("foo"), "bar")
+  luaunit.assertEquals(n:get "foo", "bar")
 
   --
   -- All done
@@ -100,8 +100,8 @@ function TestCache:test_cache_empty ()
   --
   --  Now the file should exist, and be non-zero in size
   --
-  local stat = File:stat( tmp )
-  luaunit.assertTrue( stat['size'] > 0 )
+  local stat = File:stat(tmp)
+  luaunit.assertTrue(stat['size'] > 0)
   luaunit.assertEquals(File:exists(tmp), true)
 
 
@@ -114,8 +114,8 @@ function TestCache:test_cache_empty ()
   --
   -- The file should still exist, but it should be empty
   --
-  stat = File:stat( tmp )
-  luaunit.assertTrue( stat['size'] == 0 )
+  stat = File:stat(tmp)
+  luaunit.assertTrue(stat['size'] == 0)
   luaunit.assertEquals(File:exists(tmp), true)
 
   --

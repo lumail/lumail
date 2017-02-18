@@ -50,12 +50,14 @@ function TestConfig:test_types ()
     "Oiva",
 
 
+
   }
   Config:set("family", tbl)
   luaunit.assertEquals(Config:get "family", {
       "Kirsi",
       "Steve",
       "Oiva",
+
 
 
     })

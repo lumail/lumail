@@ -17,26 +17,25 @@ TU = require "table_utilities"
 --
 -- Helper function - return a message with the given content
 --
-function txt2msg(txt)
+function txt2msg (txt)
 
-   --
-   -- Create a temporary file, and write our message to it
-   --
-   local tmp = os.tmpname()
-   local file = io.open(tmp, "w")
-   file:write(txt)
-   file:close()
+  --
+  -- Create a temporary file, and write our message to it
+  --
+  local tmp = os.tmpname()
+  local file = io.open(tmp, "w")
+  file:write(txt)
+  file:close()
 
 
-   --
-   -- Create the object
-   --
-   local msg = Message.new(tmp)
-   luaunit.assertEquals( tmp, msg:path() )
+  --
+  -- Create the object
+  --
+  local msg = Message.new(tmp)
+  luaunit.assertEquals(tmp, msg:path())
 
-   return(msg)
+  return msg
 end
-
 
 
 --
@@ -62,7 +61,7 @@ end
 -- Simple header testing
 --
 function TestMessage:test_headers ()
-   local msg_txt = [[To: steve@example.net
+  local msg_txt = [[To: steve@example.net
 From: steve@example.com
 Subject: This is my subject
 Date: Mon Jan 16 09:56:15 EET 2017
@@ -74,37 +73,36 @@ Steve
               ]]
 
 
-   --
-   -- Get a new message object
-   --
-   local msg = txt2msg(msg_txt)
+  --
+  -- Get a new message object
+  --
+  local msg = txt2msg(msg_txt)
 
-   --
-   -- Test our headers
-   --
-   luaunit.assertEquals( msg:header("From"), "steve@example.com" )
-   luaunit.assertEquals( msg:header("FROM"), "steve@example.com" )
+  --
+  -- Test our headers
+  --
+  luaunit.assertEquals(msg:header "From", "steve@example.com")
+  luaunit.assertEquals(msg:header "FROM", "steve@example.com")
 
-   luaunit.assertEquals( msg:header("To"), "steve@example.net" )
-   luaunit.assertEquals( msg:header("TO"), "steve@example.net" )
+  luaunit.assertEquals(msg:header "To", "steve@example.net")
+  luaunit.assertEquals(msg:header "TO", "steve@example.net")
 
-   --
-   -- Get all the headers - we should have four of them.
-   --
-   local h = msg:headers()
-   luaunit.assertEquals( table.size(h), 4 )
+  --
+  -- Get all the headers - we should have four of them.
+  --
+  local h = msg:headers()
+  luaunit.assertEquals(table.size(h), 4)
 
-   --
-   -- Cleanup
-   --
-   os.remove(msg:path())
-   luaunit.assertEquals(File:exists(msg:path()), false)
+  --
+  -- Cleanup
+  --
+  os.remove(msg:path())
+  luaunit.assertEquals(File:exists(msg:path()), false)
 end
 
 
-
 function TestMessage:test_mime_parts ()
-   local msg_txt = [[Return-path: <leigh@chiashi.jp>
+  local msg_txt = [[Return-path: <leigh@chiashi.jp>
 Envelope-to: steve@steve.example.com
 Delivery-date: Mon, 16 Jan 2017 08:03:57 +0000
 Received: from qpsmtpd (helo=ssh.example.com)
@@ -147,49 +145,48 @@ Two pretty student girls ready to make you smile.
 ]]
 
 
-   --
-   -- Get a new message object
-   --
-   local msg = txt2msg(msg_txt)
+  --
+  -- Get a new message object
+  --
+  local msg = txt2msg(msg_txt)
 
-   --
-   -- We're gonna test the message-parts
-   --
-   local parts = msg:parts()
+  --
+  -- We're gonna test the message-parts
+  --
+  local parts = msg:parts()
 
-   --
-   -- There will be one part `multipart/alternative` with
-   -- a child part for `text/html` and `text/plain`.
-   --
-   luaunit.assertEquals( #parts, 1 )
-   luaunit.assertEquals( parts[1]:type(), "multipart/alternative" )
+  --
+  -- There will be one part `multipart/alternative` with
+  -- a child part for `text/html` and `text/plain`.
+  --
+  luaunit.assertEquals(#parts, 1)
+  luaunit.assertEquals(parts[1]:type(), "multipart/alternative")
 
-   --
-   -- Get those two child-parts
-   --
-   local c = parts[1]:children()
-   luaunit.assertEquals( #c, 2 )
+  --
+  -- Get those two child-parts
+  --
+  local c = parts[1]:children()
+  luaunit.assertEquals(#c, 2)
 
-   --
-   -- Test they have the distinct types
-   --
-   for i,o in ipairs(c) do
-      luaunit.assertTrue( ( o:type() == "text/html" ) or
-                          ( o:type() == "text/plain" ) )
-   end
+  --
+  -- Test they have the distinct types
+  --
+  for i, o in ipairs(c) do
+    luaunit.assertTrue((o:type() == "text/html") or (o:type() == "text/plain"))
+  end
 
-   --
-   -- Just for completeness the two types will differ - i.e we
-   -- have two parts, which are either text/html or text/plain
-   -- but they will be one of each
-   --
-   luaunit.assertTrue(c[1]:type() ~= c[2]:type())
+  --
+  -- Just for completeness the two types will differ - i.e we
+  -- have two parts, which are either text/html or text/plain
+  -- but they will be one of each
+  --
+  luaunit.assertTrue(c[1]:type() ~= c[2]:type())
 
-   --
-   -- Cleanup
-   --
-   os.remove(msg:path())
-   luaunit.assertEquals(File:exists(msg:path()), false)
+  --
+  -- Cleanup
+  --
+  os.remove(msg:path())
+  luaunit.assertEquals(File:exists(msg:path()), false)
 end
 
 
@@ -197,7 +194,7 @@ end
 -- Test removal
 --
 function TestMessage:test_unlink ()
-   local msg_txt = [[To: steve@example.net
+  local msg_txt = [[To: steve@example.net
 From: steve@example.com
 Subject: This is my subject
 Date: Mon Jan 16 09:56:15 EET 2017
@@ -209,26 +206,25 @@ Steve
               ]]
 
 
-   --
-   -- Get a new message object
-   --
-   local msg = txt2msg(msg_txt)
+  --
+  -- Get a new message object
+  --
+  local msg = txt2msg(msg_txt)
 
-   --
-   -- Test it exists - implied
-   --
-   luaunit.assertEquals(File:exists(msg:path()), true)
+  --
+  -- Test it exists - implied
+  --
+  luaunit.assertEquals(File:exists(msg:path()), true)
 
-   --
-   -- Remove
-   --
-   msg:unlink()
+  --
+  -- Remove
+  --
+  msg:unlink()
 
-   --
-   -- Confirm it is gone
-   --
-   luaunit.assertEquals(File:exists(msg:path()), false)
-
+  --
+  -- Confirm it is gone
+  --
+  luaunit.assertEquals(File:exists(msg:path()), false)
 end
 
 
