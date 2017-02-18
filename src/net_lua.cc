@@ -52,7 +52,7 @@ int l_CNet_hostname(lua_State * L)
     CLuaLog("l_CNet_hostname");
 
     /**
-     * If the environmental varaible HOSTNAME
+     * If the environmental variable HOSTNAME
      * is set, use that, otherwise use the standard networking
      * functions to determine our FQDN.
      */
@@ -99,7 +99,7 @@ int l_CNet_hostname(lua_State * L)
 
 /**
  * Export the Net object to Lua, this only contains the single static
- * method `type`.
+ * method `hostname`.
  */
 void InitNet(lua_State * l)
 {
