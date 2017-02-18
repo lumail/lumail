@@ -119,7 +119,7 @@ Config:set("global.sender", "Some User <steve@example.com>")
 Config:set("colour.unread", "red")
 
 --
--- Save persistant history of our input in the named file.
+-- Save persistent history of our input in the named file.
 --
 -- Create ~/.lumail2/history/ if missing
 --

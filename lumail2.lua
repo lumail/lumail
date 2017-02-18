@@ -359,7 +359,7 @@ end
 -- Configuration values are retrieved/set via Config:get() and Config:set().
 --
 -- There is no built-in way of getting a value with a default, so we
--- define a helper here to do the neccessary thing.
+-- define a helper here to do the necessary thing.
 --
 function Config.get_with_default (key, default)
   local value = Config:get(key)
@@ -548,7 +548,7 @@ function sort_messages (input)
     end
 
     --
-    -- helper to recursivly traverse the tree
+    -- helper to recursively traverse the tree
     --
     local function thread_walk (c, col, i, i_col)
       if c.message then
@@ -1386,7 +1386,7 @@ References: ${references}
   end
 
   --
-  -- We don't want to include the header in the mesage,
+  -- We don't want to include the header in the massage,
   -- just the text of the body.
   --
   local in_header = true
@@ -1616,7 +1616,7 @@ function Message.forward ()
   -- The message we're going to work on.
   local msg = Message.at_point()
 
-  -- Failed to find a mesage?
+  -- Failed to find a message?
   if not msg then
     error_msg "Failed to find message!"
     return
@@ -1823,7 +1823,7 @@ end
 
 
 --
--- Save a copy of the current message elsehwere.
+-- Save a copy of the current message elsewhere.
 --
 function Message.save (dest)
 
@@ -3198,7 +3198,7 @@ do
       pattern = search_text
     end
 
-    -- Pattern is lower-cased to make searchs case-insensitive.
+    -- Pattern is lower-cased to make searches case-insensitive.
     pattern = pattern:lower()
 
     -- Save for next time.
@@ -3828,7 +3828,7 @@ end
 
 
 --
---   Handle any command-line argumenst
+--   Handle any command-line arguments
 --
 -----------------------------------------------------------------------------
 
