@@ -74,7 +74,14 @@ _G['string']['interp'] = function (s, tab)
 
         -- If the value is too long, truncate.
         if val:len() > len then
-          val = val:sub(0, len)
+           --
+           -- Remove one character at a time, to avoid
+           -- having to deal with multi-byte / UTF-8
+           -- size issues.
+           --
+           while( val:len() > len ) do
+              val = val:sub(0, val:len() - 1)
+           end
         else
           -- Otherwise pad.
           while val:len() < len do
@@ -154,4 +161,12 @@ _G['string']['split'] = function (str, sep)
     table.insert(result, each)
   end
   return result
+end
+
+--
+-- This is either horrid or wonderful.
+--
+old_len = string.len
+_G['string']['len'] = function (str)
+   return( UTF.len(str) )
 end

@@ -48,7 +48,7 @@ int l_CUtf_len(lua_State * L)
     /*
      * the input
      */
-    const char *str = luaL_checkstring(L, 2);
+    const char *str = luaL_checkstring(L, 1);
 
     std::string tmp(str);
 
