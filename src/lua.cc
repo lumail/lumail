@@ -43,6 +43,7 @@ extern void InitNet(lua_State * l);
 extern void InitPanel(lua_State * l);
 extern void InitRegexp(lua_State * l);
 extern void InitScreen(lua_State * l);
+extern void InitUtf(lua_State * l);
 
 
 /*
@@ -108,6 +109,7 @@ CLua::CLua() : Observer(CConfig::instance())
     InitMIME(m_lua);
     InitRegexp(m_lua);
     InitScreen(m_lua);
+    InitUtf(m_lua);
 }
 
 
