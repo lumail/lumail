@@ -80,6 +80,27 @@ function TestInterp:testRightPadding ()
   luaunit.assertEquals(fmt "${surname|02}", "Na")
 end
 
+--
+-- Test our UTF-aware (ha!) string.len method.
+--
+function TestInterp:test_len ()
+   local a = "Muller"
+   luaunit.assertEquals( a:len(), 6)
+   luaunit.assertEquals( a:len(), old_len(a))
+
+   local b = "Müller"
+   luaunit.assertEquals( b:len(), 6)
+   luaunit.assertEquals( old_len(b), 7)
+
+   local c = "«ÜßÄ$€»"
+   luaunit.assertEquals( c:len(), 7)
+   luaunit.assertEquals( old_len(c), 14)
+
+   local d = "‹ÅåÄäÖö›"
+   luaunit.assertEquals( d:len(), 8)
+   luaunit.assertEquals( old_len(d), 18)
+end
+
 
 --
 -- Test the string.split function
