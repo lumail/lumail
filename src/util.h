@@ -63,3 +63,9 @@ std::vector<std::string> split(const std::string &text, char sep);
  * `imaps://example.com/` would become "`imaps:__example.com_`"
  */
 std::string escape_filename(std::string path);
+
+/**
+ * Return the number of bytes the given character-prefix contains
+ * in a UTF-8 string.
+ */
+int dsutil_utf8_charlen(const unsigned char  c);
