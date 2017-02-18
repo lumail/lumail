@@ -988,6 +988,7 @@ function mimeparts2table (msg)
         size = o:size(),
         type = o:type():lower(),
 
+
       }
 
       -- Insert the entry.
@@ -1118,6 +1119,7 @@ ${sig}
         date = date,
         sig = Message.generate_signature(),
 
+
       }))
 
   file:close()
@@ -1193,6 +1195,7 @@ ${sig}
         cmd = string.interp(cmd, {
             recipient = to,
 
+
           })
 
         -- Run the command.
@@ -1206,7 +1209,7 @@ ${sig}
 
       -- Allow transformations to occur before sending the message.
       if type(on_message_send) == "function" then
-         on_message_send(tmp)
+        on_message_send(tmp)
       end
 
       -- Send the mail.
@@ -1215,7 +1218,7 @@ ${sig}
 
       -- Allow transformations to occur after sending the message.
       if type(on_message_sent) == "function" then
-         on_message_sent(tmp)
+        on_message_sent(tmp)
       end
 
       --
@@ -1349,6 +1352,7 @@ References: ${references}
         msgid = Message:generate_message_id(),
         date = os.date "%a, %d %b %Y %H:%M:%S %z",
 
+
       }))
 
   --
@@ -1477,6 +1481,7 @@ References: ${references}
         cmd = string.interp(cmd, {
             recipient = to,
 
+
           })
 
         -- Run the command.
@@ -1489,7 +1494,7 @@ References: ${references}
 
       -- Allow transformations to occur before sending the message.
       if type(on_message_send) == "function" then
-         on_message_send(tmp)
+        on_message_send(tmp)
       end
 
       -- Send the mail.
@@ -1498,7 +1503,7 @@ References: ${references}
 
       -- Allow transformations to occur after sending the message.
       if type(on_message_sent) == "function" then
-         on_message_sent(tmp)
+        on_message_sent(tmp)
       end
       --
       -- Since we've sent the message we need to add the "(R)eplied"
@@ -1659,6 +1664,7 @@ Begin forwarded message.
         msgid = Message:generate_message_id(),
         date = os.date "%a, %d %b %Y %H:%M:%S %z",
 
+
       }))
 
 
@@ -1742,6 +1748,7 @@ Begin forwarded message.
         cmd = string.interp(cmd, {
             recipient = to,
 
+
           })
 
         -- Run the command.
@@ -1754,7 +1761,7 @@ Begin forwarded message.
 
       -- Allow transformations to occur before sending the message.
       if type(on_message_send) == "function" then
-         on_message_send(tmp)
+        on_message_send(tmp)
       end
 
       -- Send the mail.
@@ -1763,7 +1770,7 @@ Begin forwarded message.
 
       -- Allow transformations to occur after sending the message.
       if type(on_message_sent) == "function" then
-         on_message_sent(tmp)
+        on_message_sent(tmp)
       end
 
       --
@@ -2205,6 +2212,7 @@ function attachment_view ()
         type = o["type"] or "",
         filename = o["filename"] or "",
 
+
       }))
     table.insert(result, output)
   end
@@ -2310,6 +2318,7 @@ function Message:format (thread_indent, index)
       number = index,
       date = date,
       id = id,
+
 
     }))
 
@@ -2674,6 +2683,7 @@ function Maildir:format (index)
       number = index,
       path = path,
 
+
     }))
 
   --
@@ -2771,6 +2781,7 @@ function message_view (msg)
   if not msg then
     return {
       "No message selected!",
+
 
 
     }

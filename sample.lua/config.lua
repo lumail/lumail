@@ -34,6 +34,7 @@ function test_table ()
     "tulip",
 
 
+
   }
 
   print "Our table contains:"
