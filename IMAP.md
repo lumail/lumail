@@ -51,4 +51,4 @@ IMAP Dependencies
 
 Ensure you have the required dependencies:
 
-     apt-get install libnet-imap-client libjson-perl
+     apt-get install libnet-imap-client-perl libjson-perl
