@@ -1287,7 +1287,23 @@ function Message.reply ()
   end
 
   --
-  -- Get the Subject from the message we're replying to.
+  -- Are we going to change the recipient?
+  --
+  if type(on_get_recipient) == "function" then
+
+     --
+     -- Call the user-hook.  If it returns a non-nil
+     -- response that's the new recipient.
+     --
+     local result = on_get_recipient( to, msg )
+     if ( result ) then
+        to = result
+     end
+  end
+
+
+  --
+  -- Get the subject of the message.
   --
   local subject = msg:header "Subject"
   if (subject == nil) or (subject == "") then
@@ -1295,11 +1311,19 @@ function Message.reply ()
   end
 
   --
-  -- Remove any "Re:"-prefix(es) from the subject.
+  -- Will the user want to clean it?
   --
-  while string.find(subject, "^[rR][eE]:") do
-    subject = string.gsub(subject, "^[rR][eE]:", "")
-    subject = string.trim(subject)
+  if type(on_clean_subject) == "function" then
+     subject = on_clean_subject( subject )
+  else
+
+     --
+     -- Default to removing any "Re:"-prefix(es) from the subject.
+     --
+     while string.find(subject, "^[rR][eE]:") do
+        subject = string.gsub(subject, "^[rR][eE]:", "")
+        subject = string.trim(subject)
+     end
   end
 
   --
@@ -2272,8 +2296,8 @@ function Message:format (thread_indent, index)
   -- (This is mostly to handle transforming a string
   -- such as "Steve Kemp (via Twitter)" into "Steve Kemp")
   --
-  if type(on_cleanup_name) == "function" then
-    name = on_cleanup_name(name)
+  if type(on_clean_name) == "function" then
+    name = on_clean_name(name)
   end
 
   --
