@@ -79,7 +79,7 @@ _G['string']['interp'] = function (s, tab)
           -- having to deal with multi-byte / UTF-8
           -- size issues.
           --
-          while val:len() >= len do
+          while val:len() > len do
             val = val:sub(0, val:len() - 1)
           end
         else
