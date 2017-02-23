@@ -80,7 +80,7 @@ _G['string']['interp'] = function (s, tab)
           -- size issues.
           --
           while val:len() > len do
-            val = val:sub(0, val:len() - 1)
+            val = val:sub(0, old_len(val) - 1)
           end
         else
           -- Otherwise pad.
