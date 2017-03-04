@@ -1987,7 +1987,12 @@ function Maildir.select (desired)
       -- we return to Maildir-mode.
       Config:set("maildir.current", index - 1)
 
-      -- First match wins, so we return after updating.
+      -- Invoke the per-user hook, if present.
+      if type(on_folder_changed) == "function" then
+         on_folder_changed(folder)
+      end
+
+      -- The first match wins, so we return after updating.
       return
     end
   end
