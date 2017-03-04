@@ -67,6 +67,9 @@ std::string escape_filename(std::string path)
  * Returns length indicated by first byte.
  *
  * This function should use a table lookup.
+ *
+ * http://reedbeta.com/blog/programmers-intro-to-unicode/
+ *
  */
 int dsutil_utf8_charlen(const unsigned char  c)
 {
