@@ -183,11 +183,6 @@ GMimeMessage * CMessage::parse_message()
      */
     if (message == NULL)
     {
-        /*
-         * Clear our current object.
-         */
-        g_object_unref(stream);
-        g_object_unref(parser);
 
         /*
          * Close the file and retry parsing it, by opening it and
