@@ -1889,10 +1889,6 @@ function Message.save (dest)
   -- Is there a parameter ?
   --
   if not dest then
-    --
-    -- This will be the destination the user entered.
-    --
-    local dest = nil
 
     --
     -- Prompt differently based on which storage is in-use.
