@@ -1923,6 +1923,26 @@ function Message.save (dest)
       -- Prompt for destination
       --
       dest = Screen:get_line("Copy to local maildir:", location)
+
+
+      --
+      -- Does the destination exist, as a maildir?
+      --
+      if ( not Directory:is_maildir( dest ) ) then
+
+         --
+         -- Directory doesn't exist - see if we should create it
+         --
+         local answer = Screen:prompt( "Directory doesn't exist.  Create it? [Y/N]","yYNn" );
+
+         if ( answer == 'y' ) or ( answer == 'Y' ) then
+            Maildir:create(dest)
+         else
+            info_msg "Refusing to save to missing-maildir"
+            return
+         end
+      end
+
     end
 
     --
@@ -1933,6 +1953,8 @@ function Message.save (dest)
       return
     end
   end
+
+
   --
   -- Create a new helper for the destination
   --
@@ -2610,6 +2632,18 @@ function panel_view ()
   result = add_colours(result, 'panel')
   return result
 end
+
+--
+-- Create a maildir if it doesn't exist
+--
+function Maildir:create(path)
+
+   Directory:mkdir( path )
+   Directory:mkdir( path .. "/cur" )
+   Directory:mkdir( path .. "/new"  )
+   Directory:mkdir( path .. "/tmp"  )
+end
+
 
 --
 -- This method returns the text which is displayed when a maildir is
