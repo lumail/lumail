@@ -283,15 +283,15 @@ std::unordered_map < std::string, std::string > CMessage::headers()
              */
             char * decoded = g_mime_utils_header_decode_text(value);
             m_headers[nm] = decoded;
-
+            free(decoded);
 
             if (!g_mime_header_iter_next(iter))
                 break;
         }
     }
 
+    g_mime_header_list_clear(ls);
     g_mime_header_iter_free(iter);
-
 
     g_object_unref(msg);
 
@@ -304,8 +304,12 @@ std::unordered_map < std::string, std::string > CMessage::headers()
  */
 CMessage::~CMessage()
 {
-    if (m_parts.size() > 0)
-        m_parts.clear();
+    for (auto it = m_parts.begin(); it != m_parts.end(); ++it)
+    {
+        m_parts.erase(it);
+    }
+
+    m_parts.clear();
 }
 
 
@@ -738,6 +742,7 @@ std::shared_ptr<CMessagePart> CMessage::part2obj(GMimeObject *part)
          */
         GMimeMessage *msg = g_mime_message_part_get_message(GMIME_MESSAGE_PART(part));
         g_mime_object_write_to_stream(GMIME_OBJECT(msg), mem);
+        g_object_unref(msg);
     }
     else
     {
@@ -850,8 +855,9 @@ std::shared_ptr<CMessagePart> CMessage::part2obj(GMimeObject *part)
     }
 
     /*
-     * Unref the memory.
+     * Unref the memory & type.
      */
+    free(type);
     g_object_unref(mem);
 
     return ret;
@@ -885,6 +891,8 @@ std::vector<std::shared_ptr<CMessagePart> >CMessage::get_parts()
     }
 
     m_parts.push_back(part2obj(mime_part));
+
+    g_object_unref(message);
 
     return (m_parts);
 }
@@ -1119,7 +1127,7 @@ void CMessage::add_attachments(std::vector<std::string> attachments)
     GMimeStream *ostream = g_mime_stream_file_new(f);
     g_mime_object_write_to_stream((GMimeObject *) message, ostream);
     g_object_unref(ostream);
-
+    g_object_unref(message);
     /*
      * Now rename the temporary file over the top of the input
      * message.
