@@ -241,3 +241,10 @@ install: lumail2
 
     # if there is no config in-place, add the default
 	if [ ! -e $(LUMAIL_HOME)/lumail2.lua ] ; then cp ./lumail2.lua $(LUMAIL_HOME)/lumail2.lua ; fi
+
+
+#
+#  Test for leaks; use the debug-build so we get line-number information, etc.
+#
+valgrind: lumail2-debug
+	valgrind  --leak-check=full --show-leak-kinds=all --track-origins=yes ./lumail2-debug  --load-file ./lumail2.lua 2>leak.log
