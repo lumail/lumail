@@ -512,9 +512,16 @@ void CScreen::setup()
 void CScreen::teardown()
 {
     /*
+     * Remove all of our registered views
+     */
+    for (auto it = m_views.begin(); it != m_views.end(); it++)
+    {
+        delete( it->second );
+    }
+
+    /*
      * Remove old panel/window - in the correct order.
      */
-
     endwin();
 }
 

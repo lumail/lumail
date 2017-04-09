@@ -48,6 +48,10 @@
 class CViewMode
 {
 public:
+    /**
+     * Virtual Destructor.
+     */
+    virtual ~CViewMode() {};
 
     /**
       * Allow our virtual mode to draw its own display.
