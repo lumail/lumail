@@ -515,9 +515,12 @@ void CScreen::teardown()
      * Remove all of our registered views
      */
     for (auto it = m_views.begin(); it != m_views.end(); it++)
-    {
-        delete( it->second );
-    }
+        delete((CViewMode *) it->second );
+
+    /*
+     * Empty the container.
+     */
+    m_views.clear();
 
     /*
      * Remove old panel/window - in the correct order.
