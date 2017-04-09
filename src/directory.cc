@@ -63,6 +63,7 @@ std::vector < std::string > CDirectory::entries(std::string prefix)
             result.push_back(r);
         }
     }
+    closedir(dp);
 
     std::sort(result.begin(), result.end());
 
