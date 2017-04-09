@@ -229,6 +229,11 @@ function os.exit (code)
   end
 
   --
+  -- Empty the cache, to avoid leaks
+  --
+  cache:empty()
+
+  --
   -- Finally exit.
   --
   Screen:exit()

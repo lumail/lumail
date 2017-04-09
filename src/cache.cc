@@ -34,6 +34,7 @@ CCache::CCache()
  */
 CCache::~CCache()
 {
+    empty();
 }
 
 
