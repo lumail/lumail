@@ -134,6 +134,11 @@ void CBasicView::draw()
      */
     CScreen *screen = CScreen::instance();
     screen->draw_text_lines(txt, cur, max, m_simple);
+
+    /**
+     * Free the text we have.
+     */
+    txt.clear();
 }
 
 
