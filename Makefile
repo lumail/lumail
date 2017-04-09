@@ -214,7 +214,7 @@ test: lumail2
 # Run our lua test-cases
 #
 test-lua: lumail2
-	for i in t/test*.lua; do ./lumail2 --no-default --load-file $$i --no-curses ; done
+	for i in t/test*.lua; do ./lumail2 --no-default --load-file $$i --no-curses || exit 1; done
 
 
 #
