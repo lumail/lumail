@@ -51,6 +51,18 @@ CGlobalState::CGlobalState() : Observer(CConfig::instance())
  */
 CGlobalState::~CGlobalState()
 {
+    /*
+     * If we have items already then free each of them.
+     */
+    if (m_messages != NULL)
+        delete(m_messages);
+
+    /*
+     * If we have items already then remove them.
+     */
+    if (!m_maildirs.empty())
+        m_maildirs.clear();
+
 }
 
 
