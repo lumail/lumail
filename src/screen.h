@@ -91,7 +91,7 @@ public:
     /**
      * Destructor.
      */
-    ~CScreen();
+    virtual ~CScreen();
 
     /**
      * Register a view mode.

@@ -52,7 +52,7 @@ class CLua : public Singleton<CLua>, public Observer
 
 public:
     CLua();
-    ~CLua();
+    virtual ~CLua();
 
 public:
 

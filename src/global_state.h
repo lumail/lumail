@@ -50,7 +50,7 @@ public:
     /**
      * Destructor.
      */
-    ~CGlobalState();
+    virtual ~CGlobalState();
 
 public:
 

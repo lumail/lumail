@@ -24,12 +24,17 @@
 #include "config.h"
 #include "file.h"
 #include "global_state.h"
+#include "history.h"
 #include "imap_proxy.h"
+#include "input_queue.h"
+#include "logger.h"
 #include "lua.h"
 #include "maildir.h"
 #include "message.h"
 #include "message_part.h"
+#include "mime.h"
 #include "screen.h"
+#include "statuspanel.h"
 #include "tests.h"
 
 /*
@@ -251,6 +256,23 @@ int main(int argc, char *argv[])
      */
     CIMAPProxy *proxy = CIMAPProxy::instance();
     proxy->terminate();
+
+    /*
+     * Now we terminate all our singletons in an aim
+     * to explicitly free memory and make leak-detection
+     * simpler.
+     */
+    config->destroy_instance();
+    proxy->destroy_instance();
+
+    CHistory::instance()->destroy_instance();
+    CGlobalState::instance()->destroy_instance();
+    CInputQueue::instance()->destroy_instance();
+    CStatusPanel::instance()->destroy_instance();
+    CScreen::instance()->destroy_instance();
+    CMime::instance()->destroy_instance();
+    CLua::instance()->destroy_instance();
+    CLogger::instance()->destroy_instance();
 
     /*
      * Close GMime.
