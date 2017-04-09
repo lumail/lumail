@@ -229,9 +229,13 @@ function os.exit (code)
   end
 
   --
-  -- Empty the cache, to avoid leaks
+  -- Empty the cache, to avoid leaks, if it exists.
   --
-  cache:empty()
+  -- (Why wouldn't it?)
+  --
+  if ( cache ) then
+     cache:empty()
+  end
 
   --
   -- Finally exit.
