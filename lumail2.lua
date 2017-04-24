@@ -169,6 +169,11 @@ function get_mime_viewer (mime_type)
   local f = io.input(filename)
   local line = nil
 
+  --
+  -- Remember wildcard match
+  --
+  local wildcard_exec
+
   for line in io.lines() do
 
     --
@@ -183,9 +188,14 @@ function get_mime_viewer (mime_type)
       local type = string.trim(entries[1])
       local exec = string.trim(entries[2])
 
+      --
+      -- Wildcards like "image/*" are used if no other match was found.
+      --
       if type == mime_type then
         f:close()
         return exec
+      elseif type:sub(-2) == "/*" and type:sub(1,-3) == mime_type:split("/")[1] then
+        wildcard_exec = exec
       end
     end
   end
@@ -193,9 +203,9 @@ function get_mime_viewer (mime_type)
   f:close()
 
   --
-  -- We didn't find an obvious match, return the default.
+  -- We didn't find an obvious match, return wildcard match or default.
   --
-  return ret
+  return wildcard_exec or ret
 end
 
 
