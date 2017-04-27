@@ -1701,18 +1701,44 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
      * or blinking persists to the end of the line.
      */
 
+    /*
+     * Get the X,Y coordings.
+     */
     getyx(screen, y, x);
+    bool moved = true;
 
-    while (y == row)
+    /*
+     * Until the row has changed we draw " ", ensuring that
+     * we fill the line.
+     */
+    while ( (y == row ) && ( moved == true ) )
     {
         /*
-         * Draw " " over and over again, until we wrap and the row
-         * changes to the next one.
+         * Keep a copy of x,y
+         */
+        int x_orig = x;
+        int y_orig = y;
+
+
+        /*
+         * Draw " ", until we wrap and the row changes to the next one.
          */
         waddstr(screen, (char *)" ");
         getyx(screen, y, x);
 
         count += 1;
+
+        /*
+         * At this point X/Y should have changed because we draw " ".
+         *
+         * If neither has changed it is because the cursor didn't move
+         * because the draw didn't happen (??) - perhaps the target
+         * is invisible?
+         *
+         * Break out if that is the case
+         */
+        if ( ( x == x_orig ) && ( y == y_orig ) )
+            moved = false;
     }
 
 
