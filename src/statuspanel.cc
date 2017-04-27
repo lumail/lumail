@@ -143,6 +143,15 @@ void CStatusPanel::draw()
     static int old_x = 0;
     static int old_y = 0;
 
+
+    /*
+     * If we don't have a status-bar at the moment
+     * we can't do anything.
+     */
+    if (m_hidden == true)
+        return;
+
+
     int x;
     int y;
     getmaxyx(g_status_bar_window, y, x);
@@ -152,8 +161,6 @@ void CStatusPanel::draw()
         wresize(g_status_bar_window, y, x);
     }
 
-    if (m_hidden == true)
-        return;
 
     CScreen *s = CScreen::instance();
     int width = CScreen::width();
