@@ -1711,7 +1711,7 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
      * Until the row has changed we draw " ", ensuring that
      * we fill the line.
      */
-    while ( (y == row ) && ( moved == true ) )
+    while ((y == row) && (moved == true))
     {
         /*
          * Keep a copy of x,y
@@ -1737,7 +1737,7 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
          *
          * Break out if that is the case
          */
-        if ( ( x == x_orig ) && ( y == y_orig ) )
+        if ((x == x_orig) && (y == y_orig))
             moved = false;
     }
 
