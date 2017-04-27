@@ -2499,8 +2499,13 @@ function keybinding_view ()
 
     local keys = keymap['global']
     for i, o in pairs(table.sorted_keys(keys)) do
-      local entry = string.format("   %10s -> %s", o, keys[o])
-      table.insert(output, entry)
+
+       -- Skip global bindings for "jump(N)", because there
+       -- will be approximately 1000 of them!
+       if not string.match(keys[o], "^jump") then
+          local entry = string.format("   %10s -> %s", o, keys[o])
+          table.insert(output, entry)
+       end
     end
   end
 
