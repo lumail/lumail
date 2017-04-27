@@ -2492,20 +2492,34 @@ function keybinding_view ()
   --
   -- If we have globals
   --
-  globals = keymap['global']
+  local globals = keymap['global']
+  local jump_range = {}
   if globals then
     table.insert(output, "$[RED]Global Keybindings")
     table.insert(output, "\n")
 
-    local keys = keymap['global']
-    for i, o in pairs(table.sorted_keys(keys)) do
+    for i, o in pairs(table.sorted_keys(globals)) do
 
        -- Skip global bindings for "jump(N)", because there
        -- will be approximately 1000 of them!
-       if not string.match(keys[o], "^jump") then
-          local entry = string.format("   %10s -> %s", o, keys[o])
+       if not string.match(globals[o], "^jump") then
+          local entry = string.format("   %10s -> %s", o, globals[o])
           table.insert(output, entry)
+       else
+          local line_number = tonumber(globals[o]:match("%d+"))
+          if #jump_range == 0 then
+             jump_range = {line_number, line_number}
+          elseif line_number > jump_range[2] then
+             jump_range[2] = line_number
+          elseif line_number < jump_range[1] then
+             jump_range[1] = line_number
+          end
        end
+    end
+    if #jump_range == 2 then
+       jump_range = string.format("%d-%d", jump_range[1], jump_range[2])
+       local jump_entry = string.format("   %10s -> jump(N)", jump_range)
+       table.insert(output, jump_entry)
     end
   end
 
