@@ -304,11 +304,6 @@ std::unordered_map < std::string, std::string > CMessage::headers()
  */
 CMessage::~CMessage()
 {
-    for (auto it = m_parts.begin(); it != m_parts.end(); ++it)
-    {
-        m_parts.erase(it);
-    }
-
     m_parts.clear();
 }
 
