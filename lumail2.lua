@@ -102,6 +102,14 @@ local global_msgs = nil
 
 
 --
+-- Helper to write error messages to stderr & the panel.
+--
+function on_error(msg)
+   error_msg(msg)
+   io.stderr:write(msg)
+end
+
+--
 --- Append an error message to the panel.
 --
 -- An error indicates that an operation wasn't completed correctly.
