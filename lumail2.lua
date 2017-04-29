@@ -867,6 +867,7 @@ function get_messages ()
   -- How many steps do we expect to update for our progress-bar?
   --
   local steps = math.floor(#msgs / Screen:width())
+  if ( steps == 0 ) then steps = 1 end
 
   --
   -- Now apply any limit which should be present.
