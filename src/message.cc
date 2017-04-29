@@ -742,7 +742,17 @@ std::shared_ptr<CMessagePart> CMessage::part2obj(GMimeObject *part)
          */
         GMimeMessage *msg = g_mime_message_part_get_message(GMIME_MESSAGE_PART(part));
         g_mime_object_write_to_stream(GMIME_OBJECT(msg), mem);
-        g_object_unref(msg);
+
+        /*
+         * We explicitly don't free this message here, because this
+         * will be done by the caller.
+         *
+         * g_object_unref(msg);
+         *
+         *  https://github.com/lumail/lumail2/issues/292
+         *
+         */
+
     }
     else
     {
