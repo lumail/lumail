@@ -224,23 +224,25 @@ install: lumail2
 	mkdir -p $(DESTDIR)$(PREFIX)/bin || true
 	install -m755 lumail2 $(DESTDIR)$(PREFIX)/bin/
 
-    # make target-directories
+	# make target-directories
 	mkdir -p $(LUMAIL_HOME)/lib/  || true
 	mkdir -p $(LUMAIL_HOME)/perl.d/  || true
 
-    # copy our helpers
+	# copy our helpers
 	cp lib/*.lua $(LUMAIL_HOME)/lib/
 	cp perl.d/* $(LUMAIL_HOME)/perl.d/
 
-    # cleanup old installs
+	# cleanup old installs
 	rm $(LUMAIL_HOME)/perl.d/delete-message || true
 	rm $(LUMAIL_HOME)/perl.d/get-folders || true
 	rm $(LUMAIL_HOME)/perl.d/get-messages || true
 	rm $(LUMAIL_HOME)/perl.d/save-message || true
 	rm $(LUMAIL_HOME)/perl.d/set-flags || true
 
-    # if there is no config in-place, add the default
-	if [ ! -e $(LUMAIL_HOME)/lumail2.lua ] ; then cp ./lumail2.lua $(LUMAIL_HOME)/lumail2.lua ; fi
+	# if there is an old config in-place then rename it.
+	mv $(LUMAIL_HOME)/lumail2.lua $(LUMAIL_HOME)/lumail2.lua.$$(date +%d-%m-%Y.%s)
+	# Deploy the new config
+	cp ./lumail2.lua $(LUMAIL_HOME)/lumail2.lua
 
 
 #
