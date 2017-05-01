@@ -1283,9 +1283,32 @@ end
 
 
 --
--- Reply to the current message
+-- Reply to the current message.
+--
+-- This literally just replies to the sender of the message,
+-- any CC'd addresses are dropped.
 --
 function Message.reply ()
+   -- `False` means don't include the CC's
+   Message.send_reply( false )
+end
+
+
+--
+-- Reply to the current message, keeping all CC'd addresses.
+--
+function Message.reply_all ()
+   -- `True` means keep the CC's.
+   Message.send_reply( true )
+end
+
+
+
+--
+-- Reply to the message at the point, either keeping
+-- or dropping CC'd addresses
+--
+function Message.send_reply( include_cc )
 
   -- The message we're going to work on.
   local msg = Message.at_point()
@@ -1355,9 +1378,12 @@ function Message.reply ()
   end
 
   --
-  -- Get any CC'd addresses
+  -- Get any CC'd addresses if we're supposed to do so.
   --
-  local cc = msg:header "Cc"
+  local cc = ""
+  if ( include_cc ) then
+     cc= msg:header "Cc"
+  end
 
   -- Add prefix to the subject.
   subject = "Re: " .. subject
