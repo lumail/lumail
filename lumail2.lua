@@ -1242,7 +1242,7 @@ ${sig}
 
       -- Send the mail.
       os.execute(Config:get "global.mailer" .. " < " .. tmp)
-      info_msg("Message sent to " .. to)
+      info_msg("Message sent")
 
       -- Allow transformations to occur after sending the message.
       if type(on_message_sent) == "function" then
