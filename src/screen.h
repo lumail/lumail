@@ -114,7 +114,7 @@ public:
      * This method is called when a configuration key changes,
      * via our observer implementation.
      */
-    void update(std::string key_name);
+    void update(std::string key_name, CConfigEntry *old);
 
 
 public:

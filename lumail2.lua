@@ -316,7 +316,7 @@ end
 -- been updated - the value can be retrieved via Config:get, but
 -- remember that the value might be a string, an integer, or a table.
 --
-function Config.key_changed (name)
+function Config.key_changed (name,old)
 
   --
   -- Obsolete setting?

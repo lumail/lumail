@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
      */
     {
         CGlobalState *global = CGlobalState::instance();
-        global->update("there.is.no.match.here");
+        global->update("there.is.no.match.here", NULL);
 
         /*
          * Launch time in seconds past the epoch.

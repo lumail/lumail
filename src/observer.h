@@ -23,6 +23,12 @@
 #include <string>
 
 
+/*
+ * Forward-declaration.
+ */
+class CConfigEntry;
+
+
 /**
  * This is the subject-class for the observer-pattern.
  *
@@ -86,6 +92,6 @@ public:
      * This is the virtual function sub-classes much implement to
      * be notified of key-changes.
      */
-    virtual void update(std::string name) = 0;
+    virtual void update(std::string name, CConfigEntry *old) = 0;
 
 };

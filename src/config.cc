@@ -74,29 +74,40 @@ void CConfig::remove_all()
 
 
 /*
+ * Free the given CConfigEntry structure, and the value it held.
+ */
+void CConfig::delete_entry(CConfigEntry *entry)
+{
+    if (entry == NULL)
+        return;
+
+
+    if (entry->type == CONFIG_STRING)
+        delete(entry->value.str);
+    else if (entry->type == CONFIG_INTEGER)
+        delete(entry->value.value);
+    else if (entry->type == CONFIG_ARRAY)
+        delete(entry->value.array);
+    else
+        throw "Unknown config-type!";
+
+    delete(entry->name);
+    free(entry);
+}
+
+
+/*
  * Remove the value of the given key.
  */
 void CConfig::delete_key(std::string name)
 {
     CConfigEntry *tmp = m_entries[name];
 
-    if (! tmp)
-        return;
-
-    if (tmp->type == CONFIG_STRING)
-        delete(tmp->value.str);
-    else if (tmp->type == CONFIG_INTEGER)
-        delete(tmp->value.value);
-    else if (tmp->type == CONFIG_ARRAY)
-        delete(tmp->value.array);
-    else
-        throw "Unknown config-type!";
-
-    delete(tmp->name);
-
-    free(tmp);
-
-    m_entries[name] = NULL;
+    if (tmp)
+    {
+        delete_entry(tmp);
+        m_entries[name] = NULL;
+    }
 }
 
 
@@ -137,9 +148,9 @@ std::vector < std::string > CConfig::keys()
 void CConfig::set(std::string name, std::string val, bool notify)
 {
     /*
-     * Delete any existing value stored under this key.
+     * Keep a reference to the old value.
      */
-    delete_key(name);
+    CConfigEntry *old = m_entries[name] ;
 
     /*
      * Create the new the new entry.
@@ -165,7 +176,12 @@ void CConfig::set(std::string name, std::string val, bool notify)
      * Notify our global state of the variable change.
      */
     if (notify)
-        notify_watchers(name);
+        notify_watchers(name, old);
+
+    /*
+     * Free the old-value, if any
+     */
+    delete_entry(old);
 }
 
 
@@ -178,9 +194,9 @@ void CConfig::set(std::string name, std::string val, bool notify)
 void CConfig::set(std::string name, int val, bool notify)
 {
     /*
-     * Delete any existing value stored under this key.
+     * Keep a reference to the old value.
      */
-    delete_key(name);
+    CConfigEntry *old = m_entries[name] ;
 
     /*
      * Create the new the new entry.
@@ -206,7 +222,12 @@ void CConfig::set(std::string name, int val, bool notify)
      * Notify our global state of the variable change.
      */
     if (notify)
-        notify_watchers(name);
+        notify_watchers(name, old);
+
+    /*
+     * Free the old-value, if any
+     */
+    delete_entry(old);
 }
 
 
@@ -219,9 +240,9 @@ void CConfig::set(std::string name, std::vector < std::string > entries, bool no
 {
 
     /*
-     * Delete any existing value stored under this key.
+     * Keep a reference to the old value.
      */
-    delete_key(name);
+    CConfigEntry *old = m_entries[name] ;
 
     /*
      * Create the new entry.
@@ -255,7 +276,12 @@ void CConfig::set(std::string name, std::vector < std::string > entries, bool no
      * Notify our global state of the variable change.
      */
     if (notify)
-        notify_watchers(name);
+        notify_watchers(name, old);
+
+    /*
+     * Free the old-value, if any
+     */
+    delete_entry(old);
 }
 
 /*
@@ -310,10 +336,10 @@ std::vector<std::string> CConfig::get_array(std::string name)
 }
 
 
-void CConfig::notify_watchers(std::string key_name)
+void CConfig::notify_watchers(std::string key_name, CConfigEntry *old_value)
 {
     int max = views.size();
 
     for (int i = 0; i < max; i++)
-        views[i]->update(key_name);
+        views[i]->update(key_name, old_value);
 }

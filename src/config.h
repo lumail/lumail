@@ -140,6 +140,12 @@ public:
     void remove_all();
 
 
+
+    /**
+     * Free the given CConfigEntry structure, and the value it held.
+     */
+    void delete_entry(CConfigEntry *entry);
+
     /**
      * Remove the value of the given key, freeing the associated
      * CConfigEntry structure.
@@ -152,7 +158,7 @@ private:
      * Notify any watchers that the value of a configuration-key
      * has changed.  This is implemented via the Observer pattern.
      */
-    void notify_watchers(std::string key_name);
+    void notify_watchers(std::string key_name, CConfigEntry *old_value);
 
     /**
      * The actual map which stores our configured names & value pairs.

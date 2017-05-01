@@ -91,7 +91,7 @@ std::vector<std::string> CScreen::view_modes()
  * This method is called when a configuration key changes,
  * via our observer implementation.
  */
-void CScreen::update(std::string key_name)
+void CScreen::update(std::string key_name, CConfigEntry *old)
 {
     /*
      * If our timeout value has changed then update

@@ -297,7 +297,7 @@ std::vector<std::string> CLua::bindings(std::string mode)
  * This method is called when a configuration key changes,
  * via our observer implementation.
  */
-void CLua::update(std::string key_name)
+void CLua::update(std::string key_name, CConfigEntry *old)
 {
     CLuaLog("update(" + key_name + ")");
 
@@ -315,7 +315,54 @@ void CLua::update(std::string key_name)
      */
     lua_pushstring(m_lua, key_name.c_str());
 
-    if (lua_pcall(m_lua, 1, 0, 0) != 0)
+    /*
+     * Handle the old-value, if any
+     */
+    if (old == NULL)
+        lua_pushnil(m_lua);
+    else
+    {
+        if (old->type == CONFIG_STRING)
+        {
+            lua_pushstring(m_lua, old->value.str->c_str());
+        }
+        else if (old->type == CONFIG_INTEGER)
+        {
+            /*
+             * Does this configuration value hold an integer?
+             */
+            lua_pushnumber(m_lua, *old->value.value);
+        }
+        else if (old->type == CONFIG_ARRAY)
+        {
+            /*
+             * Does this configuration value hold an array (read: table)?
+             */
+            lua_newtable(m_lua);
+
+            int i = 1;
+
+            for (auto it = old->value.array->begin(); it != old->value.array->end();
+                    ++it)
+            {
+                std::string value = (*it);
+
+                lua_pushinteger(m_lua, i);
+                lua_pushstring(m_lua, value.c_str());
+
+                lua_settable(m_lua, -3);
+
+                i += 1;
+            }
+
+        }
+        else
+        {
+            throw ("Invalid key-type");
+        }
+    }
+
+    if (lua_pcall(m_lua, 2, 0, 0) != 0)
     {
         if (lua_isstring(m_lua, -1))
         {

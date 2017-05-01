@@ -92,8 +92,10 @@ The following (static) methods are available:
     * The value might be an integer, a string or an array (table of strings with integer indexes).
 
 If the function `Config:key_changed` is defined it will be invoked whenever
-the value of a key is changed.  The single argument being the name of the key
-which has been updated.
+the value of a key is changed.  The function will be given two arguments:
+
+* The name of the key which has changed-value.
+* The previous value of that key, if any.
 
 **NOTE**: We've defined a helper method in `lumail2.lua` which allows you to retrieve the value of a configuration-key and return a default value if the key is not set.
 

@@ -97,7 +97,7 @@ void CGlobalState::set_message(std::shared_ptr<CMessage> update)
  * This method is called when a configuration key changes,
  * via our observer implementation.
  */
-void CGlobalState::update(std::string key_name)
+void CGlobalState::update(std::string key_name, CConfigEntry *old)
 {
     CLogger *logger = CLogger::instance();
     logger->log("CGlobalState", "CConfig variable changed: %s ", key_name.c_str());
