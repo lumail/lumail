@@ -84,6 +84,13 @@ cache = Cache.new()
 
 
 --
+-- If the user cahnges the index-limit we'll try to keep the same
+-- maildir selected.  We do that by caching the old value here.
+--
+local prev_maildir = nil
+
+
+--
 -- This contains the messages which are currently visible.
 --
 -- When the user selects a Maildir, or changes the active selection
@@ -104,9 +111,9 @@ local global_msgs = nil
 --
 -- Helper to write error messages to stderr & the panel.
 --
-function on_error(msg)
-   error_msg(msg)
-   io.stderr:write(msg)
+function on_error (msg)
+  error_msg(msg)
+  io.stderr:write(msg)
 end
 
 --
@@ -202,7 +209,7 @@ function get_mime_viewer (mime_type)
       if type == mime_type then
         f:close()
         return exec
-      elseif type:sub(-2) == "/*" and type:sub(1,-3) == mime_type:split("/")[1] then
+      elseif type:sub(-2) == "/*" and type:sub(1, -3) == mime_type:split "/"[1] then
         wildcard_exec = exec
       end
     end
@@ -251,8 +258,8 @@ function os.exit (code)
   --
   -- (Why wouldn't it?)
   --
-  if ( cache ) then
-     cache:empty()
+  if cache then
+    cache:empty()
   end
 
   --
@@ -316,7 +323,7 @@ end
 -- been updated - the value can be retrieved via Config:get, but
 -- remember that the value might be a string, an integer, or a table.
 --
-function Config.key_changed (name,old)
+function Config.key_changed (name, old)
 
   --
   -- Obsolete setting?
@@ -346,6 +353,29 @@ function Config.key_changed (name,old)
     global_msgs = nil
     return
   end
+
+  --
+  -- If the index-limit changes then we'll try to preserve the
+  -- previously selected maildir.
+  --
+  if name == "maildir.limit" then
+
+    -- Get the current index, if that fails we're done
+    local x = Config.get_with_default("maildir.current", -1)
+    if x == -1 then
+      return
+    end
+
+    -- Get all known maildirs - filtered by the limit which was
+    -- PREVIOUSLY in place, using the value of old.
+    local m = maildirs(old)
+
+    -- Now we can find the folder at the point
+    if m and (x + 1 <= #m) then
+      prev_maildir = m[x + 1]:path()
+    end
+  end
+
 
   --
   -- If the sorting method has changed we need to resort our messages.
@@ -773,7 +803,7 @@ end
 --
 -- Return our maildirs
 --
-function maildirs ()
+function maildirs (limit)
 
   --
   -- Get all maildirs
@@ -786,9 +816,12 @@ function maildirs ()
   local ret = {}
 
   --
-  -- Filter them according to the limit.
+  -- Filter them according to the limit - if we don't have a limit
+  -- then use the global-one.
   --
-  local limit = Config.get_with_default("maildir.limit", "all")
+  if not limit then
+    limit = Config.get_with_default("maildir.limit", "all")
+  end
 
   if limit == "all" then
     --
@@ -875,7 +908,9 @@ function get_messages ()
   -- How many steps do we expect to update for our progress-bar?
   --
   local steps = math.floor(#msgs / Screen:width())
-  if ( steps == 0 ) then steps = 1 end
+  if steps == 0 then
+    steps = 1
+  end
 
   --
   -- Now apply any limit which should be present.
@@ -1017,6 +1052,7 @@ function mimeparts2table (msg)
         type = o:type():lower(),
 
 
+
       }
 
       -- Insert the entry.
@@ -1148,6 +1184,7 @@ ${sig}
         sig = Message.generate_signature(),
 
 
+
       }))
 
   file:close()
@@ -1224,6 +1261,7 @@ ${sig}
             recipient = to,
 
 
+
           })
 
         -- Run the command.
@@ -1242,7 +1280,7 @@ ${sig}
 
       -- Send the mail.
       os.execute(Config:get "global.mailer" .. " < " .. tmp)
-      info_msg("Message sent")
+      info_msg "Message sent"
 
       -- Allow transformations to occur after sending the message.
       if type(on_message_sent) == "function" then
@@ -1289,8 +1327,8 @@ end
 -- any CC'd addresses are dropped.
 --
 function Message.reply ()
-   -- `False` means don't include the CC's
-   Message.send_reply( false )
+  -- `False` means don't include the CC's
+  Message.send_reply(false)
 end
 
 
@@ -1298,17 +1336,16 @@ end
 -- Reply to the current message, keeping all CC'd addresses.
 --
 function Message.reply_all ()
-   -- `True` means keep the CC's.
-   Message.send_reply( true )
+  -- `True` means keep the CC's.
+  Message.send_reply(true)
 end
-
 
 
 --
 -- Reply to the message at the point, either keeping
 -- or dropping CC'd addresses
 --
-function Message.send_reply( include_cc )
+function Message.send_reply (include_cc)
 
   -- The message we're going to work on.
   local msg = Message.at_point()
@@ -1342,14 +1379,14 @@ function Message.send_reply( include_cc )
   --
   if type(on_get_recipient) == "function" then
 
-     --
-     -- Call the user-hook.  If it returns a non-nil
-     -- response that's the new recipient.
-     --
-     local result = on_get_recipient( to, msg )
-     if ( result ) then
-        to = result
-     end
+    --
+    -- Call the user-hook.  If it returns a non-nil
+    -- response that's the new recipient.
+    --
+    local result = on_get_recipient(to, msg)
+    if result then
+      to = result
+    end
   end
 
 
@@ -1365,24 +1402,24 @@ function Message.send_reply( include_cc )
   -- Will the user want to clean it?
   --
   if type(on_clean_subject) == "function" then
-     subject = on_clean_subject( subject )
+    subject = on_clean_subject(subject)
   else
 
-     --
-     -- Default to removing any "Re:"-prefix(es) from the subject.
-     --
-     while string.find(subject, "^[rR][eE]:") do
-        subject = string.gsub(subject, "^[rR][eE]:", "")
-        subject = string.trim(subject)
-     end
+    --
+    -- Default to removing any "Re:"-prefix(es) from the subject.
+    --
+    while string.find(subject, "^[rR][eE]:") do
+      subject = string.gsub(subject, "^[rR][eE]:", "")
+      subject = string.trim(subject)
+    end
   end
 
   --
   -- Get any CC'd addresses if we're supposed to do so.
   --
   local cc = ""
-  if ( include_cc ) then
-     cc= msg:header "Cc"
+  if include_cc then
+    cc = msg:header "Cc"
   end
 
   -- Add prefix to the subject.
@@ -1429,6 +1466,7 @@ References: ${references}
         references = references,
         msgid = Message:generate_message_id(),
         date = os.date "%a, %d %b %Y %H:%M:%S %z",
+
 
 
       }))
@@ -1558,6 +1596,7 @@ References: ${references}
         -- Replace the recipient, if present.
         cmd = string.interp(cmd, {
             recipient = to,
+
 
 
           })
@@ -1743,6 +1782,7 @@ Begin forwarded message.
         date = os.date "%a, %d %b %Y %H:%M:%S %z",
 
 
+
       }))
 
 
@@ -1825,6 +1865,7 @@ Begin forwarded message.
         -- Replace the recipient, if present.
         cmd = string.interp(cmd, {
             recipient = to,
+
 
 
           })
@@ -1982,19 +2023,19 @@ function Message.save (dest)
       --
       -- Does the destination exist, as a maildir?
       --
-      if ( not Directory:is_maildir( dest ) ) then
+      if not Directory:is_maildir(dest) then
 
-         --
-         -- Directory doesn't exist - see if we should create it
-         --
-         local answer = Screen:prompt( "Directory doesn't exist.  Create it? [Y/N]","yYNn" );
+        --
+        -- Directory doesn't exist - see if we should create it
+        --
+        local answer = Screen:prompt("Directory doesn't exist.  Create it? [Y/N]", "yYNn")
 
-         if ( answer == 'y' ) or ( answer == 'Y' ) then
-            Maildir:create(dest)
-         else
-            info_msg "Refusing to save to missing-maildir"
-            return
-         end
+        if (answer == 'y') or (answer == 'Y') then
+          Maildir:create(dest)
+        else
+          info_msg "Refusing to save to missing-maildir"
+          return
+        end
       end
 
     end
@@ -2035,7 +2076,7 @@ end
 -- or Lua regular expressions.  That means you don't need to escape
 -- any special characters.
 --
-function Maildir.select (desired)
+function Maildir.select (desired, change_mode)
 
   -- Get the maildirs
   local folders = maildirs()
@@ -2049,23 +2090,26 @@ function Maildir.select (desired)
       -- Select the maildir, to make it current.
       Global:select_maildir(object)
 
-      -- change the mode, to make it work
-      change_mode "index"
-
-      -- Flush the cached message-list
-      global_msgs = nil
-
-      -- And update the current selection for when
-      -- we return to Maildir-mode.
+      -- And update the current selection.
       Config:set("maildir.current", index - 1)
 
-      -- Invoke the per-user hook, if present.
-      if type(on_folder_changed) == "function" then
-         on_folder_changed(folder)
+      -- If we're supposed to change mode, do so.
+      if change_mode then
+
+        change_mode "index"
+
+        -- Flush the cached message-list
+        global_msgs = nil
+
+        -- Invoke the per-user hook, if present.
+        if type(on_folder_changed) == "function" then
+          on_folder_changed(folder)
+        end
       end
 
       -- The first match wins, so we return after updating.
       return
+
     end
   end
 end
@@ -2314,6 +2358,7 @@ function attachment_view ()
         filename = o["filename"] or "",
 
 
+
       }))
     table.insert(result, output)
   end
@@ -2419,6 +2464,7 @@ function Message:format (thread_indent, index)
       number = index,
       date = date,
       id = id,
+
 
 
     }))
@@ -2535,26 +2581,30 @@ function keybinding_view ()
 
     for i, o in pairs(table.sorted_keys(globals)) do
 
-       -- Skip global bindings for "jump(N)", because there
-       -- will be approximately 1000 of them!
-       if not string.match(globals[o], "^jump") then
-          local entry = string.format("   %10s -> %s", o, globals[o])
-          table.insert(output, entry)
-       else
-          local line_number = tonumber(globals[o]:match("%d+"))
-          if #jump_range == 0 then
-             jump_range = {line_number, line_number}
-          elseif line_number > jump_range[2] then
-             jump_range[2] = line_number
-          elseif line_number < jump_range[1] then
-             jump_range[1] = line_number
-          end
-       end
+      -- Skip global bindings for "jump(N)", because there
+      -- will be approximately 1000 of them!
+      if not string.match(globals[o], "^jump") then
+        local entry = string.format("   %10s -> %s", o, globals[o])
+        table.insert(output, entry)
+      else
+        local line_number = tonumber(globals[o]:match "%d+")
+        if #jump_range == 0 then
+          jump_range = {
+            line_number,
+            line_number,
+
+          }
+        elseif line_number > jump_range[2] then
+          jump_range[2] = line_number
+        elseif line_number < jump_range[1] then
+          jump_range[1] = line_number
+        end
+      end
     end
     if #jump_range == 2 then
-       jump_range = string.format("%d-%d", jump_range[1], jump_range[2])
-       local jump_entry = string.format("   %10s -> jump(N)", jump_range)
-       table.insert(output, jump_entry)
+      jump_range = string.format("%d-%d", jump_range[1], jump_range[2])
+      local jump_entry = string.format("   %10s -> jump(N)", jump_range)
+      table.insert(output, jump_entry)
     end
   end
 
@@ -2709,12 +2759,12 @@ end
 --
 -- Create a maildir if it doesn't exist
 --
-function Maildir:create(path)
+function Maildir:create (path)
 
-   Directory:mkdir( path )
-   Directory:mkdir( path .. "/cur" )
-   Directory:mkdir( path .. "/new"  )
-   Directory:mkdir( path .. "/tmp"  )
+  Directory:mkdir(path)
+  Directory:mkdir(path .. "/cur")
+  Directory:mkdir(path .. "/new")
+  Directory:mkdir(path .. "/tmp")
 end
 
 
@@ -2816,6 +2866,7 @@ function Maildir:format (index)
       path = path,
 
 
+
     }))
 
   --
@@ -2843,6 +2894,14 @@ function maildir_view ()
 
   -- Get the maildirs
   local folders = maildirs()
+
+  -- If we had an old selection in-place then try to
+  -- preserve that.
+  if prev_maildir then
+    info_msg("Trying to select " .. prev_maildir)
+    Maildir.select(prev_maildir, false)
+    prev_maildir = nil
+  end
 
   if (folders == nil) or (#folders == 0) then
     Screen:draw(10, 10, "There are no visible folders.")
@@ -3983,7 +4042,7 @@ for index, arg in ipairs(ARGS) do
   local folder = string.match(arg, "--folder=(.*)")
   if folder then
     Config:set("maildir.limit", "all")
-    Maildir.select(folder)
+    Maildir.select(folder, true)
   end
 
 end
