@@ -2076,7 +2076,7 @@ end
 -- or Lua regular expressions.  That means you don't need to escape
 -- any special characters.
 --
-function Maildir.select (desired, change_mode)
+function Maildir.select (desired, change_mode_too)
 
   -- Get the maildirs
   local folders = maildirs()
@@ -2094,7 +2094,7 @@ function Maildir.select (desired, change_mode)
       Config:set("maildir.current", index - 1)
 
       -- If we're supposed to change mode, do so.
-      if change_mode then
+      if change_mode_too then
 
         change_mode "index"
 
@@ -2103,7 +2103,7 @@ function Maildir.select (desired, change_mode)
 
         -- Invoke the per-user hook, if present.
         if type(on_folder_changed) == "function" then
-          on_folder_changed(folder)
+          on_folder_changed(object)
         end
       end
 
