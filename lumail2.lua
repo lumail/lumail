@@ -2396,11 +2396,12 @@ function Message:format (thread_indent, index)
   --
   -- Basics from the message
   --
-  local flags = self:flags()
-  local subject = self:header "Subject"
-  local sender = self:header "From"
-  local date = self:header "Date"
-  local id = self:header "Message-ID"
+  local flags     = self:flags()
+  local subject   = self:header "Subject"
+  local sender    = self:header "From"
+  local recipient = self:header "To"
+  local date      = self:header "Date"
+  local id        = self:header "Message-ID"
 
   --
   -- Try to parse out sender into "email" + "name".
@@ -2410,6 +2411,21 @@ function Message:format (thread_indent, index)
   if name:len() < 1 then
     name = sender
   end
+
+  --
+  -- Again for recipient.
+  --
+  local recipient_email = string.match(recipient, "<(.*)>") or recipient
+  local recipient_name = string.gsub(recipient, "<(.*)>", "")
+  if recipient_name:len() < 1 then
+    recipient_name = recipient_name
+  end
+
+  --
+  -- Compatibility updates
+  --
+  local sender_email = email
+  local sender_name  = name
 
   --
   -- The user might have a filter-function to cleanup
@@ -2454,19 +2470,21 @@ function Message:format (thread_indent, index)
   -- Format this message for display
   --
   local output = (string.interp(format, {
-      flags = flags,
-      message_flags = m_flags,
-      sender = sender,
-      email = email,
-      name = name,
-      indent = thread_indent,
-      subject = subject,
-      number = index,
-      date = date,
-      id = id,
-
-
-
+      flags           = flags,
+      message_flags   = m_flags,
+      sender          = sender,
+      sender_name     = sender_name,
+      sender_email    = sender_email,
+      email           = email,           -- depreciated
+      name            = name,            -- depreciated
+      indent          = thread_indent,
+      subject         = subject,
+      number          = index,
+      date            = date,
+      id              = id,
+      recipient       = recipient,
+      recipient_name  = recipient_name,
+      recipient_email = recipient_email,
     }))
 
   --
