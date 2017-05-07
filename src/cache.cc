@@ -120,9 +120,16 @@ void CCache::load(std::string path)
                 std::string k_value = line.substr(kname + 1);
 
                 CacheEntry *e = new CacheEntry();
-                e->value   = k_value;
-                e->created = std::stoi(c_time);
-                m_cache[ k_name ] = e;
+                try
+                {
+                    e->value   = k_value;
+                    e->created = std::stoi(c_time);
+                    m_cache[ k_name ] = e;
+                }
+                catch (std::invalid_argument& exception)
+                {
+                    delete(e);
+                }
             }
         }
     }
