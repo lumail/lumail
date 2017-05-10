@@ -120,6 +120,7 @@ void CCache::load(std::string path)
                 std::string k_value = line.substr(kname + 1);
 
                 CacheEntry *e = new CacheEntry();
+
                 try
                 {
                     e->value   = k_value;
