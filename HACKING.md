@@ -13,7 +13,7 @@ code, located beneath the top-level `perl.d` directory.  On a final
 installation this will be located at `/etc/lumail2/perl.d`.
 
 
-# Code Formating
+# Code Formatting
 
 To ensure consistency we wish all code to be formatted in an identical fashion.
 
@@ -50,7 +50,7 @@ The main objects are:
 * `CMessage`
     * Represents a single message.
 * `CMessagePart`
-    * Represents and holdes MIME-data from a message.
+    * Represents and holds MIME-data from a message.
 * `CScreen`
     * Which implements the drawing code, and runs the main event-loop of the application.
 * `CViewMode`
