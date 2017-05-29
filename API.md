@@ -317,7 +317,7 @@ Message methods:
    * Sample code is available in `sample.lua/add_attachment.lua`.
 * `ctime()`
    * Return the creation time of the message, as seconds past the epoch.
-   * THis is based upon the `Delivery-Date` / `Date` header inside the message.
+   * This is based upon the `Delivery-Date` / `Date` header inside the message.
 * `flags()`
    * Get the flags for the message.
 * `flags(new_flags)`
