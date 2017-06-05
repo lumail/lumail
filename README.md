@@ -32,11 +32,6 @@ Each of the operations works against both local-maildir hierarchies,
 and [remote IMAP servers](IMAP.md).
 
 
-**NOTE**: `lumail2` may well eat your email, corrupt your email, or
-otherwise cause data loss.  If you have no current backups of your
-email you should **NOT USE THIS PROJECT**.
-
-
 User-Interface
 --------------
 
