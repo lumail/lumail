@@ -6,18 +6,16 @@
 lumail2
 =======
 
-This repository contains the `lumail2` console-based email
-client, with fully integrated scripting provided by Lua.
+This repository contains the `lumail2` console-based email client, with fully integrated scripting provided by Lua.
 
-This project is based upon of the previous [Lumail client](https://github.com/lumail/lumail/), and was initiated to improve both the user-interface and the internal implementation:
+This is the second version of lumail which has been written, learning the lessons from the [initial version](https://github.com/lumail/lumail).  With this codebase:
 
-* The C++ core, and Lua scripting, is much more consistent.
-* The more things that can be pushed to Lua the better.
+* The C++ core, and Lua scripting support, is much more consistent.
+* More parts of the core have been pushed to Lua.
     * To allow customization.
     * To allow flexibility.
 
-The project is perpetually a work in-progress, but the core of the client
-is complete and robust:
+The project is perpetually a work in-progress, but despite that the client is functional, stable, reliable and robust:
 
 * All the obvious operations may be carried out:
      * Viewing folder-hierarchies.
@@ -27,27 +25,22 @@ is complete and robust:
      * Forwarding emails.
      * Composing fresh emails.
      * Deleting emails.
+     * Scripting, transforming, and customizing the various display modes.
 
-Each of the operations works against both local-maildir hierarchies,
-and [remote IMAP servers](IMAP.md).
+Each of the operations works against both local-maildir hierarchies, and [remote IMAP servers](IMAP.md).
 
 
 User-Interface
 --------------
 
-The user-interface will be familiar to users of previous `lumail` project,
-if you're new to the project the following screencast shows what it looks
+The user-interface should be broadly familiar to users of previous, legacy, project. If you're new to the project the following screencast shows what it looks
 like and gives a hint of how it can be used:
 
 * https://asciinema.org/a/chdqz6tb4vt9p3ifp32g4musa
 
-The only obvious change, in terms of visual appearance, is the addition of
-the status-panel which can display persistent output, under the control of
-Lua, and the updated display-modes.
-
-It should be noted that all of the display-modes are created/maintained by
-Lua code, which means it is possible to create very flexible and
-customized output.
+It should be noted that __all__ of the display-modes are created/maintained by
+Lua code, which means it is possible for you to customize most of the views
+you can see, via pure Lua code.
 
 Because this is a modal-application you're always in one of a fixed number
 of modes:
@@ -59,10 +52,9 @@ of modes:
     * i.e. The contents of a folder.
 * `message`-mode
     * Allows you to view a single message.
-    * `attachment`-mode is a submode, allowing you to view the attachments associated with a particular message.
+    * `attachment`-mode is related, allowing you to view the attachments associated with a particular message.
 * `lua`-mode.
-    * This mode displays output created by Lua.
-    * By default it dumps configuration values, & etc.
+    * This mode displays diagnostics and other internal details.
 * `keybinding`-mode.
     * Shows you the keybindings which are in-use.
     * Press `H` to enter this mode, and `q` to return from it.
@@ -80,6 +72,7 @@ The core of the project relies upon a small number of libraries:
 
 
 ### Linux
+
 Upon a Debian GNU/Linux host, running the Jessie (stable) release, the following command is sufficient to install the required dependencies:
 
      apt-get install build-essential libgmime-2.6-dev liblua5.2-dev libmagic-dev libncursesw5-dev libpcre3-dev make pkg-config
@@ -160,7 +153,7 @@ command-line flags to change the behaviour:
 
 This can be achieved like so:
 
-     $ ./lumail2 --load-path=$(pwd)/lib/ --no-default --load-file ./lumail2.lua
+     $ ./lumail2 --load-path=$(pwd)/lib/ --no-default --load-file ./lumail2.lua --load-file ./lumail2.user.lua
 
 
 
