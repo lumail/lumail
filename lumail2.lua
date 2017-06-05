@@ -1419,7 +1419,45 @@ function Message.send_reply (include_cc)
   --
   local cc = ""
   if include_cc then
-    cc = msg:header "Cc"
+
+     -- Get the recipient(s) + CCs as one string
+     h_to = msg:header( "To" )
+     h_cc = msg:header("Cc" )
+
+     x = h_to .. "," .. h_cc
+
+     -- Now we have a table of recipients
+     recip = string.split( x , "," )
+
+     -- Remove dupes
+     local hash = {}
+     local res = {}
+     for _,v in ipairs(recip) do
+        -- strip leading/trailing whitespace
+        v = string.trim(v)
+        if (not hash[v]) then
+
+           -- Ignore our self
+           if ( v ~= Config:get "global.sender" ) then
+              res[#res+1] = v
+              hash[v] = true
+           end
+        end
+     end
+
+     -- Sort the table
+     table.sort(res, function (a, b)
+                   return a:lower() < b:lower()
+                     end)
+
+     -- Now we can join them back via ","
+     cc = ""
+     for _,v in ipairs(res) do
+        cc = cc .. v .. ", "
+     end
+
+     -- Delete the trailing comma.
+     cc = (cc:gsub(", $", ""))
   end
 
   -- Add prefix to the subject.
