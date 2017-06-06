@@ -192,14 +192,27 @@ GMimeMessage * CMessage::parse_message()
         fd = open(file.c_str(), O_RDONLY, 0);
 
         int newline = 2;
+        int count   = 1024;
         char buf[2] = { '\0', '\0' };
 
-        while (newline > 0)
+        /*
+         * We're skipping two lines, but if the message
+         * is really malformed and contains a long
+         * line, etc, we'll have an infinite loop
+         * if we don't cap our attempts.
+         *
+         * `count` is the number of characters read,
+         * and we limit that to 1024 bytes.
+         *
+         */
+        while ((newline > 0) && (count > 0))
         {
             result = read(fd, buf, 1);
 
             if (buf[0] == '\n')
                 newline -= 1;
+
+            count -= 1;
         }
 
         /*
