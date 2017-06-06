@@ -38,7 +38,7 @@
  * which may be displayed, even if that character might be made from
  * multiple *BYTES*.
  */
-std::vector<COLOUR_STRING *> CColourString::parse_coloured_string(std::string input, int offset)
+std::vector<COLOUR_STRING *> CColourString::parse_coloured_string(std::string input, int offset, int tab_width)
 {
     /**
      * Vector we use while building.
@@ -152,7 +152,7 @@ std::vector<COLOUR_STRING *> CColourString::parse_coloured_string(std::string in
         std::string *text   = (*it)->string;
 
         /**
-         * Expand $[#RED]", appropriately.
+         * Expand "$[#RED]", appropriately.
          */
         if ((colour->size() > 0) && (colour->at(0) == '#'))
         {
@@ -194,6 +194,27 @@ std::vector<COLOUR_STRING *> CColourString::parse_coloured_string(std::string in
              * and if it is we'll bump it up.
              */
             const char byte = text->at(i);
+
+            /*
+             * TAB is a special-case.
+             */
+            if (byte == '\t')
+            {
+                /*
+                 * Width of a TAB is 8 characters by default, but
+                 * the user might have changed it.
+                 */
+                for (int j = 0; j < tab_width ; j++)
+                {
+                    COLOUR_STRING *tmp = (COLOUR_STRING *)malloc(sizeof(COLOUR_STRING));
+                    tmp->colour = new std::string(*colour);
+                    tmp->string = new std::string(" ");
+                    results.push_back(tmp);
+                }
+
+                continue;
+
+            }
 
             /*
              * Lookup the size of the UTF-character, in bytes.

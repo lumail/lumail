@@ -79,7 +79,7 @@ public:
      * which may be displayed, even if that character might be made from
      * multiple *BYTES*.
      */
-    static std::vector<COLOUR_STRING *> parse_coloured_string(std::string input, int offset);
+    static std::vector<COLOUR_STRING *> parse_coloured_string(std::string input, int offset, int tab_width);
 
 
 };
