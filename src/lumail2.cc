@@ -99,26 +99,59 @@ int main(int argc, char *argv[])
         load.push_back("/etc/lumail2/lumail2.lua");
 
     /*
-     * Get the home-directory of the current user.
+     * Get the user config file.
+     * 1. $XDG_CONFIG_HOME/lumail2/lumail2.lua
+     * 2. $XDG_CONFIG_HOME/lumail2/config.lua
+     * 3. $HOME/.config/lumail2/lumail2.lua
+     * 4. $HOME/.config/lumail2/config.lua
+     * 5. $HOME/.lumail2/lumail2.lua
+     * 6. $HOME/.lumail2/config.lua
      */
-    std::string home;
-
-    if (getenv("HOME") != NULL)
+    std::string conf_dir;
+    std::string filenames[] = {"/lumail2.lua", "/config.lua"};
+    if (getenv("XDG_CONFIG_HOME") != NULL)
     {
-        /*
-         * If that worked then try to find things from beneath it.
-         */
-        home = getenv("HOME");
-
-        if (!home.empty())
+        conf_dir = getenv("XDG_CONFIG_HOME");
+        conf_dir = conf_dir + "/lumail2/";
+        for (int i = 0; i < 2; i++)
         {
-            home = home + "/.lumail2/lumail2.lua";
-
-            if (CFile::exists(home))
-                load.push_back(home);
+            if (CFile::exists(conf_dir + filenames[i]))
+            {
+                load.push_back(conf_dir + filenames[i]);
+                break;
+            }
         }
     }
-
+    else if (getenv("HOME") != NULL)
+    {
+        /* Try XDG_CONFIG_HOME default ~/.config */
+        std::string home = getenv("HOME");
+        conf_dir = home + "/.config/lumail2";
+        if (!conf_dir.empty())
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                if (CFile::exists(conf_dir + filenames[i]))
+                {
+                    load.push_back(conf_dir + filenames[i]);
+                    break;
+                }
+            }
+        }
+        /* Try ~/.lumail2/ */
+        else
+        {
+            conf_dir = home + "/.lumail2";
+            for (int i = 0; i < 2; i++)
+            {
+                if (CFile::exists(conf_dir + filenames[i]))
+                {
+                    load.push_back(conf_dir + filenames[i]);
+                    break;
+                }
+            }
+        }
+    }
 
     while (1)
     {
