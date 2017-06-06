@@ -34,7 +34,7 @@ void TestEmptyString(CuTest * tc)
 {
     std::string input = "";
 
-    std::vector<COLOUR_STRING *> parts = CColourString::parse_coloured_string(input, 0);
+    std::vector<COLOUR_STRING *> parts = CColourString::parse_coloured_string(input, 0, 8);
 
     CuAssertIntEquals(tc, parts.size(), 0);
 }
@@ -46,7 +46,7 @@ void TestEmptyString(CuTest * tc)
 void TestBlankString(CuTest * tc)
 {
     std::string input = " ";
-    std::vector<COLOUR_STRING *> parts = CColourString::parse_coloured_string(input, 0);
+    std::vector<COLOUR_STRING *> parts = CColourString::parse_coloured_string(input, 0, 8);
 
     CuAssertIntEquals(tc, parts.size(), 1);
 }
@@ -61,7 +61,7 @@ void TestNoColours(CuTest * tc)
     std::string input = "Steve Kemp";
 
     std::vector<COLOUR_STRING *> parts;
-    parts = CColourString::parse_coloured_string(input, 0);
+    parts = CColourString::parse_coloured_string(input, 0, 8);
 
     /*
      * We expect one part for each character
@@ -89,7 +89,7 @@ void TestStringPartLength(CuTest * tc)
     std::string input = "Steve Kemp";
 
     std::vector<COLOUR_STRING *> parts;
-    parts = CColourString::parse_coloured_string(input, 0);
+    parts = CColourString::parse_coloured_string(input, 0, 8);
 
     /*
      * We expect one part for each character
@@ -116,7 +116,7 @@ void TestSimpleMultiByte(CuTest * tc)
     std::string input = "的展会";
 
     std::vector<COLOUR_STRING *> parts;
-    parts = CColourString::parse_coloured_string(input, 0);
+    parts = CColourString::parse_coloured_string(input, 0, 8);
 
     /*
      * We expect three parts, since there are three characters.
@@ -149,6 +149,50 @@ void TestSimpleMultiByte(CuTest * tc)
     CuAssertIntEquals(tc, input.length(), length);
 }
 
+
+/**
+ * Test that we count tab-expansion correctly.
+ */
+void TestTabWidth(CuTest * tc)
+{
+
+    /*
+     * We'll try to parse with tab width of 1-8 spaces.
+     */
+    for (int i = 1; i <= 8; i++)
+    {
+        std::string input = "Steve\tKemp";
+
+        std::vector<COLOUR_STRING *> parts;
+        parts = CColourString::parse_coloured_string(input, 0, i);
+
+        /*
+         * We expect one part for each character plus N-spaces
+         * for the tab-character.
+         */
+        int expected = strlen("Steve");
+        expected += strlen("Kemp");
+        expected += i;
+
+        CuAssertIntEquals(tc, expected, parts.size());
+
+        /*
+         * And of course for each width we want that many spaces
+         */
+        int spaces = 0;
+
+        for (std::vector<COLOUR_STRING *>::iterator it = parts.begin(); it != parts.end() ; ++it)
+        {
+            std::string *text = (*it)->string;
+
+            if (strcmp(text->c_str(), " ") == 0)
+                spaces += 1;
+        }
+
+        CuAssertIntEquals(tc, spaces, i);
+    }
+}
+
 CuSuite *
 coloured_string_getsuite()
 {
@@ -158,5 +202,6 @@ coloured_string_getsuite()
     SUITE_ADD_TEST(suite, TestNoColours);
     SUITE_ADD_TEST(suite, TestStringPartLength);
     SUITE_ADD_TEST(suite, TestSimpleMultiByte);
+    SUITE_ADD_TEST(suite, TestTabWidth);
     return suite;
 }
