@@ -1632,7 +1632,8 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
      * Get the horizontal scroll offset.
      */
     CConfig *config = CConfig::instance();
-    int horiz = config->get_integer("global.horizontal", 0);
+    int horiz       = config->get_integer("global.horizontal", 0);
+    int tab_width   = config->get_integer("global.tab", 8);
 
     /*
      * Is wrapping enabled?
@@ -1660,7 +1661,7 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
      * These single characters may well consist of multiple bytes, but
      * that is not important.
      */
-    std::vector<COLOUR_STRING *> parts = CColourString::parse_coloured_string(buf, horiz);
+    std::vector<COLOUR_STRING *> parts = CColourString::parse_coloured_string(buf, horiz, tab_width);
 
     /*
      * Draw each piece of the string.
@@ -1766,6 +1767,9 @@ int CScreen::draw_single_line(int row, int col_offset, std::string buf, WINDOW *
  */
 void CScreen::draw_text(int x, int y, std::string str, bool update)
 {
+    CConfig *config = CConfig::instance();
+    int tab_width   = config->get_integer("global.tab", 8);
+
     /*
      * Default colour/attributes for this line.
      */
@@ -1776,7 +1780,7 @@ void CScreen::draw_text(int x, int y, std::string str, bool update)
      * but we do need it in coloured fashion.
      */
     std::vector<COLOUR_STRING *> parts;
-    parts = CColourString::parse_coloured_string(str, 0);
+    parts = CColourString::parse_coloured_string(str, 0, tab_width);
 
     /*
      * Move to the starting offset.
