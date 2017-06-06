@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
     }
 
     /*
-     * Our load-apth will end with `/?.lua`.
+     * Our load-path will end with `/?.lua`.
      */
     load_path += "/?.lua";
 

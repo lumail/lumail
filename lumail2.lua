@@ -10,12 +10,19 @@
 -- The client will load two files at startup if they exist:
 --
 --    /etc/lumail2/lumail2.lua
---       * Which will then load ~/.lumail2/$HOSTNAME.lua
---    ~/.lumail2/lumail2.lua
+--       * Which will then load $HOSTNAME.lua
+--    $XDG_CONFIG_HOME/lumail2/lumail2.lua, ~/.config/lumail2/lumail2.lua
+--      or ~/.lumail2/lumail2.lua
 --
 -- The expectation is that you will NOT EDIT this file, instead
 -- you will place your own configuration in one of:
 --
+--   $XDG_CONFIG_HOME/lumail2/$HOSTNAME.lua
+--   $XDG_CONFIG_HOME/lumail2/lumail2.lua
+--
+--   ~/.config/lumail2/$HOSTNAME.lua
+--   ~/.config/lumail2/lumail2.lua
+
 --   ~/.lumail2/$HOSTNAME.lua
 --   ~/.lumail2/lumail2.lua
 --
@@ -4072,16 +4079,23 @@ end
 
 --
 --
---
 -- Load per-host configuration file, if it exists
 --
 local host = Net:hostname()
-local file = os.getenv "HOME" .. "/.lumail2/" .. host .. ".lua"
-if File:exists(file) then
-  dofile(file)
-  info_msg("Loaded" .. file)
+local filename = host .. ".lua"
+local location = os.getenv("XDG_CONFIG_HOME") or os.getenv("HOME") .. "/.config"
+location = location .. "/lumail2/"
+if File:exists(location .. filename) then
+  dofile(location .. filename)
+  info_msg("Loaded " .. location .. filename)
 else
-  warning_msg(file .. " not present")
+  location = os.getenv("HOME") .. "/.lumail2/"
+  if File:exists(location .. filename) then
+    dofile(location .. filename)
+    info_msg("Loaded " .. location .. filename)
+  else
+    warning_msg(host .. " specific config not present")
+  end
 end
 
 
