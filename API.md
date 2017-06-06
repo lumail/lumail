@@ -145,6 +145,8 @@ We have a number of variables which are special, the most important ones are:
     * This holds the name of the currently active display-mode
 * `global.sent-mail`
     * This is the Maildir to which outgoing messages are saved.
+* `global.tab`
+    * This is the width to use for any `TAB` characters.
 * `global.trash-mail`
     * This is the Maildir to which deleted messages are saved.
 
