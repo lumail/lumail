@@ -203,6 +203,14 @@ std::vector<COLOUR_STRING *> CColourString::parse_coloured_string(std::string in
                 /*
                  * Width of a TAB is 8 characters by default, but
                  * the user might have changed it.
+                 *
+                 * NOTE: We could improve things here by counting
+                 * the width of our parts, and using that to snap
+                 * to boundaries - for the moment we're just replacing
+                 * the TAB => "    ".
+                 *
+                 * TODO: Improve this :)
+                 *
                  */
                 for (int j = 0; j < tab_width ; j++)
                 {
