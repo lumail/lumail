@@ -1258,10 +1258,7 @@ ${sig}
 
         -- Replace the recipient, if present.
         cmd = string.interp(cmd, {
-            recipient = to,
-
-
-
+            recipient = to:match("<(.*)>") or to,
           })
 
         -- Run the command.
@@ -1388,7 +1385,6 @@ function Message.send_reply (include_cc)
       to = result
     end
   end
-
 
   --
   -- Get the subject of the message.
@@ -1633,10 +1629,7 @@ References: ${references}
 
         -- Replace the recipient, if present.
         cmd = string.interp(cmd, {
-            recipient = to,
-
-
-
+            recipient = to:match("<(.*)>") or to,
           })
 
         -- Run the command.
@@ -1902,10 +1895,7 @@ Begin forwarded message.
 
         -- Replace the recipient, if present.
         cmd = string.interp(cmd, {
-            recipient = to,
-
-
-
+            recipient = to:match("<(.*)>") or to,
           })
 
         -- Run the command.
