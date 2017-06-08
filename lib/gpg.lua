@@ -71,40 +71,92 @@ _G['message_replace'] = function (path)
   end
 end
 
+--
+-- GPG module
+--
 local gpg = {}
+
+--
+-- Return the arguments for mimegpg
+--  s/S = sign
+--  e/E = encrypt
+--  b/B = sign and encrypt
+--  n/Everything else = nothing
+--
+gpg.mimegpg_args = function(switch)
+  if (switch == "s") or (switch == "S") then
+    return "-s"
+  elseif (switch == "e") or (switch == "E") then
+    return "-E -- --batch -r ${recipient} --trust-model always"
+  elseif (switch == "b") or (switch == "B") then
+    return"-s -E -- --batch -r ${recipient} --trust-model always"
+  else
+    return ""
+  end
+end
+
+--
+--- Return the default gpg options depending on the config value "gpg.mode"
+--
+--  "always":
+--    Set the gpg options to always encrypt and sign by default.
+--  "auto":
+--    Check if the recipient uses pgp and only if he/she does,
+--    sign and encrypt the mail without user interaction.
+--
+gpg.defaults = function(recipient)
+  local mode = Config.get_with_default("gpg.mode", "")
+  if mode == "" then
+    return ""
+  elseif mode == "always" then
+    return gpg.mimegpg_args("b")
+  elseif mode == "auto" then
+    -- Check if a key is available for the recipients mail address
+    recipient = recipient:match("(<.*>)") or recipient
+    local has_gpg = os.execute(string.format("gpg --list-keys | grep -q %s", recipient))
+    if has_gpg then
+      return gpg.mimegpg_args("b")
+    else
+      return ""
+    end
+  else
+    -- TODO Is this output legit in a library ???
+    error_msg("GPG mode:" .. mode .. " is unknown")
+    return ""
+  end
+end
 
 --
 -- Prompt for gpg options
 --
 gpg.prompt = function(options)
-  gpg = Screen:prompt("(c)ancel, (n)othing, (s)ign, (e)ncryt, or (b)oth?", "nNcCsSeEbB")
-  if (gpg == "c") or (gpg == "C") then
+  choice = Screen:prompt("(c)ancel, (n)othing, (s)ign, (e)ncryt, or (b)oth?", "nNcCsSeEbB")
+  if (choice == "c") or (choice == "C") then
     return options
-  elseif (gpg == "n") or (gpg == "N") then
-    return ""
-  elseif (gpg == "s") or (gpg == "S") then
-    return "-s"
-  elseif (gpg == "e") or (gpg == "E") then
-    return "-E -- --batch -r ${recipient} --trust-model always"
-  elseif (gpg == "b") or (gpg == "b") then
-    return"-s -E -- --batch -r ${recipient} --trust-model always"
+  else
+    return gpg.mimegpg_args(choice)
   end
 end
 
 --
--- Sign or encrypt a mail
+-- Invoke mimegpg and replace the mail with its output
 --
-gpg.prepare_mail = function(mail, options, recipient)
-  local tmp2 = os.tmpname()
-  -- Build up the command
-  local cmd = "mimegpg " .. options .. "< " .. mail .. " > " .. tmp2
+gpg.mimgpg_replace = function(mail, options, recipient)
+  local tmp = os.tmpname()
+
+  -- Build up the command.
+  local cmd = "mimegpg " .. options .. "< " .. mail .. " > " .. tmp
+
   -- Replace the recipient, if present.
   cmd = string.interp(cmd, { recipient = recipient:match("<(.*)>") or recipient, })
+
   -- Run the command.
+  -- TODO Handle errors better. E.g. capture and present stderr.
   os.execute(cmd)
-   -- Now replace the temporary file we're to use
-  File:copy(tmp2, mail)
-  os.remove(tmp2)
+
+  -- Replace the mail with our temporary file.
+  File:copy(tmp, mail)
+  os.remove(tmp)
 end
 
 return gpg

@@ -1210,6 +1210,10 @@ ${sig}
 
   -- GPG options
   local encrypt = ""
+  if GPG ~= nil then
+    -- Get the default options
+    encrypt = GPG.defaults(to)
+  end
 
   while run do
 
@@ -1552,7 +1556,9 @@ References: ${references}
 
   -- GPG options
   local encrypt = ""
-
+  if GPG ~= nil then
+    encrypt = GPG.defaults(to)
+  end
 
   while run do
 
@@ -1792,6 +1798,9 @@ Begin forwarded message.
 
   -- GPG options
   local encrypt = ""
+  if GPG ~= nil then
+    encrypt = GPG.defaults(to)
+  end
 
   while run do
 
