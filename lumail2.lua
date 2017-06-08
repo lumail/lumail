@@ -1251,7 +1251,7 @@ ${sig}
       -- If the user has encryption options then do the necessary
       --
       if encrypt ~= "" then
-        GPG.prepare_mail(tmp, encrypt, to)
+        tmp = GPG.replace_mail(tmp, encrypt, to)
       end
 
       -- Allow transformations to occur before sending the message.
@@ -1596,7 +1596,7 @@ References: ${references}
       -- If the user has encryption options then do the necessary
       --
       if encrypt ~= "" then
-        GPG.prepare_mail(tmp, encrypt, to)
+        tmp = GPG.replace_mail(tmp, encrypt, to)
       end
 
       -- Allow transformations to occur before sending the message.
@@ -1838,7 +1838,7 @@ Begin forwarded message.
       -- If the user has encryption options then do the necessary
       --
       if encrypt ~= "" then
-        GPG.prepare_mail(tmp, encrypt, to)
+        tmp = GPG.replace_mail(tmp, encrypt, to)
       end
 
       -- Allow transformations to occur before sending the message.

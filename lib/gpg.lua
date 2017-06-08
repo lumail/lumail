@@ -141,7 +141,7 @@ end
 --
 -- Invoke mimegpg and replace the mail with its output
 --
-gpg.mimgpg_replace = function(mail, options, recipient)
+gpg.replace_mail = function(mail, options, recipient)
   local tmp = os.tmpname()
 
   -- Build up the command.
@@ -151,12 +151,18 @@ gpg.mimgpg_replace = function(mail, options, recipient)
   cmd = string.interp(cmd, { recipient = recipient:match("<(.*)>") or recipient, })
 
   -- Run the command.
-  -- TODO Handle errors better. E.g. capture and present stderr.
-  os.execute(cmd)
+  -- TODO capture and present stderr.
+  if os.execute(cmd) then
+    -- Replace the mail with our temporary file.
+    os.remove(mail)
+    return tmp
+  else
+    error_msg("GPG: mimegpg failed")
+    -- Mimegpg failed. Clean up our tmp file and return the old mail
+    os.remove(tmp)
+    return mail
+  end
 
-  -- Replace the mail with our temporary file.
-  File:copy(tmp, mail)
-  os.remove(tmp)
 end
 
 return gpg
