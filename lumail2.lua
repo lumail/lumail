@@ -82,6 +82,7 @@ GPG = nil
 if string.path "mimegpg" then
   GPG = require "gpg"
 end
+Panel:append(GPG)
 
 
 --
@@ -1225,19 +1226,7 @@ ${sig}
       if GPG == nil then
         warning_msg "GPG support disabled!"
       else
-        local gpg = Screen:prompt("(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB")
-        if (gpg == "c") or (gpg == "C") then
-          encrypt = ""
-        end
-        if (gpg == "s") or (gpg == "S") then
-          encrypt = "-s"
-        end
-        if (gpg == "e") or (gpg == "E") then
-          encrypt = "-E -- --batch -r ${recipient} --trust-model always"
-        end
-        if (gpg == "b") or (gpg == "b") then
-          encrypt = "-s -E -- --batch -r ${recipient} --trust-model always"
-        end
+        encrypt = GPG.prompt(encrypt)
       end
     end
 
@@ -1258,24 +1247,8 @@ ${sig}
       -- If the user has encryption options then do the necessary
       --
       if encrypt ~= "" then
-        local tmp2 = os.tmpname()
-
-        -- Build up the command
-        local cmd = "mimegpg " .. encrypt .. "< " .. tmp .. " > " .. tmp2
-
-        -- Replace the recipient, if present.
-        cmd = string.interp(cmd, {
-            recipient = to:match("<(.*)>") or to,
-          })
-
-        -- Run the command.
-        os.execute(cmd)
-
-        -- Now replace the temporary file we're to use
-        File:copy(tmp2, tmp)
-        os.remove(tmp2)
+        GPG.prepare_mail(tmp, encrypt, to)
       end
-
 
       -- Allow transformations to occur before sending the message.
       if type(on_message_send) == "function" then
@@ -1596,19 +1569,7 @@ References: ${references}
       if GPG == nil then
         warning_msg "GPG support disabled!"
       else
-        local gpg = Screen:prompt("(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB")
-        if (gpg == "c") or (gpg == "C") then
-          encrypt = ""
-        end
-        if (gpg == "s") or (gpg == "S") then
-          encrypt = "-s"
-        end
-        if (gpg == "e") or (gpg == "E") then
-          encrypt = "-E -- --batch -r ${recipient} --trust-model always"
-        end
-        if (gpg == "b") or (gpg == "b") then
-          encrypt = "-s -E -- --batch -r ${recipient} --trust-model always"
-        end
+        encrypt = GPG.prompt(encrypt)
       end
     end
 
@@ -1629,22 +1590,7 @@ References: ${references}
       -- If the user has encryption options then do the necessary
       --
       if encrypt ~= "" then
-        local tmp2 = os.tmpname()
-
-        -- Build up the command
-        local cmd = "mimegpg " .. encrypt .. "< " .. tmp .. " > " .. tmp2
-
-        -- Replace the recipient, if present.
-        cmd = string.interp(cmd, {
-            recipient = to:match("<(.*)>") or to,
-          })
-
-        -- Run the command.
-        os.execute(cmd)
-
-        -- Now replace the temporary file we're to use
-        File:copy(tmp2, tmp)
-        os.remove(tmp2)
+        GPG.prepare_mail(tmp, encrypt, to)
       end
 
       -- Allow transformations to occur before sending the message.
@@ -1862,19 +1808,7 @@ Begin forwarded message.
       if GPG == nil then
         warning_msg "GPG support disabled!"
       else
-        local gpg = Screen:prompt("(c)ancel, (s)ign, (e)encryt, or (b)oth?", "cCsSeEbB")
-        if (gpg == "c") or (gpg == "C") then
-          encrypt = ""
-        end
-        if (gpg == "s") or (gpg == "S") then
-          encrypt = "-s"
-        end
-        if (gpg == "e") or (gpg == "E") then
-          encrypt = "-E -- --batch -r ${recipient} --trust-model always"
-        end
-        if (gpg == "b") or (gpg == "b") then
-          encrypt = "-s -E -- --batch -r ${recipient} --trust-model always"
-        end
+        encrypt = GPG.prompt(encrypt)
       end
     end
 
@@ -1895,22 +1829,7 @@ Begin forwarded message.
       -- If the user has encryption options then do the necessary
       --
       if encrypt ~= "" then
-        local tmp2 = os.tmpname()
-
-        -- Build up the command
-        local cmd = "mimegpg " .. encrypt .. "< " .. tmp .. " > " .. tmp2
-
-        -- Replace the recipient, if present.
-        cmd = string.interp(cmd, {
-            recipient = to:match("<(.*)>") or to,
-          })
-
-        -- Run the command.
-        os.execute(cmd)
-
-        -- Now replace the temporary file we're to use
-        File:copy(tmp2, tmp)
-        os.remove(tmp2)
+        GPG.prepare_mail(tmp, encrypt, to)
       end
 
       -- Allow transformations to occur before sending the message.

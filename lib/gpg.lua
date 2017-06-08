@@ -70,3 +70,41 @@ _G['message_replace'] = function (path)
     return ""
   end
 end
+
+local gpg = {}
+
+--
+-- Prompt for gpg options
+--
+gpg.prompt = function(options)
+  gpg = Screen:prompt("(c)ancel, (n)othing, (s)ign, (e)ncryt, or (b)oth?", "nNcCsSeEbB")
+  if (gpg == "c") or (gpg == "C") then
+    return options
+  elseif (gpg == "n") or (gpg == "N") then
+    return ""
+  elseif (gpg == "s") or (gpg == "S") then
+    return "-s"
+  elseif (gpg == "e") or (gpg == "E") then
+    return "-E -- --batch -r ${recipient} --trust-model always"
+  elseif (gpg == "b") or (gpg == "b") then
+    return"-s -E -- --batch -r ${recipient} --trust-model always"
+  end
+end
+
+--
+-- Sign or encrypt a mail
+--
+gpg.prepare_mail = function(mail, options, recipient)
+  local tmp2 = os.tmpname()
+  -- Build up the command
+  local cmd = "mimegpg " .. options .. "< " .. mail .. " > " .. tmp2
+  -- Replace the recipient, if present.
+  cmd = string.interp(cmd, { recipient = recipient:match("<(.*)>") or recipient, })
+  -- Run the command.
+  os.execute(cmd)
+   -- Now replace the temporary file we're to use
+  File:copy(tmp2, mail)
+  os.remove(tmp2)
+end
+
+return gpg
