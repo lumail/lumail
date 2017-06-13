@@ -176,7 +176,7 @@ displays things, these are:
 
 The default behaviour of the gpg support can be configured with:
 
-* `gpg,mode`
+* `gpg.mode`
     * For further information [see](GPG.md).
 
 
