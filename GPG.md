@@ -7,6 +7,7 @@ Lumail now contains (experimental) support for GPG, which covers:
 * Decrypting messages.
 * Encryting outgoing email.
 * Signing outgoing email.
+* Configurable default behavior.
 
 All of this GPG-support is implemented via the use of the `mimegpg` tool, which is part of the courier mail-server.  Upon a Debian GNU/Linux system the binary can be found by installing the sqwebmail package:
 
@@ -75,3 +76,11 @@ You can choose to sign your outgoing messages, encrypt your outgoing messages, o
 In the case of encryption the recipient's email will be used to determine the key to use.
 
 To enable this just press `g` when prompted and then make your selection.
+
+Configuration
+-------------
+
+You can set the config value `gpg.mode` to eather always or auto(recommended).
+
+* always - Always sign and encrypt. WARNING: This can break easily.
+* auto   - Sign and encrypt only if the recipients key is in your keyring.
