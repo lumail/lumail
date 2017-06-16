@@ -240,7 +240,7 @@ install: lumail2
 	rm $(LUMAIL_HOME)/perl.d/set-flags || true
 
 	# if there is an old config in-place then rename it.
-	mv $(LUMAIL_HOME)/lumail2.lua $(LUMAIL_HOME)/lumail2.lua.$$(date +%d-%m-%Y.%s)
+	mv $(LUMAIL_HOME)/lumail2.lua $(LUMAIL_HOME)/lumail2.lua.$$(date +%d-%m-%Y.%s) || true
 	# Deploy the new config
 	cp ./lumail2.lua $(LUMAIL_HOME)/lumail2.lua
 
