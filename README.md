@@ -38,8 +38,8 @@ means that you're always in one of a small number of states, or modes:
     * Press `H` to enter this mode, and `q` to return from it.
 
 
-Installation and Configuration
-------------------------------
+## Compilation & Installation
+-----------------------------
 
 Running `make install` will install the binary, the libraries that we bundle, and the perl-utilities which are required for IMAP-operation.
 
@@ -52,6 +52,12 @@ If you wish to install manually then please copy:
 via:
 
      apt-get install libnet-imap-client-perl libjson-perl
+
+You can also see the notes below about running directly from a `git`-checkout
+of our repository.
+
+
+## Configuration
 
 Once installed you'll want to create your own personal configuration file.
 
@@ -78,15 +84,12 @@ The defaults in [the per-user configuration file](lumail2.user.lua) should be ad
      -- Set your preferred editor
      Config:set( "global.editor", "vim  +/^$ ++1 '+set tw=72'" )
 
-Other options are possible, and you'll find if you wish to [use IMAP](IMAP.md) you need some more options.  If you wish to use encryption you should also read the [GPG notes](GPG.md).
 
 
+### Running from `git`-checkout
 
-Running from `git`-checkout
----------------------------
-
-If you wish to run directly from a git-checkout you'll need to add some
-command-line flags to change the behaviour:
+If you wish to run directly from a `git`-checkout you'll need to add some
+command-line flags to change the default behaviour:
 
 * Change the location from which Lua libraries are fetched.
 * Disable the loading of the global configuration-files.
@@ -96,9 +99,7 @@ This can be achieved like so:
      $ ./lumail2 --load-path=$(pwd)/lib/ --no-default --load-file ./lumail2.lua --load-file ./lumail2.user.lua
 
 
-
-Using Lumail2
--------------
+## Using Lumail
 
 By default you'll be in the `maildir`-mode, and you can navigate with `j`/`k`, and select items with `ENTER`.
 
