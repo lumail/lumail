@@ -53,7 +53,7 @@ via:
 
      apt-get install libnet-imap-client-perl libjson-perl
 
-You can also see the notes below about running directly from a `git`-checkout
+You can also see [the notes below](#running-from-git-checkout) about running directly from a `git`-checkout
 of our repository.
 
 
@@ -116,8 +116,9 @@ For a quick-start you can use the following bindings:
 * `Q` - Exit.
 
 
-Further Notes
--------------
+## Further Notes
+
+Further documentation can be found upon the [project homepage](https://lumail.org/), but there are also some notes available within this repository:
 
 * [API Documentation](API.md).
    * Documents the Lua classes.
