@@ -75,7 +75,7 @@ LUA_LIBS  ?= $(shell pkg-config --libs ${LVER})
 # via `pkg-config` setup above.
 #
 # LUA_FLAGS=-I/home/steve/Downloads/lua-5.3.2/src
-# LUA_LIBS=-L/home/steve/Downloads/lua-5.3.2/install/lib -llua -ldl
+# LUA_LIBS=-L/home/steve/Downloads/lua-5.3.2/install/lib -llua
 #
 
 #
