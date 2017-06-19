@@ -5,8 +5,9 @@
 # upon other systems.
 #
 # The main configuration you'll need to look at here is the version
-# of Lua which you're compiling against.  We assume 5.2, but will support
-# 5.1 too.
+# of Lua which you're compiling against.
+#
+# We default to Lua 5.2, but 5.1 and 5.3 are also expected to work.
 #
 # If you struggle to compile this on a "common" system please do report
 # a bug against the project:
