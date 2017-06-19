@@ -3,56 +3,34 @@
 [![license](https://img.shields.io/github/license/lumail/lumail.svg)]()
 
 
-lumail2
+lumail
 =======
 
-This repository contains the `lumail2` console-based email client, with fully integrated scripting provided by Lua.
+`lumail` is a modern console-based email-client, with fully integrated scripting, implemented in the Lua programming language.
 
-This is the second version of lumail which has been written, learning the lessons from the [initial version](https://github.com/lumail/lumail).  With this codebase:
+This README file contains brief details, with more complete documentation provided on the homepage:
 
-* The C++ core, and Lua scripting support, is much more consistent.
-* More parts of the core have been pushed to Lua.
-    * To allow customization.
-    * To allow flexibility.
-
-The project is perpetually a work in-progress, but despite that the client is functional, stable, reliable and robust:
-
-* All the obvious operations may be carried out:
-     * Viewing folder-hierarchies.
-     * Viewing the contents of a folder.
-     * Reading emails.
-     * Replying to emails.
-     * Forwarding emails.
-     * Composing fresh emails.
-     * Deleting emails.
-     * Scripting, transforming, and customizing the various display modes.
-
-Each of the operations works against both local-maildir hierarchies, and [remote IMAP servers](IMAP.md).
+* Quick Links on the project website:
+  * [Downloading](https://lumail.org/download/)
+  * [Installation](https://lumail.org/install/)
+  * [Getting started](https://lumail.org/getting-started/)
+  * [API documentation](https://lumail.org/api/)
+     * [Code Samples](https://lumail.org/examples/).
 
 
-User-Interface
---------------
+## Overview
 
-The user-interface should be broadly familiar to users of previous, legacy, project. If you're new to the project the following screencast shows what it looks
-like and gives a hint of how it can be used:
-
-* https://asciinema.org/a/chdqz6tb4vt9p3ifp32g4musa
-
-It should be noted that __all__ of the display-modes are created/maintained by
-Lua code, which means it is possible for you to customize most of the views
-you can see, via pure Lua code.
-
-Because this is a modal-application you're always in one of a fixed number
-of modes:
+Lumail is a console-based mail client, which is __modal__.  A modal client
+means that you're always in one of a small number of states, or modes:
 
 * `maildir`-mode
     * Allows you to see a list of message-folders.
 * `index`-mode
     * Allows you to view a list of messages.
-    * i.e. The contents of a folder.
+       * i.e. The contents of a folder.
 * `message`-mode
     * Allows you to view a single message.
-    * `attachment`-mode is related, allowing you to view the attachments associated with a particular message.
+       * `attachment`-mode is related, allowing you to view the attachments associated with a particular message.
 * `lua`-mode.
     * This mode displays diagnostics and other internal details.
 * `keybinding`-mode.
@@ -60,50 +38,12 @@ of modes:
     * Press `H` to enter this mode, and `q` to return from it.
 
 
-Building Lumail2
-----------------
-
-The core of the project relies upon a small number of libraries:
-
-* lua 5.2.
-* libmagic, the file-identification library.
-* libgmime-2.6, the MIME-library.
-* libncursesw, the console input/graphics library.
-
-
-### Linux
-
-Upon a Debian GNU/Linux host, running the Jessie (stable) release, the following command is sufficient to install the required dependencies:
-
-     apt-get install build-essential libgmime-2.6-dev liblua5.2-dev libmagic-dev libncursesw5-dev libpcre3-dev make pkg-config
-
-
-With the dependencies installed you should find the code builds cleanly with:
-
-    $ make
-
-The integrated test-suite can be executed by running:
-
-    $ make test
-
-
-### OS X
-
-Make sure Xcode is installed and you probably want a package manager like [brew](http://brew.sh/) to install the required dependencies:
-
-     brew install lua gmime libmagic ncurses pkg-config
-
-The code can then be built as follows:
-
-    $ PKG_CONFIG_PATH=/usr/local/Cellar/ncurses/6.0_1/lib/pkgconfig make
-
-
 Installation and Configuration
 ------------------------------
 
 Running `make install` will install the binary, the libraries that we bundle, and the perl-utilities which are required for IMAP-operation.
 
-If you wish to install manually copy:
+If you wish to install manually then please copy:
 
 * The contents of `lib/` to `/etc/lumail2/lib`.
 * The contents of `perl.d` to `/etc/lumail2/perl.d`.
