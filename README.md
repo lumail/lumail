@@ -8,14 +8,17 @@ lumail
 
 `lumail` is a modern console-based email-client, with fully integrated scripting, implemented in the Lua programming language.
 
-This README file contains brief details, with more complete documentation provided on the homepage:
+Although primarily developed and tested against GNU/Linux it should run upon Mac OS X, and FreeBSD.  If your system isn't supported, and is Unix-like then this is a bug which should be fixed.
 
-* Quick Links on the project website:
-  * [Downloading](https://lumail.org/download/)
-  * [Installation](https://lumail.org/install/)
-  * [Getting started](https://lumail.org/getting-started/)
-  * [API documentation](https://lumail.org/api/)
-     * [Code Samples](https://lumail.org/examples/).
+`lumail` is primarily designed to operate against local `Maildir`-hierachies, but IMAP support is available, as well as support for GPG for security.
+
+This `README.md` file contains brief details of the project, with more complete documentation provided on the homepage. The following links on the project website should be a good starting point:
+
+* [Downloading lumail](https://lumail.org/download/)
+* [Installing lumail](https://lumail.org/install/)
+* [Getting started with lumail](https://lumail.org/getting-started/)
+* [The API documentation](https://lumail.org/api/)
+   * [Sample Code Snippets](https://lumail.org/examples/).
 
 
 ## Overview
