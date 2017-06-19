@@ -1,7 +1,7 @@
 Lumail GPG Support
 ==================
 
-Lumail now contains (experimental) support for GPG, which covers:
+Lumail now contains support for GPG, which covers:
 
 * Verifying signatures.
 * Decrypting messages.
@@ -17,7 +17,7 @@ All of this GPG-support is implemented via the use of the `mimegpg` tool, which 
 Configuring & Testing mimegpg
 -----------------------------
 
-mimegpg doesn't have any configuration, but it will assume that you're using a gpg-agent.  So you'll need to ensure that you have an agent setup, and that your GPG-key has its passphrase unlocked.
+`mimegpg` doesn't have any configuration, but it will assume that you're using a `gpg-agent`.  So you'll need to ensure that you have an agent setup, and that your GPG-key has its passphrase unlocked.
 
 Configuring this is outside the scope of this documentation.
 
