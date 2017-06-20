@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
      */
     CLua *instance        = CLua::instance();
     std::string load_path = LUMAIL_LUAPATH;
-    instance->append_to_package_path(load_path  + "/?.lua" );
+    instance->append_to_package_path(load_path  + "/?.lua");
     load_path = "";
 
 
@@ -115,10 +115,12 @@ int main(int argc, char *argv[])
      */
     std::string conf_dir;
     std::string filenames[] = {"/lumail2.lua", "/config.lua"};
+
     if (getenv("XDG_CONFIG_HOME") != NULL)
     {
         conf_dir = getenv("XDG_CONFIG_HOME");
         conf_dir = conf_dir + "/lumail2/";
+
         for (int i = 0; i < 2; i++)
         {
             if (CFile::exists(conf_dir + filenames[i]))
@@ -133,6 +135,7 @@ int main(int argc, char *argv[])
         /* Try XDG_CONFIG_HOME default ~/.config */
         std::string home = getenv("HOME");
         conf_dir = home + "/.config/lumail2";
+
         if (!conf_dir.empty())
         {
             for (int i = 0; i < 2; i++)
@@ -148,6 +151,7 @@ int main(int argc, char *argv[])
         else
         {
             conf_dir = home + "/.lumail2";
+
             for (int i = 0; i < 2; i++)
             {
                 if (CFile::exists(conf_dir + filenames[i]))
@@ -218,7 +222,7 @@ int main(int argc, char *argv[])
     /*
      * If any additional load-path was added, then append it.
      */
-    if ( ! load_path.empty() )
+    if (! load_path.empty())
     {
         instance->append_to_package_path(load_path + "/?.lua");
     }
@@ -233,6 +237,7 @@ int main(int argc, char *argv[])
      * If we're supposed to use curses then set it up.
      */
     CScreen *screen = CScreen::instance();
+
     if (curses == true)
         screen->setup();
 
