@@ -87,9 +87,15 @@ int main(int argc, char *argv[])
 
 
     /*
-     * The load-path we'll setup for Lua
+     * The default load-path is set at compile-time.
+     *
+     * Ensure it is used.
      */
+    CLua *instance        = CLua::instance();
     std::string load_path = LUMAIL_LUAPATH;
+    instance->append_to_package_path(load_path  + "/?.lua" );
+    load_path = "";
+
 
     /*
      * Default to loading some configuration files, if they
@@ -208,23 +214,25 @@ int main(int argc, char *argv[])
         }
     }
 
-    /*
-     * Our load-path will end with `/?.lua`.
-     */
-    load_path += "/?.lua";
 
     /*
-     * Ensure that Lua has access to our Lua libraries and the command-line flags.
+     * If any additional load-path was added, then append it.
      */
-    CLua  *instance = CLua::instance();
-    instance->append_to_package_path(load_path);
+    if ( ! load_path.empty() )
+    {
+        instance->append_to_package_path(load_path + "/?.lua");
+    }
+
+
+    /*
+     * Pass our command-line arguments to Lua.
+     */
     instance->set_args(argv, argc);
-
-    CScreen *screen = CScreen::instance();
 
     /*
      * If we're supposed to use curses then set it up.
      */
+    CScreen *screen = CScreen::instance();
     if (curses == true)
         screen->setup();
 

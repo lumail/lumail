@@ -669,6 +669,7 @@ void CLua::append_to_package_path(std::string added)
 
     // append our new path and push it back
     std::string current_path = lua_tostring(m_lua, -1);
+    fprintf(stderr,"Adding to load-path: %s\n", added.c_str());
     current_path.append(";");
     current_path.append(added);
     lua_pop(m_lua, 1);

@@ -12,7 +12,7 @@
 # If you struggle to compile this on a "common" system please do report
 # a bug against the project:
 #
-#   https://github.com/lumail/lumail2
+#   https://github.com/lumail/lumail
 #
 #
 # Steve
@@ -20,20 +20,12 @@
 #
 #
 
-
 #
-# The version of our code.
+# The version of our code - in release-tarballs this is hardcoded,
+# in the git repository it is the hash of the current commit.
 #
 VERSION=$(shell git describe --abbrev=4 --dirty --always --long)
 
-#
-# Install locations
-#
-DESTDIR?=
-PREFIX?=/usr
-SYSCONFDIR?=/etc
-LUMAIL_HOME?=$(DESTDIR)$(SYSCONFDIR)/lumail2
-LUMAIL_LIBS?=${LUMAIL_HOME}/lib
 #
 # Load the flags if they're not already set - first look at the version
 #
@@ -60,8 +52,11 @@ ifeq ($(UNAME),Darwin)
    CPPFLAGS+=-I /usr/include/malloc
 endif
 
+
+
 #
-# Now we know the version of Lua we'll setup the flags here.
+# Now we know the version of Lua we'll setup the appropriate
+# compilation & linker flags here.
 #
 LUA_FLAGS ?= $(shell pkg-config --cflags ${LVER})
 LUA_LIBS  ?= $(shell pkg-config --libs ${LVER})
@@ -109,16 +104,20 @@ LINKER=$(CC) -o
 
 
 #
-# Compilation flags and libraries we use.
+# Compilation flags and setup for packages we use.
 #
-CPPFLAGS+=${LUA_FLAGS} -std=c++0x -Wall -Werror  $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) -DLUMAIL_VERSION="\"${VERSION}\"" -DLUMAIL_LUAPATH="\"${LUMAIL_LIBS}\""
-LDLIBS+=${LUA_LIBS} $(shell pkg-config --libs ncursesw) $(shell pkg-config --libs panelw) -lpcrecpp -lmagic -lstdc++ -lm
+LUMAIL_LIBS=/usr/lib/lumail/
+CPPFLAGS+=-std=c++0x -Wall -Werror
+CPPFLAGS+=-DLUMAIL_VERSION="\"${VERSION}\"" -DLUMAIL_LUAPATH="\"${LUMAIL_LIBS}\""
+CPPFLAGS+=${LUA_FLAGS} $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) $(shell pkg-config --cflags gmime-2.6)
 
 #
-#  GMime is used for MIME handling.
+# Linker flags for the packages we use.
 #
-GMIME_LIBS=$(shell pkg-config --libs  gmime-2.6)
-GMIME_INC=$(shell pkg-config --cflags gmime-2.6)
+LDLIBS+=${LUA_LIBS} $(shell pkg-config --libs gmime-2.6) $(shell pkg-config --libs ncursesw) $(shell pkg-config --libs panelw)
+LDLIBS+=-lpcrecpp -lmagic -lstdc++ -lm
+
+
 
 #
 #  Only build the release-target by default.
@@ -189,12 +188,14 @@ indent:
 indent-lua:
 	lunadry.lua --in-place $$(find . -name '*.lua' -type f)
 
+
 #
 # Rebuild our (code) documentation.
 #
 .PHONY: docs
 docs:
 	doxygen
+
 
 #
 # Serve our documentation via a local python HTTP-server.
@@ -211,6 +212,7 @@ serve_docs: docs
 test: lumail2
 	./lumail2 --test
 
+
 #
 # Run our lua test-cases
 #
@@ -219,31 +221,49 @@ test-lua: lumail2
 
 
 #
-#  Install the binary, and our luarocks.d directory
+#  Install the IMAP proxy beneath /usr/share/lumail
 #
-install: lumail2
-	mkdir -p $(DESTDIR)$(PREFIX)/bin || true
-	install -m755 lumail2 $(DESTDIR)$(PREFIX)/bin/
+install_imap:
+	mkdir -p /usr/share/lumail || true
+	cp perl.d/* /usr/share/lumail/
 
-	# make target-directories
-	mkdir -p $(LUMAIL_HOME)/lib/  || true
-	mkdir -p $(LUMAIL_HOME)/perl.d/  || true
+	# cleanup really old installs
+	rm /etc/lumail2/perl.d/delete-message || true
+	rm /etc/lumail2/perl.d/get-folders    || true
+	rm /etc/lumail2/perl.d/get-messages   || true
+	rm /etc/lumail2/perl.d/save-message   || true
+	rm /etc/lumail2/perl.d/set-flags      || true
 
-	# copy our helpers
-	cp lib/*.lua $(LUMAIL_HOME)/lib/
-	cp perl.d/* $(LUMAIL_HOME)/perl.d/
+	# Cleanup old installs
+	rm /etc/lumail2/perl.d/imap-proxy || true
+	rm /etc/lumail2/perl.d/Lumail.pm  || true
+	rmdir /etc/lumail2/perl.d         || true
 
-	# cleanup old installs
-	rm $(LUMAIL_HOME)/perl.d/delete-message || true
-	rm $(LUMAIL_HOME)/perl.d/get-folders || true
-	rm $(LUMAIL_HOME)/perl.d/get-messages || true
-	rm $(LUMAIL_HOME)/perl.d/save-message || true
-	rm $(LUMAIL_HOME)/perl.d/set-flags || true
 
+#
+# Install our Lua libraries
+#
+install_lua:
+	# Install libraries
+	mkdir -p /usr/lib/lumail || true
+	cp lib/*.lua /usr/lib/lumail
+
+	# Install global config-file
 	# if there is an old config in-place then rename it.
-	mv $(LUMAIL_HOME)/lumail2.lua $(LUMAIL_HOME)/lumail2.lua.$$(date +%d-%m-%Y.%s) || true
+	mkdir -p /etc/lumail2/ || true
+	mv /etc/lumail2/lumail2.lua /etc/lumail2/lumail2.lua.$$(date +%d-%m-%Y.%s) || true
 	# Deploy the new config
-	cp ./lumail2.lua $(LUMAIL_HOME)/lumail2.lua
+	cp ./lumail2.lua /etc/lumail2/lumail2.lua
+
+
+#
+#  Install the binary, and use the other targets to install
+# the Lua libraries and perl proxy.
+#
+install: lumail2 install_imap install_lua
+	mkdir -p /usr/bin || true
+	install -m755 lumail2 /usr/bin/
+
 
 
 #

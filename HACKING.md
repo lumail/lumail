@@ -10,7 +10,7 @@ The C++ code can all be found beneath the top-level `src/` directory.
 
 For IMAP support I've chosen to delegate all operations to external perl
 code, located beneath the top-level `perl.d` directory.  On a final
-installation this will be located at `/etc/lumail2/perl.d`.
+installation this will be located at `/usr/share/lumail`.
 
 
 # Code Formatting

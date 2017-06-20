@@ -48,8 +48,8 @@ Running `make install` will install the binary, the libraries that we bundle, an
 
 If you wish to install manually then please copy:
 
-* The contents of `lib/` to `/etc/lumail2/lib`.
-* The contents of `perl.d` to `/etc/lumail2/perl.d`.
+* The contents of `lib/` to `/usr/lib/lumail`.
+* The contents of `perl.d` to `/usr/share/lumail/`.
 
 **NOTE**: If you wish to use IMAP you'll need to install the two perl modules `JSON` and `Net::IMAP::Client`.  Upon a Debian GNU/Linux system this can be done
 via:

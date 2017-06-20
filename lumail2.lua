@@ -9,10 +9,18 @@
 --
 -- The client will load two files at startup if they exist:
 --
---    /etc/lumail2/lumail2.lua
---       * Which will then load $HOSTNAME.lua
---    $XDG_CONFIG_HOME/lumail2/lumail2.lua, ~/.config/lumail2/lumail2.lua
---      or ~/.lumail2/lumail2.lua
+--  1.  The global configuration-file:
+--
+--      * /etc/lumail2/lumail2.lua
+--      * /etc/lumail/lumail.lua
+--
+--  2.  The per-user configuration file, which is one of:
+--
+--      * $XDG_CONFIG_HOME/lumail2/lumail2.lua
+--      * ~/.config/lumail2/lumail2.lua
+--      * ~/.config/lumail2/$HOSTNAME.lua
+--      * ~/.lumail2/lumail2.lua
+--      * ~/.lumail2/$HOSTNAME.lua
 --
 -- The expectation is that you will NOT EDIT this file, instead
 -- you will place your own configuration in one of:
@@ -22,7 +30,7 @@
 --
 --   ~/.config/lumail2/$HOSTNAME.lua
 --   ~/.config/lumail2/lumail2.lua
-
+--
 --   ~/.lumail2/$HOSTNAME.lua
 --   ~/.lumail2/lumail2.lua
 --
@@ -92,7 +100,7 @@ cache = Cache.new()
 
 
 --
--- If the user cahnges the index-limit we'll try to keep the same
+-- If the user changes the index-limit we'll try to keep the same
 -- maildir selected.  We do that by caching the old value here.
 --
 local prev_maildir = nil
@@ -4033,4 +4041,17 @@ for index, arg in ipairs(ARGS) do
     Maildir.select(folder, true)
   end
 
+end
+
+
+--
+-- Handle legacy setups
+--
+if ( Directory:exists( "/etc/lumail2/perl.d" ) ) then
+   info_msg( "WARNING: Obsolete directory detected /etc/lumail2/perl.d" )
+   info_msg( "Please see: https://lumail.org/install/#upgrade" )
+end
+if ( Directory:exists( "/etc/lumail2/lib" ) ) then
+   info_msg( "WARNING: Obsolete directory detected /etc/lumail2/perl.d" )
+   info_msg( "Please see: https://lumail.org/install/#upgrade" )
 end
