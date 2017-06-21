@@ -221,39 +221,38 @@ test-lua: lumail2
 
 
 #
-#  Install the IMAP proxy beneath /usr/share/lumail
+#  Cleanup obsolete versions of our IMAP code
 #
-install_imap:
-	mkdir -p /usr/share/lumail || true
-	cp perl.d/* /usr/share/lumail/
-
-	# cleanup really old installs
+clean_imap:
 	rm /etc/lumail2/perl.d/delete-message || true
 	rm /etc/lumail2/perl.d/get-folders    || true
 	rm /etc/lumail2/perl.d/get-messages   || true
 	rm /etc/lumail2/perl.d/save-message   || true
 	rm /etc/lumail2/perl.d/set-flags      || true
-
-	# Cleanup old installs
-	rm /etc/lumail2/perl.d/imap-proxy || true
-	rm /etc/lumail2/perl.d/Lumail.pm  || true
-	rmdir /etc/lumail2/perl.d         || true
+	rm /etc/lumail2/perl.d/imap-proxy     || true
+	rm /etc/lumail2/perl.d/Lumail.pm      || true
+	rmdir /etc/lumail2/perl.d             || true
 
 
 #
-# Install our Lua libraries
+#  Install the IMAP proxy beneath /usr/share/lumail
+#
+install_imap: clean_imap
+	mkdir -p /usr/share/lumail || true
+	install -m755 perl.d/imap-proxy /usr/share/lumail/
+	install -m644 perl.d/Lumail.pm  /usr/share/lumail/
+
+
+#
+# Install our Lua libraries - make a backup of the global
+# configuration-file, in case the user has editted it.
 #
 install_lua:
-	# Install libraries
 	mkdir -p /usr/lib/lumail || true
-	cp lib/*.lua /usr/lib/lumail
-
-	# Install global config-file
-	# if there is an old config in-place then rename it.
+	install -m644 lib/*.lua /usr/lib/lumail
 	mkdir -p /etc/lumail2/ || true
 	mv /etc/lumail2/lumail2.lua /etc/lumail2/lumail2.lua.$$(date +%d-%m-%Y.%s) || true
-	# Deploy the new config
-	cp ./lumail2.lua /etc/lumail2/lumail2.lua
+	install -m644 ./lumail2.lua /etc/lumail2
 
 
 #
