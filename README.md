@@ -58,17 +58,17 @@ You can also see [the notes below](#running-from-git-checkout) about running dir
 
 Once installed you'll want to create your own personal configuration file.
 
-To allow smooth upgrades it is __recommended__ you do not edit the global configuration file `/etc/lumail2/lumail2.lua`.  Instead you should copy the sample user-configuration file into place:
+To allow smooth upgrades it is __recommended__ you do not edit the global configuration file `/etc/lumail/lumail.lua`.  Instead you should copy the sample user-configuration file into place:
 
-      $ mkdir ~/.lumail2/
-      $ cp lumail2.user.lua ~/.lumail2/lumail2.lua
+      $ mkdir ~/.lumail/
+      $ cp user.config.lua ~/.lumail/lumail.lua
 
 If you prefer you can name your configuration file after the hostname of the local system - this is useful if you store your dotfiles under revision control, and share them:
 
-      $ mkdir ~/.lumail2/
-      $ cp lumail2.user.lua ~/.lumail2/$(hostname --fqdn).lua
+      $ mkdir ~/.lumail/
+      $ cp user.config.lua ~/.lumail/$(hostname --fqdn).lua
 
-The defaults in [the per-user configuration file](lumail2.user.lua) should be adequately documented, but in-brief you'll want to ensure you set at least the following:
+The defaults in [the per-user configuration file](user.config.lua) should be adequately documented, but in-brief you'll want to ensure you set at least the following:
 
      -- Set the location of your Maildir folders, and your sent-folder
      Config:set( "maildir.prefix", os.getenv( "HOME" ) .. "/Maildir/" );
@@ -93,7 +93,7 @@ command-line flags to change the default behaviour:
 
 This can be achieved like so:
 
-     $ ./lumail2 --load-path=$(pwd)/lib/ --no-default --load-file ./lumail2.lua --load-file ./lumail2.user.lua
+     $ ./lumail2 --load-path=$(pwd)/lib/ --no-default --load-file ./global.config.lua --load-file ./user.config.lua
 
 
 ## Using Lumail
