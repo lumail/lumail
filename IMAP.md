@@ -1,6 +1,18 @@
 Lumail IMAP Support
 ===================
 
+IMAP support is implemented via a simple external proxy written in Perl.
+
+If you wish to use IMAP you'll need to ensure you have the following
+perl modules installed:
+
+* `JSON`
+* `Net::IMAP::Client`
+
+Upon a Debian GNU/Linux system this can be achieved via:
+
+     apt-get install libnet-imap-client-perl libjson-perl
+
 
 Using Lumail with IMAP
 ----------------------
