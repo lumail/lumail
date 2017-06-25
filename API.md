@@ -209,6 +209,8 @@ The following (static) methods exist:
    * Copy the given source file to the specified destination.
 * `File:exists(path)`
    * Return a boolean based on whether the named file exists.
+* `File:expand(path)`
+   * Expand a path, in the same way a Unix shell would do.
 * `File:stat(path)`
    * Return a table of information about the named target.
    * Returns `nil` on failure.

@@ -108,6 +108,16 @@ int dsutil_utf8_charlen(const unsigned char  c)
     return 1;
 }
 
+
+/*
+ * Expand a filename, in the same way that a shell would.
+ *
+ * This converts "~/foo" to "/home/user/foo", and handles the expansion
+ * of environmental variables too.
+ *
+ * Note when there are multiple possible matches we take the first
+ * for example "/etc/?*.d/?*"  might return `/etc/apparmor.d/local`.
+ */
 std::string shell_expand_path(std::string input)
 {
     std::string result;
@@ -120,10 +130,10 @@ std::string shell_expand_path(std::string input)
     {
         w = p.we_wordv;
 
-        for (size_t i = 0; i < p.we_wordc; i++)
-        {
-            result = w[i];
-        }
+        /*
+         * Multiple possible matches - we take the first.
+         */
+        result = w[0];
     }
 
     wordfree(&p);

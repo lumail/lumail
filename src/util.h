@@ -75,5 +75,8 @@ int dsutil_utf8_charlen(const unsigned char  c);
  *
  * This converts "~/foo" to "/home/user/foo", and handles the expansion
  * of environmental variables too.
+ *
+ * Note when there are multiple possible matches we take the first
+ * for example "/etc/?*.d/?*"  might return `/etc/apparmor.d/local`.
  */
 std::string shell_expand_path(std::string input);

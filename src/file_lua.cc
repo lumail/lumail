@@ -21,6 +21,7 @@
 
 #include "file.h"
 #include "lua.h"
+#include "util.h"
 
 
 /**
@@ -98,6 +99,29 @@ int l_CFile_exists(lua_State * l)
         lua_pushboolean(l , 1);
     else
         lua_pushboolean(l , 0);
+
+    return 1;
+}
+
+
+/**
+ * Expand a file-path, in the same way a Unix shell would do.
+ */
+int l_CFile_expand(lua_State *l)
+{
+    CLuaLog("l_CFile_exists");
+
+    const char *str = lua_tostring(l, 2);
+
+    if (str == NULL)
+    {
+        lua_pushnil(l);
+        return 1;
+    }
+
+
+    std::string result = shell_expand_path(str);
+    lua_pushstring(l, result.c_str());
 
     return 1;
 }
@@ -209,6 +233,7 @@ void InitFile(lua_State * l)
         {"basename", l_CFile_basename},
         {"copy",     l_CFile_copy},
         {"exists",   l_CFile_exists},
+        {"expand",   l_CFile_expand},
         {"stat",     l_CFile_stat},
         {NULL,       NULL}
     };
