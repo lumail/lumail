@@ -98,55 +98,21 @@ int main(int argc, char *argv[])
 
 
     /*
-     * Loading our global configuration files - old and new.
+     * Loading our global configuration file: legacy
      */
     if (CFile::exists("/etc/lumail2/lumail2.lua"))
         load.push_back("/etc/lumail2/lumail2.lua");
 
+    /*
+     * Loading our global configuration file: new
+     */
     if (CFile::exists("/etc/lumail/lumail.lua"))
         load.push_back("/etc/lumail/lumail.lua");
 
 
     /*
-     * Per-User configuration directories.
+     * Parse our arguments.
      */
-    std::vector < std::string > dirs;
-    // legacy
-    dirs.push_back("$XDG_CONFIG_HOME/lumail2/");
-    dirs.push_back("$HOME/.config/lumail2/");
-    dirs.push_back("$HOME/.lumail2/");
-    // new
-    dirs.push_back("$XDG_CONFIG_HOME/lumail/");
-    dirs.push_back("$HOME/.config/lumail/");
-    dirs.push_back("$HOME/.lumail/");
-
-
-    /*
-     * Per-User config files.
-     */
-    std::vector < std::string > user;
-    // legacy
-    user.push_back("/lumail2.lua");
-    // new
-    user.push_back("/lumail.lua");
-    user.push_back("/config.lua");
-
-    /*
-     * Look for each config-file in each available config-dir.
-     */
-    for (std::string user_dir : dirs)
-    {
-        for (std::string user_file : user)
-        {
-            std::string path = shell_expand_path(user_dir);
-            path += user_file;
-
-            if (CFile::exists(path))
-                load.push_back(path);
-        }
-    }
-
-
     while (1)
     {
         /* ignore unknown arguments. */

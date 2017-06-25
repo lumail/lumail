@@ -250,9 +250,9 @@ install_imap: clean_imap
 install_lua:
 	mkdir -p /usr/lib/lumail || true
 	install -m644 lib/*.lua /usr/lib/lumail
-	mkdir -p /etc/lumail2/ || true
-	mv /etc/lumail2/lumail2.lua /etc/lumail2/lumail2.lua.$$(date +%d-%m-%Y.%s) || true
-	install -m644 ./lumail2.lua /etc/lumail2
+	mkdir -p /etc/lumail/ || true
+	mv /etc/lumail/lumail.lua /etc/lumail/lumail.lua.$$(date +%d-%m-%Y.%s) || true
+	install -m644 ./global.config.lua /etc/lumail/lumail.lua
 
 
 #

@@ -4003,25 +4003,85 @@ function show_key_binding ()
 end
 
 
+
+
 --
+-- Handle legacy setups
 --
--- Load per-host configuration file, if it exists
+if ( Directory:exists( "/etc/lumail2/perl.d" ) ) then
+   info_msg( "WARNING: Obsolete directory detected /etc/lumail2/perl.d" )
+   info_msg( "Please see: https://lumail.org/install/#upgrade" )
+end
+if ( Directory:exists( "/etc/lumail2/lib" ) ) then
+   info_msg( "WARNING: Obsolete directory detected /etc/lumail2/perl.d" )
+   info_msg( "Please see: https://lumail.org/install/#upgrade" )
+end
+
 --
-local host = Net:hostname()
-local filename = host .. ".lua"
-local location = os.getenv("XDG_CONFIG_HOME") or os.getenv("HOME") .. "/.config"
-location = location .. "/lumail2/"
-if File:exists(location .. filename) then
-  dofile(location .. filename)
-  info_msg("Loaded " .. location .. filename)
-else
-  location = os.getenv("HOME") .. "/.lumail2/"
-  if File:exists(location .. filename) then
-    dofile(location .. filename)
-    info_msg("Loaded " .. location .. filename)
-  else
-    warning_msg(host .. " specific config not present")
-  end
+-- Now load our per-user configuration files
+--
+-- This is divided into two parts:
+--
+--  * Legacy files which will be removed in the future.
+--
+--  * New/Current files which are the preferred location for
+--    user configuration.
+--
+local legacy_config = {}
+local current_config = {}
+
+-- Hostname-specific lua file.
+local hostname = Net:hostname() .. ".lua"
+
+table.insert( legacy_config,
+              File:expand( "$HOME/.lumail2/lumail2.lua" ) )
+table.insert( legacy_config,
+              File:expand( "$HOME/.lumail2/config.lua" ) )
+table.insert( legacy_config,
+              File:expand( "$HOME/.lumail2/" .. hostname ) )
+
+--
+-- preferred/new/modern config-location
+--
+table.insert( legacy_config,
+              File:expand( "$XDG_CONFIG_HOME/lumail/lumail.lua" ) )
+table.insert( legacy_config,
+              File:expand( "$XDG_CONFIG_HOME/lumail/config.lua" ) )
+table.insert( legacy_config,
+              File:expand( "$XDG_CONFIG_HOME/lumail/" .. hostname ) )
+table.insert( current_config,
+              File:expand( "$HOME/.config/lumail/lumail.lua" ) )
+table.insert( current_config,
+              File:expand( "$HOME/.config/lumail/config.lua" ) )
+table.insert( current_config,
+              File:expand( "$HOME/.config/lumail/" .. hostname ) )
+table.insert( current_config,
+              File:expand( "$HOME/.lumail/lumail.lua" ) )
+table.insert( current_config,
+              File:expand( "$HOME/.lumail/config.lua" ) )
+table.insert( current_config,
+              File:expand( "$HOME/.lumail/" .. hostname ) )
+
+
+--
+--  Handle the loading of legacy config
+--
+local warned = false
+
+for i, o in ipairs(legacy_config) do
+   if ( File:exists( File:expand( o ) ) ) then
+      dofile( File:expand( o ) )
+      if ( not warned ) then
+         warning_msg( "Loading legacy config file - " .. o )
+         warning_msg( "See: https://lumail.org/getting-started/" )
+         warned = true
+      end
+   end
+end
+for i, o in ipairs(current_config) do
+   if ( File:exists( File:expand( o ) ) ) then
+      dofile( File:expand( o ) )
+   end
 end
 
 
@@ -4041,17 +4101,4 @@ for index, arg in ipairs(ARGS) do
     Maildir.select(folder, true)
   end
 
-end
-
-
---
--- Handle legacy setups
---
-if ( Directory:exists( "/etc/lumail2/perl.d" ) ) then
-   info_msg( "WARNING: Obsolete directory detected /etc/lumail2/perl.d" )
-   info_msg( "Please see: https://lumail.org/install/#upgrade" )
-end
-if ( Directory:exists( "/etc/lumail2/lib" ) ) then
-   info_msg( "WARNING: Obsolete directory detected /etc/lumail2/perl.d" )
-   info_msg( "Please see: https://lumail.org/install/#upgrade" )
 end
