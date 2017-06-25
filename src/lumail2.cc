@@ -36,6 +36,7 @@
 #include "screen.h"
 #include "statuspanel.h"
 #include "tests.h"
+#include "util.h"
 
 /*
  * External flag for getopt - when set we can ignore unknown
@@ -87,9 +88,8 @@ int main(int argc, char *argv[])
 
 
     /*
-     * The default load-path is set at compile-time.
-     *
-     * Ensure it is used.
+     * The default load-path is set at compile-time, here we
+     * ensure that it is used.
      */
     CLua *instance        = CLua::instance();
     std::string load_path = LUMAIL_LUAPATH;
@@ -98,70 +98,54 @@ int main(int argc, char *argv[])
 
 
     /*
-     * Default to loading some configuration files, if they
-     * exist
+     * Loading our global configuration files - old and new.
      */
     if (CFile::exists("/etc/lumail2/lumail2.lua"))
         load.push_back("/etc/lumail2/lumail2.lua");
 
+    if (CFile::exists("/etc/lumail/lumail.lua"))
+        load.push_back("/etc/lumail/lumail.lua");
+
+
     /*
-     * Get the user config file.
-     * 1. $XDG_CONFIG_HOME/lumail2/lumail2.lua
-     * 2. $XDG_CONFIG_HOME/lumail2/config.lua
-     * 3. $HOME/.config/lumail2/lumail2.lua
-     * 4. $HOME/.config/lumail2/config.lua
-     * 5. $HOME/.lumail2/lumail2.lua
-     * 6. $HOME/.lumail2/config.lua
+     * Per-User configuration directories.
      */
-    std::string conf_dir;
-    std::string filenames[] = {"/lumail2.lua", "/config.lua"};
+    std::vector < std::string > dirs;
+    // legacy
+    dirs.push_back("$XDG_CONFIG_HOME/lumail2/");
+    dirs.push_back("$HOME/.config/lumail2/");
+    dirs.push_back("$HOME/.lumail2/");
+    // new
+    dirs.push_back("$XDG_CONFIG_HOME/lumail/");
+    dirs.push_back("$HOME/.config/lumail/");
+    dirs.push_back("$HOME/.lumail/");
 
-    if (getenv("XDG_CONFIG_HOME") != NULL)
+
+    /*
+     * Per-User config files.
+     */
+    std::vector < std::string > user;
+    // legacy
+    user.push_back("/lumail2.lua");
+    // new
+    user.push_back("/lumail.lua");
+    user.push_back("/config.lua");
+
+    /*
+     * Look for each config-file in each available config-dir.
+     */
+    for (std::string user_dir : dirs)
     {
-        conf_dir = getenv("XDG_CONFIG_HOME");
-        conf_dir = conf_dir + "/lumail2/";
-
-        for (int i = 0; i < 2; i++)
+        for (std::string user_file : user)
         {
-            if (CFile::exists(conf_dir + filenames[i]))
-            {
-                load.push_back(conf_dir + filenames[i]);
-                break;
-            }
+            std::string path = shell_expand_path(user_dir);
+            path += user_file;
+
+            if (CFile::exists(path))
+                load.push_back(path);
         }
     }
-    else if (getenv("HOME") != NULL)
-    {
-        /* Try XDG_CONFIG_HOME default ~/.config */
-        std::string home = getenv("HOME");
-        conf_dir = home + "/.config/lumail2";
 
-        if (!conf_dir.empty())
-        {
-            for (int i = 0; i < 2; i++)
-            {
-                if (CFile::exists(conf_dir + filenames[i]))
-                {
-                    load.push_back(conf_dir + filenames[i]);
-                    break;
-                }
-            }
-        }
-        /* Try ~/.lumail2/ */
-        else
-        {
-            conf_dir = home + "/.lumail2";
-
-            for (int i = 0; i < 2; i++)
-            {
-                if (CFile::exists(conf_dir + filenames[i]))
-                {
-                    load.push_back(conf_dir + filenames[i]);
-                    break;
-                }
-            }
-        }
-    }
 
     while (1)
     {
