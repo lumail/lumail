@@ -69,3 +69,11 @@ std::string escape_filename(std::string path);
  * in a UTF-8 string.
  */
 int dsutil_utf8_charlen(const unsigned char  c);
+
+/**
+ * Expand a filename, in the same way that a shell would.
+ *
+ * This converts "~/foo" to "/home/user/foo", and handles the expansion
+ * of environmental variables too.
+ */
+std::string shell_expand_path(std::string input);

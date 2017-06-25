@@ -21,6 +21,7 @@
 #include <memory>
 #include <stdlib.h>
 #include <string.h>
+#include <wordexp.h>
 
 #include "util.h"
 
@@ -105,4 +106,26 @@ int dsutil_utf8_charlen(const unsigned char  c)
     }
 
     return 1;
+}
+
+std::string shell_expand_path(std::string input)
+{
+    std::string result;
+
+    wordexp_t p;
+    char** w;
+    wordexp(input.c_str(), &p, 0);
+
+    if (p.we_wordv)
+    {
+        w = p.we_wordv;
+
+        for (size_t i = 0; i < p.we_wordc; i++)
+        {
+            result = w[i];
+        }
+    }
+
+    wordfree(&p);
+    return (result);
 }
