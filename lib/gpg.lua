@@ -112,8 +112,8 @@ gpg.defaults = function(recipient)
     return gpg.mimegpg_args("b")
   elseif mode == "auto" then
     -- Check if a key is available for the recipients mail address
-    recipient = recipient:match("(<.*>)") or recipient
-    local has_gpg = os.execute(string.format("gpg --list-keys | grep -q %s", recipient))
+    recipient = recipient:match("<(.*)>") or recipient
+    local has_gpg = os.execute(string.format("gpg --list-keys | grep -q '%s'", recipient))
     if has_gpg then
       return gpg.mimegpg_args("b")
     else
