@@ -269,4 +269,4 @@ install: lumail2 install_imap install_lua
 #  Test for leaks; use the debug-build so we get line-number information, etc.
 #
 valgrind: lumail2-debug
-	valgrind  --leak-check=full --show-leak-kinds=all --track-origins=yes ./lumail2-debug  --load-file ./lumail2.lua 2>leak.log
+	valgrind  --leak-check=full --show-leak-kinds=all --track-origins=yes ./lumail2-debug  --load-file ./global.config.lua 2>leak.log
