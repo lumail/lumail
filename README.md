@@ -1,6 +1,6 @@
 
 [![Build Status](https://travis-ci.org/lumail/lumail.png)](https://travis-ci.org/lumail/lumail)
-[![license](https://img.shields.io/github/license/lumail/lumail.svg)]()
+[![license](https://img.shields.io/github/license/lumail/lumail.svg)](https://github.com/lumail/lumail/blob/master/LICENSE)
 
 
 lumail
