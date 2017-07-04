@@ -1701,12 +1701,6 @@ function Message.delete (self)
   --
   local msg_index = Config.get_with_default("index.current", 0) + 1
 
-  -- Move message to trash.
-  local trash = Config.get_with_default("global.trash-mail", nil)
-  if trash and trash ~= Global:current_maildir():path() then
-    Message.save(trash)
-  end
-
   -- Delete the message.
   msg:unlink()
 
@@ -1727,6 +1721,33 @@ function Message.delete (self)
       Config:set("index.current", #global_msgs - 1)
     end
   end
+end
+
+--
+--- Trash the current Message
+--
+-- Move the current message to the Trash maildir before deleting it
+--
+
+function Message.trash(self)
+
+  -- The Message we want to delete.
+  local msg = self or Message.at_point()
+
+  -- If there is no message we have nothing to do.
+  if not msg then
+    error_msg "Failed to find message!"
+    return
+  end
+
+  -- Move message to trash.
+  local trash = Config.get_with_default("global.trash-mail", nil)
+  if trash and trash ~= Global:current_maildir():path() then
+    Message.save(trash)
+  end
+
+  -- Delete the original message.
+  msg:delete()
 end
 
 
