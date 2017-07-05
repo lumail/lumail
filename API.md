@@ -97,7 +97,7 @@ the value of a key is changed.  The function will be given two arguments:
 * The name of the key which has changed-value.
 * The previous value of that key, if any.
 
-**NOTE**: We've defined a helper method in `lumail2.lua` which allows you to retrieve the value of a configuration-key and return a default value if the key is not set.
+**NOTE**: We've defined a helper method in `global.config.lua` which allows you to retrieve the value of a configuration-key and return a default value if the key is not set.
 
       function Config.get_with_default(key,default)
           ..

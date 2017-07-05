@@ -3,7 +3,7 @@
 
 The core of lumail is written in C++, with extensive Lua support.
 
-The main Lua code, used for configuration, is located in the `lumail2.lua`
+The main Lua code, used for configuration, is located in the `global.config.lua`
 file, with a number of supporting libraries located beneath `lib/`.
 
 The C++ code can all be found beneath the top-level `src/` directory.
