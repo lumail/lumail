@@ -25,9 +25,7 @@
 --
 --      Threader = require("threader")
 --
---      local threads = Threader.thread messages)
---
---      local sorted_threads = Threader.sort(threads, false)
+--      local threads = Threader.thread(messages)
 --
 
 require "table_utilities"
@@ -278,7 +276,28 @@ Threader.__index = Threader
 Threader.overridden = {}
 
 --
--- Thread messages.
+-- Table that holds valuable information about our threads.
+-- It associates every root message with its thread number and
+-- holds every root message ordered in the indexed part of the table.
+--
+--
+-- Threader.roots[some_root_message]     gives us the number of the thread which is
+--                                       started by some_root_message.
+--
+-- Threader.roots[some_non_root_message] will return nil.
+--
+-- Threader.roots[1]                     gives us the root message of the first thread.
+--
+-- This information empowers us to use thread aware functions on a flat thread-sorted
+-- table of messages.
+--
+Threader.roots = {}
+
+--
+--- Thread messages.
+--
+-- This function returns a flat list of messages and a list of thread indentation.
+-- It also generate the information in Threader.roots.
 --
 function Threader.thread (messages)
   -- build up the threads
@@ -442,7 +461,64 @@ function Threader.thread (messages)
     table.insert(roots, v)
   end
 
-  return roots
+  --
+  -- Sort the threads
+  --
+  local sort_method = Config:get("threads.sort")
+  if sort_method and type(_G["compare_by_" .. sort_method]) == "function" then
+    roots = Threader.sort(roots, _G["compare_by_" .. sort_method], "max")
+  end
+
+  --
+  -- Populate the hash side of the roots table
+  --
+  for i,c in ipairs(roots) do
+    local msg = c.message
+    if not msg then
+      msg = c.children[1].message
+    end
+    table.insert(Threader.roots, msg)
+    Threader.roots[msg] = i
+  end
+
+  local flat_list = {}
+  local indentation = {}
+
+  --
+  -- Signs used to indent threads
+  --
+  local threads_output_signs = Config.get_with_default("threads.output", " ;`;-> ")
+  -- Function to split the signs string at ';'
+  threads_output_signs = threads_output_signs:gmatch "([^;]+)"
+  local threads_output_indent = threads_output_signs()
+  local threads_output_root = threads_output_signs()
+  local threads_output_sign = threads_output_signs()
+
+
+  --
+  -- Helper to recursively traverse the tree
+  --
+  local function thread_walk (c, col, i, i_col)
+    if c.message then
+      table.insert(col, c.message)
+      i_col[c.message] = i
+      if i == "" then
+        i = threads_output_root .. threads_output_sign
+      end
+      i = threads_output_indent .. i
+    else
+      i = threads_output_sign
+    end
+    for _, child in ipairs(c.children) do
+      thread_walk(child, col, i, i_col)
+    end
+  end
+
+  for _, c in ipairs(roots) do
+    thread_walk(c, flat_list, "", indentation)
+  end
+
+  return flat_list, indentation
 end
 
 --

@@ -603,51 +603,8 @@ function sort_messages (input)
   --
   if method == "threads" then
     local t_start = os.time()
-    local threads = Threader.thread(input)
-
-    --
-    -- Signs used to indent threads
-    --
-    local threads_output_signs = Config.get_with_default("threads.output", " ;`;-> ")
-    threads_output_signs = threads_output_signs:gmatch "([^;]+)"
-    local threads_output_indent = threads_output_signs()
-    local threads_output_root = threads_output_signs()
-    local threads_output_sign = threads_output_signs()
-
-    --
-    -- Sort threads
-    --
-    local sort_method = Config:get "threads.sort"
-    if sort_method and type(_G["compare_by_" .. sort_method]) == "function" then
-      threads = Threader.sort(threads, _G["compare_by_" .. sort_method], "max")
-    end
-
-    --
-    -- helper to recursively traverse the tree
-    --
-    local function thread_walk (c, col, i, i_col)
-      if c.message then
-        table.insert(col, c.message)
-        i_col[c.message] = i
-        if i == "" then
-          i = threads_output_root .. threads_output_sign
-        end
-        i = threads_output_indent .. i
-      else
-        i = threads_output_sign
-      end
-      for _, child in ipairs(c.children) do
-        thread_walk(child, col, i, i_col)
-      end
-    end
-
-    -- flat list of containers
     local res = {}
-
-    for _, c in ipairs(threads) do
-      thread_walk(c, res, "", threads_indentation)
-    end
-
+    res, threads_indentation = Threader.thread(input)
     local t_end = os.time()
     Panel:append("Sort method $[WHITE|BOLD]" .. method .. "$[WHITE] took $[WHITE|BOLD]" .. (t_end - t_start) .. "$[WHITE] seconds with " .. "$[WHITE|BOLD]" .. #input .. "$[WHITE] messages")
 
