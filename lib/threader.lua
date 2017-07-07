@@ -642,7 +642,21 @@ end
 -- Jump to the next thread
 --
 function Threader.next_thread()
-  Threader.iterate_thread(nil, next)
+  -- call next till we reach a root
+  local msgs = get_messages()
+  local index = Config:get("index.current") + 1
+
+  -- Do we start with a root ?
+  if Threader.roots[msgs[index]] then
+    next()
+    index = index + 1
+  end
+
+  
+  while Threader.roots[msgs[index]] == nil do
+    next()
+    index = index + 1
+  end
 end
 
 --
