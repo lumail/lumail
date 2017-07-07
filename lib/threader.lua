@@ -568,4 +568,137 @@ function Threader.sort (roots, cmp_func, roots_order)
   return roots
 end
 
+--
+-- Iterate through the whole thread the current message is in.
+-- msg_callback is called once on each message.
+-- general_callback is called once per iteration.
+--
+-- It returns the frames of the iterated thread: the roots of current and next thread.
+--
+function Threader.iterate_thread(msg_callback, general_callback)
+
+  -- This function only works in maildir or index modes.
+  local mode = Config:get("global.mode")
+  if (mode ~= "index") and (mode ~= "maildir") then
+    return
+  end
+
+  -- This function only works with threading
+  if Config:get("index.sort") ~= "threads" then
+    error_msg("Threading must be enabled to use thread aware functions.")
+    return
+  end
+
+  local root, msg
+  local msgs = get_messages()
+
+  -- in message view "index.current" is still valid
+  local index = Config:get("index.current") + 1
+
+  msg = msgs[index]
+
+  -- find thread root
+  while Threader.roots[msg] == nil do
+    index = index - 1
+    msg = msgs[index]
+  end
+
+  root = msg
+  if msg_callback then
+    msg_callback(root)
+  end
+  if general_callback then
+    general_callback()
+  end
+
+  -- find next thread
+  index = index + 1
+  msg = msgs[index]
+  while Threader.roots[msg] == nil do
+    if msg_callback then
+      msg_callback(msg)
+    end
+    if general_callback then
+      general_callback()
+    end
+    index = index + 1
+    msg = msgs[index]
+  end
+
+  -- msg is the root message of the next thread
+  return root, msg
+end
+
+--
+-- Collect and return all messages in a thread
+--
+function Threader.collect_thread()
+  local thread_msgs = {}
+  Threader.iterate_thread(function(msg) table.insert(thread_msgs, msg) end)
+  return thread_msgs
+end
+
+--
+-- Jump to the next thread
+--
+function Threader.next_thread()
+  Threader.iterate_thread(nil, next)
+end
+
+--
+-- Jump to the root of the previous thread
+--
+function Threader.prev_thread()
+
+  local msgs = get_messages()
+  -- The second root is the root of the previous thread
+  local roots_found = 0
+  local index = Config:get("index.current") + 1
+
+  -- Do we start with a root ?
+  if Threader.roots[msgs[index]] then
+    roots_found = 1
+  end
+
+  while roots_found ~= 2 do
+    index = index - 1
+    prev()
+    if Threader.roots[msgs[index]] then
+      roots_found = roots_found + 1
+    end
+  end
+end
+
+--
+-- Mark current thread as read
+--
+function Threader.thread_mark_read()
+  Threader.iterate_thread(Message.mark_read)
+end
+
+--
+-- Mark current thread as unread
+--
+function Threader.thread_mark_unread()
+  Threader.iterate_thread(Message.mark_unread)
+end
+
+--
+-- Trash current thread
+--
+function Threader.thread_trash()
+  for _,m in ipairs(Threader.collect_thread()) do
+    m:trash()
+  end
+end
+
+--
+-- Delete current thread
+--
+function Threader.thread_delete()
+  for _,m in ipairs(Threader.collect_thread()) do
+    m:delete()
+  end
+end
+
 return Threader
