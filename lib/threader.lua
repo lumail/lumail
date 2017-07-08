@@ -278,15 +278,15 @@ Threader.overridden = {}
 --
 -- Table that holds valuable information about our threads.
 -- It associates every root message with its thread number and
--- holds every root message ordered in the indexed part of the table.
+-- holds an ordered list of root messages in the indexed part of the table.
 --
 --
--- Threader.roots[some_root_message]     gives us the number of the thread which is
---                                       started by some_root_message.
+-- Threader.roots[some_root_message]       gives us the number of the thread
+--                                         which is started by some_root_message.
 --
--- Threader.roots[some_non_root_message] will return nil.
+-- Threader.roots[some_non_root_message]   will return nil.
 --
--- Threader.roots[1]                     gives us the root message of the first thread.
+-- Threader.roots[1]                       gives us the root message of the first thread.
 --
 -- This information empowers us to use thread aware functions on a flat thread-sorted
 -- table of messages.
@@ -296,8 +296,8 @@ Threader.roots = {}
 --
 --- Thread messages.
 --
--- This function returns a flat list of messages and a list of thread indentation.
--- It also generate the information in Threader.roots.
+-- Return a flat list of messages and a list of thread indentation.
+-- Also generate the information in Threader.roots.
 --
 function Threader.thread (messages)
   -- build up the threads
@@ -470,7 +470,7 @@ function Threader.thread (messages)
   end
 
   --
-  -- Populate the hash side of the roots table
+  -- Populate Threader.roots
   --
   for i,c in ipairs(roots) do
     local msg = c.message
@@ -570,10 +570,9 @@ end
 
 --
 -- Iterate through the whole thread the current message is in.
--- msg_callback is called once on each message.
--- general_callback is called once per iteration.
+-- msg_callback is called on each message.
 --
--- It returns the frames of the iterated thread: the roots of current and next thread.
+-- Return the frames of the iterated thread: the roots of current and next thread.
 --
 function Threader.iterate_thread(msg_callback, general_callback)
 
@@ -607,9 +606,6 @@ function Threader.iterate_thread(msg_callback, general_callback)
   if msg_callback then
     msg_callback(root)
   end
-  if general_callback then
-    general_callback()
-  end
 
   -- find next thread
   index = index + 1
@@ -617,9 +613,6 @@ function Threader.iterate_thread(msg_callback, general_callback)
   while Threader.roots[msg] == nil do
     if msg_callback then
       msg_callback(msg)
-    end
-    if general_callback then
-      general_callback()
     end
     index = index + 1
     msg = msgs[index]
