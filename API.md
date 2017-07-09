@@ -174,10 +174,10 @@ displays things, these are:
 * `maildir.truncate`
     * Alternate between showing the full/truncated Maildir path in maildir-mode.
 
-The default behaviour of the gpg support can be configured with:
+The default behaviour of the `gpg` support can be configured with:
 
 * `gpg.mode`
-    * For further information [see](GPG.md).
+    * For further information see `GPG.md`.
 
 
 ### Directories
