@@ -10,7 +10,7 @@ lumail
 
 Although primarily developed and tested against GNU/Linux it should run upon Mac OS X, and FreeBSD.  If your system isn't supported, and is Unix-like then this is a bug which should be fixed.
 
-`lumail` is primarily designed to operate against local `Maildir`-hierachies, but IMAP support is available, as well as support for GPG for security.
+`lumail` is primarily designed to operate against local `Maildir`-hierarchies, but IMAP support is available, as well as support for GPG for security.
 
 This `README.md` file contains brief details of the project, with more complete documentation provided on the homepage. The following links on the project website should be a good starting point:
 
@@ -51,7 +51,7 @@ If you wish to install manually then please copy:
 * The contents of `lib/` to `/usr/lib/lumail`.
 * The contents of `perl.d` to `/usr/share/lumail/`.
 
-You can also see [the notes below](#running-from-git-checkout) about running directly from a `git`-checkout of our repository.  Note that if you wish to [use IMAP](IMAP.md) you'll need to install the extra depedencies for that.
+You can also see [the notes below](#running-from-git-checkout) about running directly from a `git`-checkout of our repository.  Note that if you wish to [use IMAP](IMAP.md) you'll need to install the extra dependencies for that.
 
 
 ## Configuration
@@ -86,7 +86,7 @@ The defaults in [the per-user configuration file](user.config.lua) should be ade
 ### Running from `git`-checkout
 
 If you wish to run directly from a `git`-checkout you'll need to add some
-command-line flags to change the default behaviour:
+command-line flags to change the default behavior:
 
 * Change the location from which Lua libraries are fetched.
 * Disable the loading of the global configuration-files.
