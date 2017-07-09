@@ -25,9 +25,7 @@
 --
 --      Threader = require("threader")
 --
---      local threads = Threader.thread messages)
---
---      local sorted_threads = Threader.sort(threads, false)
+--      local threads = Threader.thread(messages)
 --
 
 require "table_utilities"
@@ -278,7 +276,28 @@ Threader.__index = Threader
 Threader.overridden = {}
 
 --
--- Thread messages.
+-- Table that holds valuable information about our threads.
+-- It associates every root message with its thread number and
+-- holds an ordered list of root messages in the indexed part of the table.
+--
+--
+-- Threader.roots[some_root_message]       gives us the number of the thread
+--                                         which is started by some_root_message.
+--
+-- Threader.roots[some_non_root_message]   will return nil.
+--
+-- Threader.roots[1]                       gives us the root message of the first thread.
+--
+-- This information empowers us to use thread aware functions on a flat thread-sorted
+-- table of messages.
+--
+Threader.roots = {}
+
+--
+--- Thread messages.
+--
+-- Return a flat list of messages and a list of thread indentation.
+-- Also generate the information in Threader.roots.
 --
 function Threader.thread (messages)
   -- build up the threads
@@ -442,7 +461,64 @@ function Threader.thread (messages)
     table.insert(roots, v)
   end
 
-  return roots
+  --
+  -- Sort the threads
+  --
+  local sort_method = Config:get("threads.sort")
+  if sort_method and type(_G["compare_by_" .. sort_method]) == "function" then
+    roots = Threader.sort(roots, _G["compare_by_" .. sort_method], "max")
+  end
+
+  --
+  -- Populate Threader.roots
+  --
+  for i,c in ipairs(roots) do
+    local msg = c.message
+    if not msg then
+      msg = c.children[1].message
+    end
+    table.insert(Threader.roots, msg)
+    Threader.roots[msg] = i
+  end
+
+  local flat_list = {}
+  local indentation = {}
+
+  --
+  -- Signs used to indent threads
+  --
+  local threads_output_signs = Config.get_with_default("threads.output", " ;`;-> ")
+  -- Function to split the signs string at ';'
+  threads_output_signs = threads_output_signs:gmatch "([^;]+)"
+  local threads_output_indent = threads_output_signs()
+  local threads_output_root = threads_output_signs()
+  local threads_output_sign = threads_output_signs()
+
+
+  --
+  -- Helper to recursively traverse the tree
+  --
+  local function thread_walk (c, col, i, i_col)
+    if c.message then
+      table.insert(col, c.message)
+      i_col[c.message] = i
+      if i == "" then
+        i = threads_output_root .. threads_output_sign
+      end
+      i = threads_output_indent .. i
+    else
+      i = threads_output_sign
+    end
+    for _, child in ipairs(c.children) do
+      thread_walk(child, col, i, i_col)
+    end
+  end
+
+  for _, c in ipairs(roots) do
+    thread_walk(c, flat_list, "", indentation)
+  end
+
+  return flat_list, indentation
 end
 
 --
@@ -490,6 +566,146 @@ function Threader.sort (roots, cmp_func, roots_order)
   end
 
   return roots
+end
+
+--
+-- Iterate through the whole thread the current message is in.
+-- msg_callback is called on each message.
+--
+-- Return the frames of the iterated thread: the roots of current and next thread.
+--
+function Threader.iterate_thread(msg_callback, general_callback)
+
+  -- This function only works in maildir or index modes.
+  local mode = Config:get("global.mode")
+  if (mode ~= "index") and (mode ~= "maildir") then
+    return
+  end
+
+  -- This function only works with threading
+  if Config:get("index.sort") ~= "threads" then
+    error_msg("Threading must be enabled to use thread aware functions.")
+    return
+  end
+
+  local root, msg
+  local msgs = get_messages()
+
+  -- in message view "index.current" is still valid
+  local index = Config:get("index.current") + 1
+
+  msg = msgs[index]
+
+  -- find thread root
+  while Threader.roots[msg] == nil do
+    index = index - 1
+    msg = msgs[index]
+  end
+
+  root = msg
+  if msg_callback then
+    msg_callback(root)
+  end
+
+  -- find next thread
+  index = index + 1
+  msg = msgs[index]
+  while Threader.roots[msg] == nil do
+    if msg_callback then
+      msg_callback(msg)
+    end
+    index = index + 1
+    msg = msgs[index]
+  end
+
+  -- msg is the root message of the next thread
+  return root, msg
+end
+
+--
+-- Collect and return all messages in a thread
+--
+function Threader.collect_thread()
+  local thread_msgs = {}
+  Threader.iterate_thread(function(msg) table.insert(thread_msgs, msg) end)
+  return thread_msgs
+end
+
+--
+-- Jump to the next thread
+--
+function Threader.next_thread()
+  -- call next till we reach a root
+  local msgs = get_messages()
+  local index = Config:get("index.current") + 1
+
+  -- Do we start with a root ?
+  if Threader.roots[msgs[index]] then
+    next()
+    index = index + 1
+  end
+
+  
+  while Threader.roots[msgs[index]] == nil do
+    next()
+    index = index + 1
+  end
+end
+
+--
+-- Jump to the root of the previous thread
+--
+function Threader.prev_thread()
+
+  local msgs = get_messages()
+  -- The second root is the root of the previous thread
+  local roots_found = 0
+  local index = Config:get("index.current") + 1
+
+  -- Do we start with a root ?
+  if Threader.roots[msgs[index]] then
+    roots_found = 1
+  end
+
+  while roots_found ~= 2 do
+    index = index - 1
+    prev()
+    if Threader.roots[msgs[index]] then
+      roots_found = roots_found + 1
+    end
+  end
+end
+
+--
+-- Mark current thread as read
+--
+function Threader.thread_mark_read()
+  Threader.iterate_thread(Message.mark_read)
+end
+
+--
+-- Mark current thread as unread
+--
+function Threader.thread_mark_unread()
+  Threader.iterate_thread(Message.mark_unread)
+end
+
+--
+-- Trash current thread
+--
+function Threader.thread_trash()
+  for _,m in ipairs(Threader.collect_thread()) do
+    m:trash()
+  end
+end
+
+--
+-- Delete current thread
+--
+function Threader.thread_delete()
+  for _,m in ipairs(Threader.collect_thread()) do
+    m:delete()
+  end
 end
 
 return Threader
