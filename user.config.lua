@@ -4,7 +4,7 @@
 -- To make it active copy it to either:
 --
 --   ~/.lumail/lumail.lua
---   ~/.luamil/$(hostname --fqdn).lua
+--   ~/.lumail/$(hostname --fqdn).lua
 --
 -- Changes here will override the defaults which are loaded by the
 -- global configuration file (/etc/lumail/lumail.lua).
