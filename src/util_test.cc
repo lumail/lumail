@@ -38,7 +38,7 @@ typedef struct _split_test_case
 
 
 /**
- * Helper for our escape & expansion tests.
+ * Helper for our escape tests.
  */
 typedef struct _test_case
 {
