@@ -2066,22 +2066,28 @@ function Maildir.select (desired, change_mode_too)
 end
 
 
+
 --
--- This function is called by pressing `s` in attachment-mode
+-- This function saves the MIME part under the cursor to the named path.
 --
-function save_mime_part ()
+-- If the function succeeds it returns the MIME object, otherwise it
+-- returns false.
+--
+function write_mime_part( path )
+
   --
   -- Get the currently highlighted attachment-offset
   --
   local mode = Config:get "global.mode"
-  local cur = Config.get_with_default(mode .. ".current", 0)
+  local cur  = Config.get_with_default(mode .. ".current", 0)
 
   --
   -- Get the current message, and then the parts.
   --
   local msg = Global:current_message()
   if not msg then
-    return
+     warning_msg "There is no currently selected message!"
+     return false
   end
 
   -- Parse the MIME parts into an ordered list.
@@ -2092,32 +2098,41 @@ function save_mime_part ()
 
   --  If we found the part.
   if found then
-    -- Get the path of the attachment, if any
-    local path = found['filename']
-    if path == nil or path == "" then
-      path = "attachment"
-    end
 
-    -- Prompt for local-path
-    local output = Screen:get_line("Save to:", path)
+     -- Open the file for writing
+     local file = assert(io.open(path, "w"))
 
-    if output == nil or output == "" then
+     -- save the content there
+     file:write(found['object']:content())
+     file:close()
+
+     return found
+  else
+     warning_msg "Failed to find MIME-part!"
+     return false
+  end
+end
+
+
+--
+-- This function is called by pressing `s` in attachment-mode
+--
+function save_mime_part ()
+   -- Prompt for local-path
+   local output = Screen:get_line("Save to:")
+
+   -- Ensure we got a path.
+   if output == nil or output == "" then
       info_msg "Attachment saving aborted!"
       return
-    end
+   end
 
-    -- save it
-    local f = io.open(output, "wb")
-
-    -- save the content there
-    f:write(found['object']:content())
-
-    f:close()
-
-    info_msg("Wrote attachment to " .. output)
-
-    return
-  end
+   -- Write out the part
+   if ( write_mime_part( output ) ) then
+      info_msg("Wrote attachment to " .. output)
+   else
+      warning_msg( "Failed to write attachment" )
+   end
 end
 
 
@@ -2125,62 +2140,37 @@ end
 -- This function is called by pressing `SPACE`/`ENTER` in attachment-mode
 --
 function view_mime_part (cmd)
-  --
-  -- Get the currently highlighted attachment-offset
-  --
-  local mode = Config:get "global.mode"
-  local cur = Config.get_with_default(mode .. ".current", 0)
 
-  --
-  -- Get the current message, and then the parts.
-  --
-  local msg = Global:current_message()
-  if not msg then
-    return
-  end
+   --
+   -- Generate a temporary file to write the attachment to
+   --
+   local tmp = os.tmpname()
 
-  -- Parse the MIME parts into an ordered list.
-  local out = mimeparts2table(msg)
-
-  -- Get the part we should view
-  local found = out[cur + 1]
-
-  --  If we found the part.
-  if found then
-
-    if found['size'] == 0 then
-      error_msg "This MIME-part is empty!"
+   --
+   -- Write it out and test for success
+   --
+   local obj = write_mime_part( tmp )
+   if ( obj == false ) then
+      warning_msg( "Failed to write out object")
       return
-    end
+   end
 
-    -- Generate a temporary file
-    local tmp = os.tmpname()
-    local file = assert(io.open(tmp, "w"))
+   -- Get the MIME-type of the attachment
+   local mime = obj['type']:lower()
 
-    -- save the content there
-    file:write(found['object']:content())
-    file:close()
-
-    -- Get the MIME-type of the attachment
-    local mime = found['type']:lower()
-
-    -- Lookup the viewer to use, if not specified.
-    if (not cmd) or (cmd == "") then
+   -- Lookup the viewer to use, if not specified.
+   if (not cmd) or (cmd == "") then
       cmd = get_mime_viewer(mime)
-    end
+   end
 
-    -- Replace "%s" with the filename, and run the command
-    cmd = string.gsub(cmd, "%%s", tmp)
+   -- Replace "%s" with the filename, and run the command
+   cmd = string.gsub(cmd, "%%s", tmp)
 
-    -- Execute it
-    Screen:execute(cmd)
+   -- Execute it
+   Screen:execute(cmd)
 
-    -- Remove the file
-    os.remove(tmp)
-    return
-  else
-    error_msg "Failed to find MIME-part!"
-  end
+   -- Remove the file
+   os.remove(tmp)
 end
 
 
