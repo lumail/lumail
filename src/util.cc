@@ -21,7 +21,6 @@
 #include <memory>
 #include <stdlib.h>
 #include <string.h>
-#include <wordexp.h>
 
 #include "util.h"
 
@@ -106,36 +105,4 @@ int dsutil_utf8_charlen(const unsigned char  c)
     }
 
     return 1;
-}
-
-
-/*
- * Expand a filename, in the same way that a shell would.
- *
- * This converts "~/foo" to "/home/user/foo", and handles the expansion
- * of environmental variables too.
- *
- * Note when there are multiple possible matches we take the first
- * for example "/etc/?*.d/?*"  might return `/etc/apparmor.d/local`.
- */
-std::string shell_expand_path(std::string input)
-{
-    std::string result;
-
-    wordexp_t p;
-    char** w;
-    wordexp(input.c_str(), &p, 0);
-
-    if (p.we_wordv)
-    {
-        w = p.we_wordv;
-
-        /*
-         * Multiple possible matches - we take the first.
-         */
-        result = w[0];
-    }
-
-    wordfree(&p);
-    return (result);
 }

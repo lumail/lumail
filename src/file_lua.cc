@@ -21,7 +21,6 @@
 
 #include "file.h"
 #include "lua.h"
-#include "util.h"
 
 
 /**
@@ -120,7 +119,7 @@ int l_CFile_expand(lua_State *l)
     }
 
 
-    std::string result = shell_expand_path(str);
+    std::string result = CFile::expand_path(str);
     lua_pushstring(l, result.c_str());
 
     return 1;

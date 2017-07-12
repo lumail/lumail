@@ -39,6 +39,16 @@ typedef struct _basename_test_case
 } basename_test_case;
 
 
+/**
+ * Helper for our expansion tests.
+ */
+typedef struct _test_case
+{
+    std::string input;
+    std::string output;
+} test_case;
+
+
 
 /**
  * Test CFile::basename()
@@ -418,6 +428,47 @@ void TestFileMaildir(CuTest * tc)
 }
 
 
+/**
+ * Test CFile::expand_path()
+ */
+void TestShellExpand(CuTest * tc)
+{
+    /*
+     * Setup some environmental variables
+     */
+    putenv((char*)"USER=moi");
+    putenv((char*)"BAR=bar");
+    putenv((char*)"MISSING=");
+    putenv((char*)"RECURSE=$BAR");
+
+    test_case tests[] =
+    {
+        {"$USER", "moi"},
+        {"${USER}", "moi"},
+        {"$USER/$MISSING/$USER", "moi//moi"},
+        {"$MISSING/steve", "/steve"},
+        {"$RECURSE", "$BAR"},
+    };
+
+    /*
+     * Number of test-cases in the array above.
+     */
+    int max = sizeof(tests) / sizeof(tests[0]);
+    CuAssertIntEquals(tc, 5, max);
+
+    /*
+     * Run each test
+     */
+    for (int i = 0; i < max; i++)
+    {
+        test_case cur   = tests[i];
+        std::string out = CFile::expand_path(cur.input);
+
+        CuAssertStrEquals(tc, cur.output.c_str(), out.c_str());
+    }
+
+}
+
 
 CuSuite *
 file_getsuite()
@@ -430,5 +481,6 @@ file_getsuite()
     SUITE_ADD_TEST(suite, TestFileMaildir);
     SUITE_ADD_TEST(suite, TestFileMove);
     SUITE_ADD_TEST(suite, TestFileRenameMtime);
+    SUITE_ADD_TEST(suite, TestShellExpand);
     return suite;
 }

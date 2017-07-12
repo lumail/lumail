@@ -59,6 +59,11 @@ public:
     static bool delete_file(std::string path);
 
     /**
+     * Expand a given path, converting "$HOME" and "~/" appropriately
+     */
+    static std::string expand_path(std::string path);
+
+    /**
      * Get the basename of the given file.
      */
     static std::string basename(std::string path);

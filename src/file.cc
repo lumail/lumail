@@ -26,6 +26,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <wordexp.h>
 
 #include "file.h"
 
@@ -208,9 +209,42 @@ std::vector < std::string > CFile::get_all_maildirs(std::string prefix)
     return result;
 }
 
-
+/*
+ * Delete the given path.
+ */
 bool CFile::delete_file(std::string path)
 {
     bool result = ::unlink(path.c_str());
+    return (result);
+}
+
+/*
+ * Expand a given path, converting "$HOME" and "~/" appropriately
+ *
+ * This converts "~/foo" to "/home/user/foo", and handles the expansion
+ * of environmental variables too.
+ *
+ * Note when there are multiple possible matches we take the first
+ * for example "/etc/?*.d/?*"  might return `/etc/apparmor.d/local`.
+ */
+std::string CFile::expand_path(std::string path)
+{
+    std::string result;
+
+    wordexp_t p;
+    char** w;
+    wordexp(path.c_str(), &p, 0);
+
+    if (p.we_wordv)
+    {
+        w = p.we_wordv;
+
+        /*
+         * Multiple possible matches - we take the first.
+         */
+        result = w[0];
+    }
+
+    wordfree(&p);
     return (result);
 }

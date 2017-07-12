@@ -120,47 +120,6 @@ void TestEscape(CuTest * tc)
 }
 
 
-/**
- * Test our shell expansion function.
- */
-void TestShellExpand(CuTest * tc)
-{
-    /*
-     * Setup some environmental variables
-     */
-    putenv((char*)"USER=moi");
-    putenv((char*)"BAR=bar");
-    putenv((char*)"MISSING=");
-    putenv((char*)"RECURSE=$BAR");
-
-    test_case tests[] =
-    {
-        {"$USER", "moi"},
-        {"${USER}", "moi"},
-        {"$USER/$MISSING/$USER", "moi//moi"},
-        {"$MISSING/steve", "/steve"},
-        {"$RECURSE", "$BAR"},
-    };
-
-    /*
-     * Number of test-cases in the array above.
-     */
-    int max = sizeof(tests) / sizeof(tests[0]);
-    CuAssertIntEquals(tc, 5, max);
-
-    /*
-     * Run each test
-     */
-    for (int i = 0; i < max; i++)
-    {
-        test_case cur   = tests[i];
-        std::string out = shell_expand_path(cur.input);
-
-        CuAssertStrEquals(tc, cur.output.c_str(), out.c_str());
-    }
-
-}
-
 
 CuSuite *
 util_getsuite()
@@ -168,6 +127,5 @@ util_getsuite()
     CuSuite *suite = CuSuiteNew();
     SUITE_ADD_TEST(suite, TestSplit);
     SUITE_ADD_TEST(suite, TestEscape);
-    SUITE_ADD_TEST(suite, TestShellExpand);
     return suite;
 }
