@@ -29,12 +29,14 @@ VERSION=$(shell git describe --abbrev=4 --dirty --always --long)
 #
 # Install locations
 #
+PKGNAME?=lumail
 DESTDIR?=
 PREFIX?=/usr
 SYSCONFDIR?=/etc
 LUMAIL_ETC?=$(DESTDIR)$(SYSCONFDIR)/lumail
 LUMAIL_HOME?=$(DESTDIR)$(PREFIX)/share/lumail
 LUMAIL_LIBS?=$(DESTDIR)$(PREFIX)/lib/lumail
+DOCDIR?=$(DESTDIR)$(PREFIX)/share/doc/$(PKGNAME)
 LUMAIL_HOME_OLD?=$(DESTDIR)$(SYSCONFDIR)/lumail2
 LUMAIL_LIBS_OLD?=${LUMAIL_HOME_OLD}/lib
 
@@ -258,6 +260,26 @@ install_lua:
 	mv $(LUMAIL_ETC)/lumail.lua $(LUMAIL_ETC)/lumail.lua.$$(date +%d-%m-%Y.%s) || true
 	install -m644 ./global.config.lua $(LUMAIL_ETC)/lumail.lua
 
+#
+# Install documentation files.
+#
+install_doc:
+	mkdir -p $(DOCDIR) || true
+	install -m644 ./*.md $(DOCDIR)
+
+#
+# Install tests and sample files.
+#
+install_data:
+	install -m644 ./user.config.lua $(LUMAIL_HOME)
+	mkdir -p $(LUMAIL_HOME)/tests || true
+	for test in t/*; do \
+		install -m644 $$test $(LUMAIL_HOME)/tests ;\
+	done
+	mkdir -p $(LUMAIL_HOME)/sample.lua || true
+	for sample in sample.lua/*; do \
+		install -m644 $$sample $(LUMAIL_HOME)/sample.lua ;\
+	done
 
 #
 #  Install the binary, and use the other targets to install
