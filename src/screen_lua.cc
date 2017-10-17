@@ -137,6 +137,33 @@ int l_CScreen_get_line(lua_State * l)
     return 1;
 }
 
+/**
+ * Implementation of Screen:choose_string().
+ */
+int l_CScreen_choose_string(lua_State * l)
+{
+    CLuaLog("l_CScreen_choose_string");
+    /*
+     * Get options
+     */
+    std::vector<std::string> options;
+
+    lua_pushnil(l);
+    while (lua_next(l, -2))
+    {
+        const char *entry = lua_tostring(l, -1);
+        options.push_back(entry);
+        lua_pop(l, 1);
+    }
+
+    CScreen *screen = CScreen::instance();
+    std::string out = screen->choose_string(options);
+
+    lua_pushstring(l, out.c_str());
+
+    return 1;
+}
+
 
 /**
  * Implementation of Screen:prompt_chars().
@@ -213,7 +240,7 @@ int l_CScreen_sleep(lua_State * l)
 
 
 /**
- * Implementation of Screen:sleep().
+ * Implementation of Screen:stuff().
  */
 int l_CScreen_stuff(lua_State * l)
 {
@@ -252,6 +279,7 @@ void InitScreen(lua_State * l)
         {"exit",  l_CScreen_exit},
         {"get_char", l_CScreen_get_char},
         {"get_line", l_CScreen_get_line},
+        {"choose_string", l_CScreen_choose_string},
         {"height", l_CScreen_height},
         {"prompt", l_CScreen_prompt_chars},
         {"redraw", l_CScreen_redraw},
