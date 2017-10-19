@@ -1120,7 +1120,7 @@ end
 function Message.compose ()
 
   -- Get some details
-  local to = Screen:get_line "To:"
+  local to = Screen:get_address "To:"
   if to == nil or to == "" then
     return
   end
@@ -1251,7 +1251,7 @@ ${sig}
 
     if (a == 'a') or (a == 'A') then
       -- Add attachment
-      path = Screen:get_line "Attachment path:"
+      path = Screen:get_path "Attachment path:"
       if File:exists(path) then
         table.insert(attachments, path)
       end
@@ -1605,7 +1605,7 @@ References: ${references}
 
     if (a == 'a') or (a == 'A') then
       -- Add attachment
-      path = Screen:get_line "Attachment path:"
+      path = Screen:get_path "Attachment path:"
       if File:exists(path) then
         table.insert(attachments, path)
       end
@@ -1722,7 +1722,7 @@ function Message.forward ()
     return
   end
 
-  local to = Screen:get_line "Forward to:"
+  local to = Screen:get_address "Forward to:"
   if to == nil or to == "" then
     return
   end
@@ -1859,7 +1859,7 @@ Begin forwarded message.
 
     if (a == 'a') or (a == 'A') then
       -- Add attachment
-      path = Screen:get_line "Attachment path:"
+      path = Screen:get_path "Attachment path:"
       if File:exists(path) then
         table.insert(attachments, path)
       end
@@ -2119,7 +2119,7 @@ end
 --
 function save_mime_part ()
    -- Prompt for local-path
-   local output = Screen:get_line("Save to:")
+   local output = Screen:get_path("Save to:")
 
    -- Ensure we got a path.
    if output == nil or output == "" then
@@ -3134,7 +3134,7 @@ end
 -- Read input, and evaluate it as lua.
 --
 function read_eval ()
-  local txt = Screen:get_line ":"
+  local txt = Screen:get_lua ":"
 
   if txt == nil or txt == "" then
     return
@@ -3700,26 +3700,208 @@ end
 --
 -----------------------------------------------------------------------------
 
+--
+-- Completion system for Screen:get_line
+--
+-----------------------------------------------------------------------------
+--
+-- For better completion results the completion function uses contexts.
+-- A context is a function named complete_context, which produces the completion
+-- options for this specific situation. Multiple contexts can be set at once.
+-- A context function is called with the whole line buffer and is
+-- responsible to find the right completion position and completions for its
+-- context. It has to return the token its completions are based on and a table
+-- of the actual completions.
+--
+-- The following three contexts are available:
+--  * address: completing email addresses calling a external program specified in
+--             the config option "complete.addressbookcmd".
+--  * path: complete file paths.
+--  * lua: complete lua code including lumail's objects.
+--
+-- To extend the completions add a function handling your custom context.
+-- And activate it using set_completion_context("your_context") before the use
+-- of Screen:get_line.
+--
+-- For Example: To add environment variables to shell command completion define
+-- this function:
+--
+--function complete_shell(buffer)
+--  local ret = {}
+--  local token = buffer:match(".*%${([^}]*)$")
+--
+--  local handle = io.popen("env | cut -d '=' -f 1")
+--  local env_vars = handle:read("*a"):to_table()
+--  handle:close()
+--
+--  for _, var in ipairs(env_vars) do
+--    if var:match("^" .. token) then
+--      table.insert(ret, var)
+--    end
+--  end
+--  return token, ret
+--end
+--
+-- And activate it for read_execute like this:
+--do
+--  local _read_execute = read_execute
+--  read_execute = function()
+--    set_completion_context("shell")
+--    _read_execute()
+--  end
+--end
+
+
+do
+  --
+  -- Table to hold the completion contexts.
+  --
+  local completion_context = {}
+
+  function set_completion_context(...)
+    completion_context = {}
+    for i,v in ipairs({...}) do
+      completion_context[v] = true
+    end
+  end
+
+  --
+  --- Entry point for the TAB-Completion system for Screen:get_line.
+  --
+  -- This function is called with the buffer Screen:get_line holds. It
+  -- calls the functions for the specified contexts and collects their
+  -- completions. After the user chose one completion the buffer is
+  -- build with the completion and returned.
+  --
+  function on_complete (line)
+    -- The possible completions.
+    local completions = {}
+
+    -- The tokens we complete on.
+    local tokens = {}
+
+    -- Index mapping completions to their token.
+    local index = {}
+
+    --
+    -- Collect all possible completions and their tokens by calling
+    -- the context complete functions.
+    --
+    local i = 1
+    for context, _ in pairs(completion_context) do
+      local func = _G["complete_"..context]
+      if func then
+        local token, options = func(line)
+
+        table.insert(tokens, token)
+
+        for _, option in ipairs(options) do
+          table.insert(completions, option)
+          -- Build our index.
+          index[option] = i
+        end
+      else
+        warning_msg("Unknown completion context: \"" .. context .. "\"")
+      end
+    end
+
+    -- No completion possible
+    if #completions == 0 then
+      return ""
+    end
+
+    local choice = Screen:choose_string(completions)
+    if choice ~= "" then
+      -- Build the buffer to return
+      local token = tokens[index[choice]]
+      return line:sub(0, #line-#token) .. choice
+    else
+      return line
+    end
+  end
+
+  --
+  -- Prompt for a path.
+  --
+  Screen["get_path"] = function(self, prompt)
+    set_completion_context("path")
+    return Screen:get_line(prompt)
+  end
+
+  --
+  -- Prompt for an address.
+  --
+  Screen["get_address"] = function(self, prompt)
+    set_completion_context("address")
+    return Screen:get_line(prompt)
+  end
+
+  --
+  -- Prompt for lua code.
+  --
+  Screen["get_lua"] = function(self, prompt)
+    set_completion_context("lua")
+    return Screen:get_line(prompt)
+  end
+end
 
 --
--- This function is called to generate TAB-completion results.
+--- Complete addresses using an external addressbook.
 --
--- Given a token the user has entered it should return a table
--- containing all possible matches.  The user-interface will
--- complete precisely if there is a single entry in the table, if not
--- it will prompt the user to choose from the available selection.
+-- The completion is done after the last white space.
 --
-function on_complete (token)
+-- The output of the external addressbook should contain one
+-- email address per line.
+--
+function complete_address(buffer)
+  local ret = {}
 
-  --
-  -- Some fixed things that we should be able to complete upon.
-  --
-  tmp = {}
+  -- Find the token to complete on.
+  -- Our token starts at the last space char in buffer.
+  local token_pos = (buffer:reverse():find("%s"))
+  local token = ""
+  if token_pos then
+    token = buffer:sub(#buffer - token_pos + 2)
+  else
+    token = buffer
+  end
 
-  --
-  -- The values we'll return to the caller.
-  --
-  ret = {}
+  local cmd = Config:get("complete.addressbookcmd")
+
+  local handle = io.popen(cmd .. " \"".. token .. "\"")
+  local stdout = handle:read("*a")
+  handle:close()
+
+  local function insert_mailaddr(line)
+    -- include @ to make sure we match the email address
+    local mailaddr = line:match("([^%s]*@[^%s]*)%s")
+    if mailaddr then
+      table.insert(ret, mailaddr)
+    end
+  end
+
+  -- get emails from output
+  stdout:gsub("(.-)\r?\n", insert_mailaddr)
+
+  return token, ret
+end
+
+--
+--- Complete lua code.
+--
+-- The completion is done after last occurence of ( ' " or space in the buffer.
+--
+function complete_lua(buffer)
+  local ret = {}
+
+  -- Find the token to complete on.
+  local token_pos = (buffer:reverse():find("[(\"'%s]"))
+  local token = ""
+  if token_pos then
+    token = buffer:sub(#buffer - token_pos + 2)
+  else
+    token = buffer
+  end
 
   --
   -- Add in our local objects.
@@ -3737,9 +3919,9 @@ function on_complete (token)
   objs["Screen:"] = Screen
 
   for name, object in pairs(objs) do
-    for key, value in pairs(object) do
-      if not string.match(key, "^_") then
-        tmp[name .. key] = name .. key
+    for key, _ in pairs(object) do
+      if not string.match(key, "^_") and string.match(name .. key, "^" .. token) then
+        table.insert(ret, name .. key)
       end
     end
   end
@@ -3747,62 +3929,68 @@ function on_complete (token)
   --
   -- Add in all user-defined functions.
   --
-  for k, v in pairs(_G) do
-    tmp[k] = k
+  for k, _ in pairs(_G) do
+    if string.match(k, "^" .. token) then
+      table.insert(ret, k)
+    end
   end
+
+  return token, ret
+end
+
+--
+--- Complete paths.
+--
+-- The completion is done on the whole buffer.
+--
+function complete_path(buffer)
+  local ret = {}
+
+  local token = buffer
 
   --
   -- If the token starts with "~" then replace that with
-  -- the users' home-directory
+  -- the users' home-directory.
   --
   if string.sub(token, 0, 1) == "~" then
     token = string.sub(token, 2)
     token = os.getenv "HOME" .. token
+
+  --
+  -- If the token doesn't start with '/' it is a relative path
+  -- and we have to make it absolute.
+  --
+  elseif not string.match(token, "^/") then
+    -- get pwd
+    local handle = io.popen("pwd")
+    local pwd = handle:read("*a")
+    handle:close()
+    token = pwd .. "/" .. token
   end
 
+  --
+  -- Get the last directory in the token.
+  --
+  -- Default to / if we can't find one.
+  --
+  dir = string.match(token, "^(.*)/")
+  if dir == "" then
+    dir = "/"
+  end
 
   --
-  -- Is the user attempting to complete on a file-path?
+  -- If the directory exists then add all the entries to the completion-set.
   --
-  if string.match(token, "^/") then
-
-    --
-    -- Get the directory this is from.
-    --
-    -- Default to / if we found no match.
-    --
-    dir = string.match(token, "^(.*)/")
-    if dir == "" then
-      dir = "/"
-    end
-
-    --
-    -- If the directory exists then add all the entries to the completion-set.
-    --
-    if File:exists(dir) then
-      entries = Directory:entries(dir)
-      for i, v in ipairs(entries) do
-        tmp[v] = v
+  if File:exists(dir) then
+    entries = Directory:entries(dir)
+    for i, v in ipairs(entries) do
+      if string.match(v, "^" .. token) then
+        table.insert(ret, v)
       end
     end
   end
-
-  --
-  -- Do we have a match?
-  --
-  for k, v in pairs(tmp) do
-    if string.match(v, "^" .. token) then
-      table.insert(ret, v)
-    end
-  end
-
-  --
-  -- Return the sorted value(s).
-  --
-  table.sort(ret)
-  return ret
+  return buffer, ret
 end
-
 
 --
 -- Handle timers
