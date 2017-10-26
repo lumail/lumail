@@ -3750,6 +3750,20 @@ end
 --    _read_execute()
 --  end
 --end
+--
+-- An already existing context can be extended in a similar way.
+-- To add the email address of your mother to the completions do:
+--
+--do
+--  local _complete_address = complete_address
+--  complete_address = function(buffer)
+--    -- get old completions
+--    local token, ret = _complete_address(buffer)
+--    -- add mothers mail
+--    table.insert(ret, "mother@domain.com")
+--    return token, ret
+--  end
+--end
 
 
 do
