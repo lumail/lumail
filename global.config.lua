@@ -3868,6 +3868,11 @@ function complete_address(buffer)
 
   local cmd = Config:get("complete.addressbookcmd")
 
+  -- Check if cmd is set
+  if not cmd then
+    return token, ret
+  end
+
   local handle = io.popen(cmd .. " \"".. token .. "\"")
   local stdout = handle:read("*a")
   handle:close()
