@@ -27,6 +27,20 @@
 VERSION=$(shell git describe --abbrev=4 --dirty --always --long)
 
 #
+# Install locations
+#
+PKGNAME?=lumail
+DESTDIR?=
+PREFIX?=/usr
+SYSCONFDIR?=/etc
+LUMAIL_ETC?=$(DESTDIR)$(SYSCONFDIR)/lumail
+LUMAIL_HOME?=$(DESTDIR)$(PREFIX)/share/lumail
+LUMAIL_LIBS?=$(DESTDIR)$(PREFIX)/lib/lumail
+DOCDIR?=$(DESTDIR)$(PREFIX)/share/doc/$(PKGNAME)
+LUMAIL_HOME_OLD?=$(DESTDIR)$(SYSCONFDIR)/lumail2
+LUMAIL_LIBS_OLD?=${LUMAIL_HOME_OLD}/lib
+
+#
 # Load the flags if they're not already set - first look at the version
 #
 LUA_VERSION?=5.2
@@ -106,7 +120,6 @@ LINKER=$(CC) -o
 #
 # Compilation flags and setup for packages we use.
 #
-LUMAIL_LIBS=/usr/lib/lumail/
 CPPFLAGS+=-std=c++0x -Wall -Werror
 CPPFLAGS+=-DLUMAIL_VERSION="\"${VERSION}\"" -DLUMAIL_LUAPATH="\"${LUMAIL_LIBS}\""
 CPPFLAGS+=${LUA_FLAGS} $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) $(shell pkg-config --cflags gmime-2.6)
@@ -224,23 +237,16 @@ test-lua: lumail2
 #  Cleanup obsolete versions of our IMAP code
 #
 clean_imap:
-	rm /etc/lumail2/perl.d/delete-message || true
-	rm /etc/lumail2/perl.d/get-folders    || true
-	rm /etc/lumail2/perl.d/get-messages   || true
-	rm /etc/lumail2/perl.d/save-message   || true
-	rm /etc/lumail2/perl.d/set-flags      || true
-	rm /etc/lumail2/perl.d/imap-proxy     || true
-	rm /etc/lumail2/perl.d/Lumail.pm      || true
-	rmdir /etc/lumail2/perl.d             || true
+	rm -rf $(LUMAIL_HOME_OLD)/perl.d/
 
 
 #
 #  Install the IMAP proxy beneath /usr/share/lumail
 #
 install_imap: clean_imap
-	mkdir -p /usr/share/lumail || true
-	install -m755 perl.d/imap-proxy /usr/share/lumail/
-	install -m644 perl.d/Lumail.pm  /usr/share/lumail/
+	mkdir -p $(LUMAIL_HOME) || true
+	install -m755 perl.d/imap-proxy $(LUMAIL_HOME)
+	install -m644 perl.d/Lumail.pm  $(LUMAIL_HOME)
 
 
 #
@@ -248,21 +254,40 @@ install_imap: clean_imap
 # configuration-file, in case the user has editted it.
 #
 install_lua:
-	mkdir -p /usr/lib/lumail || true
-	install -m644 lib/*.lua /usr/lib/lumail
-	mkdir -p /etc/lumail/ || true
-	mv /etc/lumail/lumail.lua /etc/lumail/lumail.lua.$$(date +%d-%m-%Y.%s) || true
-	install -m644 ./global.config.lua /etc/lumail/lumail.lua
+	mkdir -p $(LUMAIL_LIBS) || true
+	install -m644 lib/*.lua $(LUMAIL_LIBS)
+	mkdir -p $(LUMAIL_ETC) || true
+	mv $(LUMAIL_ETC)/lumail.lua $(LUMAIL_ETC)/lumail.lua.$$(date +%d-%m-%Y.%s) || true
+	install -m644 ./global.config.lua $(LUMAIL_ETC)/lumail.lua
 
+#
+# Install documentation files.
+#
+install_doc:
+	mkdir -p $(DOCDIR) || true
+	install -m644 ./*.md $(DOCDIR)
+
+#
+# Install tests and sample files.
+#
+install_data:
+	install -m644 ./user.config.lua $(LUMAIL_HOME)
+	mkdir -p $(LUMAIL_HOME)/tests || true
+	for test in t/*; do \
+		install -m644 $$test $(LUMAIL_HOME)/tests ;\
+	done
+	mkdir -p $(LUMAIL_HOME)/sample.lua || true
+	for sample in sample.lua/*; do \
+		install -m644 $$sample $(LUMAIL_HOME)/sample.lua ;\
+	done
 
 #
 #  Install the binary, and use the other targets to install
 # the Lua libraries and perl proxy.
 #
 install: lumail2 install_imap install_lua
-	mkdir -p /usr/bin || true
-	install -m755 lumail2 /usr/bin/
-
+	mkdir -p $(DESTDIR)$(PREFIX)/bin || true
+	install -m755 lumail2 $(DESTDIR)$(PREFIX)/bin/
 
 
 #
