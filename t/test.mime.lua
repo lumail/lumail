@@ -55,7 +55,7 @@ function testMime ()
   local gif = get_mime_type_bytes "GIF87a"
   luaunit.assertEquals(gif, "image/gif")
 
-  local png = get_mime_type_bytes(string.fromhex "89504E470D0A1A0A000000000000000000000000000000000000000000000000000000000")
+  local png = get_mime_type_bytes(string.fromhex "89504e470d0a1a0a0000000d4948445200000001000000010100000000376ef9240000001049444154789c626001000000ffff03000006000557bfabd40000000049454e44ae426082" )
   luaunit.assertEquals(png, "image/png")
 
   local avi = get_mime_type_bytes(string.fromhex "524946460102030441564920")
