@@ -3148,7 +3148,7 @@ end
 -- Read input, and evaluate it as a shell-command.
 --
 function read_execute ()
-  local cmd = Screen:get_line "!"
+  local cmd = Screen:get_shell "!"
 
   if cmd == nil or cmd == "" then
     return
@@ -3862,6 +3862,14 @@ do
     set_completion_context("lua")
     return Screen:get_line(prompt)
   end
+
+  --
+  -- Prompt for shell code.
+  --
+  Screen["get_shell"] = function(self, prompt)
+    set_completion_context("shell")
+    return Screen:get_line(prompt)
+  end
 end
 
 --
@@ -3959,9 +3967,53 @@ function complete_lua(buffer)
     end
   end
 
+  --
+  -- Add path and email completions
+  --
+  local _, paths = complete_path(token)
+  for _, p in ipairs(paths) do
+    table.insert(ret, p)
+  end
+
+  local _, addresses = complete_address(token)
+  for _, a in ipairs(addresses) do
+    table.insert(ret, a)
+  end
+
   return token, ret
 end
 
+--
+--- Complete shell.
+--
+-- The completion is done after last occurence of ( ' " or space in the buffer.
+function complete_shell(buffer)
+  local ret = {}
+
+  -- Find the token to complete on.
+  local token_pos = (buffer:reverse():find("[(\"'%s]"))
+  local token = ""
+  if token_pos then
+    token = buffer:sub(#buffer - token_pos + 2)
+  else
+    token = buffer
+  end
+
+  --
+  -- Add path and email completions
+  --
+  local _, paths = complete_path(token)
+  for _, p in ipairs(paths) do
+    table.insert(ret, p)
+  end
+
+  local _, addresses = complete_address(token)
+  for _, a in ipairs(addresses) do
+    table.insert(ret, a)
+  end
+
+  return token, ret
+end
 --
 --- Complete paths.
 --
