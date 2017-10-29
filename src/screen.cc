@@ -767,6 +767,20 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
                 selected = (int)(choices.size() - 1);
 
         }
+
+        if (c == KEY_DOWN)
+        {
+            if ((int)(selected + cols) < (int)choices.size())
+                selected += cols;
+
+        }
+
+        if (c == KEY_UP)
+        {
+            if (selected > (int) cols)
+                selected -= cols;
+
+        }
     }
 
     delwin(childwin);
