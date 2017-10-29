@@ -4003,8 +4003,12 @@ function complete_path(buffer)
   if File:exists(dir) then
     entries = Directory:entries(dir)
     for i, v in ipairs(entries) do
-      if string.match(v, "^" .. token) then
-        table.insert(ret, v)
+       if string.match(v, "^" .. token) then
+          if ( File:is_directory( v ) ) then
+             table.insert(ret, v .. "/")
+          else
+             table.insert(ret, v)
+          end
       end
     end
   end

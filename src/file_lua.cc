@@ -127,6 +127,30 @@ int l_CFile_expand(lua_State *l)
 
 
 /**
+ * Is the given path a directory?
+ */
+int l_CFile_is_directory(lua_State *l)
+{
+    CLuaLog("l_CFile_is_directory");
+
+    const char *str = lua_tostring(l, 2);
+
+    if (str == NULL)
+    {
+        lua_pushnil(l);
+        return 1;
+    }
+
+
+    if (CFile::is_directory(str))
+        lua_pushboolean(l , 1);
+    else
+        lua_pushboolean(l , 0);
+
+    return 1;
+}
+
+/**
  * Get details about the given file.
  *
  * This returns a Lua-table with values such as `size`, `uid`, `gid`, etc.
@@ -229,11 +253,12 @@ void InitFile(lua_State * l)
 {
     luaL_Reg sFooRegs[] =
     {
-        {"basename", l_CFile_basename},
-        {"copy",     l_CFile_copy},
-        {"exists",   l_CFile_exists},
-        {"expand",   l_CFile_expand},
-        {"stat",     l_CFile_stat},
+        {"basename",     l_CFile_basename},
+        {"copy",         l_CFile_copy},
+        {"exists",       l_CFile_exists},
+        {"expand",       l_CFile_expand},
+        {"is_directory", l_CFile_is_directory},
+        {"stat",         l_CFile_stat},
         {NULL,       NULL}
     };
     luaL_newmetatable(l, "luaL_CFile");
