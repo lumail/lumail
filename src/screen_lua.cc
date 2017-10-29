@@ -149,6 +149,7 @@ int l_CScreen_choose_string(lua_State * l)
     std::vector<std::string> options;
 
     lua_pushnil(l);
+
     while (lua_next(l, -2))
     {
         const char *entry = lua_tostring(l, -1);
