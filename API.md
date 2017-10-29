@@ -37,7 +37,7 @@ core in the style of a traditionally callback:
      * This function is called when an error is encountered.
 * `on_complete(token)`
      * This is called when the user invokes TAB-completion upon a token.
-     * It should return a table of matches, which are presented to the user.
+     * Look at its definition in global.config.lua for more information how to extend the completions.
 * `on_idle()`
      * This function is called regularly from the main loop.
      * See the later note on timers for more details of what this does.
@@ -179,6 +179,11 @@ The default behaviour of the `gpg` support can be configured with:
 * `gpg.mode`
     * For further information see `GPG.md`.
 
+To get email address completions set:
+
+* complete.addressbookcmd
+    * The token to complete on is appended at the end of the command
+    * For possible external addressbooks have a look at [](https://wiki.archlinux.org/index.php/Mutt#Contact_management)
 
 ### Directories
 

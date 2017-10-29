@@ -873,14 +873,14 @@ std::string CScreen::get_line(std::string prompt, std::string input)
         mvaddnstr(y, x, buffer.c_str(), buffer.size());
 
         /*
-          * Clear the line- the "-2" comes from the size of the prompt.
-          */
+         * Clear the line- the "-2" comes from the size of the prompt.
+         */
         for (int padding = buffer.size(); padding < (width() - 1 - (int)prompt.length()); padding++)
             printw(" ");
 
         /*
-          * Move the cursor
-          */
+         * Move the cursor
+         */
         move(y, x + pos);
 
         /*
@@ -890,8 +890,8 @@ std::string CScreen::get_line(std::string prompt, std::string input)
         c = input->get_input();
 
         /*
-          * Ropy input-handler.
-          */
+         * Ropy input-handler.
+         */
         if (c == KEY_ENTER || c == '\n' || c == '\r')
         {
             break;
@@ -907,8 +907,8 @@ std::string CScreen::get_line(std::string prompt, std::string input)
         else if (c == 11)	/* ctrl-k: kill to end of line */
         {
             /*
-                 * Kill the buffer from the current position onwards.
-                 */
+             * Kill the buffer from the current position onwards.
+             */
             buffer = buffer.substr(0, pos);
         }
         else if ((c == 2) ||	/* ctrl-b : back char */
@@ -972,47 +972,14 @@ std::string CScreen::get_line(std::string prompt, std::string input)
         else if ((c == '\t') && (! buffer.empty()))      /* TAB-completion */
         {
             /*
-             * We're going to find the token to complete against
-             * by searching backwards for a position to start from.
-             *
-             * This string comes from lua, and includes things like: ( " ' space
-             *
-             */
-            size_t toke = buffer.find_last_of("(\"' ", pos);
-
-            std::string prefix = "";
-            std::string token  = buffer;
-
-            /*
-             * If we found one of the split-characters then we have
-             * a token to complete, and the prefix to ignore.
-             *
-             * If we didn't then the prefix is empty, and the buffer is
-             * the token; i.e. we're completing the sole token on the line.
-             *
-             * NOTE:  This implies you cannot complete in the middle of a line.
-             * Just at the end.  Or start.
-             *
-             */
-            if (toke != std::string::npos)
-            {
-                prefix = buffer.substr(0, toke + 1);
-                token = token.substr(toke + 1);
-            }
-
-
-            /*
-             * The token length - because we want to update the cursor position, post-completion.
-             */
-            int toke_len = token.size();
-
-            /*
-             * Get the completions.
+             * The completion is controlled by lua. We hand over the buffer
+             * and get back the completed version.
              */
             CLua *lua = CLua::instance();
-            std::vector<std::string> matches = lua->functiona2table("on_complete", token);
+            std::string completion = lua->function2string("on_complete", buffer);
+            beep();
 
-            if (matches.size() == 0)
+            if (completion == "")
             {
                 /*
                  * No completion possible.
@@ -1021,42 +988,8 @@ std::string CScreen::get_line(std::string prompt, std::string input)
             }
             else
             {
-                /*
-                 * Single completion == match.
-                 */
-                if (matches.size() == 1)
-                {
-                    buffer = prefix + matches.at(0).c_str();
-                    pos += (matches.at(0).size() - toke_len);
-                }
-                else
-                {
-                    /*
-                     * Disable echoing before showing the menu.
-                     */
-                    noecho();
-                    curs_set(0);
-
-                    /*
-                     * Prompt for clarification in the multiple-matches.
-                     */
-                    std::string choice = choose_string(matches);
-
-                    /*
-                     * Reset the cursor.
-                     */
-                    curs_set(1);
-                    echo();
-
-                    /*
-                     * If the user did make a specific choice, then use it.
-                     */
-                    if (! choice.empty())
-                    {
-                        buffer = prefix + choice.c_str();
-                        pos += (choice.size() - toke_len);
-                    }
-                }
+                pos += completion.size() - buffer.size();
+                buffer = completion;
             }
         }
         else if (isprint(c))
