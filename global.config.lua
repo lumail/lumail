@@ -4041,7 +4041,7 @@ function complete_path(buffer)
   elseif not string.match(token, "^/") then
     -- get pwd
     local handle = io.popen("pwd")
-    local pwd = handle:read("*a")
+    local pwd = handle:read("*a"):sub(0,-2) -- strip new line
     handle:close()
     token = pwd .. "/" .. token
   end
