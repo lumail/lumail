@@ -3824,12 +3824,14 @@ do
       return ""
     end
 
+    local choice = ""
     -- Only one completion?
     if #completions == 1 then
-       return completions[1]
+       choice = completions[1]
+    else
+      choice = Screen:choose_string(completions)
     end
 
-    local choice = Screen:choose_string(completions)
     if choice ~= "" then
       -- Build the buffer to return
       local token = tokens[index[choice]]
