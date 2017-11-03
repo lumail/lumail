@@ -610,7 +610,7 @@ function Threader.iterate_thread(msg_callback, general_callback)
   -- find next thread
   index = index + 1
   msg = msgs[index]
-  while Threader.roots[msg] == nil do
+  while Threader.roots[msg] == nil and msg ~= nil do
     if msg_callback then
       msg_callback(msg)
     end
@@ -629,6 +629,19 @@ function Threader.collect_thread()
   local thread_msgs = {}
   Threader.iterate_thread(function(msg) table.insert(thread_msgs, msg) end)
   return thread_msgs
+end
+
+
+--
+-- Jump to the root of the current thread
+--
+function Threader.select_root()
+  local msgs = get_messages()
+  local index = Config:get("index.current") + 1
+  while Threader.roots[msgs[index]] == nil do
+    index = index - 1
+    prev()
+  end
 end
 
 --
@@ -694,8 +707,12 @@ end
 -- Trash current thread
 --
 function Threader.thread_trash()
-  for _,m in ipairs(Threader.collect_thread()) do
-    m:trash()
+  -- Start with the root of the thread
+  Threader.select_root()
+
+  for _, m in ipairs(Threader.collect_thread()) do
+    -- call Message.trash for every message in thread
+    Message.trash()
   end
 end
 
@@ -703,8 +720,12 @@ end
 -- Delete current thread
 --
 function Threader.thread_delete()
-  for _,m in ipairs(Threader.collect_thread()) do
-    m:delete()
+  -- Start with the root of the thread
+  Threader.select_root()
+
+  for _, m in ipairs(Threader.collect_thread()) do
+    -- call Message.delete for every message in thread
+    Message.delete()
   end
 end
 
