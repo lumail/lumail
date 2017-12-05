@@ -17,6 +17,7 @@
  */
 
 
+#include <algorithm>
 #include <fstream>
 
 #include "cache.h"
@@ -60,6 +61,12 @@ void CCache::empty()
  */
 std::string CCache::get(std::string key)
 {
+    //
+    // Remove spaces from key-names to avoid issues when
+    // saving/loading.
+    //
+    key.erase(std::remove_if(key.begin(), key.end(), ::isspace), key.end());
+
     CacheEntry *e = m_cache[key];
 
     if (e != NULL)
@@ -78,6 +85,12 @@ void CCache::set(std::string key, std::string value)
 
     if (e != NULL)
         delete(e);
+
+    //
+    // Remove spaces from key-names to avoid issues when
+    // saving/loading.
+    //
+    key.erase(std::remove_if(key.begin(), key.end(), ::isspace), key.end());
 
     e = new CacheEntry();
     e->value   = value;
