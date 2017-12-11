@@ -229,7 +229,7 @@ int l_CMessage_headers(lua_State * l)
         if (!value.empty())
             lua_pushstring(l, value.c_str());
         else
-            lua_pushstring(l, "[EMPTY]");
+            lua_pushstring(l, "");
 
         lua_settable(l, -3);
     }
