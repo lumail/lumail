@@ -28,6 +28,7 @@
 --      local threads = Threader.thread(messages)
 --
 
+Progress = require "progress_bar"
 require "table_utilities"
 
 --
@@ -308,6 +309,7 @@ function Threader.thread (messages)
 
   -- 1:
   for _, msg in ipairs(messages) do
+    Progress:step("sorting messages")
 
     -- 1.A: create/get container of the current message
     local msgid = msg:header "Message-ID"
@@ -360,6 +362,7 @@ function Threader.thread (messages)
 
   -- 2: find root set
   for _, v in pairs(id_table) do
+    Progress:step("sorting messages")
     if v.parent == nil then
       table.insert(roots, v)
     end
@@ -381,6 +384,7 @@ function Threader.thread (messages)
   -- 5.B: find subject of this tree
   local without_subject = {}
   for _, root in ipairs(roots) do
+    Progress:step("sorting messages")
 
     local subject = root:get_normalized_subject()
     if subject ~= "" then
@@ -397,6 +401,7 @@ function Threader.thread (messages)
   -- Prefer non-replies, older than any child of the empty container, over
   -- the empty container
   for _, root in ipairs(roots) do
+    Progress:step("sorting messages")
     local subject = root:get_normalized_subject()
     local target = subject_table[subject]
     if target and target ~= root then
