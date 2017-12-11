@@ -92,21 +92,17 @@ GPG = nil
 if string.path "mimegpg" then
   GPG = require "gpg"
 end
-Panel:append(GPG)
-
 
 --
 -- Setup a cache for objects.
 --
 cache = Cache.new()
 
-
 --
 -- If the user changes the index-limit we'll try to keep the same
 -- maildir selected.  We do that by caching the old value here.
 --
 local prev_maildir = nil
-
 
 --
 -- This contains the messages which are currently visible.
