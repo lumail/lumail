@@ -75,6 +75,7 @@ Life = require "life"
 Stack = require "stack"
 keymap = require "keymap"
 Progress = require "progress_bar"
+Hcache = require "header_cache"
 Threader = require "threader"
 
 --
@@ -471,6 +472,10 @@ do
 
   -- Restore to the previous mode
   function previous_mode ()
+    if Config:get("global.mode") == "index" then
+      -- Write the header cache of this maildir to disk
+      Hcache.save()
+    end
     local prev = mode_stack:pop()
     if prev == nil then
       prev = "maildir"
@@ -719,22 +724,7 @@ end
 function compare_by_from (a, b)
   Progress:step "Sorting messages"
 
-  local a_path = a:path()
-  local a_from = cache:get("compare_by_from" .. a_path)
-
-  if a_from == nil then
-    a_from = a:header "From":lower()
-    cache:set("compare_by_from" .. a_path, a_from)
-  end
-
-  local b_path = b:path()
-  local b_from = cache:get("compare_by_from" .. b_path)
-
-  if b_from == nil then
-    b_from = b:header "From":lower()
-    cache:set("compare_by_from" .. b_path, b_from)
-  end
-  return (a_from < b_from)
+  return (a:header("From") < b:header("From"))
 end
 
 --
@@ -745,22 +735,7 @@ end
 function compare_by_subject (a, b)
   Progress:step "Sorting messages"
 
-  local a_path = a:path()
-  local a_sub = cache:get("compare_by_subject" .. a_path)
-
-  if a_sub == nil then
-    a_sub = a:header "Subject":lower()
-    cache:set("compare_by_subject" .. a_path, a_sub)
-  end
-
-  local b_path = b:path()
-  local b_sub = cache:get("compare_by_subject" .. b_path)
-
-  if b_sub == nil then
-    b_sub = b:header "Subject":lower()
-    cache:set("compare_by_subject" .. b_path, b_sub)
-  end
-  return (a_sub < b_sub)
+  return (a:header("Subject") < b:header("Subject"))
 end
 
 
@@ -2038,8 +2013,14 @@ function Maildir.select (desired, change_mode_too)
     local path = object:path()
     if string.ends(path, desired) then
 
+      -- Save the header cache of the previous selected maildir if possible.
+      Hcache.save()
+
       -- Select the maildir, to make it current.
       Global:select_maildir(object)
+
+      -- Load the header cache of the new selected maildir.
+      Hcache.load()
 
       -- And update the current selection.
       Config:set("maildir.current", index - 1)
@@ -3196,6 +3177,9 @@ function select ()
         info_msg("Selected " .. folder:path() .. " with " .. size .. " messages.")
       end
     end
+
+    -- Populate the header cache for this maildir
+    Hcache.load()
 
     --
     -- Change to the index-mode, so we can see the messages in
