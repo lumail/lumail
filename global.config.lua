@@ -397,12 +397,14 @@ function Config.key_changed (name, old)
 
   --
   -- If the sorting method has changed we need to resort our messages.
+  -- But only If we are in index view. Otherwise the messages get resorted when
+  -- index view is selected.
   --
   -- NOTE: We explicitly avoid re-reading the maildir, so we're
   -- just changing the order of the existing messages not refreshing
   -- them 100%.
   --
-  if name == "index.sort" then
+  if name == "index.sort" and Config:get "global.mode" == "index" then
     global_msgs = sort_messages(global_msgs)
     return
   end
