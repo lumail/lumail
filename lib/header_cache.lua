@@ -158,11 +158,13 @@ do
     end
 
     for path, headers in pairs(_cache) do
-      f:write(path .. "\n")
-      for h, v in pairs(headers) do
-        f:write(h .. ": " .. v .. "\n")
+      if File:exists(path) then
+        f:write(path .. "\n")
+        for h, v in pairs(headers) do
+          f:write(h .. ": " .. v .. "\n")
+        end
+        f:write("\n")
       end
-      f:write("\n")
     end
 
     f:close()
