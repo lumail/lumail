@@ -665,7 +665,6 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
     size_t cols = 1;
 
     WINDOW *childwin = newwin(height, width, 2, 2);
-    box(childwin, 0, 0);
 
     /*
      * How many columns to draw?
@@ -683,13 +682,36 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
         cols = choices.size();
 
 
+    /*
+     * Matches of the string search.
+     */
+    std::vector<size_t> matches(choices.size());
+    for (size_t i = 0; i < choices.size(); i++)
+    {
+        matches.at(i)=i;
+    }
+    /*
+     * User input to search for.
+     */
+    std::string search_string;
+
     int selected  = 0;
     bool done     = false;
     int col_width = width / cols;
 
     while (!done)
     {
-        refresh();
+        /*
+         * Redraw the window in each iteration because of changing choices.
+         */
+        wclear(childwin);
+        box(childwin, 0, 0);
+
+        /*
+         * If the selection is bigger than the matches select the last item.
+         */
+        if ((size_t)selected > matches.size())
+            selected = matches.size()-1;
 
         int count = 0;
 
@@ -699,9 +721,9 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
         int x = 0;
         int y = 2;
 
-        for (std::string choice : choices)
+        for (size_t i: matches)
         {
-
+            std::string choice = choices.at(i);
             /*
              * Calculate the column.
              */
@@ -711,11 +733,17 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
 
             if (count == selected)
                 wattron(childwin, A_UNDERLINE | A_STANDOUT);
-            else
-                wattrset(childwin, A_NORMAL);
 
             mvwaddstr(childwin, y, x,  choice.c_str());
+
+            wattrset(childwin, A_NORMAL);
             count += 1;
+        }
+        /*
+         * Display the search string in the last line.
+         */
+        if (search_string != "") {
+            mvwprintw(childwin, height - 1, 1, "%s %s", "search:", search_string.c_str());
         }
 
         wrefresh(childwin);
@@ -781,12 +809,32 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
                 selected -= cols;
 
         }
+        /*
+         * Update the search string and our matches.
+         */
+        if (c == KEY_BACKSPACE || isprint(c))
+        {
+            if (c == KEY_BACKSPACE && search_string.length() > 0)
+                search_string.pop_back();
+            else
+                search_string += c;
+
+            /*
+             * Calculate matches.
+             */
+            matches.clear();
+            for (size_t i = 0; i < choices.size(); i++)
+            {
+                if (choices[i].find(search_string) != std::string::npos)
+                    matches.push_back(i);
+            }
+        }
     }
 
     delwin(childwin);
     ::clear();
 
-    return (choices.at(selected));
+    return (choices.at(matches.at(selected)));
 }
 
 
