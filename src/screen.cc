@@ -710,7 +710,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
         /*
          * If the selection is bigger than the matches select the last item.
          */
-        if ((size_t)selected > matches.size())
+        if ((size_t)selected >= matches.size())
             selected = matches.size()-1;
 
         int count = 0;
@@ -814,8 +814,11 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
          */
         if (c == KEY_BACKSPACE || isprint(c))
         {
-            if (c == KEY_BACKSPACE && search_string.length() > 0)
-                search_string.pop_back();
+            if (c == KEY_BACKSPACE)
+                if (search_string.length() > 0)
+                    search_string.pop_back();
+                else
+                    beep();
             else
                 search_string += c;
 
