@@ -743,7 +743,7 @@ std::string CScreen::choose_string(std::vector<std::string> choices)
          * Display the search string in the last line.
          */
         if (search_string != "") {
-            mvwprintw(childwin, height - 1, 1, "%s %s", "search:", search_string.c_str());
+            mvwprintw(childwin, height - 1, 1, "%s %s ", "filter:", search_string.c_str());
         }
 
         wrefresh(childwin);
