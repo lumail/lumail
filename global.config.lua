@@ -1119,6 +1119,7 @@ From: ${from}
 Subject: ${subject}
 Message-ID: ${msgid}
 Date: ${date}
+Content-Type: text/plain; charset="utf-8"
 
 ${sig}
 ]]
@@ -1392,6 +1393,7 @@ Date: ${date}
 Message-ID: ${msgid}
 In-Reply-To: ${source_id}
 References: ${references}
+Content-Type: text/plain; charset="utf-8"
 
 ]]
 
@@ -1717,6 +1719,7 @@ From: ${from}
 Subject: Fwd: ${subject}
 Message-ID: ${msgid}
 Date: ${date}
+Content-Type: text/plain; charset="utf-8"
 
 Begin forwarded message.
 
