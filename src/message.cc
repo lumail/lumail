@@ -286,9 +286,27 @@ void CMessage::populate_message() {
              * Decode the value.
              */
             char * decoded = g_mime_utils_header_decode_text(value);
-            m_headers[nm] = decoded;
+
+            /*
+             * We want to make sure there are no newlines in the header
+             * value - do that in a hacky way.
+             */
+            std::string v;
+            int l = strlen(decoded);
+            for( int i =0; i < l;i++ ) {
+                if ( decoded[i] != '\n' )
+                    v += decoded[i];
+            }
+
+            /*
+             * Store the updated value and free the original pointer.
+             */
+            m_headers[nm] = v;
             free(decoded);
 
+            /*
+             * We want to ensure that no header-values contain a newline.
+             */
             if (!g_mime_header_iter_next(iter))
                 break;
         }
