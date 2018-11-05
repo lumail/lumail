@@ -120,9 +120,10 @@ LINKER=$(CC) -o
 #
 # Compilation flags and setup for packages we use.
 #
-CPPFLAGS+=-std=c++0x -Wall -Werror
-CPPFLAGS+=-DLUMAIL_VERSION="\"${VERSION}\"" -DLUMAIL_LUAPATH="\"${LUMAIL_LIBS}\""
-CPPFLAGS+=${LUA_FLAGS} $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) $(shell pkg-config --cflags gmime-2.6)
+CPPFLAGS+=-Wall -Werror
+override CPPFLAGS+=-std=c++0x
+override CPPFLAGS+=-DLUMAIL_VERSION="\"${VERSION}\"" -DLUMAIL_LUAPATH="\"${LUMAIL_LIBS}\""
+override CPPFLAGS+=${LUA_FLAGS} $(shell pcre-config --cflags) $(shell pkg-config --cflags ncursesw) $(shell pkg-config --cflags gmime-2.6)
 
 #
 # Linker flags for the packages we use.
