@@ -64,6 +64,7 @@ sub imap_connect
         $host = $1;
         $ssl  = 0;
     }
+    die "No imap_server specified." unless $1;
 
     my $handle = Net::IMAP::Client->new(
         server          => $host,
