@@ -99,6 +99,7 @@ void CIMAPProxy::launch()
             if (m_child == 0)
             {
                 unused = execl(path.c_str(), CFile::basename(path).c_str(), NULL);
+                exit(1);
             }
 
             sleep(1.0);
