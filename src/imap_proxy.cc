@@ -40,6 +40,12 @@
 CIMAPProxy::CIMAPProxy()
 {
     m_child = -1;
+
+    /*
+     * Use ~/.imap.sock as the path.
+     */
+    m_sock_path = getenv("HOME");
+    m_sock_path += "/.imap.sock";
 }
 
 
@@ -92,8 +98,11 @@ void CIMAPProxy::launch()
         if (CFile::exists(path))
         {
             CStatusPanel *panel = CStatusPanel::instance();
+            int i;
+
             panel->add_text("Launching IMAP proxy " + path);
 
+            unlink(m_sock_path.c_str());
             m_child = fork();
 
             if (m_child == 0)
@@ -102,7 +111,18 @@ void CIMAPProxy::launch()
                 exit(1);
             }
 
-            sleep(1.0);
+            for (i = 0; i < 100; i++)
+            {
+                if (access(m_sock_path.c_str(), F_OK) == 0)
+                {
+                    /*
+                     * Done waiting, successfully.
+                     */
+                    return;
+                }
+                usleep(100000);
+            }
+            panel->add_text("Timed out waiting for IMAP proxy");
         }
         else
         {
@@ -134,13 +154,7 @@ std::string CIMAPProxy::read_imap_output(std::string cmd)
     sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
     addr.sun_family = AF_UNIX;
 
-    /*
-     * Use ~/.imap.sock as the path.
-     */
-    std::string path = getenv("HOME");
-    path += "/.imap.sock";
-
-    strcpy(addr.sun_path, path.c_str());
+    strcpy(addr.sun_path, m_sock_path.c_str());
 
     if (connect(sockfd, (sockaddr*)&addr, sizeof(addr)) < 0)
     {
