@@ -125,9 +125,11 @@ while (1)
     #
     #  Send a "still alive" message to our remote IMAP-server.
     #
-    $handle->noop();
-
-    if ( !$handle )
+    if ( $handle )
+    {
+        $handle->noop();
+    }
+    else
     {
         $handle = Lumail::imap_connect();
     }
