@@ -64,4 +64,9 @@ private:
      * The handle to our child-process.
      */
     pid_t m_child;
+
+    /**
+     * Path to the IMAP proxy socket.
+     */
+    std::string m_sock_path;
 };

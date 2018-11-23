@@ -272,7 +272,7 @@ void CGlobalState::update_maildirs()
         if (!parsingSuccessful)
         {
             CLua *lua = CLua::instance();
-            lua->on_error("Failed to parse JSON response to 'list_folders'.");
+            lua->on_error("Failed to parse JSON response to 'list_folders': " + json);
 
             config->set("maildir.max", 0);
             return;
