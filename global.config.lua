@@ -4001,6 +4001,7 @@ function complete_shell(buffer)
 
   return token, ret
 end
+
 --
 --- Complete paths.
 --
@@ -4048,8 +4049,11 @@ function complete_path(buffer)
     entries = Directory:entries(dir)
     for i, v in ipairs(entries) do
        if string.match(v, "^" .. token) then
-          if ( File:is_directory( v ) ) then
-             table.insert(ret, v .. "/")
+          if File:is_directory(v) then
+            -- skip . and .. directories
+            if not v:match(".*/%.%.?$") then
+              table.insert(ret, v .. "/")
+            end
           else
              table.insert(ret, v)
           end
