@@ -1090,14 +1090,14 @@ end
 --
 -- Compose a new message.
 --
-function Message.compose ()
+function Message.compose (to, subject)
 
   -- Get some details
-  local to = Screen:get_address "To:"
+  local to = to or Screen:get_address "To:"
   if to == nil or to == "" then
     return
   end
-  local subject = Screen:get_line "Subject:"
+  local subject = subject or Screen:get_line "Subject:"
   if subject == nil or subject == "" then
     subject = "No subject"
   end
