@@ -255,7 +255,7 @@ private:
     /**
      * Are we (still) in the event-loop?
      */
-    bool m_running;
+    bool m_running = true;
 
     /**
      * This map contains a mapping between a given mode-name and the

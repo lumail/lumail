@@ -140,11 +140,6 @@ void CScreen::update(std::string key_name, CConfigEntry *old)
 void CScreen::run_main_loop()
 {
     /*
-     * Now we're in our loop.
-     */
-    m_running = true;
-
-    /*
      * Get the lua-helper.
      */
     CLua *lua = CLua::instance();
